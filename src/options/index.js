@@ -7,7 +7,8 @@ import {htmlToTemplate, tBody, template, templateCache} from '@/js/localization'
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {FIREFOX, MAC, OPERA} from '@/js/ua';
-import {clamp, t} from '@/js/util';
+import {favicon, usoa, usw} from '@/js/urls';
+import {clamp, getHost, t} from '@/js/util';
 import {CHROME_POPUP_BORDER_BUG, ignoreChromeError} from '@/js/util-webext';
 import './options-sync';
 import '@/css/onoffswitch.css';
@@ -25,6 +26,12 @@ $id(pKeepAlive).previousElementSibling.firstChild.textContent +=
 if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
   $id('popupWidth').closest('.items').append(template.popupBorders);
 }
+$('#favs-note').title = t('optionTargetIconsNote').replace('<SRV>', getHost(favicon('')));
+$('#installer-note').title = t('optionsUrlInstallerNote').replace('<LIST>', [
+  usw + 'explore',
+  usoa + 'browse/categories',
+  'https://greasyfork.org/scripts?language=css',
+].map(u => `<a href="${u}">${getHost(u)}</a>`).join(', '));
 window.on('keydown', event => {
   if (getEventKeyName(event) === 'Escape') {
     tellTopToCloseOptions();

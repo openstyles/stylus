@@ -198,21 +198,8 @@
             <p i18n="manageNewUI"></p>
             <input type="checkbox" id="manage.newUI" class="slider">
           </label>
-          <label show-if="manage.newUI" id="favs">
-            <p i18n="manageFavicons">
-              <a i18n="title:manageFaviconsHelp"
-                 data-cmd="note" class=icon tabindex="0">
-                <i class=i-info></i>
-              </a>
-            </p>
-            <input type="checkbox" id="manage.newUI.favicons" class="slider">
-          </label>
-          <label show-if="manage.newUI.favicons">
-            <p i18n="manageFaviconsGray"></p>
-            <input type="checkbox" id="manage.newUI.faviconsGray" class="slider">
-          </label>
           <label>
-            <p i18n="manageMaxTargets"></p>
+            <p i18n="optionTargetNum"></p>
             <input id="manage.newUI.targets" type="number" min="0" max="99">
           </label>
           <label>
@@ -225,9 +212,15 @@
       <div class="block">
         <h2 i18n="general"></h2>
         <div class="items swap">
-          <label>
-            <p i18n="optionsUrlInstaller"></p>
-            <input type="checkbox" id="urlInstaller" class="slider">
+          <label show-if="manage.newUI">
+            <p i18n="optionTargetIcons">
+              <a id="favs-note" data-cmd="note" class=icon tabindex="0"><i class=i-info></i></a>
+            </p>
+            <input type="checkbox" id="manage.newUI.favicons" class="slider">
+          </label>
+          <label show-if="manage.newUI.favicons">
+            <p i18n="manageFaviconsGray"></p>
+            <input type="checkbox" id="manage.newUI.faviconsGray" class="slider">
           </label>
           <label>
             <p i18n="optionCompactWidth"></p>
@@ -236,6 +229,12 @@
           <label class="chromium-only">
             <p i18n="optionsAdvancedContextDelete"></p>
             <input type="checkbox" id="editor.contextDelete" class="slider">
+          </label>
+          <label>
+            <p i18n="optionsUrlInstaller">
+              <a id="installer-note" data-cmd="note" class=icon tabindex="0"><i class=i-info></i></a>
+            </p>
+            <input type="checkbox" id="urlInstaller" class="slider">
           </label>
         </div>
       </div>

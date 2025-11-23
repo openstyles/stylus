@@ -728,25 +728,13 @@
     "message": "Live reload",
     "description": "The label of live-reload feature"
   },
-  "manageFavicons": {
-    "message": "Favicons in applies-to column",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI in style manager"
-  },
   "manageFaviconsGray": {
     "message": "Grayed out",
     "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI in style manager"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus uses an external service https://icons.duckduckgo.com",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI in style manager"
-  },
   "manageFilters": {
     "message": "Filters",
     "description": "Label for filters container"
-  },
-  "manageMaxTargets": {
-    "message": "Number of applies-to items",
-    "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI in style manager"
   },
   "manageMinColumnWidth": {
     "message": "Minimum column width (in pixels; 9999 disables multi-column mode)"
@@ -1070,6 +1058,18 @@
   "optionKeepAliveNote": {
     "message": "Increase it if you encounter flashing of unstyled content (FOUC) when opening a page after not interacting with the browser for a while.\n\n-1 = ManifestV2 default behavior (no limit).\n0 = ManifestV3 default behavior (half a minute).\n\nThe cache takes 30MB or more of RAM, but rebuilding it may take too much time and cause FOUC depending on the website, network speed, amount of styles, RAM size, and CPU performance."
   },
+  "optionTargetIcons": {
+    "message": "Icons for target sites",
+    "description": "Label for the checkbox that toggles showing icons for style's target sites in various parts of UI"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus uses an external service <SRV>",
+    "description": "Label for the checkbox that toggles icons, <SRV> is replaced with the actual service name"
+  },
+  "optionTargetNum": {
+    "message": "Number of target sites",
+    "description": "Label for the numeric input box to limit max number of applies-to targets in the style manager"
+  },
   "optionsAdvanced": {
     "message": "Advanced"
   },
@@ -1237,7 +1237,11 @@
     "message": "Userstyle autoupdate interval in hours (specify 0 to disable)"
   },
   "optionsUrlInstaller": {
-    "message": "Open installer when navigating to a .user.css URL"
+    "message": "Open installer for UserCSS styles on any site"
+  },
+  "optionsUrlInstallerNote": {
+    "message": "Enable it to install from any site when these conditions are met:\n1) URL ends with <code>.user.css</code> or <code>.user.less</code> or <code>.user.styl</code>,\n2) URL points to a plain text contents of the style (usually called \"raw\") i.e. not to an HTML webpage.\n\nDisable it to limit installations to the dedicated style galleries:\n<LIST>.",
+    "description": "<LIST> is replaced with a list of sites (like 3)."
   },
   "overwriteFileExport": {
     "message": "Do you want to overwrite an existing file?"
