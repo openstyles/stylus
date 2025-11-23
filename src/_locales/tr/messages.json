@@ -660,14 +660,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Mozilla biçemiyle yazılmış kodu yapıştır"
   },
-  "styleInstall": {
-    "message": "'$stylename$' Stylus'e yüklensin mi?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleMissingName": {
     "message": "Bir ad girin"
   },

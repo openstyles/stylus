@@ -127,14 +127,6 @@
   "styleEnabledLabel": {
     "message": "Aktivoitu"
   },
-  "styleInstall": {
-    "message": "Asennetaanko '$stylename$' Stylusiin?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleMissingName": {
     "message": "Syötä nimi"
   },

@@ -252,14 +252,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Налепи код у Mozilla формату"
   },
-  "styleInstall": {
-    "message": "Инсталирати '$stylename$' у Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleMissingName": {
     "message": "Унесите назив"
   },

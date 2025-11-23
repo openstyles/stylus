@@ -127,14 +127,6 @@
   "styleEnabledLabel": {
     "message": "ممكّن"
   },
-  "styleInstall": {
-    "message": "هل تريد تثبيت '$stylename$' في Stylus؟",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleMissingName": {
     "message": "أدخل اسمًا"
   },

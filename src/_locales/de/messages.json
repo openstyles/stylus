@@ -1229,14 +1229,6 @@
   "styleInjectionOrderHint_prio": {
     "message": "Die unten als wichtig gekennzeichneten Styles werden immer zuletzt angewendet, sodass sie auch neu installierte Styles überschreiben können. Klicke auf das Zeichen des Styles, um die Wichtigkeit umzuschalten."
   },
-  "styleInstall": {
-    "message": "\"$stylename$\" mit Stylus installieren?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "Installation des Styles fehlgeschlagen!\n$error$",
     "placeholders": {

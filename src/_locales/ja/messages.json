@@ -1247,14 +1247,6 @@
   "styleInjectionOrderHint_prio": {
     "message": "以下に表示される重要なスタイルは、常に最後に挿入されるため、新しくインストールしたスタイルを上書きできます。スタイルをクリックして重要度を設定/解除してください。"
   },
-  "styleInstall": {
-    "message": "「$stylename$」を Stylus にインストールしますか？",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "ユーザースタイルのインストールに失敗しました!\n$error$",
     "placeholders": {

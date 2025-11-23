@@ -740,14 +740,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Vložte kód v Mozilla formátu"
   },
-  "styleInstall": {
-    "message": "Nainstalovat „$stylename$“ do Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "Styl nelze nainstalovat.\n$error$",
     "placeholders": {

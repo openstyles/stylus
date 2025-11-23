@@ -1251,14 +1251,6 @@
   "styleInjectionOrderHint_prio": {
     "message": "Belangrijke stijlen hieronder worden altijd als laatste geïnjecteerd, zodat ze eventuele pas geïnstalleerde stijlen kunnen vervangen. Klik op het sterpictogram van een stijl om de urgentie ervan te bepalen."
   },
-  "styleInstall": {
-    "message": "‘$stylename$’ installeren in Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "Installeren van gebruikersstijl mislukt!\n$error$",
     "placeholders": {

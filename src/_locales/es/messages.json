@@ -1249,14 +1249,6 @@
   "styleInjectionOrderHint_prio": {
     "message": "Los estilos importantes que se indican a continuación se aplican siempre en último lugar para que puedan anular cualquier estilo recién instalado. Haga clic en la estrella del estilo para cambiar su importancia."
   },
-  "styleInstall": {
-    "message": "¿Quiere instalar «$stylename$» en Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "¡No se pudo instalar el estilo de usuario!\n$error$",
     "placeholders": {

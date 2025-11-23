@@ -1180,14 +1180,6 @@
   "styleIncludeLabel": {
     "message": "Включені користувачем сайти"
   },
-  "styleInstall": {
-    "message": "Встановити '$stylename$' у Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "Не вдалося встановити користувальницький стиль!\n$error$",
     "placeholders": {

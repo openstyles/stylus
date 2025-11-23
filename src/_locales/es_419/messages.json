@@ -1067,14 +1067,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Pegue el código de formato Mozilla"
   },
-  "styleInstall": {
-    "message": "¿Quiere instalar «$stylename$» en Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "¡No se pudo instalar el estilo de usuario!\n$error$",
     "placeholders": {

@@ -854,14 +854,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Kleebi Mozilla-vormingus koodi"
   },
-  "styleInstall": {
-    "message": "Paigaldad \"$stylename$\" Stylus'isse?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "Kasutajastiili paigaldamine ebaõnnestus!\n$error$",
     "placeholders": {

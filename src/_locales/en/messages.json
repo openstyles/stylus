@@ -1591,15 +1591,6 @@
     "message": "Important styles listed below are always injected last so they can override any newly installed styles. Click the style's mark to toggle its importance.",
     "description": "Hint at the bottom of the injection order dialog in style manager"
   },
-  "styleInstall": {
-    "message": "Install '$stylename$' into Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    },
-    "description": "Confirmation when installing a style"
-  },
   "styleInstallFailed": {
     "message": "Failed to install userstyle!\n$error$",
     "placeholders": {

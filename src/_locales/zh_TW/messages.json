@@ -1282,14 +1282,6 @@
   "styleInjectionOrderHint_prio": {
     "message": "下方列出的重要樣式一律最後注入，因此它們會覆寫新安裝的樣式。點擊樣式的標記以切換其重要程度。"
   },
-  "styleInstall": {
-    "message": "安裝 '$stylename$' 到 Stylus ？",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "安裝使用者樣式失敗！\n$error$",
     "placeholders": {

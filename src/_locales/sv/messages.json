@@ -945,14 +945,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Klistra in Mozilla-formatkoden"
   },
-  "styleInstall": {
-    "message": "Installera '$stylename$' in i Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "Det gick inte att installera userstyle!\n$error$",
     "placeholders": {

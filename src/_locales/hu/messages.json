@@ -1035,14 +1035,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Mozilla formátumú kód beillesztése"
   },
-  "styleInstall": {
-    "message": "Telepíted a(z) „$stylename$” nevű stílust a Stylusba?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "A stílus telepítése nem sikerült!\n$error$",
     "placeholders": {

@@ -1000,14 +1000,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Indsæt Mozilla-formatkoden"
   },
-  "styleInstall": {
-    "message": "Installer '$stylename$' i Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "Kunne ikke installere userstyle!\n$error$",
     "placeholders": {

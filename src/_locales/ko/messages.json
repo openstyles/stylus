@@ -1057,14 +1057,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Mozilla 형식의 코드를 붙여넣으세요"
   },
-  "styleInstall": {
-    "message": "Stylus에 '$stylename$'을(를) 설치하시겠습니까?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "userstyle 설치에 실패했습니다.\n$error$",
     "placeholders": {

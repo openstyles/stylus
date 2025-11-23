@@ -1288,14 +1288,6 @@
   "styleInjectionOrderHint_prio": {
     "message": "下面列出的重要样式始终是最后注入的，因此它们可以覆盖任何新安装的样式。单击样式的标记以切换其重要性。"
   },
-  "styleInstall": {
-    "message": "要将“$stylename$”安装到 Stylus 中吗？",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "安装用户样式失败!\n$error$",
     "placeholders": {

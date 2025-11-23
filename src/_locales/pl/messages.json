@@ -1282,14 +1282,6 @@
   "styleInjectionOrderHint_prio": {
     "message": "Ważne style wymienione poniżej są zawsze wstrzykiwane jako ostatnie, dzięki czemu mogą zastąpić nowo zainstalowane style. Kliknij oznaczenie stylu, aby zmienić jego ważność."
   },
-  "styleInstall": {
-    "message": "Zainstalować '$stylename$' do Stylusa?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "Nie udało się zainstalować stylu!\n$error$",
     "placeholders": {

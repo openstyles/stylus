@@ -635,14 +635,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Paste cod în format Mozilla"
   },
-  "styleInstall": {
-    "message": "Instalați '$stylename$' în Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "Instalarea temei eșuată!\n$error$",
     "placeholders": {

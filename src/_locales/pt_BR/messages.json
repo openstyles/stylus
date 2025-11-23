@@ -921,14 +921,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Colar o código formato-Mozilla"
   },
-  "styleInstall": {
-    "message": "Instalar \"$stylename$\" no Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "Falha ao instalar o estilo de usuário!\n$error$",
     "placeholders": {

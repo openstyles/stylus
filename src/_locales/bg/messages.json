@@ -396,14 +396,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Поставете кода във формат на Мозила"
   },
-  "styleInstall": {
-    "message": "Да се инсталира ли '$stylename$'?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleMissingName": {
     "message": "Въведете име"
   },

@@ -791,14 +791,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "הדבק את הקוד ב־Mozilla-format"
   },
-  "styleInstall": {
-    "message": "להתקין ';$stylename$' אל Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "נכשל בהתקנת העיצוב!\n$error$",
     "placeholders": {

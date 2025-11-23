@@ -1297,14 +1297,6 @@
   "styleInjectionOrderHint_prio": {
     "message": "Важные стили всегда применяются после новоустановленных стилей, чтобы иметь «последнее слово». Для изменения важности стиля нажмите на его значок."
   },
-  "styleInstall": {
-    "message": "Установить \"$stylename$\" в Stylus?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleInstallFailed": {
     "message": "Ошибка установки стиля!\n$error$",
     "placeholders": {
