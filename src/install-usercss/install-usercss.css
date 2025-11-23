@@ -248,8 +248,13 @@ li {
   border: none;
 }
 
-.settings > :nth-child(n + 2) {
-  margin-top: 1em;
+.settings {
+  label[for], label.ws-nowrap {
+    display: inline;
+  }
+  > :nth-child(n + 2) {
+    margin-top: 1em;
+  }
 }
 
 #header {
