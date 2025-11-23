@@ -16,7 +16,7 @@ export const template = /*@__PURE__*/new Proxy(templateCache, {
   get: (obj, k) => obj[k] || createTemplate($(`template[data-id="${k}"]`)),
 });
 /** Nuke everything except safe tags without attributes and "a" with href="https://..." */
-const RX_DISALLOWED_TAG = /<\/?(?!a(?:\s+href\s*=\s*['"]?https:\/\/[^<>'"]['"]?\s*)?>|(?:b|br|code|i|hr|nobr|small|sub|sup|table|tr|td|wbr)>)[a-z\d]+(?:\s+[^<>]*)?>/gi;
+const RX_DISALLOWED_TAG = /<\/?(?!a(?:\s+href\s*=\s*['"]?https:\/\/[^<>'"]+['"]?\s*)?>|(?:b|br|code|i|hr|li|nobr|ol|small|sub|sup|table|tr|td|ul|wbr)>)[a-z\d]+(?:\s+[^<>]*)?>/gi;
 /** Break long text unless inside the specified tags */
 const RX_LONG_TEXT = /(<)(?:(?:nobr|pre|code)>[^>]+|\/?[a-z\d]+(?:\s+[^<>]*)?>)|\s*[^<]{11,}\s*/gi;
 const RX_WORD_BREAK = /([\w{-\uFFFF]{10}|[\w{-\uFFFF]{5,10}[!'")*,./]|((?!\s)\W){10})(?!\s|$)/gu;
