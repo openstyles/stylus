@@ -5,9 +5,10 @@ import {globAsRegExpStr, RX_MAYBE_REGEXP, tryURL} from '@/js/util';
 const BAD_MATCHER = /^$/;
 const EXT_RE = /\bextension\b/;
 const GLOB_RE = /^(\*|[\w-]+):\/\/(\*\.)?([\w.]+\/.*)/;
-const CACHE_MAX = 1000;
 /** @type {Map<string,RegExp>} */
 const cache = new Map();
+/** @type {Set<string>} */
+let trimmed;
 
 function buildOverrideRe(text) {
   const slashed = text.startsWith('/');
@@ -43,15 +44,28 @@ function compile(text) {
     re = BAD_MATCHER;
   }
   cache.set(text, re);
-  if (cache.size > CACHE_MAX) {
-    // delete the least recently used key
-    const firstKey = cache.keys().next().value;
-    cache.delete(firstKey);
-    // increase recency of this key
-    if (text !== firstKey) cache.delete(text);
-    cache.set(text, re);
+  if (!trimmed) {
+    trimmed = new Set();
+    setInterval(trimCache, 5 * 60e3);
   }
   return re;
+}
+
+/** Trim the cache in a long-lived bg (MV2 or MV3 with keepAlive) */
+function trimCache() {
+  let num = cache.size / 10;
+  for (const key of trimmed) {
+    if (cache.has(key)) --num;
+    else trimmed.delete(key);
+  }
+  num = Math.max(0, num) | 0;
+  if (!num)
+    return;
+  for (const key of cache.keys()) {
+    trimmed.add(key);
+    cache.delete(key);
+    if (--num) break;
+  }
 }
 
 export function urlMatchSection(query, section, skipEmptyGlobal) {
