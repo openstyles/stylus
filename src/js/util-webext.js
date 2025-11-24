@@ -6,7 +6,9 @@ import {deepCopy} from './util';
 
 export const ownId = chrome.runtime.id;
 export const MF = /*@__PURE__*/ chrome.runtime.getManifest();
-export const MF_ICON = /*@__PURE__*/ MF.icons[16].replace(ownRoot, '');
+export const MF_ICON = /*@__PURE__*/ MF.icons[
+  devicePixelRatio > 3 ? 128 : 16 * Math.max(1, Math.round(devicePixelRatio))
+].replace(ownRoot, '');
 export const MF_ICON_PATH = /*@__PURE__*/ MF_ICON.slice(0, MF_ICON.lastIndexOf('/') + 1);
 export const MF_ICON_EXT = /*@__PURE__*/ MF_ICON.slice(MF_ICON.lastIndexOf('.'));
 
