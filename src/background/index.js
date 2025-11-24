@@ -1,6 +1,6 @@
 import './intro';
 import '@/js/browser';
-import {k_msgExec, kInstall, kInvokeAPI, kResolve} from '@/js/consts';
+import {k_msgExec, kBadFavs, kInstall, kInvokeAPI, kResolve} from '@/js/consts';
 import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '@/js/dnr';
 import {_execute, onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
@@ -84,7 +84,7 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     if (WINDOWS) prefs.set('editor.keyMap', 'sublime');
   }
   if (previousVersion === '1.5.30') {
-    prefsDB.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
+    prefsDB.delete(kBadFavs); // old Stylus marked all icons as bad when network was offline
   }
   (bgPreInit.length ? bgPreInit : bgInit).push(
     styleCache.clear(),

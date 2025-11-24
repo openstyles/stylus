@@ -1,5 +1,5 @@
 import {CodeMirror, extraKeys} from '@/cm';
-import {kCodeMirror, UCD} from '@/js/consts';
+import {kCodeMirror, pFavicons, UCD} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {htmlToTemplateCache, templateCache} from '@/js/localization';
@@ -7,6 +7,7 @@ import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleSectionsEqual, styleToCss} from '@/js/sections-util';
 import {clipString, RX_META, sleep0, t} from '@/js/util';
+import {iconize} from './applies-to';
 import editor from './editor';
 import * as linterMan from './linter';
 import EditorSection from './sections-editor-section';
@@ -42,6 +43,9 @@ export default function SectionsEditor() {
     for (const sec of sections) {
       (val ? sec.elLabel : sec.targetsEl.nextSibling).after(sec.targetsEl);
     }
+  });
+  prefs.subscribe(pFavicons, (key, val) => {
+    if (val) iconize(sections.map(sec => sec.targetsEl));
   });
 
   /** @namespace Editor */

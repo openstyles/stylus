@@ -1,3 +1,4 @@
+import {pFavicons, pFaviconsGray} from '@/js/consts';
 import {$toggleClasses, dom} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
 import {tBody} from './localization';
@@ -12,6 +13,9 @@ export let mqCompact;
 
 prefs.subscribe('disableAll', (_, val) => {
   $rootCL.toggle('all-disabled', val);
+}, true);
+prefs.subscribe([pFavicons, pFaviconsGray], (key, val) => {
+  $rootCL.toggle(key === pFavicons ? 'has-favicons' : 'favicons-grayed', val);
 }, true);
 
 $root.classList.add(

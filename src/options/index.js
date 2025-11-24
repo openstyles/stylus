@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import '@/js/browser';
-import {pKeepAlive} from '@/js/consts';
+import {kBadFavs, pKeepAlive} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '@/js/dom-util';
 import {htmlToTemplate, tBody, template, templateCache} from '@/js/localization';
@@ -43,7 +43,7 @@ $id('manage').onclick = () => {
   API.openManager();
 };
 $id('manage.newUI.favicons').onclick = () => {
-  API.prefsDB.delete('badFavs');
+  API.prefsDB.delete(kBadFavs);
 };
 $id('shortcuts').onclick = () => {
   if (__.BUILD !== 'chrome' && FIREFOX) {

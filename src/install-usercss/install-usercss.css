@@ -12,26 +12,56 @@ input:disabled + span {
   color: var(--c50);
 }
 
-#header,
+.header,
 .warnings {
   flex: 0 0 var(--header-width);
   box-sizing: border-box;
-  padding: 1rem;
+  padding: var(--child-gap);
   overflow-wrap: break-word;
   overflow-y: auto;
   z-index: 100;
 }
-#header {
+.header {
   --child-gap: 1rem;
+  position: relative;
+  &.meta-init-error {
+    display: none;
+  }
+  &:not(.meta-init) > *:not(.lds-spinner),
+  &.meta-init > .lds-spinner {
+    -moz-user-select: none;
+    user-select: none;
+    pointer-events: none;
+    opacity: 0;
+  }
+  &.meta-init {
+    > * {
+      transition: opacity .5s;
+    }
+    &[data-arrived-fast="true"] > * {
+      transition-duration: .1s;
+    }
+  }
 }
-#header-contents > :nth-last-child(n + 2) {
-  margin-bottom: var(--child-gap);
-}
-#header.meta-init-error {
-  display: none;
-}
-#header-contents ul {
-  margin: 0;
+.header-contents {
+  header& {
+    position: sticky;
+    top: calc(-1 * var(--child-gap));
+    z-index: 1;
+    background-color: inherit;
+    margin: calc(-1 * var(--child-gap)) calc(-1 * var(--child-gap)) 0;
+    padding: var(--child-gap);
+  }
+  > :nth-child(n + 2) {
+    margin-top: var(--child-gap);
+  }
+  h3 {
+    margin: 0 0 calc(var(--child-gap) / 2);
+  }
+  ul {
+    margin: 0;
+    padding-left: var(--child-gap);
+  }
 }
 
 .warnings {
@@ -53,7 +83,7 @@ input:disabled + span {
 .warning {
   font-weight: bold;
   font-size: 125%;
-  margin-bottom: 1em;
+  margin-bottom: var(--child-gap);
   & pre {
     overflow-wrap: break-word;
     white-space: pre-wrap;
@@ -65,17 +95,9 @@ input:disabled + span {
 }
 
 h1 {
-  margin-top: 0;
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-}
-.meta-name {
-  margin-right: .5em;
+  margin: 0 0 calc(var(--child-gap) * .25);
 }
 .meta-version {
-  font-size: 0.6em;
-  white-space: nowrap;
   &::before {
     content: "v";
   }
@@ -83,7 +105,7 @@ h1 {
 .set-update-url p {
   word-break: break-all;
   opacity: .5;
-  margin: .25em 0 0;
+  margin: calc(var(--child-gap) * .25) 0 0;
 }
 label {
   display: block; /* enable margin */
@@ -100,7 +122,7 @@ textarea {
   align-items: center;
   flex-wrap: wrap;
   > :nth-last-child(n + 2) {
-    margin-right: .5rem;
+    margin-right: calc(var(--child-gap) * .5);
   }
 }
 #live-reload-install-hint {
@@ -215,7 +237,7 @@ h2 {
   }
 }
 
-#header-contents > .hide-empty:empty,
+.header-contents > .hide-empty:empty,
 body:not(.installed) .install-show,
 .installed .install-hide {
   display: none !important;
@@ -231,8 +253,15 @@ body:not(.installed) .install-show,
   }
 }
 
-li {
-  margin-left: -2em;
+.applies-to .target {
+  display: flex;
+  overflow-wrap: anywhere;
+  &:nth-child(n + 2) {
+    margin-top: 2px;
+  }
+  img {
+    margin-right: 1ex;
+  }
 }
 
 .main {
@@ -255,26 +284,6 @@ li {
   > :nth-child(n + 2) {
     margin-top: 1em;
   }
-}
-
-#header {
-  position: relative;
-}
-
-#header:not(.meta-init) > *:not(.lds-spinner),
-#header.meta-init > .lds-spinner {
-  -moz-user-select: none;
-  user-select: none;
-  pointer-events: none;
-  opacity: 0;
-}
-
-#header.meta-init > * {
-  transition: opacity .5s;
-}
-
-.meta-init[data-arrived-fast="true"] > * {
-  transition-duration: .1s;
 }
 
 .lds-spinner {
@@ -302,7 +311,7 @@ li {
   body {
     flex-direction: column;
   }
-  #header {
+  .header {
     border-bottom: 1px dashed var(--c65);
     min-height: 6rem;
     max-height: 40vh;
@@ -310,12 +319,15 @@ li {
     flex: 0 1 auto;
     --child-gap: .75rem;
   }
-  #header:not(.meta-init) {
+  .header:not(.meta-init) {
     min-height: 300px;
   }
-  #header-contents {
+  .header-contents {
+    @media (min-width: 600px) {
+      columns: 2;
+    }
     > :not(.w100) {
-      margin-right: 1rem;
+      margin-right: var(--child-gap);
     }
   }
   .set-update-url {
@@ -323,15 +335,12 @@ li {
     white-space: nowrap;
     box-sizing: border-box;
     & p {
-      margin: 0 0 0 1rem;
+      margin: 0 0 0 var(--child-gap);
     }
   }
   .warning:not(:last-child) {
     border-bottom: 1px dashed #b57c7c;
-    padding-bottom: 1em;
-  }
-  #header-contents h3 {
-    margin: 0 0 .5rem;
+    padding-bottom: var(--child-gap);
   }
   #message-box.config-dialog > div {
     top: auto;
@@ -347,8 +356,11 @@ li {
 }
 
 @media not (max-width: 850px), compact {
-  #header {
+  .header {
     height: 100% !important; /* overrides user resize */
+    .applies-to {
+      padding: 0;
+    }
   }
   .w100-full {
     width: 100%;

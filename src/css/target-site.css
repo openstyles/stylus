@@ -1,0 +1,19 @@
+.target {
+  img {
+    flex: 0 0 16px;
+    height: 16px;
+    transition: opacity .5s, filter .5s;
+    /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
+    backface-visibility: hidden;
+    &:not([src]) {
+      visibility: hidden;
+    }
+    html:not(.has-favicons) & {
+      display: none;
+    }
+  }
+  .favicons-grayed :is(&, .entry):not(:hover) img {
+    filter: grayscale(1);
+    opacity: .25;
+  }
+}

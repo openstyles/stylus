@@ -1,9 +1,9 @@
 import {k_size} from '@/js/consts';
 import {cssFieldSizing} from '@/js/dom';
 import {template} from '@/js/localization';
-import * as newUI from './new-ui';
+import * as UI from './ui';
 
-export {newUI};
+export {UI};
 export const installed = template.body.$('#installed');
 
 export const queue = Object.assign([], {

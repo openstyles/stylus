@@ -18,6 +18,7 @@ import './windowed-mode';
 import './edit.css';
 /** Loading here to avoid a separate tiny file in dist */
 import './autocomplete.css';
+import '@/css/target-site.css';
 
 tBody();
 

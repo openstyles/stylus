@@ -11,7 +11,8 @@ export const own = /** @type {Injection.Response} */{
   cfg: {off: false, top: ''},
 };
 export const runtime = chrome.runtime;
-export const ownId = runtime.id;
+// Firefox uses a different id for moz-extension://
+export const ownId = __.MV3 ? runtime.id : runtime.getURL('').split('/')[2];
 export const isXml = !__.ENTRY && document instanceof XMLDocument;
 const wrappedDoc = __.BUILD !== 'chrome' && FF && document.wrappedJSObject
   || document;

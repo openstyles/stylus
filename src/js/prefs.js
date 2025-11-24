@@ -1,7 +1,8 @@
 /** Don't use this file in content script context! */
 import {
-  k_busy, pDisableAll, pExposeIframes, pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr,
-  pUrlInstaller,
+  k_busy, kBadFavs, pDisableAll, pExposeIframes, pFavicons, pFaviconsGray, pManageNewUi,
+  pManageNewUiTargets,
+  pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr, pUrlInstaller,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {deepCopy, deepEqual, isCssDarkScheme, makePropertyPopProxy} from './util';
@@ -17,6 +18,7 @@ export const clientData = !__.IS_BG && (
     ? global[__.CLIENT_DATA]
     : API.setClientData({url: location.href, dark: isCssDarkScheme()}).then(data => {
       data = makePropertyPopProxy(data);
+      setBadFavs(data);
       setAll(data.prefs);
       return data;
     })
@@ -77,10 +79,10 @@ const defaults = {
   'manage.links.expanded': true,
   'manage.minColumnWidth': 750,
   // the new compact layout doesn't look good on Android yet
-  'manage.newUI': true,
-  'manage.newUI.favicons': true, // show favicons for the sites in applies-to
-  'manage.newUI.faviconsGray': false, // gray out favicons
-  'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
+  [pManageNewUi]: true,
+  [pFavicons]: true,              // show favicons for the sites in applies-to
+  [pFaviconsGray]: false,         // gray out favicons
+  [pManageNewUiTargets]: 3,       // max number of applies-to targets visible: 0 = none
   'manage.newUI.sort': 'title,asc',
   'manage.searchMode': 'meta',
 
@@ -184,6 +186,11 @@ export const get = key => {
   return res && typeof res === 'object' ? deepCopy(res) : res;
 };
 
+export const getDbArray = async key => {
+  key = await API.prefsDB.get(key);
+  return Array.isArray(key) ? key : null;
+};
+
 export const set = (key, val, isSynced) => {
   const old = values[key];
   const def = defaults[key];
@@ -265,10 +272,15 @@ function setAll(data, fromStorage) {
   }
 }
 
+function setBadFavs(data) {
+  global[kBadFavs] = new Set(data[kBadFavs] || []);
+}
+
 if (__.IS_BG) {
   busy = ready = new Promise(cb => (setReady = cb));
   busy.set = (...args) => setReady(setAll(...args));
 } else if (__.MV3) {
+  setBadFavs(clientData);
   setAll(clientData.prefs);
   ready = Promise.resolve();
   ready.then = fn => fn(); // run synchronously in the same microtick because the data is ready

@@ -9,7 +9,7 @@ import {chromeLocal} from '@/js/storage-util';
 import {t} from '@/js/util';
 import {filterAndAppend, filtersSelector} from './filters';
 import {updateStripes} from './sorter';
-import {newUI} from './util';
+import {UI} from './util';
 
 const elAll = template.updateAll;
 const btnApply = elAll.$('#apply-all-updates');
@@ -174,7 +174,7 @@ function reportUpdateState({updated, style, error, STATES}) {
     newClasses['no-update'] = true;
     newClasses['update-problem'] = !same;
     entry.$('.update-note').textContent = message;
-    entry.$('.check-update').title = newUI.cfg.enabled ? message : '';
+    entry.$('.check-update').title = UI.tableView ? message : '';
     entry.$('.update').title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
     // digest may change silently when forcing an update of a locally edited style
     // so we need to update it in entry's styleMeta in all open manager tabs

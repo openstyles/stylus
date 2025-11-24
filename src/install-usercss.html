@@ -14,12 +14,12 @@
   </template>
 </head>
 <body id="stylus-install-usercss" class="dvh100">
-  <div id="header">
-    <div id="header-contents">
-      <h1 class="w100">
-        <span class="meta-name ellipsis"></span>
-        <small class="meta-version"></small>
-      </h1>
+  <div id="header" class="header"> <!-- id is used by the global css and resizer -->
+    <header class="header-contents">
+      <div>
+        <h1 class="meta-name"></h1>
+        <b class="meta-version"></b>
+      </div>
       <div id="install-wrapper">
         <h2 class="install-show" i18n="installButtonInstalled"></h2>
         <button class="install install-hide" i18n="installButton"></button>
@@ -32,6 +32,8 @@
           <a id="delete" tabindex="0"><button i18n="deleteStyleLabel"></button></a>
         </div>
       </div>
+    </header>
+    <main class="header-contents">
       <div class="set-update-url w100 install-disable">
         <label>
           <input type="checkbox"><span i18n="installUpdateFromLabel"></span>
@@ -53,12 +55,12 @@
         <span class="meta-license"></span>
       </div>
       <div class="external-link hide-empty"></div>
-      <div class="w100">
+      <div>
         <h3 i18n="appliesLabel"></h3>
         <ul class="applies-to">
         </ul>
       </div>
-    </div>
+    </main>
     <div id="header-resizer" i18n="title:headerResizerHint"></div>
   </div>
   <div class="main">

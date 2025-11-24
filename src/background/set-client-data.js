@@ -1,10 +1,10 @@
-import {kPopup, UCD} from '@/js/consts';
+import {kBadFavs, kPopup, UCD} from '@/js/consts';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
 import {isDark, setSystemDark} from './color-scheme';
 import {bgBusy, dataHub, isVivaldi, WRB, WRBTest} from './common';
-import {prefsDB, stateDB} from './db';
+import {stateDB} from './db';
 import makePopupData from './popup-data';
 import {nondefaults} from './prefs-api';
 import * as styleMan from './style-manager';
@@ -33,9 +33,6 @@ const PROVIDERS = {
     const sp = url.searchParams;
     const query = sp.get('search') || undefined/*to enable client's parameter default value*/;
     return /** @namespace StylusClientData */ {
-      badFavs: prefs.__values['manage.newUI']
-        && prefs.__values['manage.newUI.favicons']
-        && prefsDB.get('badFavs'),
       ids: query
         && styleMan.searchDb({
           query,
@@ -80,6 +77,9 @@ export default async function setClientData({
     dark: isDark,
     favicon: FIREFOX || isVivaldi,
     prefs: nondefaults,
+    [kBadFavs]: (page === 'edit' || page === 'install-usercss' || page === 'manage')
+      && prefs.__values['manage.newUI.favicons']
+      && prefs.getDbArray(kBadFavs),
   }, PROVIDERS[page]?.(url));
   const results = await Promise.all(Object.values(jobs));
   Object.keys(jobs).forEach((id, i) => (jobs[id] = results[i]));

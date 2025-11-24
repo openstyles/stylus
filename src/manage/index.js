@@ -6,26 +6,24 @@ import {onMessage} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import * as syncUtil from '@/js/sync-util';
 import {t} from '@/js/util';
-import {readBadFavs, showStyles} from './render';
+import {showStyles} from './render';
 import * as router from './router';
 import * as sorter from './sorter';
-import {newUI} from './util';
+import {UI} from './util';
 import './manage.css';
-import './manage-newui.css';
+import './manage-table.css';
+import '@/css/target-site.css';
 
 tBody();
 
 (async () => {
-  const {badFavs, ids, styles, sync} = __.MV3 ? prefs.clientData : await prefs.clientData;
-  const rerenderNewUI = () => newUI.render();
+  const data = __.MV3 ? prefs.clientData : await prefs.clientData;
   setupLivePrefs();
-  newUI.render(true);
-  prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), rerenderNewUI);
+  UI.render(true);
   sorter.init();
   router.update();
-  if (newUI.hasFavs()) readBadFavs(badFavs);
-  showStyles(styles, ids);
-  initSyncButton(sync);
+  showStyles(data.styles, data.ids);
+  initSyncButton(data.sync);
   import('./lazy-init');
 })();
 

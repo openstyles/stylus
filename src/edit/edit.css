@@ -589,6 +589,7 @@ i,
     .applies-value-wrapper {
       flex-grow: 1;
       display: flex;
+      align-items: center;
     }
     .applies-value {
       flex-grow: 1;
@@ -606,14 +607,11 @@ i,
     border-color: var(--c85);
     caret-color: auto;
   }
-  .select-wrapper {
+  .select-wrapper, img {
     margin-right: calc(2px + var(--target-gapY));
   }
   &[data-all] .applies-value-wrapper {
     display: none;
-  }
-  img {
-    vertical-align: bottom;
   }
 }
 .add-applies-to,
@@ -628,6 +626,7 @@ i,
 :is(.add-applies-to, .remove-applies-to) i {
   pointer-events: none;
   color: var(--c60);
+  line-height: var(--input-height);
 }
 :is(.add-applies-to, .remove-applies-to):hover i {
   pointer-events: none;

@@ -5,13 +5,14 @@ import {
 } from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
+import {renderTargetIcons} from '@/js/target-icons';
 import {sessionStore, t} from '@/js/util';
 import {browserWindows, getOwnTab} from '@/js/util-webext';
 import {filterAndAppend, showFiltersStats} from './filters';
-import {createStyleElement, createTargetsElement, renderFavs, updateTotal} from './render';
+import {createStyleElement, createTargetsElement, updateTotal} from './render';
 import * as sorter from './sorter';
 import {checkUpdate, handleUpdateInstalled} from './updater-ui';
-import {installed, newUI, objectDiff, queue, styleToDummyEntry} from './util';
+import {installed, objectDiff, queue, styleToDummyEntry, UI} from './util';
 
 for (const a of $$('#header a[href^="http"]')) a.onclick = openLink;
 installed.on('click', onEntryClicked);
@@ -36,7 +37,7 @@ const ENTRY_ROUTES = {
   },
 
   '.style-name'(event, entry) {
-    if (newUI.cfg.enabled && !event.target.closest('.homepage')) {
+    if (UI.tableView && !event.target.closest('.homepage')) {
       edit(event, entry);
     }
   },
@@ -112,7 +113,7 @@ function expandTargets(event, entry) {
   }
   if (!entry._allTargetsRendered) {
     createTargetsElement({entry, expanded: true});
-    renderFavs(entry);
+    if (UI.favicons) renderTargetIcons(entry);
   }
   this.closest('.applies-to').classList.toggle('expanded');
 }
@@ -199,7 +200,7 @@ function handleUpdate(style, {reason, method} = {}) {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
   }
-  renderFavs(entry);
+  if (UI.favicons) renderTargetIcons(entry);
 
   function handleToggledOrCodeOnly() {
     const diff = objectDiff(oldEntry.styleMeta, style)

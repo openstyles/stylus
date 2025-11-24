@@ -86,12 +86,16 @@ export function getEventKeyName(e, letterAsCode) {
   }`;
 }
 
-/** Declared as `@media condition, name {` */
+/** Declared as `@media condition, name {`
+ * @param {string} name
+ * @param {(res: MediaList) => any} [cb] - return `false` to stop iteration
+ * @returns {MediaList} - the first found when cb is omitted or returned false
+ */
 export function getCssMediaRuleByName(name, cb) {
   for (const sheet of document.styleSheets) {
     for (const {media: m} of sheet.cssRules) {
-      if (m && m[1] === name && cb(m) === false) {
-        return;
+      if (m && m[1] === name && (!cb || cb(m) === false)) {
+        return m;
       }
     }
   }

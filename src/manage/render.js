@@ -4,13 +4,11 @@ import {animateElement, scrollElementIntoView} from '@/js/dom-util';
 import {breakWord, template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {TO_CSS} from '@/js/sections-util';
+import {renderTargetIcons} from '@/js/target-icons';
 import {sessionStore, t} from '@/js/util';
 import {filterAndAppend} from './filters';
-import {renderFavs} from './render';
 import * as sorter from './sorter';
-import {installed, newUI, padLeft, styleToDummyEntry} from './util';
-
-export * from './render-favs';
+import {installed, padLeft, styleToDummyEntry, UI} from './util';
 
 const AGES = [
   [24, 'h', t('dateAbbrHour', '\x01')],
@@ -93,7 +91,7 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
   const configurable = !!ud?.vars;
   const name = style.customName || style.name;
   const version = ud ? ud.version : '';
-  const isNew = newUI.cfg.enabled;
+  const isNew = UI.tableView;
   if (isNew !== partNewUI) createParts(isNew);
   partChecker.checked = style.enabled;
   partNameLink.firstChild.textContent = breakWord(name);
@@ -133,8 +131,7 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
 }
 
 export function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
-  const isNew = newUI.cfg.enabled;
-  const maxTargets = expanded ? 1000 : isNew ? newUI.cfg.targets : 10;
+  const maxTargets = expanded ? 1000 : UI.targets;
   if (!maxTargets) {
     entry._numTargets = 0;
     return;
@@ -149,6 +146,7 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
   let numTargets = 0;
   let allTargetsRendered = true;
   for (const type in TO_CSS) {
+    const cssType = TO_CSS[type];
     for (const section of style.sections) {
       for (const targetValue of section[type] || []) {
         if (displayed.has(targetValue)) {
@@ -163,7 +161,7 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
           (partDecorations[type + 'Before'] || '') +
           targetValue +
           (partDecorations[type + 'After'] || '');
-        if (el && el.dataset.type === type && el.lastChild.textContent === text) {
+        if (el && el.dataset.type === cssType && el.lastChild.textContent === text) {
           const next = el.nextElementSibling;
           // TODO: collect all in a fragment and use a single container.append()
           toAppend.push(el);
@@ -171,7 +169,7 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
           continue;
         }
         const element = (tplTarget ??= template.appliesToTarget).cloneNode(true);
-        if (!isNew) {
+        if (!UI.tableView) {
           if (numTargets === maxTargets) {
             const extra = (tplExtra ??= template.extraAppliesTo).cloneNode(true);
             toAppend.push(extra);
@@ -182,14 +180,14 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
             toAppend.push((tplSep ??= template.appliesToSeparator).cloneNode(true));
           }
         }
-        element.dataset.type = type;
+        element.dataset.type = cssType;
         element.append(text);
         toAppend.push(element);
       }
     }
   }
   container.append(...toAppend);
-  if (isNew && numTargets > newUI.cfg.targets) {
+  if (UI.tableView && numTargets > UI.targets) {
     expanderCls.add('has-more');
   }
   if (numTargets) {
@@ -206,7 +204,7 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
   entry.classList.toggle('global', !numTargets);
   entry._allTargetsRendered = allTargetsRendered;
   entry._numTargets = numTargets;
-  if (isNew) entry.style.setProperty('--num-targets', Math.min(numTargets, newUI.cfg.targets));
+  if (UI.tableView) entry.style.setProperty('--num-targets', Math.min(numTargets, UI.targets));
 }
 
 function highlightEditedStyle() {
@@ -258,7 +256,7 @@ export function showStyles(styles = [], matchUrlIds) {
     || sessionStore.justEditedStyleId
     || canRenderAll;
   const renderBin = document.createDocumentFragment();
-  favsBusy = newUI.hasFavs();
+  favsBusy = UI.favicons;
   fitNameColumn(styles);
   fitSizeColumn(dummies);
   renderStyles();
@@ -280,12 +278,13 @@ export function showStyles(styles = [], matchUrlIds) {
     filterAndAppend({container: renderBin}, matchUrlIds).then(sorter.updateStripes);
     if (index < sorted.length) {
       requestAnimationFrame(renderStyles);
-      if (firstRun && favsBusy) renderFavs();
+      if (firstRun && favsBusy) renderTargetIcons(installed);
       firstRun = false;
       return;
     }
     if (favsBusy) {
-      renderFavs().then(() => (favsBusy = false));
+      renderTargetIcons(installed);
+      favsBusy = false;
     }
     if (sessionStore.justEditedStyleId) {
       setTimeout(highlightEditedStyle); // delaying to avoid forced layout

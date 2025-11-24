@@ -3,7 +3,7 @@ $pad: 1rem;
 $iconGapX: .75rem;
 $iconGapY: .25rem;
 
-@media not all, newui {
+@media not all, table {
   .disabled.entry i {
     color: var(--c80);
     transition: color .5s .1s;
@@ -31,7 +31,7 @@ $iconGapY: .25rem;
       display: flex;
       align-items: center;
     }
-    & input[type="checkbox"]:not(.slider) {
+    input[type="checkbox"]:not(.slider) {
       pointer-events: all;
     }
   }
@@ -190,7 +190,7 @@ $iconGapY: .25rem;
     &:hover {
       background: hsla(0, 0%, 50%, .05);
     }
-    & i {
+    i {
       width: 16px;
       height: 16px;
       color: var(--c50);
@@ -209,45 +209,17 @@ $iconGapY: .25rem;
     width: 0;
     min-width: 100%;
     box-sizing: border-box;
-    & img {
-      width: 16px;
-      height: 16px;
-      vertical-align: middle;
-      margin: -1px 4px 0 -20px;
-      transition: opacity .5s, filter .5s;
-      /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
-      backface-visibility: hidden;
-      visibility: hidden;
-    }
-    .favicons-grayed & img {
-      filter: grayscale(1);
-      opacity: .25;
-    }
+    $faviconW: 20px;
     .has-favicons & {
-      padding-left: 20px;
-      & img[src] {
-        visibility: visible;
-      }
+      padding-left: $faviconW;
     }
-    .entry:hover & img {
-      opacity: 1;
-      filter: none;
-    }
-    & b::after {
-      content: '?';
-      margin: -2px 4px 0 -20px;
-      display: inline-block;
-      vertical-align: baseline;
-      background: var(--c85);
-      width: 16px;
-      line-height: 16px;
-      text-align: center;
-      border-radius: 50%;
-      color: var(--bg);
+    img {
+      margin: 0 0 0 -$faviconW;
+      position: absolute;
     }
   }
   .expanded {
-    & i {
+    i {
       transform: rotate(180deg);
       transform-origin: 8px 8px;
     }

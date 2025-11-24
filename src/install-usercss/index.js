@@ -1,19 +1,21 @@
 import '@/js/dom-init';
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
 import compareVersion from '@/js/cmpver';
-import {UCD} from '@/js/consts';
+import {pFavicons, UCD} from '@/js/consts';
 import {$$remove, $create, $createLink, urlParams} from '@/js/dom';
 import {configDialog, messageBox, showSpinner} from '@/js/dom-util';
 import {htmlToTemplate, tBody} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleCodeEmpty} from '@/js/sections-util';
+import {renderTargetIcons} from '@/js/target-icons';
 import {isLocalhost} from '@/js/urls';
 import {clipString, debounce, deepEqual, sessionStore, t, tryURL} from '@/js/util';
 import {closeCurrentTab} from '@/js/util-webext';
 import DirectDownloader from './direct-downloader';
 import PortDownloader from './port-downloader';
 import htmlStyleOpts from '../edit/style-settings.html';
+import '../css/target-site.css';
 import '../edit/settings.css';
 import './install-usercss.css';
 
@@ -228,8 +230,7 @@ function updateMeta(newStyle) {
   replaceChildren($('.meta-author'), makeAuthor(data.author), true);
   replaceChildren($('.meta-license'), data.license, true);
   replaceChildren($('.external-link'), makeExternalLink());
-  getAppliesTo().then(list =>
-    replaceChildren($('.applies-to'), list.map(s => $create('li', s))));
+  renderTargetSites();
 
   Object.assign($('.configure-usercss'), {
     hidden: !data.vars,
@@ -365,30 +366,54 @@ function enablePostActions() {
   };
 }
 
-async function getAppliesTo() {
+async function renderTargetSites() {
   if (sectionsPromise) {
     try {
       style.sections = (await sectionsPromise).sections;
     } catch (error) {
       showBuildError(error);
-      return [];
+      return;
     } finally {
       sectionsPromise = null;
     }
   }
   let numGlobals = 0;
-  const res = [];
-  const TARGETS = ['urls', 'urlPrefixes', 'domains', 'regexps'];
+  let targets = new Set();
+  const TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps']; // the order is used for sort()
+  const favs = prefs.__values[pFavicons];
+  const elParent = $('.applies-to');
+  const el = $tag('li');
+  if (favs) el.appendChild($tag('img')).loading = 'lazy';
+  el.className = 'target';
+  el.append('');
   for (const section of style.sections) {
-    const targets = [].concat(...TARGETS.map(_ => section[_]).filter(Boolean));
-    res.push(...targets);
-    numGlobals += !targets.length && !styleCodeEmpty(section);
+    if (styleCodeEmpty(section))
+      continue;
+    let hasTargets;
+    for (let i = 0, arr, val; i < TYPES.length; i++) {
+      arr = section[TYPES[i]];
+      if (arr)
+        for (val of arr)
+          if (val)
+            hasTargets = targets.add(i + val);
+    }
+    numGlobals += !hasTargets;
   }
-  res.sort();
-  if (!res.length || numGlobals) {
-    res.push(t('appliesToEverything'));
+  targets = [...targets].sort();
+  if (numGlobals || !targets.length) {
+    targets.unshift(' ' + t('appliesToEverything'));
   }
-  return [...new Set(res)];
+  for (let i = 0, val; (val = targets[i]); i++) {
+    // dropping "s" for "domains" and "regexps", don't care about "urlPrefixes"
+    el.dataset.type = TYPES[+val[0]].slice(0, -1);
+    el.lastChild.nodeValue = val.slice(1);
+    targets[i] = el.cloneNode(true);
+  }
+  elParent.append(...targets);
+  if (favs) renderTargetIcons(elParent);
+  prefs.subscribe(pFavicons, (key, val) => {
+    if (val) renderTargetIcons(elParent);
+  });
 }
 
 function adjustCodeHeight() {

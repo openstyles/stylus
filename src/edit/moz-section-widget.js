@@ -1,10 +1,13 @@
 import colorMimicry from '@/js/color/color-mimicry';
+import {pFavicons} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {htmlToTemplate, templateCache} from '@/js/localization';
 import {onMessage} from '@/js/msg';
+import * as prefs from '@/js/prefs';
 import {sleep0, t} from '@/js/util';
 import {CodeMirror} from '@/cm';
+import {C_CONTAINER, C_ITEM, C_LIST, C_TYPE, C_VALUE, iconize} from './applies-to';
 import editor from './editor';
 import MozSectionFinder from './moz-section-finder';
 import {htmlAppliesTo} from './util';
@@ -12,14 +15,7 @@ import {htmlAppliesTo} from './util';
 export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
   let TPL, EVENTS, CLICK_ROUTE;
   const KEY = 'MozSectionWidget';
-  const C_CONTAINER = '.applies-to';
   const C_LABEL = 'label';
-  const C_LIST = '.applies-to-list';
-  const C_ITEM = '.applies-to-item';
-  const C_TYPE = '.applies-type';
-  const C_VALUE = '.applies-value';
-  /** @returns {MarkedFunc} */
-  const getFuncFor = el => el.closest(C_ITEM)[KEY];
   /** @returns {MarkedFunc[]} */
   const getFuncsFor = el => el.closest(C_LIST)[KEY];
   /** @returns {MozSection} */
@@ -97,7 +93,8 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
           el.matches(C_VALUE) && 'value' ||
           el.matches(C_TYPE) && 'type';
         if (!part) return;
-        const func = getFuncFor(el);
+        const elItem = el.closest(C_ITEM);
+        const func = elItem[KEY];
         const pos = func[part].find();
         const {value} = el;
         if (value === func.str[part]) return;
@@ -111,6 +108,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
           if (!sec.tocEntry.label) editor.updateToc([sec]);
         }
         cm.replaceRange(toDoubleslash(value), pos.from, pos.to, finder.IGNORE_ORIGIN);
+        if (prefs.__values[pFavicons]) iconize(elItem, true);
       },
       onclick(event) {
         const {target} = event;
@@ -135,6 +133,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     finder.on(update);
     updateWidgetStyle(); // updating in this paint frame to avoid FOUC for dark themes
     cm.display.wrapper.style.setProperty('--cm-bar-width', cm.display.barWidth + 'px');
+    prefs.subscribe(pFavicons, onFaviconsEnabled);
   }
 
   function destroy() {
@@ -145,12 +144,17 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     actualStyle = null;
     cm.operation(() => finder.sections.forEach(killWidget));
     finder.off(update);
+    prefs.unsubscribe(pFavicons, onFaviconsEnabled);
   }
 
   function onCmOption(_cm, option) {
     if (option === 'theme') {
       updateWidgetStyle();
     }
+  }
+
+  function onFaviconsEnabled(key, val) {
+    if (val) iconize(cm.display.wrapper);
   }
 
   function onRuntimeMessage(m) {
@@ -229,13 +233,16 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     const isDelayed = added.isDelayed && (cm.startOperation(), true);
     const toDelay = [];
     const t0 = performance.now();
+    const elemsToIconize = prefs.__values[pFavicons] && [];
     let viewTo = editor.viewTo || cm.display.viewTo;
     for (const sec of added) {
       const i = removed.findIndex(isReusableWidget, sec);
       const old = removed[i];
       if (isDelayed || old
       || sec.start.line < viewTo /* must add preceding ones to calc scrollTop*/) {
-        renderWidget(sec, old);
+        const el = renderWidget(sec, old);
+        if (elemsToIconize && sec.funcs.length)
+          elemsToIconize.push(el);
         viewTo -= (sec.funcs.length || 1) * 1.25;
         if (old) removed[i] = null;
         if (performance.now() - t0 > 50) {
@@ -261,6 +268,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       removed.forEach(killWidget);
     }
     if (isDelayed) cm.endOperation();
+    if (elemsToIconize.length) iconize(elemsToIconize);
   }
 
   /** @this {MozSection} */
@@ -302,13 +310,13 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       funcHeight = node.offsetHeight / (sec.funcs.length || 1);
     }
     setProp(sec, 'widget', widget);
-    return widget;
+    return node;
   }
 
   /**
    * @param {MozSection} sec
    * @param {LineWidget} oldWidget
-   * @returns {Node}
+   * @returns {HTMLElement}
    */
   function renderContainer(sec, oldWidget) {
     const container = oldWidget ? oldWidget.node : TPL.container.cloneNode(true);

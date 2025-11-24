@@ -1,4 +1,4 @@
-import {kCodeMirror, kEditorSettings} from '@/js/consts';
+import {kCodeMirror, kEditorSettings, pFavicons} from '@/js/consts';
 import {$toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {templateCache, htmlToTemplate, template} from '@/js/localization';
@@ -6,6 +6,7 @@ import * as prefs from '@/js/prefs';
 import {FROM_CSS, TO_CSS} from '@/js/sections-util';
 import {debounce} from '@/js/util';
 import {CodeMirror} from '@/cm';
+import {C_CONTAINER, C_ITEM, C_LIST, C_TYPE, C_VALUE, iconize} from './applies-to';
 import {initBeautifyButton} from './beautify';
 import cmFactory from './codemirror-factory';
 import editor from './editor';
@@ -25,7 +26,7 @@ export default class EditorSection {
     const me = this; // for tocEntry.removed
     const el = this.el = templateCache.section.cloneNode(true);
     const elLabel = this.elLabel = el.$('.code-label');
-    const at = this.targetsEl = el.$('.applies-to');
+    const elTargets = this.targetsEl = el.$(C_CONTAINER);
     // TODO: find another way other than `el[kCodeMirror]` for getAssociatedEditor
     const cm = this.cm = el[kCodeMirror] = cmFactory.create(wrapper => {
       const ws = wrapper.style;
@@ -34,7 +35,7 @@ export default class EditorSection {
         ? ws.height = si ? si.height : '100vh'
         : ws.height;
       el.style.setProperty('--cm-height', h);
-      at[prefs.__values['editor.targetsFirst'] ? 'after' : 'before'](wrapper);
+      elTargets[prefs.__values['editor.targetsFirst'] ? 'after' : 'before'](wrapper);
     }, {
       value: sectionData.code,
       finishInit(_) {
@@ -57,18 +58,19 @@ export default class EditorSection {
         return me.removed; // using `me` because of different `this`
       },
     };
-    this.targets = /** @type {SectionTarget[]} */ [];
-    this.targetsListEl = el.$('.applies-to-list');
-    this.targetsEl.on('change', this);
-    this.targetsEl.on('input', this);
-    this.targetsEl.on('click', this);
+    const targets = this.targets = /** @type {SectionTarget[]} */ [];
+    const elList = this.targetsListEl = el.$(C_LIST);
+    elTargets.on('change', this);
+    elTargets.on('input', this);
+    elTargets.on('click', this);
     cm.on('changes', EditorSection.onCmChanges);
     for (const propName in TO_CSS) {
       const arr = sectionData[propName];
       const cssName = TO_CSS[propName];
       if (cssName && arr) for (const v of arr) this.addTarget(cssName, v);
     }
-    if (!this.targets.length) this.addTarget();
+    if (!targets.length) this.addTarget();
+    else if (prefs.__values[pFavicons]) iconize(elList);
     initBeautifyButton(el.$('.beautify-section'), [cm]);
     prefs.subscribe('editor.toc.expanded', this.updateTocPrefToggled.bind(this), true);
     new ResizeGrip(cm); // eslint-disable-line no-use-before-define
@@ -200,13 +202,13 @@ export default class EditorSection {
   handleEvent(evt) {
     const el = evt.target;
     const cls = el.classList;
-    const trgEl = el.closest('.applies-to-item');
+    const trgEl = el.closest(C_ITEM);
     const trg = /** @type {SectionTarget} */ trgEl && trgEl.me;
     let tmp;
     switch (evt.type) {
       case 'click':
         if (cls.contains('add-applies-to')) {
-          this.addTarget(trg.type, '', trg).el.$('input').focus();
+          this.addTarget(trg.type, '', trg).el.$(C_VALUE).focus();
         } else if (cls.contains('remove-applies-to')) {
           this.removeTarget(trg);
         } else if (!this.ati && (tmp = el.closest('label'))) {
@@ -299,10 +301,11 @@ class SectionTarget {
     this.id = section.genId();
     this.el = (templateCache.appliesTo ??= htmlToTemplate(htmlAppliesTo)).cloneNode(true);
     this.el.me = this;
+    this.el.dataset.type = type;
     this.section = section;
     this.dirt = `section.${section.id}.apply.${this.id}`;
-    this.selectEl = this.el.$('.applies-type');
-    this.valueEl = this.el.$('.applies-value');
+    this.selectEl = this.el.$(C_TYPE);
+    this.valueEl = this.el.$(C_VALUE);
     editor.toggleRegexp(this.valueEl, type);
     this.type = this.selectEl.value = type;
     this.value = this.valueEl.value = value;
@@ -332,10 +335,12 @@ class SectionTarget {
     const val = this.selectEl.value;
     editor.dirty.modify(`${this.dirt}.type`, this.type, val);
     editor.toggleRegexp(this.valueEl, val);
+    this.el.dataset.type = val;
     this.type = val;
     this.toggleAll();
     sec.emitChange('apply');
     sec.updateTocEntry('apply');
+    if (prefs.__values[pFavicons]) iconize(this.el, true);
   }
 
   onValueChange() {
@@ -344,6 +349,7 @@ class SectionTarget {
     this.value = val;
     this.section.emitChange('apply');
     this.section.updateTocEntry('apply');
+    if (prefs.__values[pFavicons]) iconize(this.el, true);
   }
 }
 

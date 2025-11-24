@@ -1,5 +1,5 @@
 import '@/js/browser';
-import {pOpenEditInWindow} from '@/js/consts';
+import {kBadFavs, pOpenEditInWindow} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {browserWindows, getActiveTab} from '@/js/util-webext';
@@ -63,7 +63,7 @@ export async function openManager(opts = {}) {
   const same = tabs.find(_ => _.url === url);
   let tab = same || tabs[0];
   if (!tab) {
-    prefsDB.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
+    prefsDB.get(kBadFavs); // prime the cache to avoid flicker/delay when opening the page
     tab = await openURL({url, newTab: true});
   } else if (!same) {
     await sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url, opts)});

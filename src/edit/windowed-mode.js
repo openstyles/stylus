@@ -4,12 +4,11 @@ import {urlParams} from '@/js/dom';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
 import {sessionStore, tryJSONparse} from '@/js/util';
-import {browserWindows, getOwnTab} from '@/js/util-webext';
+import {browserWindows, getOwnTab, ownTab} from '@/js/util-webext';
 import editor from './editor';
 import EmbeddedPopup from './embedded-popup';
 
 export let isWindowed;
-let ownTabId;
 if (browserWindows) {
   initWindowedMode();
   const pos = tryJSONparse(sessionStore.windowPos);
@@ -21,8 +20,7 @@ if (browserWindows) {
 }
 
 getOwnTab().then(tab => {
-  ownTabId = tab.id;
-  if (sessionStore['manageStylesHistory' + ownTabId] === location.href) {
+  if (sessionStore['manageStylesHistory' + tab.id] === location.href) {
     editor.cancel = () => history.back();
   }
 });
@@ -38,7 +36,7 @@ async function initWindowedMode() {
 }
 
 async function onTabAttached(tabId, info) {
-  if (tabId !== ownTabId) {
+  if (tabId !== ownTab.id) {
     return;
   }
   if (info.newPosition !== 0) {
