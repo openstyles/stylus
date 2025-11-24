@@ -207,7 +207,7 @@ h1 {
 }
 
 #installed {
-  padding-left: var(--header-width);
+  padding-left: calc(var(--header-width) + var(--header-resizer-width));
   box-sizing: border-box;
   width: 100%;
   align-self: flex-start;

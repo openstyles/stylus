@@ -398,18 +398,20 @@ html:not(.all-disabled) {
   --header-resizer-width: 8px;
 }
 #header-resizer {
-  position: absolute;
+  position: fixed;
+  left: var(--header-width);
   top: 0;
-  right: 0;
   bottom: 0;
   width: var(--header-resizer-width);
   box-sizing: border-box;
   cursor: e-resize;
   border-width: 0 1px;
   border-style: solid;
-  color: hsla(0, 0%, 50%, .5);
+  color: var(--c80);
+  background: var(--bg);
   border-color: currentColor;
   pointer-events: auto;
+  z-index: 10000000;
   &:active {
     border-color: var(--c50);
   }

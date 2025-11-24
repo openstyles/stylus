@@ -93,7 +93,7 @@ html:not(.is-new-style) #heading::before {
   }
 }
 #sections {
-  padding-left: var(--header-width);
+  padding-left: calc(var(--header-width) + var(--header-resizer-width));
   .usercss & {
     min-height: 0;
     height: 100%;
@@ -206,7 +206,6 @@ i,
   overflow: hidden;
   margin-top: var(--pad05);
   details {
-    margin-right: var(--header-resizer-width);
     &[open] {
       overflow-y: auto;
       margin-top: calc(1.5 * var(--pad));
