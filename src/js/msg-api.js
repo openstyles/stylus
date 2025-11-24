@@ -8,16 +8,16 @@ export const FF = __.BUILD !== 'chrome' && (
 export const rxIgnorableError = /(R)eceiving end does not exist|The message (port|channel) closed|moved into back\/forward cache/;
 
 export const apiHandler = !__.IS_BG && {
-  get: ({name: path}, name) => new Proxy(
-    Object.defineProperty(() => {}, 'name', {value: path ? path + '.' + name : name}),
-    apiHandler),
+  get: (obj, key) => (obj[key] ??= new Proxy(
+    Object.defineProperty(() => {}, 'name', {value: obj.name ? obj.name + '.' + key : key}),
+    apiHandler)),
   apply: apiSendProxy,
 };
 /** @typedef {{}} API */
 /** @type {API} */
 export const API = __.IS_BG
   ? global[__.API]
-  : global[__.API] = new Proxy({path: ''}, apiHandler);
+  : global[__.API] = new Proxy({name: ''}, apiHandler);
 export const isFrame = !__.IS_BG && window !== top;
 
 export let bgReadySignal;
