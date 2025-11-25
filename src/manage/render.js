@@ -246,50 +246,43 @@ export function fitSizeColumn(entries = installed.children, entry) {
   $root.style.setProperty('--size-width', res + 'ch');
 }
 
-export function showStyles(styles = [], matchUrlIds) {
+export async function showStyles(styles = [], matchUrlIds) {
   const dummies = styles.map(styleToDummyEntry);
   const sorted = sorter.sort(dummies);
-  let index = 0;
-  let firstRun = true;
   const scrollY = history.state?.scrollY;
   const shouldRenderAll = scrollY > window.innerHeight
     || sessionStore.justEditedStyleId
     || canRenderAll;
   const renderBin = document.createDocumentFragment();
-  favsBusy = UI.favicons;
   fitNameColumn(styles);
   fitSizeColumn(dummies);
-  renderStyles();
   updateTotal(styles.length);
-
-  function renderStyles() {
-    const t0 = !shouldRenderAll && performance.now();
-    while (index < sorted.length && (
+  let numIconized; // keeping it undefined so the comparison is false if favicons are disabled
+  for (let i = 0, t0 = !shouldRenderAll && performance.now(), entry, style, done;
+    !done;
+    await new Promise(requestAnimationFrame)
+  ) {
+    while (!(done = i === numStyles) && (
       shouldRenderAll ||
-      (index & 7) < 7 ||
+      (i & 7) < 7 ||
       performance.now() - t0 < 50
     )) {
-      const entry = createStyleElement(sorted[index++]);
-      if (matchUrlIds && !matchUrlIds.includes(entry.styleMeta.id)) {
+      entry = createStyleElement(style = sorted[i++]);
+      if (matchUrlIds && !matchUrlIds.includes(style.styleMeta.id))
         entry.classList.add('not-matching', 'hidden');
-      }
       renderBin.appendChild(entry);
     }
-    filterAndAppend({container: renderBin}, matchUrlIds).then(sorter.updateStripes);
-    if (index < sorted.length) {
-      requestAnimationFrame(renderStyles);
-      if (firstRun && favsBusy) renderTargetIcons(installed);
-      firstRun = false;
-      return;
+    if (!numIconized && UI.favicons) {
+      numIconized = i;
+      renderTargetIcons(renderBin);
     }
-    if (favsBusy) {
-      renderTargetIcons(installed);
-      favsBusy = false;
-    }
-    if (sessionStore.justEditedStyleId) {
-      setTimeout(highlightEditedStyle); // delaying to avoid forced layout
-    }
+    filterAndAppend({container: renderBin}, matchUrlIds)
+      .then(sorter.updateStripes);
   }
+  if (sessionStore.justEditedStyleId)
+    setTimeout(highlightEditedStyle); // delaying to avoid forced layout
+  if (numIconized < numStyles)
+    requestIdleCallback(() => renderTargetIcons(installed));
 }
 
 export function updateTotal(delta) {
