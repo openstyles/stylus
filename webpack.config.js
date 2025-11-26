@@ -486,7 +486,7 @@ module.exports = [
           })),
         ],
       }),
-      new webpack.ProgressPlugin(),
+      !GITHUB_ACTIONS && new webpack.ProgressPlugin(),
     ].filter(Boolean),
     resolve: RESOLVE_VIA_SHIM,
   }),
