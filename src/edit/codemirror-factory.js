@@ -1,7 +1,6 @@
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
 import {rerouteHotkeys} from '@/edit/util';
 import {kCodeMirror} from '@/js/consts';
-import {CHROME} from '@/js/ua';
 import editor from './editor';
 import * as prefs from '@/js/prefs';
 
@@ -25,8 +24,6 @@ const cmFactory = {
   create(place, options) {
     const cm = CodeMirror(place, options);
     cm.display.lineDiv.on('mousewheel', plusMinusOnWheel.bind(cm), true);
-    // TODO: remove when CM stops adding it unconditionally or minimum_chrome_version >= 106
-    if (CHROME !== 105) cm.display.wrapper.style.removeProperty('clip-path');
     cm.lastActive = 0;
     cms.add(cm);
     return cm;
