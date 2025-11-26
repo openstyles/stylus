@@ -249,17 +249,11 @@
       }
     }
   },
-  "manageFavicons": {
-    "message": "Иконки на приложимите сайтовете"
-  },
   "manageFaviconsGray": {
     "message": "Сиви"
   },
   "manageFilters": {
     "message": "Филтри"
-  },
-  "manageMaxTargets": {
-    "message": "Брой на видимите приложими адреси"
   },
   "manageOnlyEnabled": {
     "message": "Само включените стилове"

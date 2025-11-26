@@ -61,6 +61,9 @@
   "author": {
     "message": "Maker"
   },
+  "backup": {
+    "message": "Back-up"
+  },
   "backupReminder": {
     "message": "<b>Stijlen kunnen verloren gaan</b> als gevolg van stroomuitval, bugs in de browser, of gebruikersfouten.<hr><b>Maak een back-up van uw gegevens:</b> configureer ‘Synchroniseren met cloud’ in de opties, of klik handmatig op de exporteerknop wanneer u belangrijke wijzigingen aanbrengt. Configureer bij voorkeur het automatisch maken van back-ups van al uw gegevens via een toegewijde app."
   },
@@ -289,6 +292,9 @@
   "exportLabel": {
     "message": "Exporteren"
   },
+  "exportStyles": {
+    "message": "Stijlen exporteren"
+  },
   "externalHomepage": {
     "message": "Startpagina"
   },
@@ -421,13 +427,13 @@
     "message": "ongeldige overgeslagen"
   },
   "importReportLegendUpdatedBoth": {
-    "message": "meta-informatie en code bijgewerkt"
+    "message": "metagegevens en code bijgewerkt"
   },
   "importReportLegendUpdatedCode": {
     "message": "code bijgewerkt"
   },
   "importReportLegendUpdatedMeta": {
-    "message": "meta-informatie bijgewerkt"
+    "message": "metagegevens bijgewerkt"
   },
   "importReportTitle": {
     "message": "Stijlen importeren voltooid"
@@ -440,6 +446,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Importeren is ongedaan gemaakt"
+  },
+  "importStyles": {
+    "message": "Stijlen importeren"
   },
   "installButton": {
     "message": "Stijl installeren"
@@ -539,17 +548,8 @@
   "liveReloadLabel": {
     "message": "Live herladen"
   },
-  "manageFavicons": {
-    "message": "Favicons in kolom ‘Van toepassing op’"
-  },
   "manageFaviconsGray": {
     "message": "Niet beschikbaar"
-  },
-  "manageFaviconsHelp": {
-    "message": "Stylus gebruikt een externe dienst: https://icons.duckduckgo.com"
-  },
-  "manageMaxTargets": {
-    "message": "Aantal ‘Van toepassing op’-items"
   },
   "manageMinColumnWidth": {
     "message": "Minimale kolombreedte (in pixels; 9999 schakelt de modus met meerdere kolommen uit)"
@@ -580,6 +580,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Alleen UserCSS-stijlen"
+  },
+  "manageStyles": {
+    "message": "Stijlen beheren"
   },
   "masterSwitch": {
     "message": "Hoofdschakelaar"
@@ -785,6 +788,9 @@
   "numberedLine": {
     "message": "Regel:"
   },
+  "openAsPopupWindow": {
+    "message": "...zonder werkbalken en tabbladen"
+  },
   "openManage": {
     "message": "Beheren"
   },
@@ -814,6 +820,15 @@
   },
   "optionKeepAliveNote": {
     "message": "Verhoog deze waarde als u knipperende inhoud zonder stijlen (‘FOUC’) ondervindt bij het openen van een pagina nadat u de browser even niet hebt gebruikt.\n\n-1 = Standaardgedrag voor ManifestV2 (geen limiet).\n0 = Standaardgedrag voor ManifestV3 (een halve minuut).\n\nDe cache gebruikt 30MB of meer RAM, maar opnieuw opbouwen ervan kan te veel tijd kosten en FOUC veroorzaken, afhankelijk van de website, netwerksnelheid, hoeveelheid stijlen, RAM-grootte en CPU-prestaties."
+  },
+  "optionTargetIcons": {
+    "message": "Pictogrammen voor doelwebsites"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus gebruikt een externe dienst: <SRV>"
+  },
+  "optionTargetNum": {
+    "message": "Aantal doelwebsites"
   },
   "optionsAdvanced": {
     "message": "Geavanceerd"
@@ -973,7 +988,10 @@
     "message": "Interval voor automatisch bijwerken van gebruikersstijlen in uren (geef 0 op om dit uit te schakelen)"
   },
   "optionsUrlInstaller": {
-    "message": "Installer openen bij navigeren naar een .user.css-URL"
+    "message": "Installer openen voor UserCSS-stijlen op alle websites"
+  },
+  "optionsUrlInstallerNote": {
+    "message": "Schakel dit in om vanaf alle websites te installeren wanneer aan deze voorwaarden wordt voldaan:\n1) De URL eindigt met <code>.user.css</code>, <code>.user.less</code> of <code>.user.styl</code>,\n2) De URL wijst naar inhoud van de stijl in platte tekst (doorgaans ‘raw’ genoemd), m.a.w. geen HTML-webpagina.\n\nSchakel dit uit om installaties te beperken tot de toegewijde stijlgalerijen:\n<LIST>."
   },
   "overwriteFileExport": {
     "message": "Wilt u een bestaand bestand overschrijven?"
@@ -1088,6 +1106,9 @@
   },
   "saveAsTemplate": {
     "message": "Opslaan als sjabloon"
+  },
+  "saved": {
+    "message": "Opgeslagen"
   },
   "search": {
     "message": "Zoeken"
@@ -1227,17 +1248,14 @@
   "styleEnabledLabel": {
     "message": "Ingeschakeld"
   },
-  "styleExcludeLabel": {
-    "message": "Eigen uitgesloten websites"
+  "styleForceApplied": {
+    "message": "Geforceerd toegepast via ‘<INC>’ in stijlinstellingen"
   },
   "styleFromMozillaFormatError": {
     "message": "Importeren vanuit Mozilla-opmaak mislukt"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Plak de code in Mozilla-opmaak"
-  },
-  "styleIncludeLabel": {
-    "message": "Eigen opgenomen websites"
   },
   "styleInjectionImportance": {
     "message": "Urgentie van stijl bepalen"
@@ -1284,6 +1302,12 @@
   },
   "styleName": {
     "message": "Stijlnaam"
+  },
+  "styleNotAppliedExcluded": {
+    "message": "Uitgesloten via ‘<EXC>’ in stijlinstellingen"
+  },
+  "styleNotAppliedOverridden": {
+    "message": "Uw ‘<INC>’ in de stijlinstellingen hebben voorrang op oorspronkelijke websites van de stijl"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Stijl is niet toegepast vanwege onjuist gebruik van ‘regexp()’"
@@ -1332,6 +1356,15 @@
   },
   "styleSettings": {
     "message": "Stijlinstellingen"
+  },
+  "styleSitesExclude": {
+    "message": "Persoonlijk uitgesloten websites"
+  },
+  "styleSitesInclude": {
+    "message": "Persoonlijk opgenomen websites"
+  },
+  "styleSitesIncludeNote": {
+    "message": "Websites waar deze stijl is ingeschakeld op uw persoonlijke apparaat, ofwel hieraan toegevoegd ofwel gebruikt in plaats van de websites zoals vastgelegd door de stijl, afhankelijk van het selectievakje. Handig voor externe stijlen die u beter niet kunt bewerken, zodat ze automatisch bijgewerkt kunnen blijven. Let er op dat in stijlen met meerdere secties, alle secties voor uw toegevoegde website zijn ingeschakeld, zelfs die welke voor bepaalde pagina’s van de oorspronkelijke website waren bedoeld."
   },
   "styleToMozillaFormatHelp": {
     "message": "De Mozilla-opmaak van de code kan bij userstyles.org worden ingediend en met het klassieke Stylish voor Firefox worden gebruikt."

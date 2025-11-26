@@ -1485,7 +1485,7 @@
     "description": "Label for the button to restore a removed section"
   },
   "sectionUserCSS": {
-    "message": "The classic sectioned editor doesn't support UserCSS syntax. To use it, enable the `UserCSS` checkbox first in the manager or the popup and then make a new style, then copy your current code by clicking the Export button in this editor."
+    "message": "The classic sectioned editor doesn't support UserCSS syntax. To use it, enable the UserCSS checkbox first in the manager or the popup and then make a new style, then copy your current code by clicking the Export button in this editor."
   },
   "sections": {
     "message": "Sections",

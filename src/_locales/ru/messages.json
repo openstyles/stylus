@@ -573,20 +573,11 @@
   "liveReloadLabel": {
     "message": "Автозагрузка изменений"
   },
-  "manageFavicons": {
-    "message": "Пиктограммы для целевых сайтов"
-  },
   "manageFaviconsGray": {
     "message": "Обесцвечивать"
   },
-  "manageFaviconsHelp": {
-    "message": "Используется сторонний сервис https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Фильтры"
-  },
-  "manageMaxTargets": {
-    "message": "Кол-во целевых сайтов/выражений"
   },
   "manageMinColumnWidth": {
     "message": "Минимальная ширина столбца (в пикселях; 9999 отключает многоколоночный режим)"
@@ -855,6 +846,15 @@
   "optionKeepAliveNote": {
     "message": "Увеличьте этот параметр, если вы столкнулись с миганием нестилизованного контента (FOUC) при открытии страницы после длительного бездействия браузера.\n\n-1 = Поведение ManifestV2 по умолчанию (без ограничений).\n0 = Поведение ManifestV3 по умолчанию (полминуты).\n\nКэш занимает от 30 МБ оперативной памяти, но его восстановление может потребовать слишком много времени и вызвать FOUC в зависимости от сайта, скорости сети, количества стилей, размера оперативной памяти и быстродействия процессора."
   },
+  "optionTargetIcons": {
+    "message": "Пиктограммы для целевых сайтов"
+  },
+  "optionTargetIconsNote": {
+    "message": "Используется сторонний сервис <SRV>"
+  },
+  "optionTargetNum": {
+    "message": "Кол-во целевых сайтов/выражений"
+  },
   "optionsAdvanced": {
     "message": "Другое"
   },
@@ -1011,9 +1011,6 @@
   },
   "optionsUpdateInterval": {
     "message": "Промежуток обновления стилей, в часах (укажите 0 для отключения)"
-  },
-  "optionsUrlInstaller": {
-    "message": "Открывать установку при переходе по URL-адресу .user.css."
   },
   "overwriteFileExport": {
     "message": "Хотите перезаписать существующий файл?"
@@ -1273,17 +1270,11 @@
   "styleEnabledLabel": {
     "message": "Включено"
   },
-  "styleExcludeLabel": {
-    "message": "Личный список исключенных сайтов"
-  },
   "styleFromMozillaFormatError": {
     "message": "Ошибка импорта формата Mozilla"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Вставьте содержимое стиля в формате Mozilla"
-  },
-  "styleIncludeLabel": {
-    "message": "Личный список включенных сайтов"
   },
   "styleInjectionImportance": {
     "message": "Переключить важность стиля"
@@ -1378,6 +1369,12 @@
   },
   "styleSettings": {
     "message": "Настройки стиля"
+  },
+  "styleSitesExclude": {
+    "message": "Личный список исключенных сайтов"
+  },
+  "styleSitesInclude": {
+    "message": "Личный список включенных сайтов"
   },
   "styleToMozillaFormatHelp": {
     "message": "Формат кода Mozilla можно отправлять на сайт userstyles.org и использовать в дополнении Stylish для Firefox."

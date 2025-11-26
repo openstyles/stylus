@@ -478,20 +478,11 @@
   "liveReloadLabel": {
     "message": "Recarga en tiempo real"
   },
-  "manageFavicons": {
-    "message": "Favicons en la columna 'Se aplica a'"
-  },
   "manageFaviconsGray": {
     "message": "Atenuado"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus usa un servicio externo https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filtros"
-  },
-  "manageMaxTargets": {
-    "message": "Número de elementos 'Se aplica a'"
   },
   "manageOnlyDisabled": {
     "message": "Solo estilos deshabilitados"
@@ -726,6 +717,9 @@
   },
   "openOptions": {
     "message": "Opciones"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus usa un servicio externo <SRV>"
   },
   "optionsAdvanced": {
     "message": "Avanzado"

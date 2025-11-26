@@ -570,20 +570,11 @@
   "liveReloadLabel": {
     "message": "动态刷新"
   },
-  "manageFavicons": {
-    "message": "显示「应用于」列的网站图标（favicon）"
-  },
   "manageFaviconsGray": {
     "message": "显示为灰色图标"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus 使用外部服务 https://icons.duckduckgo.com 来获取图标"
-  },
   "manageFilters": {
     "message": "过滤器"
-  },
-  "manageMaxTargets": {
-    "message": "「应用于」列每个样式显示的对象数量"
   },
   "manageMinColumnWidth": {
     "message": "最小列宽度（以像素为单位；9999 停用多列模式）"
@@ -852,6 +843,9 @@
   "optionKeepAliveNote": {
     "message": "如果您在一段时间未与浏览器交互后打开页面时遇到无样式内容  闪烁(FOUC)，请增加此值。\n\n-1 = ManifestV2 默认行为（无限制）。\n0 = ManifestV3 默认行为（半分钟）。\n\n缓存占用 30MB 或更多 RAM，但重建缓存可能需要更多时间并导致 FOUC，具体取决于网站、网络速度、样式数量、RAM 大小和 CPU 性能。"
   },
+  "optionTargetIconsNote": {
+    "message": "Stylus 使用外部服务 <SRV> 来获取图标"
+  },
   "optionsAdvanced": {
     "message": "高级设置"
   },
@@ -1002,9 +996,6 @@
   },
   "optionsUpdateInterval": {
     "message": "每隔 N 小时 自动检测更新（0 为禁用）"
-  },
-  "optionsUrlInstaller": {
-    "message": "打开以 .user.css 结尾的 URL 时，直接打开安装界面"
   },
   "overwriteFileExport": {
     "message": "是否覆盖现有文件？"
@@ -1264,17 +1255,11 @@
   "styleEnabledLabel": {
     "message": "启用"
   },
-  "styleExcludeLabel": {
-    "message": "自定义排除网站"
-  },
   "styleFromMozillaFormatError": {
     "message": "导入 Mozilla 格式失败"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "粘贴 Mozilla 格式代码"
-  },
-  "styleIncludeLabel": {
-    "message": "自定义包括网站"
   },
   "styleInjectionImportance": {
     "message": "切换样式的优先级"

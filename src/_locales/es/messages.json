@@ -537,9 +537,6 @@
   "manageFaviconsGray": {
     "message": "Atenuado"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus usa un servicio externo https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filtros"
   },
@@ -809,6 +806,9 @@
   },
   "optionKeepAliveNote": {
     "message": "Auméntalo si encuentras parpadeo de contenido sin estilo (FOUC) al abrir una página después de no interactuar con el navegador durante un tiempo.\n\n-1 = Comportamiento por defecto de ManifestV2 (sin límite).\n0 = Comportamiento por defecto de ManifestV3 (medio minuto).\n\nLa caché ocupa 30MB o más de RAM, pero reconstruirla puede llevar demasiado tiempo y causar FOUC dependiendo del sitio web, la velocidad de la red, la cantidad de estilos, el tamaño de la RAM y el rendimiento de la CPU."
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus usa un servicio externo <SRV>"
   },
   "optionsAdvanced": {
     "message": "Avanzado"
@@ -1160,7 +1160,7 @@
     "message": "Restaurar sección eliminada"
   },
   "sectionUserCSS": {
-    "message": "El editor seccionado clásico no soporta la sintaxis UserCSS. Para usarla, activa primero la casilla `UserCSS` en el gestor o en la ventana emergente y luego crea un nuevo estilo, después copia tu código actual pulsando el botón Exportar de este editor."
+    "message": "El editor seccionado clásico no soporta la sintaxis UserCSS. Para usarla, activa primero la casilla UserCSS en el gestor o en la ventana emergente y luego crea un nuevo estilo, después copia tu código actual pulsando el botón Exportar de este editor."
   },
   "sections": {
     "message": "Secciones"

@@ -524,20 +524,11 @@
   "liveReloadLabel": {
     "message": "Live genindlæsning"
   },
-  "manageFavicons": {
-    "message": "Favicons i 'Anvendes på'-kolonnen"
-  },
   "manageFaviconsGray": {
     "message": "Udtonet"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus bruger den eksterne tjeneste https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filtre"
-  },
-  "manageMaxTargets": {
-    "message": "Antal 'Anvendes på'-elementer"
   },
   "manageMinColumnWidth": {
     "message": "Minimum kolonnebredde (i pixels; 9999 deaktiverer multikolonne-tilstand)"
@@ -714,6 +705,9 @@
   },
   "optionKeepAliveIdle": {
     "message": "...selv hvis browseren er inaktiv"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus bruger den eksterne tjeneste <SRV>"
   },
   "optionsAdvanced": {
     "message": "Avanceret"

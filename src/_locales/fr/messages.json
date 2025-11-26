@@ -539,20 +539,11 @@
   "liveReloadLabel": {
     "message": "Rechargement immédiat"
   },
-  "manageFavicons": {
-    "message": "Favicons dans la colonne « s’applique à »"
-  },
   "manageFaviconsGray": {
     "message": "Grisés"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus utilise le service externe https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filtres"
-  },
-  "manageMaxTargets": {
-    "message": "Nombre d’items « s’applique à »"
   },
   "manageMinColumnWidth": {
     "message": "Largeur de colonne minimale (en pixel ; 9999 désactive le mode multicolonne)"
@@ -815,6 +806,9 @@
   "optionKeepAliveIdle": {
     "message": "… même si le navigateur est inactif"
   },
+  "optionTargetIconsNote": {
+    "message": "Stylus utilise le service externe <SRV>"
+  },
   "optionsAdvanced": {
     "message": "Avancé"
   },
@@ -962,9 +956,6 @@
   },
   "optionsUpdateInterval": {
     "message": "Intervalle de mise à jour automatique des styles utilisateur en heures (spécifier 0 pour désactiver)"
-  },
-  "optionsUrlInstaller": {
-    "message": "Ouvrir l'installateur quand une URL .user.css est rencontrée"
   },
   "overwriteFileExport": {
     "message": "Voulez-vous écraser un fichier existant ?"
@@ -1218,17 +1209,11 @@
   "styleEnabledLabel": {
     "message": "Activé"
   },
-  "styleExcludeLabel": {
-    "message": "Sites exclus"
-  },
   "styleFromMozillaFormatError": {
     "message": "Échec de l'importation depuis le format Mozilla"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Coller le code au format Mozilla"
-  },
-  "styleIncludeLabel": {
-    "message": "Sites inclus"
   },
   "styleInjectionImportance": {
     "message": "Basculer l'importance du style"

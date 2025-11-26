@@ -449,17 +449,11 @@
   "liveReloadLabel": {
     "message": "רענון לייב (live)"
   },
-  "manageFavicons": {
-    "message": "הצגת אייקונים בעמודת 'חל על'"
-  },
   "manageFaviconsGray": {
     "message": "האפרת האייקונים"
   },
   "manageFilters": {
     "message": "מסננים"
-  },
-  "manageMaxTargets": {
-    "message": "מספר הפריטים ה־'מוחלים על'"
   },
   "manageOnlyDisabled": {
     "message": "רק עיצובים מושבתים"

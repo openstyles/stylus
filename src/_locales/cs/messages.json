@@ -434,20 +434,11 @@
   "liveReloadLabel": {
     "message": "Živá aktualizace"
   },
-  "manageFavicons": {
-    "message": "Favicony v části „Platí pro“ "
-  },
   "manageFaviconsGray": {
     "message": "Zešednutí"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus používá externí službu https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filtry"
-  },
-  "manageMaxTargets": {
-    "message": "Počet položek v části „Platí pro“"
   },
   "manageOnlyDisabled": {
     "message": "Pouze vypnuté styly"
@@ -526,6 +517,9 @@
   },
   "openOptions": {
     "message": "Možnosti"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus používá externí službu <SRV>"
   },
   "optionsAdvanced": {
     "message": "Pokročilé"

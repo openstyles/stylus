@@ -528,20 +528,11 @@
   "liveReloadLabel": {
     "message": "Valós idejű újratöltés"
   },
-  "manageFavicons": {
-    "message": "Faviconok az 'Érvényes erre' oszlopban"
-  },
   "manageFaviconsGray": {
     "message": "Megjelenítés szürkítve"
   },
-  "manageFaviconsHelp": {
-    "message": "A Stylus külső szolgáltatást használ (https://icons.duckduckgo.com)"
-  },
   "manageFilters": {
     "message": "Szűrők"
-  },
-  "manageMaxTargets": {
-    "message": "'Érvényes erre' elemek kijelzendő száma"
   },
   "manageOnlyDisabled": {
     "message": "Csak a letiltott stílusok"
@@ -754,6 +745,9 @@
   },
   "openOptions": {
     "message": "Beállítások"
+  },
+  "optionTargetIconsNote": {
+    "message": "A Stylus külső szolgáltatást használ (<SRV>)"
   },
   "optionsAdvanced": {
     "message": "Haladó"

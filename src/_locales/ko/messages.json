@@ -479,20 +479,11 @@
   "liveReloadLabel": {
     "message": "실시간 리로드"
   },
-  "manageFavicons": {
-    "message": "적용 대상 열에 Favicon(사이트 아이콘) 표시"
-  },
   "manageFaviconsGray": {
     "message": "회색으로 표시"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus는 https://icons.duckduckgo.com 외부 서비스를 이용합니다"
-  },
   "manageFilters": {
     "message": "필터"
-  },
-  "manageMaxTargets": {
-    "message": "적용 대상 항목 수"
   },
   "manageOnlyDisabled": {
     "message": "비활성화된 스타일만"
@@ -719,6 +710,9 @@
   },
   "openOptions": {
     "message": "옵션"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus는 <SRV> 외부 서비스를 이용합니다"
   },
   "optionsAdvanced": {
     "message": "고급"

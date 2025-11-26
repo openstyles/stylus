@@ -383,20 +383,11 @@
   "liveReloadError": {
     "message": "A avut loc o eroare în timpul monitorizării acestui fișier"
   },
-  "manageFavicons": {
-    "message": "Favicons în coloana 'se aplică la'"
-  },
   "manageFaviconsGray": {
     "message": "Hașurat"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus folosește un serviciu extern https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filtre"
-  },
-  "manageMaxTargets": {
-    "message": "Numărul obiectelor la care se aplică"
   },
   "manageOnlyDisabled": {
     "message": "Doar teme dezactivate"
@@ -439,6 +430,9 @@
   },
   "openOptions": {
     "message": "Opțiuni"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus folosește un serviciu extern <SRV>"
   },
   "optionsAdvanced": {
     "message": "Avansat"

@@ -526,9 +526,6 @@
   "manageFaviconsGray": {
     "message": "Ausgegraut"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus nutzt hierzu den externen Dienst https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filter"
   },
@@ -801,6 +798,9 @@
   },
   "optionKeepAliveNote": {
     "message": "Erhöhe den Wert, wenn beim Öffnen einer Seite nach längerer Nichtbenutzung des Browsers ein Blinken von ungestyltem Inhalt (FOUC) auftritt.\n\n-1 = ManifestV2 Standardverhalten (Kein Limit).\n0 = ManifestV3 Standardverhalten (halbe Minute).\n\nDer Cache benötigt 30 MB oder mehr RAM, aber der Wiederaufbau kann zu viel Zeit in Anspruch nehmen und zu FOUC führen je nach Website, Netzwerkgeschwindigkeit, Anzahl der Styles, RAM-Größe und CPU-Leistung."
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus nutzt hierzu den externen Dienst <SRV>"
   },
   "optionsAdvanced": {
     "message": "Erweitert"
@@ -1140,7 +1140,7 @@
     "message": "Gelöschten Bereich wiederherstellen"
   },
   "sectionUserCSS": {
-    "message": "Der klassische, unterteilte Editor unterstützt keine UserCSS Syntax. Aktiviere das `UserCSS` Kästchen in der Styleverwaltung oder im Popup und erstelle dann einen neuen Style, um UserCSS verwenden zu können. Kopiere dann deinen vorherigen Code über die Export-Schaltfläche und füge ihn im neuen Style ein."
+    "message": "Der klassische, unterteilte Editor unterstützt keine UserCSS Syntax. Aktiviere das UserCSS Kästchen in der Styleverwaltung oder im Popup und erstelle dann einen neuen Style, um UserCSS verwenden zu können. Kopiere dann deinen vorherigen Code über die Export-Schaltfläche und füge ihn im neuen Style ein."
   },
   "sections": {
     "message": "Bereiche"

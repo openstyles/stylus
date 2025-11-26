@@ -522,20 +522,11 @@
   "liveReloadLabel": {
     "message": "Recarregamento dinâmico"
   },
-  "manageFavicons": {
-    "message": "Favicons em colunas de aplica-se a"
-  },
   "manageFaviconsGray": {
     "message": "Acinzentado(s)"
   },
-  "manageFaviconsHelp": {
-    "message": "O Stylus usa um serviço externo https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filtros"
-  },
-  "manageMaxTargets": {
-    "message": "Número de aplica-se a itens"
   },
   "manageOnlyDisabled": {
     "message": "Somente estilos desativados"
@@ -644,6 +635,9 @@
   },
   "openOptions": {
     "message": "Opções"
+  },
+  "optionTargetIconsNote": {
+    "message": "O Stylus usa um serviço externo <SRV>"
   },
   "optionsAdvanced": {
     "message": "Avançadas"

@@ -449,20 +449,11 @@
   "liveReloadLabel": {
     "message": "Reaalajas uuestilaadimine"
   },
-  "manageFavicons": {
-    "message": "Lehe ikoonid rakendub-tulbas"
-  },
   "manageFaviconsGray": {
     "message": "Tee halliks"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus kasutab välist teenust https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filtrid"
-  },
-  "manageMaxTargets": {
-    "message": "Rakendub-üksuste arv"
   },
   "manageOnlyDisabled": {
     "message": "Ainult keelatud stiilid"
@@ -607,6 +598,9 @@
   },
   "openOptions": {
     "message": "Valikud"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus kasutab välist teenust <SRV>"
   },
   "optionsAdvanced": {
     "message": "Täpsem"

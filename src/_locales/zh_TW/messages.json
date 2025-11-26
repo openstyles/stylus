@@ -64,6 +64,9 @@
   "author": {
     "message": "作者"
   },
+  "backup": {
+    "message": "備份"
+  },
   "backupReminder": {
     "message": "樣式可能會因為停電、瀏覽器臭蟲、個人錯誤而<b>遺失</b>。<hr><b>備份您的資料：</b>在選項中設定「同步至雲端」，或者每當您進行重大變更時手動按一下匯出按鈕，或者最好使用專用的應用程式設定自動備份所有資料。"
   },
@@ -308,6 +311,9 @@
   "exportLabel": {
     "message": "匯出"
   },
+  "exportStyles": {
+    "message": "匯出樣式"
+  },
   "externalFeedback": {
     "message": "回饋"
   },
@@ -463,6 +469,9 @@
   "importReportUndoneTitle": {
     "message": "匯入已被復原"
   },
+  "importStyles": {
+    "message": "匯入樣式"
+  },
   "installButton": {
     "message": "安裝樣式"
   },
@@ -561,20 +570,11 @@
   "liveReloadLabel": {
     "message": "即時重新整理"
   },
-  "manageFavicons": {
-    "message": "Favicons 要套用到的欄位"
-  },
   "manageFaviconsGray": {
     "message": "灰階淡出"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus 使用外部服務 https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "過濾器"
-  },
-  "manageMaxTargets": {
-    "message": "已套用項目的數量"
   },
   "manageMinColumnWidth": {
     "message": "最小欄位寬度（以像素為單位；9999 停用多欄模式）"
@@ -605,6 +605,9 @@
   },
   "manageOnlyUsercss": {
     "message": "僅 UserCSS 樣式"
+  },
+  "manageStyles": {
+    "message": "管理樣式"
   },
   "masterSwitch": {
     "message": "總開關"
@@ -810,6 +813,9 @@
   "numberedLine": {
     "message": "行"
   },
+  "openAsPopupWindow": {
+    "message": "……無工具列與分頁"
+  },
   "openManage": {
     "message": "管理已安裝樣式"
   },
@@ -839,6 +845,15 @@
   },
   "optionKeepAliveNote": {
     "message": "如果您在一段時間未與瀏覽器互動後，開啟頁面時遇到未套用樣式內容閃爍 (FOUC)，請增加該值。\n\n-1 = ManifestV2 預設行為（無限制）。\n0 = ManifestV3 預設行為（半分鐘）。\n\n快取需要 30MB 或更多的 RAM，但重建快取可能會花費太多時間並導致 FOUC，這取決於網站、網路速度、樣式數量、RAM 大小與 CPU 效能。"
+  },
+  "optionTargetIcons": {
+    "message": "目標網站圖示"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus 會使用外部服務 <SRV>"
+  },
+  "optionTargetNum": {
+    "message": "目標網站數量"
   },
   "optionsAdvanced": {
     "message": "進階"
@@ -1001,7 +1016,10 @@
     "message": "使用者樣式自動更新間隔（以小時計，指定為 0 以停用）"
   },
   "optionsUrlInstaller": {
-    "message": "導航至 .user.css URL 時開啟安裝程式"
+    "message": "在任何網站上開啟 UserCSS 的安裝程式"
+  },
+  "optionsUrlInstallerNote": {
+    "message": "當滿足以下條件時，允許從任何網站進行安裝：\n1) URL 以 <code>.user.css</code> 或 <code>.user.less</code> 或 <code>.user.styl</code> 結尾。\n2) URL 指向樣式的純文字內容（通常稱為「原始檔」）而非 HTML 網頁。\n停用此功能以限制僅於專用樣式庫才能安裝：\n<LIST>"
   },
   "overwriteFileExport": {
     "message": "您想要覆寫既有的檔案嗎？"
@@ -1116,6 +1134,9 @@
   },
   "saveAsTemplate": {
     "message": "另存為範本"
+  },
+  "saved": {
+    "message": "已儲存"
   },
   "search": {
     "message": "搜尋"
@@ -1258,17 +1279,14 @@
   "styleEnabledLabel": {
     "message": "已啟用"
   },
-  "styleExcludeLabel": {
-    "message": "自訂排除網站"
+  "styleForceApplied": {
+    "message": "透過樣式設定中的「<INC>」強制套用"
   },
   "styleFromMozillaFormatError": {
     "message": "從 Mozilla 格式匯入失敗"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "貼上 Mozilla 格式代碼"
-  },
-  "styleIncludeLabel": {
-    "message": "自訂包含網站"
   },
   "styleInjectionImportance": {
     "message": "切換樣式重要程度"
@@ -1315,6 +1333,12 @@
   },
   "styleName": {
     "message": "樣式名稱"
+  },
+  "styleNotAppliedExcluded": {
+    "message": "在樣式設定中透過「<EXC>」排除"
+  },
+  "styleNotAppliedOverridden": {
+    "message": "您在樣式設定中的「<INC>」將覆蓋樣式原始設定的原始網站"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "因為不正確的 'regexp()' 使用導致未套用"
@@ -1363,6 +1387,18 @@
   },
   "styleSettings": {
     "message": "樣式設定"
+  },
+  "styleSitesExclude": {
+    "message": "個人排除網站"
+  },
+  "styleSitesInclude": {
+    "message": "個人包含網站"
+  },
+  "styleSitesIncludeNote": {
+    "message": "在您的個人裝置上啟用此樣式的位置，會根據核取方塊設定，將新增位置加入樣式定義的網站清單，或直接取代原有網站。此功能適用於外部樣式，為維持自動更新能力，您不應直接編輯這些外部樣式。請注意：在多區段樣式中，您新增的位置將啟用所有區段，即使該區段原本僅適用於原始網站的特定頁面。"
+  },
+  "styleSitesIncludeOvr": {
+    "message": "覆寫樣式"
   },
   "styleToMozillaFormatHelp": {
     "message": "Mozilla格式的樣式代碼能在火狐版Stylus使用，也可以提交至 userstyles.org 。"

@@ -46,6 +46,9 @@
   "appliesRemove": {
     "message": "Rimuovi"
   },
+  "appliesRemoveError": {
+    "message": "Impossibile rimuovere l'ultimo accesso 'Applica a' "
+  },
   "appliesToEverything": {
     "message": "Tutto"
   },
@@ -118,6 +121,9 @@
   "cm_theme": {
     "message": "Tema"
   },
+  "colorpickerPaletteHint": {
+    "message": "Fare clic con il pulsante destro del mouse su un campione per scorrere le sue righe di codice sorgente"
+  },
   "colorpickerSwitchFormatTooltip": {
     "message": "Cambia formato: HEX -> RGB -> HSL.\nShift-click per invertire la direzione.\nAnche con i tasti PgUp (PaginaSu), PgDn (PaginaGiù)."
   },
@@ -166,6 +172,30 @@
   "customNameResetHint": {
     "message": "Non utilizzare il nome personalizzato, modificalo nel nome dello stile."
   },
+  "dateAbbrDay": {
+    "message": "$value$gg.",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrMonth": {
+    "message": "$value$mm.",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$aaaa.",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
   "dateInstalled": {
     "message": "Data installazione"
   },
@@ -196,6 +226,9 @@
   "disableStyleLabel": {
     "message": "Disattiva"
   },
+  "draftAction": {
+    "message": "Seleziona \"Sì\" per caricare questa bozza o \"No\" per scartare."
+  },
   "draftTitle": {
     "message": "bozza recuperata, creato il $date$",
     "placeholders": {
@@ -206,6 +239,9 @@
   },
   "dragDropMessage": {
     "message": "Trascina e rilascia il file di backup ovunque in questa pagina per importarlo."
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Per installare il file, rilasciarlo sulla barra delle schede (l'area in cui vengono mostrati i titoli delle schede)."
   },
   "editDeleteText": {
     "message": "Elimina"
@@ -275,6 +311,12 @@
   "genericHistoryLabel": {
     "message": "Cronologia"
   },
+  "genericMaximum": {
+    "message": "massimo"
+  },
+  "genericMinimum": {
+    "message": "minimo"
+  },
   "genericNext": {
     "message": "Successivo"
   },
@@ -284,11 +326,20 @@
   "genericResetLabel": {
     "message": "Reimposta"
   },
+  "genericSize": {
+    "message": "Dimensione"
+  },
+  "genericTest": {
+    "message": "Testo"
+  },
   "genericTitle": {
     "message": "Titolo"
   },
   "genericUnknown": {
     "message": "Sconosciuto"
+  },
+  "gettingStyles": {
+    "message": "Caricando tutti gli stili..."
   },
   "helpAlt": {
     "message": "Guida"
@@ -307,6 +358,9 @@
   },
   "importLabel": {
     "message": "Importa"
+  },
+  "importPreprocessorTitle": {
+    "message": "Potenziali problemi a causa di @preprocessor"
   },
   "importReplaceLabel": {
     "message": "Sovrascrivi stile"
@@ -378,6 +432,9 @@
   },
   "linkGetHelp": {
     "message": "Otteini aiuto"
+  },
+  "linkGetShareStyles": {
+    "message": "Scarica e condividi stili"
   },
   "linkGetStyles": {
     "message": "Ottieni stili"

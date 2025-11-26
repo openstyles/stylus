@@ -408,14 +408,8 @@
   "manageFaviconsGray": {
     "message": "Gri renkte"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus harici bir servis kullanır https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filtreler"
-  },
-  "manageMaxTargets": {
-    "message": "Uygulanan ögelerin sayısı"
   },
   "manageOnlyDisabled": {
     "message": "Yalnızca devre dışı bırakılan stiller"
@@ -446,6 +440,9 @@
   },
   "openOptions": {
     "message": "Seçenekler"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus harici bir servis kullanır <SRV>"
   },
   "optionsAdvanced": {
     "message": "Gelişmiş"

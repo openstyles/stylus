@@ -440,20 +440,11 @@
   "liveReloadLabel": {
     "message": "Uppdaterar i realtid"
   },
-  "manageFavicons": {
-    "message": "Ikoner i 'Tillämpad för' kolumnen"
-  },
   "manageFaviconsGray": {
     "message": "Nedtonade"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus använder en extern tjänst https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filter"
-  },
-  "manageMaxTargets": {
-    "message": "Antal tillämpad-för objekt"
   },
   "manageOnlyDisabled": {
     "message": "Endast inaktiverade stilar"
@@ -677,6 +668,9 @@
   },
   "openOptions": {
     "message": "Alternativ"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus använder en extern tjänst <SRV>"
   },
   "optionsAdvanced": {
     "message": "Avancerat"

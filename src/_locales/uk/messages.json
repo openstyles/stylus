@@ -543,17 +543,8 @@
   "liveReloadLabel": {
     "message": "Живе перезавантаження"
   },
-  "manageFavicons": {
-    "message": "Піктограми для цільових сайтів"
-  },
-  "manageFaviconsHelp": {
-    "message": "Stylus використовує зовнішній сервіс https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Фільтри"
-  },
-  "manageMaxTargets": {
-    "message": "Кількість цільових елементів"
   },
   "manageMinColumnWidth": {
     "message": "Мінімальна ширина колонки (у пікселях, 9999 вимикає багатоколонковий режим)"
@@ -792,6 +783,9 @@
   "openOptions": {
     "message": "Налаштування"
   },
+  "optionTargetIconsNote": {
+    "message": "Stylus використовує зовнішній сервіс <SRV>"
+  },
   "optionsAdvanced": {
     "message": "Інше"
   },
@@ -936,9 +930,6 @@
   },
   "optionsUpdateInterval": {
     "message": "Інтервал автооновлення стилів у годинах (вказати 0 для вимкнення)"
-  },
-  "optionsUrlInstaller": {
-    "message": "Відкрити інсталятор під час переходу до URL-адреси .user.css"
   },
   "overwriteFileExport": {
     "message": "Ви бажаєте перезаписати існуючий файл?"
@@ -1168,17 +1159,11 @@
   "styleEnabledLabel": {
     "message": "Увімкнено"
   },
-  "styleExcludeLabel": {
-    "message": "Виключені користувачем сайти"
-  },
   "styleFromMozillaFormatError": {
     "message": "Не вдалося імпортувати з формату Mozilla"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Вставити код у форматі Mozilla"
-  },
-  "styleIncludeLabel": {
-    "message": "Включені користувачем сайти"
   },
   "styleInstallFailed": {
     "message": "Не вдалося встановити користувальницький стиль!\n$error$",

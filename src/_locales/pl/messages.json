@@ -564,9 +564,6 @@
   "manageFaviconsGray": {
     "message": "Wyszarzone"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus korzysta z usługi zewnętrznej https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filtry"
   },
@@ -836,6 +833,9 @@
   },
   "optionKeepAliveNote": {
     "message": "Zwiększ ją, jeśli napotkasz miganie niestylizowanej zawartości (FOUC) podczas otwierania strony po pewnym czasie niekorzystania z przeglądarki.\n\n-1 = domyślne zachowanie ManifestV2 (bez ograniczeń).\n0 = domyślne zachowanie ManifestV3 (pół minuty).\n\nPamięć podręczna zajmuje 30 MB lub więcej pamięci RAM, ale jej odbudowa może zająć zbyt dużo czasu i spowodować FOUC w zależności od witryny, szybkości sieci, liczby stylów, rozmiaru pamięci RAM i wydajności procesora."
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus korzysta z usługi zewnętrznej <SRV>"
   },
   "optionsAdvanced": {
     "message": "Zaawansowane"
@@ -1193,7 +1193,7 @@
     "message": "Przywróć usuniętą sekcję"
   },
   "sectionUserCSS": {
-    "message": "Klasyczny edytor podzielony na sekcje nie obsługuje składni UserCSS. Aby z niej skorzystać, zaznacz najpierw pole wyboru `UserCSS` w menedżerze lub wyskakującym okienku, a następnie utwórz nowy styl, wówczas skopiuj bieżący kod, klikając przycisk Eksportuj w tym edytorze."
+    "message": "Klasyczny edytor podzielony na sekcje nie obsługuje składni UserCSS. Aby z niej skorzystać, zaznacz najpierw pole wyboru UserCSS w menedżerze lub wyskakującym okienku, a następnie utwórz nowy styl, wówczas skopiuj bieżący kod, klikając przycisk Eksportuj w tym edytorze."
   },
   "sections": {
     "message": "Sekcje"
