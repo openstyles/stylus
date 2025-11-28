@@ -48,9 +48,10 @@ tBody();
   $id('testRE').onclick = async function () {
     (this.onclick = (await import('./regexp-tester')).toggle)(true);
   };
-  $id('lint-help').onclick = async function () {
+  $id('lint-help').on('click', async function (evt) {
+    evt.preventDefault(); // prevent toggling <details>
     (this.onclick = (await import('./linter/dialogs')).showLintHelp)();
-  };
+  }, true); // capture to prevent toggling <details>
   const elSec = $id('sections-list');
   const elToc = $id('toc');
   const moDetails = new MutationObserver(([{target: sec}]) => {
