@@ -14,16 +14,20 @@ export function pauseAll(paused = true) {
 export class MessageBox {
   /** @readonly
    * @type {HTMLElement} */
-  el = null;
-  originalFocus = null;
-  paused = false;
-  #blockScroll = null;
-  #moving = false;
-  #resolve = null;
-  #clickX = 0;
-  #clickY = 0;
-  #offsetX = 0;
-  #offsetY = 0;
+  el;
+  /** @type {HTMLElement} */
+  originalFocus;
+  /** @type {boolean} */
+  paused;
+  // privates
+  #blockScroll;
+  #moving;
+  #resolve;
+  #resolveAsClosed;
+  #clickX;
+  #clickY;
+  #offsetX;
+  #offsetY;
   /**
    * @typedef MessageBoxParams
    * @prop {String} title
@@ -51,7 +55,7 @@ export class MessageBox {
         $create('div', [
           $create('#message-box-title.ellipsis', {on: {mousedown: this}}, title),
           $create('#message-box-close-icon',
-            {on: {click: this.#resolveWith.bind(this, {button: -1})}},
+            {on: {click: this.#resolveAsClosed = this.#resolveWith.bind(this, {button: -1})}},
             $create('i.i-close')),
           $create('#message-box-contents', tHTML(contents)),
           $create('#message-box-buttons', buttons.filter(Boolean).map((btn, buttonIndex) => {
@@ -83,6 +87,8 @@ export class MessageBox {
       window.on('scroll', this, {passive: false});
       this.#blockScroll = {x: scrollX, y: scrollY};
     }
+    if (el.matches('.note'))
+      el.on('click', this);
     boxes.delete(this);
     pauseAll();
     this.paused = false;
@@ -130,6 +136,7 @@ export class MessageBox {
     if (this.paused)
       return;
     switch (evt.type) {
+      case 'click': return evt.target === this.el && this.#resolveAsClosed();
       case 'keydown': return this.#onKey(evt);
       case 'mousedown': return this.#onMouseDown(evt);
       case 'mousemove': return this.#onMouseMove(evt);
