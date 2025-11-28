@@ -1,4 +1,5 @@
 import {pFavicons, pFaviconsGray} from '@/js/consts';
+import {ownRoot} from '@/js/urls';
 import {$toggleClasses, dom} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
 import {tBody} from './localization';
@@ -71,7 +72,6 @@ if ($rootCL.contains('normal-layout')) {
     });
     prefs.ready.then(() => dom.setHWProp(prefs.__values[HWprefId]));
   }
-  window.on('load', () => import('./dom-on-load'), {once: true});
 }
 
 prefs.ready.then(() => tBody(() => {
@@ -104,3 +104,45 @@ prefs.ready.then(() => tBody(() => {
     }
   }
 }));
+
+window.on('load', () => import('./dom-on-load'), {once: true});
+window.on('error', e => showUnhandledError(e.error));
+window.on('unhandledrejection', e => showUnhandledError(e.reason));
+
+function showUnhandledError(err) {
+  // (c) tophf: reusing the function I wrote for Violentmonkey (MIT license)
+  const id = 'unhandledError';
+  const fontSize = 12;
+  const el = document.getElementById(id) || document.createElement('textarea');
+  const text = el.value = [
+    el.value,
+    [FIREFOX && err.message, err.stack].filter(Boolean).join('\n') || `${err}`,
+  ].filter(Boolean).join('\n\n').trim().split(ownRoot).join('');
+  const height = fontSize * (text.match(/^/gm).length + .5) + 'px';
+  const parent = document.body || document.documentElement;
+  el.id = id;
+  el.readOnly = true;
+  // using an inline style because we don't know if our CSS is loaded at this stage
+  el.style.cssText = `\
+    position:fixed;
+    z-index:${1e9};
+    left:0;
+    right:0;
+    bottom:0;
+    background:red;
+    color:#fff;
+    border-top: 2px solid #fff;
+    padding: ${fontSize / 2}px;
+    font-size: ${fontSize}px;
+    line-height: 1;
+    box-sizing: content-box;
+    height: ${height};
+    max-height: 50vh;
+    border: none;
+    resize: none;
+  `.replace(/;/g, '!important;');
+  el.spellcheck = false;
+  el.onclick = () => el.select();
+  parent.style.minHeight = height;
+  parent.appendChild(el);
+}
