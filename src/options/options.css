@@ -99,22 +99,29 @@ h2 {
 
 .items:not(.no-stretch) {
   width: 100%;
+  &:not(.swap) > label {
+    justify-content: space-between;
+  }
 }
 label {
   display: flex;
+  min-height: var(--input-height);
+  width: fit-content;
   &:not(.sites) {
     align-items: center;
   }
   > p {
     margin: 0 8px 0 0;
-    flex-grow: 1;
   }
   .swap & {
-    min-height: var(--input-height);
     > p:first-child {
       margin-right: 0;
       order: 2;
     }
+  }
+  &.no-stretch {
+    width: min-content;
+    min-width: 100%;
   }
   &.sites {
     &.disabled .slider:checked {
