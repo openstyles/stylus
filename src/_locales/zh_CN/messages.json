@@ -836,11 +836,11 @@
   "optionFOUCMV3": {
     "message": "考虑启用 「$optInst$」并增加 「$optCache$」。",
     "placeholders": {
-      "optCache": {
-        "content": "$2"
-      },
       "optInst": {
         "content": "$1"
+      },
+      "optCache": {
+        "content": "$2"
       }
     }
   },
@@ -1302,14 +1302,14 @@
   "styleInstallOverwrite": {
     "message": "'$stylename$' 已经安装，要覆盖吗？\n版本： $oldVersion$ -> $newVersion$",
     "placeholders": {
-      "newVersion": {
-        "content": "$3"
+      "stylename": {
+        "content": "$1"
       },
       "oldVersion": {
         "content": "$2"
       },
-      "stylename": {
-        "content": "$1"
+      "newVersion": {
+        "content": "$3"
       }
     }
   },
@@ -1502,14 +1502,14 @@
   "webRequestBlockingMV3Note": {
     "message": "需要webRequestBlocking权限，该权限可在Manifest V3中通过以下任一方法启用：\n\n 1) 先导出Stylus备份文件，为此扩展的ID \"$id$\" 设置$policyName$策略，重启浏览器并等待扩展安装完成后，在样式管理器中导入备份文件，可选将图标固定到工具栏。\n\n 2) 修改浏览器图标或启动器的命令行参数：添加一个空格和$cmd$",
     "placeholders": {
-      "cmd": {
-        "content": "$3"
+      "policyName": {
+        "content": "$1"
       },
       "id": {
         "content": "$2"
       },
-      "policyName": {
-        "content": "$1"
+      "cmd": {
+        "content": "$3"
       }
     }
   },

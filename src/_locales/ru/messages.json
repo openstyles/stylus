@@ -839,11 +839,11 @@
   "optionFOUCMV3": {
     "message": "Следует включить опцию \"$optInst$\" и повысить значение \"$optCache$\".",
     "placeholders": {
-      "optCache": {
-        "content": "$2"
-      },
       "optInst": {
         "content": "$1"
+      },
+      "optCache": {
+        "content": "$2"
       }
     }
   },
@@ -1317,14 +1317,14 @@
   "styleInstallOverwrite": {
     "message": "'$stylename$' уже установлен. Обновить?\nВерсии: $oldVersion$ -> $newVersion$",
     "placeholders": {
-      "newVersion": {
-        "content": "$3"
+      "stylename": {
+        "content": "$1"
       },
       "oldVersion": {
         "content": "$2"
       },
-      "stylename": {
-        "content": "$1"
+      "newVersion": {
+        "content": "$3"
       }
     }
   },
@@ -1523,14 +1523,14 @@
   "webRequestBlockingMV3Note": {
     "message": "Требуется разрешение webRequestBlocking, которое можно включить в ManifestV3 одним из следующих способов:\n\n1) Экспортируйте резервную копию, установите правило $policyName$ для id этого расширения \"$id$\", перезапустите браузер, дождитесь установки расширения, импортируйте резервную копию в менеджер стилей и, по желанию, закрепите иконку на панели инструментов.\n\n2) Измените параметры запуска в командной строке иконки или лаунчера браузера: добавьте пробел и $cmd$",
     "placeholders": {
-      "cmd": {
-        "content": "$3"
+      "policyName": {
+        "content": "$1"
       },
       "id": {
         "content": "$2"
       },
-      "policyName": {
-        "content": "$1"
+      "cmd": {
+        "content": "$3"
       }
     }
   },

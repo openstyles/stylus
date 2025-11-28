@@ -721,14 +721,14 @@
   "styleInstallOverwrite": {
     "message": "'$stylename$' è già installato. Vuoi sovrascriverlo?\nVersione: $oldVersion$ -> $newVersion$",
     "placeholders": {
-      "newVersion": {
-        "content": "$3"
+      "stylename": {
+        "content": "$1"
       },
       "oldVersion": {
         "content": "$2"
       },
-      "stylename": {
-        "content": "$1"
+      "newVersion": {
+        "content": "$3"
       }
     }
   },

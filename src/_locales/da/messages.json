@@ -702,11 +702,11 @@
   "optionFOUCMV3": {
     "message": "Overvej at aktivere '$optInst$' og øge '$optCache$'.",
     "placeholders": {
-      "optCache": {
-        "content": "$2"
-      },
       "optInst": {
         "content": "$1"
+      },
+      "optCache": {
+        "content": "$2"
       }
     }
   },
@@ -1023,14 +1023,14 @@
   "styleInstallOverwrite": {
     "message": "'$stylename$' er allerede installeret. Overskriv?\nVersion: $oldVersion$ -> $newVersion$",
     "placeholders": {
-      "newVersion": {
-        "content": "$3"
+      "stylename": {
+        "content": "$1"
       },
       "oldVersion": {
         "content": "$2"
       },
-      "stylename": {
-        "content": "$1"
+      "newVersion": {
+        "content": "$3"
       }
     }
   },

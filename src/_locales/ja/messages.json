@@ -804,11 +804,11 @@
   "optionFOUCMV3": {
     "message": "「$optInst$」を有効にし、「$optCache$」を増加することを検討ください。",
     "placeholders": {
-      "optCache": {
-        "content": "$2"
-      },
       "optInst": {
         "content": "$1"
+      },
+      "optCache": {
+        "content": "$2"
       }
     }
   },
@@ -1304,14 +1304,14 @@
   "styleInstallOverwrite": {
     "message": "「$stylename$」はすでにインストール済みです。上書きしますか？\nバージョン: $oldVersion$ -> $newVersion$",
     "placeholders": {
-      "newVersion": {
-        "content": "$3"
+      "stylename": {
+        "content": "$1"
       },
       "oldVersion": {
         "content": "$2"
       },
-      "stylename": {
-        "content": "$1"
+      "newVersion": {
+        "content": "$3"
       }
     }
   },
@@ -1529,14 +1529,14 @@
   "webRequestBlockingMV3Note": {
     "message": "webRequestBlocking 権限が必要です。これは、次のいずれかの方法で Manifest V3 で有効にすることができます:\n\n 1) バックアップをエクスポートし、この拡張機能の ID「$id$」に対して $policyName$ ポリシーを設定し、ブラウザを再起動して、拡張機能がインストールされるのを待ち、スタイルマネージャでバックアップをインポートし、必要に応じてアイコンをツールバーにピン留めします。\n\n 2) ブラウザのアイコンまたはランチャーのコマンドライン文字列を変更します: スペースと $cmd$ を追加します。",
     "placeholders": {
-      "cmd": {
-        "content": "$3"
+      "policyName": {
+        "content": "$1"
       },
       "id": {
         "content": "$2"
       },
-      "policyName": {
-        "content": "$1"
+      "cmd": {
+        "content": "$3"
       }
     }
   },

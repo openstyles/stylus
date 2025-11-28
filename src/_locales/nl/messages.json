@@ -814,11 +814,11 @@
   "optionFOUCMV3": {
     "message": "Overweeg ‘$optInst$’ in te schakelen en ‘$optCache$’ te verhogen.",
     "placeholders": {
-      "optCache": {
-        "content": "$2"
-      },
       "optInst": {
         "content": "$1"
+      },
+      "optCache": {
+        "content": "$2"
       }
     }
   },
@@ -1308,14 +1308,14 @@
   "styleInstallOverwrite": {
     "message": "‘$stylename$’ is al geïnstalleerd. Overschrijven?\nVersie: $oldVersion$ -> $newVersion$",
     "placeholders": {
-      "newVersion": {
-        "content": "$3"
+      "stylename": {
+        "content": "$1"
       },
       "oldVersion": {
         "content": "$2"
       },
-      "stylename": {
-        "content": "$1"
+      "newVersion": {
+        "content": "$3"
       }
     }
   },
@@ -1533,14 +1533,14 @@
   "webRequestBlockingMV3Note": {
     "message": "Vereist de toestemming webRequestBlocking, die in ManifestV3 kan worden ingeschakeld via een van deze methoden:\n\n 1) Exporteer de back-up, configureer het beleid $policyName$ voor de ID ‘$id$’ van deze extensie, herstart de browser, wacht tot de extensie is geïnstalleerd, importeer de back-up in de stijlbeheerder, en zet optioneel het pictogram vast aan de werkbalk.\n\n 2) Pas de opdrachtregel aan in het pictogram of de launcher van de browser: voeg een spatie en $cmd$ toe.",
     "placeholders": {
-      "cmd": {
-        "content": "$3"
+      "policyName": {
+        "content": "$1"
       },
       "id": {
         "content": "$2"
       },
-      "policyName": {
-        "content": "$1"
+      "cmd": {
+        "content": "$3"
       }
     }
   },

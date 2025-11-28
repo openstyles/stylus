@@ -22,7 +22,11 @@ const srcJson = readLngJson('en');
 for (const val of Object.values(srcJson)) {
   if (val.placeholders) {
     val.placeholdersStr = JSON.stringify(
-      val.placeholders = Object.fromEntries(Object.entries(val.placeholders).sort(sortAlpha))
+      val.placeholders = Object.fromEntries(
+        Object.entries(val.placeholders).sort(([, {content: a}], [, {content: b}]) =>
+          a.slice(1) - b.slice(1) || (a < b ? -1 : a > b)
+        )
+      )
     );
   }
 }

@@ -839,11 +839,11 @@
   "optionFOUCMV3": {
     "message": "請考慮啟用「$optInst$」並增加「$optCache$」。",
     "placeholders": {
-      "optCache": {
-        "content": "$2"
-      },
       "optInst": {
         "content": "$1"
+      },
+      "optCache": {
+        "content": "$2"
       }
     }
   },
@@ -1339,14 +1339,14 @@
   "styleInstallOverwrite": {
     "message": "「$stylename$」已安裝。要覆寫嗎？\n版本：$oldVersion$→$newVersion$",
     "placeholders": {
-      "newVersion": {
-        "content": "$3"
+      "stylename": {
+        "content": "$1"
       },
       "oldVersion": {
         "content": "$2"
       },
-      "stylename": {
-        "content": "$1"
+      "newVersion": {
+        "content": "$3"
       }
     }
   },
@@ -1567,14 +1567,14 @@
   "webRequestBlockingMV3Note": {
     "message": "需要 webRequestBlocking 權限，可使用下列的其中一個方法在 ManifestV3 中啟用：\n\n1) 匯出備份，為此擴充套件的 ID「$id$」設定 $policyName$ 策略，重新啟動瀏覽器，等待擴充套件安裝完成，在樣式管理器中匯入備份，並可將圖示釘選到工具列上。\n\n2) 修改瀏覽器圖示或啟動器中的命令列：新增空格與 $cmd$",
     "placeholders": {
-      "cmd": {
-        "content": "$3"
+      "policyName": {
+        "content": "$1"
       },
       "id": {
         "content": "$2"
       },
-      "policyName": {
-        "content": "$1"
+      "cmd": {
+        "content": "$3"
       }
     }
   },

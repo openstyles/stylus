@@ -786,11 +786,11 @@
   "optionFOUCMV3": {
     "message": "Versuche \"$optInst$\" zu aktivieren und \"$optCache$\" zu vergrößern.",
     "placeholders": {
-      "optCache": {
-        "content": "$2"
-      },
       "optInst": {
         "content": "$1"
+      },
+      "optCache": {
+        "content": "$2"
       }
     }
   },
@@ -1246,14 +1246,14 @@
   "styleInstallOverwrite": {
     "message": "\"$stylename$\" ist bereits installiert. Überschreiben?\nVersion: $oldVersion$ -> $newVersion$",
     "placeholders": {
-      "newVersion": {
-        "content": "$3"
+      "stylename": {
+        "content": "$1"
       },
       "oldVersion": {
         "content": "$2"
       },
-      "stylename": {
-        "content": "$1"
+      "newVersion": {
+        "content": "$3"
       }
     }
   },
@@ -1440,14 +1440,14 @@
   "webRequestBlockingMV3Note": {
     "message": "Erfordert die Berechtigung webRequestBlocking, die in ManifestV3 mit einer der folgenden Methoden aktiviert werden kann:\n\n 1) Exportiere das Backup, richte die $policyName$ für die ID \"$id$\" dieser Erweiterung ein. Starte den Browser neu und warte, bis die Erweiterung installiert ist. importiere das Backup in den Style Manager.\n\n 2) Ändere die Befehlszeile in der Browserverknüpfung oder im Launcher: Füge ein Leerzeichen und $cmd$hinzu.",
     "placeholders": {
-      "cmd": {
-        "content": "$3"
+      "policyName": {
+        "content": "$1"
       },
       "id": {
         "content": "$2"
       },
-      "policyName": {
-        "content": "$1"
+      "cmd": {
+        "content": "$3"
       }
     }
   },

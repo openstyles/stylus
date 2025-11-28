@@ -845,11 +845,11 @@
   "optionFOUCMV3": {
     "message": "فكر في تمكين \"$optInst$\" وزيادة \"$optCache$\".",
     "placeholders": {
-      "optCache": {
-        "content": "$2"
-      },
       "optInst": {
         "content": "$1"
+      },
+      "optCache": {
+        "content": "$2"
       }
     }
   },
@@ -1348,14 +1348,14 @@
   "styleInstallOverwrite": {
     "message": "'$stylename$' مثبت بالفعل. هل تريد الكتابة فوقه؟\nالإصدار: $oldVersion$ -> $newVersion$",
     "placeholders": {
-      "newVersion": {
-        "content": "$3"
+      "stylename": {
+        "content": "$1"
       },
       "oldVersion": {
         "content": "$2"
       },
-      "stylename": {
-        "content": "$1"
+      "newVersion": {
+        "content": "$3"
       }
     }
   },
@@ -1576,14 +1576,14 @@
   "webRequestBlockingMV3Note": {
     "message": "يتطلب إذن webRequestBlocking الذي يمكن تمكينه في ManifestV3 باستخدام إحدى هذه الطرق:\n\n 1) قم بتصدير النسخة الاحتياطية، قم بإعداد سياسة $policyName$ لمعرف هذا الامتداد \"$id$\"، أعد تشغيل المتصفح، انتظر حتى يتم تثبيت الامتداد، استورد النسخة الاحتياطية في مدير الأنماط، وقم optionally بتثبيت الأيقونة على شريط الأدوات.\n\n 2) قم بتعديل سطر الأوامر في أيقونة المتصفح أو المشغل: أضف مسافة و $cmd$",
     "placeholders": {
-      "cmd": {
-        "content": "$3"
+      "policyName": {
+        "content": "$1"
       },
       "id": {
         "content": "$2"
       },
-      "policyName": {
-        "content": "$1"
+      "cmd": {
+        "content": "$3"
       }
     }
   },

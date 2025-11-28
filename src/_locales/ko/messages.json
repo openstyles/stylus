@@ -1067,14 +1067,14 @@
   "styleInstallOverwrite": {
     "message": "'$stylename$'은(는) 이미 설치되어 있습니다. 덮어쓰시겠습니까?\n버전: $oldVersion$ -> $newVersion$",
     "placeholders": {
-      "newVersion": {
-        "content": "$3"
+      "stylename": {
+        "content": "$1"
       },
       "oldVersion": {
         "content": "$2"
       },
-      "stylename": {
-        "content": "$1"
+      "newVersion": {
+        "content": "$3"
       }
     }
   },

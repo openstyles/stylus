@@ -836,11 +836,11 @@
   "optionFOUCMV3": {
     "message": "Rozważ włączenie „$optInst$” i zwiększenie „$optCache$”.",
     "placeholders": {
-      "optCache": {
-        "content": "$2"
-      },
       "optInst": {
         "content": "$1"
+      },
+      "optCache": {
+        "content": "$2"
       }
     }
   },
@@ -1339,14 +1339,14 @@
   "styleInstallOverwrite": {
     "message": "'$stylename$' jest już zainstalowany. Zastąpić?\nWersja: $oldVersion$ -> $newVersion$",
     "placeholders": {
-      "newVersion": {
-        "content": "$3"
+      "stylename": {
+        "content": "$1"
       },
       "oldVersion": {
         "content": "$2"
       },
-      "stylename": {
-        "content": "$1"
+      "newVersion": {
+        "content": "$3"
       }
     }
   },
@@ -1567,14 +1567,14 @@
   "webRequestBlockingMV3Note": {
     "message": "Wymaga uprawnienia webRequestBlocking, które można włączyć w ManifestV3 za pomocą jednej z następujących metod:\n\n1) Wyeksportuj kopię zapasową, skonfiguruj zasady $policyName$ dla identyfikatora tego rozszerzenia „$id$”, uruchom ponownie przeglądarkę, poczekaj na zainstalowanie rozszerzenia, zaimportuj kopię zapasową w menedżerze stylów i opcjonalnie przypnij ikonę do paska narzędzi.\n\n2) Zmodyfikuj wiersz poleceń w ikonie przeglądarki lub programie uruchamiającym: dodaj spację i $cmd$",
     "placeholders": {
-      "cmd": {
-        "content": "$3"
+      "policyName": {
+        "content": "$1"
       },
       "id": {
         "content": "$2"
       },
-      "policyName": {
-        "content": "$1"
+      "cmd": {
+        "content": "$3"
       }
     }
   },
