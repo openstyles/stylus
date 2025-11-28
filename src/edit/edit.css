@@ -30,12 +30,6 @@ $targetGapY: 2px;
 .hidden {
   display: none !important;
 }
-html.is-new-style #heading::before {
-  content: attr(data-add);
-}
-html:not(.is-new-style) #heading::before {
-  content: attr(data-edit);
-}
 
 /************ embedded popup for simple-window editor ************/
 #popup-iframe {
@@ -77,13 +71,10 @@ html:not(.is-new-style) #heading::before {
   display: flex;
   flex-direction: column;
   h1 {
-    margin-top: 0;
-    .usercss & {
-      margin-bottom: 0;
-      + a {
-        margin-bottom: 1em;
-      }
-    }
+    margin: 0 0 .25rem;
+  }
+  a[href].icon {
+    margin-left: $pad05;
   }
 }
 .sectioned {
@@ -182,23 +173,15 @@ html:not(.is-new-style) #heading::before {
 i {
   width: 16px;
   height: 16px;
+  &:not(.i-config) {
+    color: var(--fg);
+  }
+  &:hover {
+    color: var(--accent-1);
+  }
 }
 a.icon {
   margin-left: .2rem;
-}
-.i-info {
-  width: 14px;
-  height: 16px;
-}
-i:hover,
-.i-info,
-.i-config {
-  color: var(--c40);
-}
-i,
-.i-info:hover,
-.i-config:hover {
-  color: var(--fg);
 }
 /* collapsibles */
 #details-wrapper {

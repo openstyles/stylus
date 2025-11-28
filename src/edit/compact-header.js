@@ -22,15 +22,15 @@ export default function CompactHeader() {
   const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
   const xoRoot = isUsercss ? scroller : undefined;
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
-  const elInfo = $('h1 a');
+  const elInfo = [...$$('h1 a')];
   scroller.appendChild(elHeader);
   mqCompact(val => {
     if (val) {
       xo.observe(elHeader);
-      $id('basic-info-name').after(elInfo);
+      $id('basic-info-name').append(...elInfo);
     } else {
       xo.disconnect();
-      $('h1').append(elInfo);
+      $('h1').append(...elInfo);
     }
   });
 

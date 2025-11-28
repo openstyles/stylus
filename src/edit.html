@@ -21,11 +21,18 @@
 
   <template data-id="body"> <!-- https://crbug.com/1288447 -->
     <div id="header" class="dvh100">
-      <h1 id="heading" i18n="data-edit:editStyleHeading, data-add:addStyleTitle">
-        <a class="usercss-only icon hide-if-sticky"
-           href="https://github.com/openstyles/stylus/wiki/Writing-UserCSS"
-           i18n="title:externalUsercssDocument" target="_blank">
+      <h1 id="heading" class="flex">
+        <span class="ellipsis"></span>
+        <a id="url" target="_blank" class="icon" i18n="title:externalHomepage">
+          <i class=i-external></i>
+        </a>
+        <a class="icon" target="_blank" i18n="title:linkStylusWiki"
+           href="https://github.com/openstyles/stylus/wiki/Writing-styles">
           <i class=i-info></i>
+        </a>
+        <a class="usercss-only icon" target="_blank" i18n="title:externalUsercssDocument"
+           href="https://github.com/openstyles/stylus/wiki/Writing-UserCSS">
+          <i class=i-usercss style="font-size: 16px"></i>
         </a>
       </h1>
       <section id="basic-info">
@@ -34,7 +41,6 @@
           <a id="reset-name" i18n="title:customNameResetHint" tabindex="0" hidden>
             <i class=i-close></i>
           </a>
-          <a id="url" target="_blank" class="icon"><i class=i-external></i></a>
         </div>
         <div id="basic-info-enabled">
           <label id="enabled-label" class="hide-if-sticky"

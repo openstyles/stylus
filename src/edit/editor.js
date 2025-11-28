@@ -1,4 +1,5 @@
 import {$create} from '@/js/dom';
+import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {clipString, debounce, deepEqual, mapObj, sessionStore, t} from '@/js/util';
 import {sticky} from './compact-header';
@@ -97,6 +98,9 @@ const editor = self.editor = {
 
   updateClass() {
     $rootCL.toggle('is-new-style', !editor.style.id);
+    template.body.$('#heading span').textContent = editor.style.id
+      ? t('editStyleHeading')
+      : t('addStyleTitle');
   },
 
   updateDirty() {
