@@ -1254,6 +1254,9 @@
   "shortcutsNoteFF": {
     "message": "W przeglądarce Firefox 66+ możesz ręcznie otworzyć interfejs wbudowanych skrótów:\n1) kliknij prawym przyciskiem myszy ikonę Stylusa na pasku narzędzi i wybierz 'Zarządzaj'\n(alternatywnie otwórz about:addon z menu głównego lub Ctrl-Shift-A),\n2) na stronie, która się otworzy, kliknij ikonę koła zębatego w prawym górnym rogu,\n3) wybierz 'Zarządzaj skrótami rozszerzeń'.\n\nMożesz także dostosować skróty tutaj."
   },
+  "sitesNoteRe": {
+    "message": "Wyrażenie regularne </\\w+://(abc|def)\\.com/(?!xyz).*/> musi uwzględniać cały adres URL, np. w przykładzie <\\w://> dla <https://> i <.*> dla ścieżki po domenie. 2) Nie ma potrzeby stosowania znaku ucieczki </> w żadnym miejscu. 3) Nie ma potrzeby zakotwiczania wyrażenia, ponieważ odbywa się to wewnętrznie za pomocą <^(abc)$$>."
+  },
   "sortDateNewestFirst": {
     "message": "najpierw najnowsze"
   },

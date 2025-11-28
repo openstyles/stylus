@@ -1531,7 +1531,7 @@
   },
   "sitesNoteRe": {
     "description": "Tooltip for an option. Make sure to preserve newlines, <>, and the text inside as it'll be reformatted on screen",
-    "message": "</\\w+://(abc|def)\\.com/(?!xyz).*/> regular expression that must account for the entire URL, e.g. the example has <\\w://> for <https://> and <.*> for the path after the domain. 2) No need to escape </> anywhere. 3) No need to anchor the expression as it's done internally via <^(abc)$$>. 4) To match case-insensitively add <i> like </abc/i>."
+    "message": "</\\w+://(abc|def)\\.com/(?!xyz).*/> regular expression that must account for the entire URL, e.g. the example has <\\w://> for <https://> and <.*> for the path after the domain. 2) No need to escape </> anywhere. 3) No need to anchor the expression as it's done internally via <^(abc)$$>."
   },
   "sortDateNewestFirst": {
     "message": "newest first",
