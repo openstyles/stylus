@@ -195,6 +195,7 @@ function onTextInput() {
 
 function onTextKey(e) {
   if (e.key === 's' && (e.metaKey === MAC && e.ctrlKey === !MAC) && !e.altKey && !e.shiftKey) {
+    e.preventDefault();
     this.dispatchEvent(new Event('change'));
   }
 }
