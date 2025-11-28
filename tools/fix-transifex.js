@@ -18,15 +18,12 @@ const readLngJson = lng => JSON.parse(
 );
 const sortAlpha = ([a], [b]) => a < b ? -1 : a > b;
 
-const src = readLngJson('en');
-for (const val of Object.values(src)) {
-  const {placeholders} = val;
-  if (placeholders) {
-    const sorted = {};
-    for (const [k, v] of Object.entries(placeholders).sort(sortAlpha)) {
-      sorted[k] = v;
-    }
-    val.placeholders = sorted;
+const srcJson = readLngJson('en');
+for (const val of Object.values(srcJson)) {
+  if (val.placeholders) {
+    val.placeholdersStr = JSON.stringify(
+      val.placeholders = Object.fromEntries(Object.entries(val.placeholders).sort(sortAlpha))
+    );
   }
 }
 
@@ -53,24 +50,23 @@ function fixLngFile(lng) {
   const json = readLngJson(lng);
   const res = {};
   for (const [key, val] of Object.entries(json).sort(sortAlpha)) {
-    const {placeholders, message: msgSrc} = src[key] || {};
+    const src = srcJson[key] || {};
     const msg = val.message;
-    if (!msgSrc) {
+    if (!src.message) {
       unknown.push(`\n\t${chalk.bold(key)}: ${msg.length > 50 ? msg.slice(0, 50) + '...' : msg}`);
-    } else if (!msg || msg === msgSrc) {
+    } else if (!msg || msg === src.message) {
       numUntranslated++;
     } else {
       delete val.description;
-      if (placeholders && !val.placeholders) {
+      if (src.placeholdersStr && src.placeholdersStr !== JSON.stringify(val.placeholders)) {
         numVarsFixed++;
-        val.placeholders = placeholders;
+        val.placeholders = src.placeholders;
       }
       res[key] = val;
     }
   }
-  const jsonStr = JSON.stringify(json, null, 2);
   const resStr = JSON.stringify(res, null, 2);
-  if (resStr !== jsonStr) {
+  if (numVarsFixed || numUntranslated || unknown.length) {
     let err;
     if (resStr === '{}') {
       fs.rmSync(`${DIR}${lng}`, {recursive: true, force: true});

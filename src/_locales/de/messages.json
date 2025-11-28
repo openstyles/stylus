@@ -378,7 +378,7 @@
     "message": "Importieren"
   },
   "importPreprocessor": {
-    "message": "Ein Style mit einem <code>@preprocessor</code>funktioniert nicht im klassischen Modus. Du kannst den Editor auf UserCSS umstellen: 1) Öffne die Style-Verwaltung, 2) Aktiviere das Kästchen \"Als UserCSS\", 3) Klicke auf \"Neuen Style erstellen\"\n\nTrotzdem jetzt importieren?"
+    "message": "Ein Style mit einem <@preprocessor>funktioniert nicht im klassischen Modus. Du kannst den Editor auf UserCSS umstellen: 1) Öffne die Style-Verwaltung, 2) Aktiviere das Kästchen \"Als UserCSS\", 3) Klicke auf \"Neuen Style erstellen\"\n\nTrotzdem jetzt importieren?"
   },
   "importPreprocessorTitle": {
     "message": "Mögliches Problem wegen @preprocessor"
@@ -520,17 +520,11 @@
   "liveReloadLabel": {
     "message": "Echtzeitaktualisierung"
   },
-  "manageFavicons": {
-    "message": "Favicons in der \"Gilt für\" Spalte anzeigen"
-  },
   "manageFaviconsGray": {
     "message": "Ausgegraut"
   },
   "manageFilters": {
     "message": "Filter"
-  },
-  "manageMaxTargets": {
-    "message": "Anzahl der \"Gilt für\" Elemente"
   },
   "manageMinColumnWidth": {
     "message": "Minimale Spaltenbreite (in Pixeln. 9999 deaktiviert den Mehrspalten-Modus)"
@@ -782,10 +776,23 @@
     "message": "Styles zu spät angewendet?"
   },
   "optionFOUCMV2": {
-    "message": "Versuche \"<a>\" zu aktivieren."
+    "message": "Versuche \"$optInst$\" zu aktivieren.",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionFOUCMV3": {
-    "message": "Versuche \"<a>\" zu aktivieren und \"<b>\" zu vergrößern."
+    "message": "Versuche \"$optInst$\" zu aktivieren und \"$optCache$\" zu vergrößern.",
+    "placeholders": {
+      "optCache": {
+        "content": "$2"
+      },
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionKeepAlive": {
     "message": "Style Cachedauer"
@@ -800,7 +807,12 @@
     "message": "Erhöhe den Wert, wenn beim Öffnen einer Seite nach längerer Nichtbenutzung des Browsers ein Blinken von ungestyltem Inhalt (FOUC) auftritt.\n\n-1 = ManifestV2 Standardverhalten (Kein Limit).\n0 = ManifestV3 Standardverhalten (halbe Minute).\n\nDer Cache benötigt 30 MB oder mehr RAM, aber der Wiederaufbau kann zu viel Zeit in Anspruch nehmen und zu FOUC führen je nach Website, Netzwerkgeschwindigkeit, Anzahl der Styles, RAM-Größe und CPU-Leistung."
   },
   "optionTargetIconsNote": {
-    "message": "Stylus nutzt hierzu den externen Dienst <SRV>"
+    "message": "Stylus nutzt hierzu den externen Dienst $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "Erweitert"
@@ -818,7 +830,7 @@
     "message": "\"Löschen\" im Editor-Kontextmenü hinzufügen"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Ermögliche Iframes via HTML[stylus-iframe]"
+    "message": "Ermögliche <iframe> via <html[stylus-iframe]>"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Style wirkt sich auch auf iframes der anvisierten (obersten) Domain aus.\nIframe-spezifisches CSS ist dann wie folgt möglich:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
@@ -833,13 +845,13 @@
     "message": "Schreibe neuen Style als UserCSS"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "<code>CSP</code> abändern, um externe Ressourcen zu erlauben"
+    "message": "<CSP> abändern, um externe Ressourcen zu erlauben"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "Aktivieren, wenn Styles Bilder oder Schriftarten enthalten, die aufgrund strenger <code>CSP</code> (<code>Content-Security-Policy</code>) Regeln mancher Seiten nicht laden.\n\nDas Aktivieren wird <code>CSP</code>Beschränkungen lockern, um für den Style erforderliche Ressourcen zu laden. Diese Option ist für fortgeschrittene Benutzer gedacht, die sich den möglichen Sicherheitsrisiken bewusst sind und die die Verantwortung dafür tragen, die nachgeladenen Inhalte selbst zu überwachen. Informiere dich über \"CSS-basierte Angriffe\" um mehr zu erfahren.\n\nBeachte außerdem, dass diese Option nicht garantiert funktioniert, falls eine andere installierte Erweiterung die Netzwerkantwort (CSP-header) zuerst abändert."
+    "message": "Aktivieren, wenn Styles Bilder oder Schriftarten enthalten, die aufgrund strenger <CSP> (<Content-Security-Policy>) Regeln mancher Seiten nicht laden.\n\nDas Aktivieren wird <CSP>Beschränkungen lockern, um für den Style erforderliche Ressourcen zu laden. Diese Option ist für fortgeschrittene Benutzer gedacht, die sich den möglichen Sicherheitsrisiken bewusst sind und die die Verantwortung dafür tragen, die nachgeladenen Inhalte selbst zu überwachen. Informiere dich über \"CSS-basierte Angriffe\" um mehr zu erfahren.\n\nBeachte außerdem, dass diese Option nicht garantiert funktioniert, falls eine andere installierte Erweiterung die Netzwerkantwort (CSP-header) zuerst abändert."
   },
   "optionsAdvancedStyleViaASS": {
-    "message": "Umgehe CSP 'style-src' durch adoptedStyleSheets"
+    "message": "Umgehe <CSP> <style-src> durch <adoptedStyleSheets>"
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "Style unverzüglich einfügen"
@@ -1205,17 +1217,11 @@
   "styleEnabledLabel": {
     "message": "Aktiviert"
   },
-  "styleExcludeLabel": {
-    "message": "Benutzerdefinierte ausgeschlossene URLs"
-  },
   "styleFromMozillaFormatError": {
     "message": "Import vom Mozilla Format fehlgeschlagen"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Mozilla-Format Code einfügen"
-  },
-  "styleIncludeLabel": {
-    "message": "Benutzerdefinierte Ziel-URLs"
   },
   "styleInjectionImportance": {
     "message": "Style als wichtig markieren"
@@ -1276,7 +1282,7 @@
     "message": "Einige RegExp konnten nicht kompiliert werden."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Dieser Style verwendet nur teilweise übereinstimmende RegExp unter Missachtung der <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document Spezifikationen</a>, welche eine vollständig übereinstimmende URL benötigen. Die betroffenen CSS-Bereiche wurde nicht auf die Website angewandt. Dieser Style wurde wahrscheinlich unter Stylish für Chrome erstellt, in der seit der ersten Version eine fehlerhafte Überprüfung der RegExp besteht (bekannter Fehler)."
+    "message": "Dieser Style verwendet nur teilweise übereinstimmende RegExp unter Missachtung der <a>CSS4 @document Spezifikationen</a>, welche eine vollständig übereinstimmende URL benötigen. Die betroffenen CSS-Bereiche wurde nicht auf die Website angewandt. Dieser Style wurde wahrscheinlich unter Stylish für Chrome erstellt, in der seit der ersten Version eine fehlerhafte Überprüfung der RegExp besteht (bekannter Fehler)."
   },
   "styleRegexpProblemTooltip": {
     "message": "Anzahl der Bereiche, welche aufgrund nicht korrekt verwendeter RegExp nicht angewendet wurden"
@@ -1356,7 +1362,12 @@
     "message": "Um den Zugriff zu erlauben, öffne <about:config>, rechtsklicke in die Liste, klicke \"Neu\", dann \"Boolean\", füge <privacy.resistFingerprinting.block_mozAddonManager> ein und klicke OK, <true>, OK, lade <addons.mozilla.org> neu."
   },
   "unreachableCSP": {
-    "message": "Versuche \"CSP abändern\" in den Stylus Optionen zu aktivieren."
+    "message": "Versuche \"$optCSP$\" in den Stylus Optionen zu aktivieren.",
+    "placeholders": {
+      "optCSP": {
+        "content": "$1"
+      }
+    }
   },
   "unreachableContentScript": {
     "message": "Konnte nicht mit der Seite kommunizieren. Bitte versuchen Sie, die Seite erneut zu laden."
@@ -1368,7 +1379,7 @@
     "message": "In Firefox 60 oder neuer muss diese Domain von <extensions.webextensions.restrictedDomains> in <about:config> entfernt werden."
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Erst ab Firefox 59 können WebExtensions Style-Elemente auf CSP-geschützten Seiten wie dieser hinzufügen."
+    "message": "Erst ab Firefox 59 können WebExtensions Style-Elemente auf <CSP>-geschützten Seiten wie dieser hinzufügen."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Keine Updates gefunden."
@@ -1427,9 +1438,15 @@
     "message": "Die Version des Styles ist älter als die des bereits installierten."
   },
   "webRequestBlockingMV3Note": {
-    "message": "Erfordert die Berechtigung webRequestBlocking, die in ManifestV3 mit einer der folgenden Methoden aktiviert werden kann:\n\n 1) Exportiere das Backup, richte die <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist-Richtlinie</a> für die ID \"$id$\" dieser Erweiterung ein. Starte den Browser neu und warte, bis die Erweiterung installiert ist. importiere das Backup in den Style Manager.\n\n 2) Ändere die Befehlszeile in der Browserverknüpfung oder im Launcher: Füge ein Leerzeichen und <code><nobr>--allowlisted-extension-id=$id$</nobr></code>hinzu.",
+    "message": "Erfordert die Berechtigung webRequestBlocking, die in ManifestV3 mit einer der folgenden Methoden aktiviert werden kann:\n\n 1) Exportiere das Backup, richte die $policyName$ für die ID \"$id$\" dieser Erweiterung ein. Starte den Browser neu und warte, bis die Erweiterung installiert ist. importiere das Backup in den Style Manager.\n\n 2) Ändere die Befehlszeile in der Browserverknüpfung oder im Launcher: Füge ein Leerzeichen und $cmd$hinzu.",
     "placeholders": {
+      "cmd": {
+        "content": "$3"
+      },
       "id": {
+        "content": "$2"
+      },
+      "policyName": {
         "content": "$1"
       }
     }

@@ -390,7 +390,7 @@
     "message": "インポート"
   },
   "importPreprocessor": {
-    "message": "<code>@preprocessor</code>を含むスタイルは、クラシックモードでは機能しません。エディタをUserCSSモードにしてください : 1) スタイルマネージャを開きます, 2)「UserCSSとして」チェックボックスをONにします, 3)「新スタイルを作成」をクリックします\n\nとにかくインポートしますか？"
+    "message": "<@preprocessor>を含むスタイルは、クラシックモードでは機能しません。エディタをUserCSSモードにしてください : 1) スタイルマネージャを開きます, 2)「UserCSSとして」チェックボックスをONにします, 3)「新スタイルを作成」をクリックします\n\nとにかくインポートしますか？"
   },
   "importPreprocessorTitle": {
     "message": "@preprocessorの潜在的な問題"
@@ -794,10 +794,23 @@
     "message": "スタイルの適用が遅すぎる?"
   },
   "optionFOUCMV2": {
-    "message": "「<a>」を有効にすることを検討ください。"
+    "message": "「$optInst$」を有効にすることを検討ください。",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionFOUCMV3": {
-    "message": "「<a>」を有効にし、「<b>」を増加することを検討ください。"
+    "message": "「$optInst$」を有効にし、「$optCache$」を増加することを検討ください。",
+    "placeholders": {
+      "optCache": {
+        "content": "$2"
+      },
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionKeepAlive": {
     "message": "スタイルキャッシュ期間"
@@ -815,7 +828,12 @@
     "message": "対象サイトのアイコン"
   },
   "optionTargetIconsNote": {
-    "message": "Stylusは外部サービス<SRV>を使用します"
+    "message": "Stylusは外部サービス$SRV$を使用します",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionTargetNum": {
     "message": "対象サイトの数"
@@ -836,7 +854,7 @@
     "message": "エディタのコンテキストメニューに「削除」を追加する"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "HTML[stylus-iframe] によってiframeへのアクセスを可能にする"
+    "message": "<html[stylus-iframe]> によって<iframe>へのアクセスを可能にする"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "各iframeにトップサイトドメインを公開します。\n次のようにiframe用のCSSを書くことができるようになります:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
@@ -851,10 +869,10 @@
     "message": "スタイルをUserCSSとして新規作成"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "スタイルのアセットを許可するために<code>CSP</code>にパッチを当てる"
+    "message": "スタイルのアセットを許可するために<CSP>にパッチを当てる"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "厳格な<code>CSP</code>(<code>Content-Security-Policy</code>)を持つサイトで、ロードできない画像やフォントを含んだスタイルの場合に、これを有効にします。\n\nこの設定を有効にすると、<code>CSP</code>の制限をゆるめて、必要なコンテンツのロードを許可します。このオプションは、潜在的なセキュリティへの影響を理解し、許可しているコンテンツを監視する責任を持つことができる上級ユーザーのみを対象としています。 詳細については、CSSベースの攻撃に関する資料をお読みください。\n\nまた、インストールされている別の拡張機能が最初にネットワークの応答を変更した場合、この特別な設定が有効になるとは限らないことに注意してください。"
+    "message": "厳格な<CSP>(<Content-Security-Policy>)を持つサイトで、ロードできない画像やフォントを含んだスタイルの場合に、これを有効にします。\n\nこの設定を有効にすると、<CSP>の制限をゆるめて、必要なコンテンツのロードを許可します。このオプションは、潜在的なセキュリティへの影響を理解し、許可しているコンテンツを監視する責任を持つことができる上級ユーザーのみを対象としています。 詳細については、CSSベースの攻撃に関する資料をお読みください。\n\nまた、インストールされている別の拡張機能が最初にネットワークの応答を変更した場合、この特別な設定が有効になるとは限らないことに注意してください。"
   },
   "optionsAdvancedSites": {
     "message": "...マッチしたサイトのみ"
@@ -863,7 +881,7 @@
     "message": "<abc.com> ひとつのサイト\n<*.abc.com> サイト + サブドメイン\n<-m.abc.com> 先頭に「-」を付けると除外\n<*> すべてのサイト（除外と組合せ可能）\n<#abc.com> 不正な文字があると無視されます\n<*://abc.*/xyz> ワイルドカード\n<https://abc.com/xyz> 完全なURL\n各項目は、スペースまたは改行で区切られます。入力中の文字列は、Ctrl-S または ⌘S を押すか、入力欄の外側をクリックするか、オプション画面を閉じると、自動で保存されます。"
   },
   "optionsAdvancedStyleViaASS": {
-    "message": "adoptedStyleSheetsによってCSPの 'style-src' の問題を回避する"
+    "message": "<adoptedStyleSheets>によって<CSP>の <style-src> の問題を回避する"
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "即時更新モード"
@@ -984,7 +1002,12 @@
     "message": "任意のサイトについて UserCSS スタイルのインストーラーを開く"
   },
   "optionsUrlInstallerNote": {
-    "message": "以下の条件が満たされる場合、任意のサイトからインストール可能にします。\n1) URLが<code>.user.css</code>、<code>.user.less</code>、もしくは、<code>.user.styl</code>で終わる。\n2) URLがスタイルのテキストコンテンツである (通常「raw」と呼ばれます) 。つまり、HTMLのWebではない場合。\n\nインストールを以下の専用のスタイルギャラリーに制限したい場合は、これを無効にしてください:\n<LIST>"
+    "message": "以下の条件が満たされる場合、任意のサイトからインストール可能にします。\n1) URLが<.user.css>、<.user.less>、もしくは、<.user.styl>で終わる。\n2) URLがスタイルのテキストコンテンツである (通常「raw」と呼ばれます) 。つまり、HTMLのWebではない場合。\n\nインストールを以下の専用のスタイルギャラリーに制限したい場合は、これを無効にしてください:\n$LIST$",
+    "placeholders": {
+      "LIST": {
+        "content": "$1"
+      }
+    }
   },
   "overwriteFileExport": {
     "message": "存在するファイルを上書きしてよろしいですか？"
@@ -1245,7 +1268,12 @@
     "message": "有効"
   },
   "styleForceApplied": {
-    "message": "スタイル設定の\"<INC>\"により強制適用"
+    "message": "スタイル設定の\"$INC$\"により強制適用",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
   },
   "styleFromMozillaFormatError": {
     "message": "Mozilla形式のインポートに失敗しました"
@@ -1297,10 +1325,20 @@
     "message": "スタイル名"
   },
   "styleNotAppliedExcluded": {
-    "message": "スタイル設定の\"<EXC>\"により除外"
+    "message": "スタイル設定の\"$EXC$\"により除外",
+    "placeholders": {
+      "EXC": {
+        "content": "$1"
+      }
+    }
   },
   "styleNotAppliedOverridden": {
-    "message": "スタイル設定の\"<INC>\"で元のサイトのスタイルを上書き"
+    "message": "スタイル設定の\"$INC$\"で元のサイトのスタイルを上書き",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "'regexp()' の誤った使用のためスタイルを適用できませんでした"
@@ -1318,7 +1356,7 @@
     "message": "いくつかの 'regexp()' のルールはコンパイルできませんでした"
   },
   "styleRegexpPartialExplanation": {
-    "message": "このスタイルは、完全なURLの一致を要求する <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document 仕様</a> に違反した部分一致の正規表現を使用しています。影響を受けるCSSセクションはページに適用されませんでした。このスタイルは、'regexp()' のルールを誤ってチェックしていた かなり初期のバージョンの Stylish-for-Chrome で作成された可能性があります（既知のバグです）。"
+    "message": "このスタイルは、完全なURLの一致を要求する <a>CSS4 @document 仕様</a> に違反した部分一致の正規表現を使用しています。影響を受けるCSSセクションはページに適用されませんでした。このスタイルは、'regexp()' のルールを誤ってチェックしていた かなり初期のバージョンの Stylish-for-Chrome で作成された可能性があります（既知のバグです）。"
   },
   "styleRegexpProblemTooltip": {
     "message": "'regexp()' の誤った使用のためいくつかのセクションを適用できませんでした"
@@ -1413,7 +1451,12 @@
     "message": "アクセスを許可するには、<about:config> を開き、リストを右クリックして「新規作成」－「真偽値」をクリックし、<privacy.resistFingerprinting.block_mozAddonManager> を貼り付けてOKをクリックし、<true> を選択してOKをクリックし、その後、<addons.mozilla.org> ページをリロードしてください。"
   },
   "unreachableCSP": {
-    "message": "Stylusのオプションで「CSPにパッチを当てる」を有効にしてみてください。"
+    "message": "Stylusのオプションで「$optCSP$」を有効にしてみてください。",
+    "placeholders": {
+      "optCSP": {
+        "content": "$1"
+      }
+    }
   },
   "unreachableContentScript": {
     "message": "ページと通信できませんでした。タブを再読み込みしてみてください。"
@@ -1425,7 +1468,7 @@
     "message": "Firefox 60 以降では、<about:config>内の<extensions.webextensions.restrictedDomains>から、このドメインを削除する必要があります。"
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "このようなCSPで保護されたサイトへのスタイル要素の追加を、Web拡張機能に許可するためには、Firefox 59 以降が必要です。"
+    "message": "このような<CSP>で保護されたサイトへのスタイル要素の追加を、Web拡張機能に許可するためには、Firefox 59 以降が必要です。"
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "更新は見つかりませんでした。"
@@ -1484,9 +1527,15 @@
     "message": "インストール済みのスタイルより古いバージョンです。"
   },
   "webRequestBlockingMV3Note": {
-    "message": "webRequestBlocking 権限が必要です。これは、次のいずれかの方法で Manifest V3 で有効にすることができます:\n\n 1) バックアップをエクスポートし、この拡張機能の ID「$id$」に対して <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> ポリシーを設定し、ブラウザを再起動して、拡張機能がインストールされるのを待ち、スタイルマネージャでバックアップをインポートし、必要に応じてアイコンをツールバーにピン留めします。\n\n 2) ブラウザのアイコンまたはランチャーのコマンドライン文字列を変更します: スペースと <code><nobr>--allowlisted-extension-id=$id$</nobr></code> を追加します。",
+    "message": "webRequestBlocking 権限が必要です。これは、次のいずれかの方法で Manifest V3 で有効にすることができます:\n\n 1) バックアップをエクスポートし、この拡張機能の ID「$id$」に対して $policyName$ ポリシーを設定し、ブラウザを再起動して、拡張機能がインストールされるのを待ち、スタイルマネージャでバックアップをインポートし、必要に応じてアイコンをツールバーにピン留めします。\n\n 2) ブラウザのアイコンまたはランチャーのコマンドライン文字列を変更します: スペースと $cmd$ を追加します。",
     "placeholders": {
+      "cmd": {
+        "content": "$3"
+      },
       "id": {
+        "content": "$2"
+      },
+      "policyName": {
         "content": "$1"
       }
     }

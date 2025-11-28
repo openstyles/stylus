@@ -820,7 +820,7 @@
     "message": "לא היה ניתן להחיל מספר כללי 'regexp()' כלל."
   },
   "styleRegexpPartialExplanation": {
-    "message": "סגנון זה משתמש ב- regexps תואם חלקית בניגוד למפרט <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document</a> המצריך התאמה מלאה של כתובת אתר. קטעי ה־CSS המושפעים לא הוחלו על הדף. סגנון זה נוצר ככל הנראה ב־Stylish-for-Chrome שבודק באופן שגוי את כללי 'regexp()' מאז הגרסה הראשונה (באג ידוע)."
+    "message": "סגנון זה משתמש ב- regexps תואם חלקית בניגוד למפרט <a>CSS4 @document</a> המצריך התאמה מלאה של כתובת אתר. קטעי ה־CSS המושפעים לא הוחלו על הדף. סגנון זה נוצר ככל הנראה ב־Stylish-for-Chrome שבודק באופן שגוי את כללי 'regexp()' מאז הגרסה הראשונה (באג ידוע)."
   },
   "styleRegexpProblemTooltip": {
     "message": "מספר המקטעים שלא הוחלו עקב שימוש שגוי ב־'regexp()'"

@@ -342,7 +342,7 @@
     "message": "Importar"
   },
   "importPreprocessor": {
-    "message": "Los estilos con <code>@preprocessor</code> no funcionarán en el modo clásico. Puedes cambiar el editor para usar el modo UserCSS: 1) Abre el administrador de estilos. 2) Activa la casilla «como UserCSS». 3) Haz clic en «Escribir un estilo nuevo»\n\n¿Quieres importarlo de todos modos?"
+    "message": "Los estilos con <@preprocessor> no funcionarán en el modo clásico. Puedes cambiar el editor para usar el modo UserCSS: 1) Abre el administrador de estilos. 2) Activa la casilla «como UserCSS». 3) Haz clic en «Escribir un estilo nuevo»\n\n¿Quieres importarlo de todos modos?"
   },
   "importPreprocessorTitle": {
     "message": "Problema potencial debido a @preprocessor"
@@ -719,7 +719,12 @@
     "message": "Opciones"
   },
   "optionTargetIconsNote": {
-    "message": "Stylus usa un servicio externo <SRV>"
+    "message": "Stylus usa un servicio externo $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "Avanzado"
@@ -728,7 +733,7 @@
     "message": "Añadir 'Eliminar' al menú contextual del editor"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Visualizar marcos integrados (iframes) a través de HTML[stylus-iframe]"
+    "message": "Visualizar marcos integrados (<iframe>) a través de <html[stylus-iframe]>"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Muestra el dominio del sitio principal en cada iframe.\nPermite escribir código CSS específico para iframes, como en el ejemplo siguiente:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
@@ -737,10 +742,10 @@
     "message": "Escribir nuevo estilo como UserCSS"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "Cambiar <code>CSP</code> para permitir recursos de estilos"
+    "message": "Cambiar <CSP> para permitir recursos de estilos"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "Activa esta opción si los estilos contienen imágenes o fuentes que no se cargan en un sitio con una configuración estricta de <code>CSP</code> (<code>Política de seguridad de contenido</code>).\n\nAl activar esta opción, se reducen las restricciones de <code>CSP</code> para que puedan cargarse los contenidos de estilo necesarios. Esta opción va dirigida únicamente a usuarios avanzados que comprenden las posibles implicaciones de seguridad y aceptan la responsabilidad de supervisar el contenido que permiten que se cargue. Antes de usar esta opción, obtén más información sobre los ataques basados en CSS.\n\nAdemás, puede que esta opción específica no se aplique si otra extensión modifica antes la respuesta de red."
+    "message": "Activa esta opción si los estilos contienen imágenes o fuentes que no se cargan en un sitio con una configuración estricta de <CSP> (<Content-Security-Policy>, Política de seguridad de contenido).\n\nAl activar esta opción, se reducen las restricciones de <CSP> para que puedan cargarse los contenidos de estilo necesarios. Esta opción va dirigida únicamente a usuarios avanzados que comprenden las posibles implicaciones de seguridad y aceptan la responsabilidad de supervisar el contenido que permiten que se cargue. Antes de usar esta opción, obtén más información sobre los ataques basados en CSS.\n\nAdemás, puede que esta opción específica no se aplique si otra extensión modifica antes la respuesta de red."
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "Modo de inserción instantánea"
@@ -1099,7 +1104,7 @@
     "message": "Algunas reglas «regexp()» que no se pudieron compilar en absoluto."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Este estilo utiliza expresiones regulares (regexps) con coincidencias parciales, infringiendo la <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>especificación @document de CSS4</a> que requiere una coincidencia de URL completa. \nLas secciones CSS correspondientes a estas expresiones regulares no se aplicaron a la página. Este estilo fue probablemente creado con Stylish para Chrome que evalúa incorrectamente las reglas 'regexp()' desde la primera versión (fallo conocido)."
+    "message": "Este estilo utiliza expresiones regulares (regexps) con coincidencias parciales, infringiendo la <a>especificación @document de CSS4</a> que requiere una coincidencia de URL completa. \nLas secciones CSS correspondientes a estas expresiones regulares no se aplicaron a la página. Este estilo fue probablemente creado con Stylish para Chrome que evalúa incorrectamente las reglas 'regexp()' desde la primera versión (fallo conocido)."
   },
   "styleRegexpProblemTooltip": {
     "message": "Número de secciones no aplicadas debido a un uso incorrecto de 'regexp()'"
@@ -1171,7 +1176,7 @@
     "message": "En Firefox 60 y versiones posteriores, quita este dominio de <extensions.webextensions.restrictedDomains> en <about:config>."
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Se necesita Firefox 59 y versiones posteriores para que las extensiones del tipo WebExtensions agreguen elementos de estilo en sitios protegidos mediante CSP como este."
+    "message": "Se necesita Firefox 59 y versiones posteriores para que las extensiones del tipo WebExtensions agreguen elementos de estilo en sitios protegidos mediante <CSP> como este."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "No se encontraron actualizaciones."

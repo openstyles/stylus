@@ -4,7 +4,7 @@ import {
   setLastHocus,
 } from './dom-util';
 import HeaderResizer from './header-resizer';
-import {tHTML} from './localization';
+import {sanitizeHtml} from './localization';
 import {onMessage} from './msg';
 import * as prefs from './prefs';
 import {CHROME, FIREFOX} from './ua';
@@ -13,8 +13,9 @@ import {clamp, debounce, t, tryURL} from './util';
 
 const SPLIT_BTN_MENU = '.split-btn-menu';
 const tooltips = new WeakMap();
-/** Strips html tags but allows <invalid-html-tags> which we use to emphasize stuff */
-const rxTag = /(\n\s*)?<\/?[a-z]+(?:\s+[a-z]+=[^>]*)?>/g;
+/** Strips all normal html tags but allows <invalid-html-tags> which we use to emphasize stuff */
+const rxTag = /<(?:\/[a-z]+|[a-z]+(?:\s+[^>]*)?)>/g;
+const rxTaglike = /<[^\s<>][^<>]*>/g;
 const rxLong1 = /([.?!]\s+|[．。？！]\s*|.{55,70},)\s+/gu;
 const rxLong2 = /(.{55,70}(?=.{50,}))\s+/gu;
 
@@ -213,33 +214,38 @@ function showTooltipNote(event) {
   let note = event.target.closest('[data-cmd=note]');
   if (note) {
     event.preventDefault();
-    note = tooltips.get(note) || note.title;
+    const internal = note.dataset.title;
+    note = internal || tooltips.get(note) || note.title;
     messageBox.show({
       className: 'note center-dialog',
-      contents: note.includes('<') ? tHTML(note) :
-        note.includes('\n') ? $create('div', note.split('\n').map(line => $create('p', line))) :
-          note,
+      contents: note.includes('<') ? sanitizeHtml(note, internal) : note,
       buttons: [t('confirmClose')],
     });
   }
 }
 
 function splitLongTooltips() {
-  for (const el of $$('[title]')) {
+  for (const el of $$('[title], [data-title]')) {
     if (tooltips.has(el))
       continue;
-    const old = el.title;
+    const internal = el.dataset.title;
+    const old = internal ? el.title = internal : el.title;
+    const hls = [];
     tooltips.set(el, old);
-    let res = old.includes('<') ? old.replace(rxTag, '$1') : old;
+    let res = old.includes('</') ? old.replace(rxTag, '')
+      : old.replace(rxTaglike, s => '\x00'.repeat(s.length - 1 || 1) +
+        String.fromCharCode(hls.push(s)));
     if (res.length > 60) {
       for (let arr = res.split(/\n+/), a = res = '', b, cut, i = 0; i < arr.length; i++) {
         a = arr[i];
         b = a.length <= 60 ? a : a.replace(rxLong1, '$1\n').replace(rxLong2, '$1\n');
-        res += cut || i && b !== a ? '\n\n' : '\n';
+        if (res) res += cut || i && b !== a ? '\n\n' : '\n';
         res += b;
         cut = b !== a;
       }
     }
+    if (hls.length)
+      res = res.replace(/\x00+(.)/g, (_, c) => hls[c.charCodeAt(0) - 1]);
     if (res !== old)
       el.title = res;
   }

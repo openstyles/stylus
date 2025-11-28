@@ -432,7 +432,12 @@
     "message": "Opțiuni"
   },
   "optionTargetIconsNote": {
-    "message": "Stylus folosește un serviciu extern <SRV>"
+    "message": "Stylus folosește un serviciu extern $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "Avansat"
@@ -441,7 +446,7 @@
     "message": "Adaugați 'Ștergeți' în meniul de click dreapta"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Expuneți iframes via HTML[stylus-iframe]"
+    "message": "Expuneți <iframe>s via <html[stylus-iframe]>"
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Scrieți temă nouă în formatul UserCSS"
@@ -664,7 +669,7 @@
     "message": "Unele reguli 'regexp()' care nu au putut fi compilate."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Această temă folosește regexp parțiale care încalcă <a href='https://developer.mozilla.org/docs/Web/CSS/@document'> specificațiile CSS4 @document</a> care are nevoie de o potrivire regexp exactă. Părțile afectate de CSS nu au fost aplicate paginii. Cel mai probabil tema a fost creată în Stylish-for-Chrome care verifică incorect 'regexp()' de la prima sa versiune (bug cunoscut)."
+    "message": "Această temă folosește regexp parțiale care încalcă <a> specificațiile CSS4 @document</a> care are nevoie de o potrivire regexp exactă. Părțile afectate de CSS nu au fost aplicate paginii. Cel mai probabil tema a fost creată în Stylish-for-Chrome care verifică incorect 'regexp()' de la prima sa versiune (bug cunoscut)."
   },
   "styleRegexpProblemTooltip": {
     "message": " Numărul de secțiuni care nu au fost aplicate din cauza utilizării incorecte a 'regexp()'"
@@ -727,7 +732,7 @@
     "message": "Stylus poate accesa file:// URLs doar când este activată opțiunea respectivă din pagina cu setări chrome://extensions"
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Doar Firefox 59 sau mai nou poate fi configurat să permită WebExtension-urilor să adauge elemente la site-uri CSP-protected precum acesta."
+    "message": "Doar Firefox 59 sau mai nou poate fi configurat să permită WebExtension-urilor să adauge elemente la site-uri <CSP>-protected precum acesta."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Niciun update găsit."

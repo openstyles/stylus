@@ -382,7 +382,7 @@
     "message": "Importér"
   },
   "importPreprocessor": {
-    "message": "Stile med en <code>@preprocessor</code> fungerer ikke i klassisk tilstand. Du kan skifte til UserCSS-tilstand ved at: 1) åbne stiladministratoren, 2) krydse af for 'som UserCSS', 3) klikke på 'Skriv ny stil'\n\nImportér nu alligevel?"
+    "message": "Stile med en <@preprocessor> fungerer ikke i klassisk tilstand. Du kan skifte til UserCSS-tilstand ved at: 1) åbne stiladministratoren, 2) krydse af for 'som UserCSS', 3) klikke på 'Skriv ny stil'\n\nImportér nu alligevel?"
   },
   "importPreprocessorTitle": {
     "message": "Potentielt problem grundet @preprocessor"
@@ -692,10 +692,23 @@
     "message": "Stile anvendt for sent?"
   },
   "optionFOUCMV2": {
-    "message": "Overvej at aktivere '<a>'."
+    "message": "Overvej at aktivere '$optInst$'.",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionFOUCMV3": {
-    "message": "Overvej at aktivere '<a>' og øge '<b>'."
+    "message": "Overvej at aktivere '$optInst$' og øge '$optCache$'.",
+    "placeholders": {
+      "optCache": {
+        "content": "$2"
+      },
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionKeepAlive": {
     "message": "Varighed af stilcache"
@@ -707,7 +720,12 @@
     "message": "...selv hvis browseren er inaktiv"
   },
   "optionTargetIconsNote": {
-    "message": "Stylus bruger den eksterne tjeneste <SRV>"
+    "message": "Stylus bruger den eksterne tjeneste $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "Avanceret"

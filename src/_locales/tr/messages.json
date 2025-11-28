@@ -442,7 +442,12 @@
     "message": "Seçenekler"
   },
   "optionTargetIconsNote": {
-    "message": "Stylus harici bir servis kullanır <SRV>"
+    "message": "Stylus harici bir servis kullanır $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "Gelişmiş"
@@ -451,7 +456,7 @@
     "message": "Editör bağlam menüsüne 'Sil' seçeneği ekle"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "HTML[stylus-iframe] vasıtasıyla iframe'leri gösterin"
+    "message": "<html[stylus-iframe]> vasıtasıyla <iframe>'leri gösterin"
   },
   "optionsBadgeDisabled": {
     "message": "Etkin değilken arkaplan rengi"

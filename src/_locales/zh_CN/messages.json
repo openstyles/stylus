@@ -428,7 +428,7 @@
     "message": "导入"
   },
   "importPreprocessor": {
-    "message": "带有 <code>@preprocessor</code> 样式无法当前的经典模式下使用。\n您可以将编辑器切换到 UserCSS 模式。\n1) 打开样式管理器；2) 勾选「以 UserCSS」勾选框；3) 点击「编写新样式」\n\n仍然导入吗？"
+    "message": "带有 <@preprocessor> 样式无法当前的经典模式下使用。\n您可以将编辑器切换到 UserCSS 模式。\n1) 打开样式管理器；2) 勾选「以 UserCSS」勾选框；3) 点击「编写新样式」\n\n仍然导入吗？"
   },
   "importPreprocessorTitle": {
     "message": "潜在问题之 @preprocessor 预处理"
@@ -826,10 +826,23 @@
     "message": "样式应用的太晚了？"
   },
   "optionFOUCMV2": {
-    "message": "考虑启用 「<a>」。"
+    "message": "考虑启用 「$optInst$」。",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionFOUCMV3": {
-    "message": "考虑启用 「<a>」并增加 「<b>」。"
+    "message": "考虑启用 「$optInst$」并增加 「$optCache$」。",
+    "placeholders": {
+      "optCache": {
+        "content": "$2"
+      },
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionKeepAlive": {
     "message": "样式缓存时间"
@@ -844,7 +857,12 @@
     "message": "如果您在一段时间未与浏览器交互后打开页面时遇到无样式内容  闪烁(FOUC)，请增加此值。\n\n-1 = ManifestV2 默认行为（无限制）。\n0 = ManifestV3 默认行为（半分钟）。\n\n缓存占用 30MB 或更多 RAM，但重建缓存可能需要更多时间并导致 FOUC，具体取决于网站、网络速度、样式数量、RAM 大小和 CPU 性能。"
   },
   "optionTargetIconsNote": {
-    "message": "Stylus 使用外部服务 <SRV> 来获取图标"
+    "message": "Stylus 使用外部服务 $SRV$ 来获取图标",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "高级设置"
@@ -862,7 +880,7 @@
     "message": "向编辑器右键菜单添加“删除”"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "通过 HTML[stylus-iframe] 确定 iframe 父页面"
+    "message": "通过 <html[stylus-iframe]> 确定 <iframe> 父页面"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "给每个iframe框架的html注入window.top父域名的内联属性(值)\n即 html[stylus-iframe=\"hostname\"] \n\n用途: 确定或排除 iframe选择器以避免伤及无辜.\nhtml:not([stylus-iframe]) {...}\nhtml[stylus-iframe] 或 html[stylus-iframe$=\"twitter.com\"] h1 {...}\n\ngithub.com/openstyles/stylus/blob/master/content/apply.js#L270"
@@ -877,13 +895,13 @@
     "message": "以 UserCSS 编写新样式"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "启用 <code>CSP</code> 补丁以使样式资源生效"
+    "message": "启用 <CSP> 补丁以使样式资源生效"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "如果在带有严格<code>CSP</code>（<code>Content-Security-Policy</code>）的网站上无法加载样式中包含的图像或字体，请启用此补丁选项。 \n\n启用此补丁选项将会放宽<code>CSP</code>限制，从而允许加载基本样式内容。⚠此选项仅适用于了解潜在安全隐患的高级用户, 并自行承担负责监视其被允许的内容。请阅读有关基于CSS攻击的更多信息以做决定。\n\n另请注意，如果另一个已安装的扩展首先修改了网络响应，则不能保证此特定选项一定会生效。"
+    "message": "如果在带有严格<CSP>（<Content-Security-Policy>）的网站上无法加载样式中包含的图像或字体，请启用此补丁选项。 \n\n启用此补丁选项将会放宽<CSP>限制，从而允许加载基本样式内容。⚠此选项仅适用于了解潜在安全隐患的高级用户, 并自行承担负责监视其被允许的内容。请阅读有关基于CSS攻击的更多信息以做决定。\n\n另请注意，如果另一个已安装的扩展首先修改了网络响应，则不能保证此特定选项一定会生效。"
   },
   "optionsAdvancedStyleViaASS": {
-    "message": "‌利用adoptedStyleSheets绕过CSP的'style-src'"
+    "message": "‌利用<adoptedStyleSheets>绕过<CSP>的<style-src>"
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "XHR 即时注入模式"
@@ -1323,7 +1341,7 @@
     "message": "部分正则表达式无法生效。"
   },
   "styleRegexpPartialExplanation": {
-    "message": "这个样式有一部分正则表达式与 <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a>完整的 URL 不匹配。这部分样式将被忽略，可能这个样式是基于 Stylish 编写的，请尝试在 Stylus 重新编写该样式。"
+    "message": "这个样式有一部分正则表达式与 <a>CSS4 @document specification</a>完整的 URL 不匹配。这部分样式将被忽略，可能这个样式是基于 Stylish 编写的，请尝试在 Stylus 重新编写该样式。"
   },
   "styleRegexpProblemTooltip": {
     "message": "多个部分代码无法正常处理正则表达式"
@@ -1406,7 +1424,12 @@
     "message": "若要允许存取，打开 <about:config>，在列表上单击右键，点击新增，然后再点击 'Boolean'，粘贴 <privacy.resistFingerprinting.block_mozAddonManager> 并点击确定 -> <true> -> 确定，然后重新刷新 <addons.mozilla.org> 页面。"
   },
   "unreachableCSP": {
-    "message": "尝试在Stylus选项里启用 \"CSP补丁\""
+    "message": "尝试在Stylus选项里启用 \"$optCSP$\"",
+    "placeholders": {
+      "optCSP": {
+        "content": "$1"
+      }
+    }
   },
   "unreachableContentScript": {
     "message": "无法读取页面，请尝试刷新。"
@@ -1418,7 +1441,7 @@
     "message": "在 Firefox 版本⩾60 , 需要在 <about:config> 里移除 <extensions.webextensions.restrictedDomains>"
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Firefox ⩾59 才能配置为允许 WebExtensions 在受 CSP 保护的网站上（例如本站）添加样式元素。"
+    "message": "Firefox ⩾59 才能配置为允许 WebExtensions 在受 <CSP> 保护的网站上（例如本站）添加样式元素。"
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "没有找到更新。"
@@ -1477,9 +1500,15 @@
     "message": "当前样式版本比已安装样式版本旧。"
   },
   "webRequestBlockingMV3Note": {
-    "message": "需要webRequestBlocking权限，该权限可在Manifest V3中通过以下任一方法启用：\n\n 1) 先导出Stylus备份文件，为此扩展的ID \"$id$\" 设置<a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a>策略，重启浏览器并等待扩展安装完成后，在样式管理器中导入备份文件，可选将图标固定到工具栏。\n\n 2) 修改浏览器图标或启动器的命令行参数：添加一个空格和<code><nobr> --allowlisted-extension-id=$id$</nobr></code>",
+    "message": "需要webRequestBlocking权限，该权限可在Manifest V3中通过以下任一方法启用：\n\n 1) 先导出Stylus备份文件，为此扩展的ID \"$id$\" 设置$policyName$策略，重启浏览器并等待扩展安装完成后，在样式管理器中导入备份文件，可选将图标固定到工具栏。\n\n 2) 修改浏览器图标或启动器的命令行参数：添加一个空格和$cmd$",
     "placeholders": {
+      "cmd": {
+        "content": "$3"
+      },
       "id": {
+        "content": "$2"
+      },
+      "policyName": {
         "content": "$1"
       }
     }

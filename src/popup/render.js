@@ -145,13 +145,12 @@ export function onIntersect(results) {
   for (const {target: $name, boundingClientRect: r} of results) {
     /** @type {StyleObj & MatchUrlResult} */
     const style = $name.$entry.styleMeta;
-    const inc = style.included ? t('styleForceApplied')
-      : style.overridden && t('styleNotAppliedOverridden');
     $name.title = [
       style.sloppy && t('styleNotAppliedRegexpProblemTooltip'),
-      style.excluded && t('styleNotAppliedExcluded').replace('<EXC>', t('styleSitesExclude')),
+      style.excluded && t('styleNotAppliedExcluded', t('styleSitesExclude')),
       style.excludedScheme && t(`styleNotAppliedScheme${capitalize(style.preferScheme)}`),
-      inc && inc.replace('<INC>', t('styleSitesInclude')),
+      style.included && t('styleForceApplied', t('styleSitesInclude')),
+      style.overridden && t('styleNotAppliedOverridden', t('styleSitesInclude')),
     ].filter(Boolean).join('\n') ||
       $name.scrollWidth > r.width + 1 && $name.textContent ||
       '';

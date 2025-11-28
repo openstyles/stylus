@@ -406,7 +406,7 @@
     "message": "Importeren"
   },
   "importPreprocessor": {
-    "message": "Stijlen met een <code>@preprocessor</code> werken niet in de klassieke modus. U kunt de editor omschakelen naar UserCSS-modus: 1) open de stijlbeheerder, 2) vink het selectievakje ‘als UserCSS’ aan, 3) klik op ‘Nieuwe stijl schrijven’\n\nToch nu importeren?"
+    "message": "Stijlen met een <@preprocessor> werken niet in de klassieke modus. U kunt de editor omschakelen naar UserCSS-modus: 1) open de stijlbeheerder, 2) vink het selectievakje ‘als UserCSS’ aan, 3) klik op ‘Nieuwe stijl schrijven’\n\nToch nu importeren?"
   },
   "importPreprocessorTitle": {
     "message": "Mogelijk probleem vanwege @preprocessor"
@@ -804,10 +804,23 @@
     "message": "Stijlen te laat toegepast?"
   },
   "optionFOUCMV2": {
-    "message": "Overweeg ‘<a>’ in te schakelen."
+    "message": "Overweeg ‘$optInst$’ in te schakelen.",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionFOUCMV3": {
-    "message": "Overweeg ‘<a>’ in te schakelen en ‘<b>’ te verhogen."
+    "message": "Overweeg ‘$optInst$’ in te schakelen en ‘$optCache$’ te verhogen.",
+    "placeholders": {
+      "optCache": {
+        "content": "$2"
+      },
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionKeepAlive": {
     "message": "Duur van stijlcache"
@@ -825,7 +838,12 @@
     "message": "Pictogrammen voor doelwebsites"
   },
   "optionTargetIconsNote": {
-    "message": "Stylus gebruikt een externe dienst: <SRV>"
+    "message": "Stylus gebruikt een externe dienst: $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionTargetNum": {
     "message": "Aantal doelwebsites"
@@ -846,7 +864,7 @@
     "message": "‘Verwijderen’ toevoegen in contextmenu van editor"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "iframes blootleggen via HTML[stylus-iframe]"
+    "message": "<iframe>s blootleggen via <html[stylus-iframe]>"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Legt het bovenliggende domein van de website bloot in elk iframe.\nSchakelt schrijven in voor iframe-specifieke CSS, zoals:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
@@ -861,10 +879,10 @@
     "message": "Nieuwe stijl schrijven als UserCSS"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "<code>CSP</code> corrigeren om stijlmiddelen toe te staan"
+    "message": "<CSP> corrigeren om stijlmiddelen toe te staan"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "Schakel dit in als stijlen afbeeldingen of lettertypen bevatten die niet worden geladen op websites met een streng <code>CSP</code> (<code>inhoudsbeveiligingsbeleid</code>).\n\nHet inschakelen van deze instelling versoepelt <code>CSP</code>-restricties, waardoor essentiële stijlinhoud kan worden geladen. Deze optie is alleen bedoeld voor gevorderde gebruikers die de mogelijke gevolgen op beveiligingsgebied begrijpen, en die de verantwoordelijkheid voor het monitoren van de toegestane inhoud accepteren. Lees meer over CSS-gebaseerde aanvallen voor meer informatie.\n\nHoud er ook rekening mee dat deze specifieke instelling geen garantie geeft op een goede werking als een andere geïnstalleerde extensie eerst het netwerkantwoord aanpast."
+    "message": "Schakel dit in als stijlen afbeeldingen of lettertypen bevatten die niet worden geladen op websites met een streng <CSP> (<Content-Security-Policy>, inhoudsbeveiligingsbeleid).\n\nHet inschakelen van deze instelling versoepelt <CSP>-restricties, waardoor essentiële stijlinhoud kan worden geladen. Deze optie is alleen bedoeld voor gevorderde gebruikers die de mogelijke gevolgen op beveiligingsgebied begrijpen, en die de verantwoordelijkheid voor het monitoren van de toegestane inhoud accepteren. Lees meer over CSS-gebaseerde aanvallen voor meer informatie.\n\nHoud er ook rekening mee dat deze specifieke instelling geen garantie geeft op een goede werking als een andere geïnstalleerde extensie eerst het netwerkantwoord aanpast."
   },
   "optionsAdvancedSites": {
     "message": "...alleen op overeenkomende websites"
@@ -873,7 +891,7 @@
     "message": "<abc.com> één website.\n<*.abc.com> website + subdomeinen.\n<-m.abc.com> uitsluiting middels ‘-’-voorvoegsel.\n<*> alle websites (handig bij uitsluitingen).\n<#abc.com> genegeerd vanwege ongeldig teken.\n<*://abc.*/xyz> eenvoudig glob-patroon.\n<https://abc.com/xyz> volledige URL.\nDe vermeldingen worden gescheiden door een spatie of een nieuwe regel. De tekst wordt automatisch opgeslagen bij het drukken op Ctrl-S of ⌘S in het invoerveld, of door buiten het invoerveld te klikken of de opties te sluiten."
   },
   "optionsAdvancedStyleViaASS": {
-    "message": "CSP ‘style-src’ omzeilen via adoptedStyleSheets"
+    "message": "<CSP> <style-src> omzeilen via <adoptedStyleSheets>"
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "Directe-injectiemodus"
@@ -991,7 +1009,12 @@
     "message": "Installer openen voor UserCSS-stijlen op alle websites"
   },
   "optionsUrlInstallerNote": {
-    "message": "Schakel dit in om vanaf alle websites te installeren wanneer aan deze voorwaarden wordt voldaan:\n1) De URL eindigt met <code>.user.css</code>, <code>.user.less</code> of <code>.user.styl</code>,\n2) De URL wijst naar inhoud van de stijl in platte tekst (doorgaans ‘raw’ genoemd), m.a.w. geen HTML-webpagina.\n\nSchakel dit uit om installaties te beperken tot de toegewijde stijlgalerijen:\n<LIST>."
+    "message": "Schakel dit in om vanaf alle websites te installeren wanneer aan deze voorwaarden wordt voldaan:\n1) De URL eindigt met <.user.css>, <.user.less> of <.user.styl>,\n2) De URL wijst naar inhoud van de stijl in platte tekst (doorgaans ‘raw’ genoemd), m.a.w. geen HTML-webpagina.\n\nSchakel dit uit om installaties te beperken tot de toegewijde stijlgalerijen:\n$LIST$.",
+    "placeholders": {
+      "LIST": {
+        "content": "$1"
+      }
+    }
   },
   "overwriteFileExport": {
     "message": "Wilt u een bestaand bestand overschrijven?"
@@ -1249,7 +1272,12 @@
     "message": "Ingeschakeld"
   },
   "styleForceApplied": {
-    "message": "Geforceerd toegepast via ‘<INC>’ in stijlinstellingen"
+    "message": "Geforceerd toegepast via ‘$INC$’ in stijlinstellingen",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
   },
   "styleFromMozillaFormatError": {
     "message": "Importeren vanuit Mozilla-opmaak mislukt"
@@ -1304,10 +1332,20 @@
     "message": "Stijlnaam"
   },
   "styleNotAppliedExcluded": {
-    "message": "Uitgesloten via ‘<EXC>’ in stijlinstellingen"
+    "message": "Uitgesloten via ‘$EXC$’ in stijlinstellingen",
+    "placeholders": {
+      "EXC": {
+        "content": "$1"
+      }
+    }
   },
   "styleNotAppliedOverridden": {
-    "message": "Uw ‘<INC>’ in de stijlinstellingen hebben voorrang op oorspronkelijke websites van de stijl"
+    "message": "Uw ‘$INC$’ in de stijlinstellingen hebben voorrang op oorspronkelijke websites van de stijl",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Stijl is niet toegepast vanwege onjuist gebruik van ‘regexp()’"
@@ -1325,7 +1363,7 @@
     "message": "Sommige ‘regexp()’-regels konden niet worden gecompileerd."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Deze stijl gebruikt gedeeltelijk overeenkomende regexps. Dit is in strijd met de <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document-specificatie</a>, die een volledige URL-overeenkomst vereist. De getroffen CSS-secties zijn niet op de pagina toegepast. Deze stijl is waarschijnlijk met Stylish-for-Chrome gemaakt, dat sinds de allereerste versie op een onjuiste manier ‘regexp()’-regels controleert (bekende fout)."
+    "message": "Deze stijl gebruikt gedeeltelijk overeenkomende regexps. Dit is in strijd met de <a>CSS4 @document-specificatie</a>, die een volledige URL-overeenkomst vereist. De getroffen CSS-secties zijn niet op de pagina toegepast. Deze stijl is waarschijnlijk met Stylish-for-Chrome gemaakt, dat sinds de allereerste versie op een onjuiste manier ‘regexp()’-regels controleert (bekende fout)."
   },
   "styleRegexpProblemTooltip": {
     "message": "Aantal secties dat niet wordt toegepast vanwege onjuist gebruik van ‘regexp()’"
@@ -1417,7 +1455,12 @@
     "message": "Toestemming verlenen: open <about:config>, klik met de rechtermuisknop op de lijst, klik op ‘Nieuw’ -> ‘Boolean’ en plak <privacy.resistFingerprinting.block_mozAddonManager>. Klik daarna op OK -> <true> -> OK en vernieuw de pagina <addons.mozilla.org>."
   },
   "unreachableCSP": {
-    "message": "Probeer ‘CSP corrigeren’ in te schakelen in de Stylus-opties."
+    "message": "Probeer ‘$optCSP$’ in te schakelen in de Stylus-opties.",
+    "placeholders": {
+      "optCSP": {
+        "content": "$1"
+      }
+    }
   },
   "unreachableContentScript": {
     "message": "Kon niet met de pagina communiceren. Probeer het tabblad te vernieuwen."
@@ -1429,7 +1472,7 @@
     "message": "In Firefox 60 en hoger moet u ook het AMO-domein uit <extensions.webextensions.restrictedDomains> verwijderen in <about:config>."
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Alleen Firefox 59 en hoger kunnen worden geconfigureerd om WebExtensions stijlelementen te laten toevoegen op door CSP beveiligde websites zoals deze."
+    "message": "Alleen Firefox 59 en hoger kunnen worden geconfigureerd om WebExtensions stijlelementen te laten toevoegen op door <CSP> beveiligde websites zoals deze."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Geen updates gevonden."
@@ -1488,9 +1531,15 @@
     "message": "De versie is ouder dan de geïnstalleerde stijl."
   },
   "webRequestBlockingMV3Note": {
-    "message": "Vereist de toestemming webRequestBlocking, die in ManifestV3 kan worden ingeschakeld via een van deze methoden:\n\n 1) Exporteer de back-up, configureer het beleid <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> voor de ID ‘$id$’ van deze extensie, herstart de browser, wacht tot de extensie is geïnstalleerd, importeer de back-up in de stijlbeheerder, en zet optioneel het pictogram vast aan de werkbalk.\n\n 2) Pas de opdrachtregel aan in het pictogram of de launcher van de browser: voeg een spatie en <code><nobr>--allowlisted-extension-id=$id$</nobr></code> toe.",
+    "message": "Vereist de toestemming webRequestBlocking, die in ManifestV3 kan worden ingeschakeld via een van deze methoden:\n\n 1) Exporteer de back-up, configureer het beleid $policyName$ voor de ID ‘$id$’ van deze extensie, herstart de browser, wacht tot de extensie is geïnstalleerd, importeer de back-up in de stijlbeheerder, en zet optioneel het pictogram vast aan de werkbalk.\n\n 2) Pas de opdrachtregel aan in het pictogram of de launcher van de browser: voeg een spatie en $cmd$ toe.",
     "placeholders": {
+      "cmd": {
+        "content": "$3"
+      },
       "id": {
+        "content": "$2"
+      },
+      "policyName": {
         "content": "$1"
       }
     }

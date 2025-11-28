@@ -125,6 +125,7 @@
   align-items: center;
   justify-content: center;
   white-space: pre-wrap;
+  line-height: 1.4;
   > div {
     max-width: 40em;
     top: unset;

@@ -428,7 +428,7 @@
     "message": "匯入"
   },
   "importPreprocessor": {
-    "message": "以一個 <code>@preprocessor</code> 進行風格設定在經典模式下無法運作。您可以將編輯器切換到 UserCSS 模式：1）開啟風格管理員，2）啟用「作為 UserCSS」核取方塊，3）點選「撰寫新風格」\n\n現在要進行匯入嗎？"
+    "message": "以一個 <@preprocessor> 進行風格設定在經典模式下無法運作。您可以將編輯器切換到 UserCSS 模式：1）開啟風格管理員，2）啟用「作為 UserCSS」核取方塊，3）點選「撰寫新風格」\n\n現在要進行匯入嗎？"
   },
   "importPreprocessorTitle": {
     "message": "@preprocessor 引起的潛在問題"
@@ -829,10 +829,23 @@
     "message": "樣式套用得太晚了嗎？"
   },
   "optionFOUCMV2": {
-    "message": "請考慮啟用「<a>」。"
+    "message": "請考慮啟用「$optInst$」。",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionFOUCMV3": {
-    "message": "請考慮啟用「<a>」並增加「<b>」。"
+    "message": "請考慮啟用「$optInst$」並增加「$optCache$」。",
+    "placeholders": {
+      "optCache": {
+        "content": "$2"
+      },
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionKeepAlive": {
     "message": "樣式快取持續時間"
@@ -850,7 +863,12 @@
     "message": "目標網站圖示"
   },
   "optionTargetIconsNote": {
-    "message": "Stylus 會使用外部服務 <SRV>"
+    "message": "Stylus 會使用外部服務 $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionTargetNum": {
     "message": "目標網站數量"
@@ -871,7 +889,7 @@
     "message": "在編輯器的右鍵選單中加入「刪除」"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "透過 HTML[stylus-iframe] 公開 iframes"
+    "message": "透過 <html[stylus-iframe]> 公開 <iframe>"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "公開每個 iframe 中的頂級頁面網域。\n啟用編寫特別用於 iframe 的 CSS，如這個：\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
@@ -886,10 +904,10 @@
     "message": "以 UserCSS 編寫新樣式"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "修補 <code>CSP</code> 以允許樣式資源"
+    "message": "修補 <CSP> 以允許樣式資源"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "如果樣式包含無法在有嚴格 <code>CSP</code>（<code>內容安全策略</code>）的網站上載入的圖片或字型，請啟用此選項。\n\n啟用此設定將會放寬 <code>CSP</code> 限制，允許基本的樣式內容載入。此選項僅適用於了解潛在的安全問題，且接受監視其允許內容責任的進階使用者。閱讀關於以 CSS 為基礎的攻擊來取得更多資訊。\n\n另外請注意，如果已經有另一個已安裝的附加元件先修改了網路回應，則無法保證此設定可起作用。"
+    "message": "如果樣式包含無法在有嚴格 <CSP>（<Content-Security-Policy>, 內容安全策略）的網站上載入的圖片或字型，請啟用此選項。\n\n啟用此設定將會放寬 <CSP> 限制，允許基本的樣式內容載入。此選項僅適用於了解潛在的安全問題，且接受監視其允許內容責任的進階使用者。閱讀關於以 CSS 為基礎的攻擊來取得更多資訊。\n\n另外請注意，如果已經有另一個已安裝的附加元件先修改了網路回應，則無法保證此設定可起作用。"
   },
   "optionsAdvancedSites": {
     "message": "……僅限於相符的網站"
@@ -898,7 +916,7 @@
     "message": "<abc.com> 單一網站。\n<*.abc.com> 網站+子網域。\n<-m.abc.com> 使用「-」前綴排除。\n<*> 所有網站（與排除功能搭配時很有用）。\n<#abc.com> 因無效字元而忽略。\n<*://abc.*/xyz> 簡易的萬用字元模式。\n<https://abc.com/xyz> 完整 URL。\n各項目以空格或換行符號分隔。在輸入框內按下 Ctrl-S 或 ⌘S 鍵、點擊輸入框外部區域，或關閉選項時，文字內容將自動儲存。"
   },
   "optionsAdvancedStyleViaASS": {
-    "message": "透過 adoptedStyleSheets 規避 CSP 'style-src'"
+    "message": "透過 <adoptedStyleSheets> 規避 <CSP> <style-src>"
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "即時注入模式"
@@ -1019,7 +1037,12 @@
     "message": "在任何網站上開啟 UserCSS 的安裝程式"
   },
   "optionsUrlInstallerNote": {
-    "message": "當滿足以下條件時，允許從任何網站進行安裝：\n1) URL 以 <code>.user.css</code> 或 <code>.user.less</code> 或 <code>.user.styl</code> 結尾。\n2) URL 指向樣式的純文字內容（通常稱為「原始檔」）而非 HTML 網頁。\n停用此功能以限制僅於專用樣式庫才能安裝：\n<LIST>"
+    "message": "當滿足以下條件時，允許從任何網站進行安裝：\n1) URL 以 <.user.css> 或 <.user.less> 或 <.user.styl> 結尾。\n2) URL 指向樣式的純文字內容（通常稱為「原始檔」）而非 HTML 網頁。\n停用此功能以限制僅於專用樣式庫才能安裝：\n$LIST$",
+    "placeholders": {
+      "LIST": {
+        "content": "$1"
+      }
+    }
   },
   "overwriteFileExport": {
     "message": "您想要覆寫既有的檔案嗎？"
@@ -1280,7 +1303,12 @@
     "message": "已啟用"
   },
   "styleForceApplied": {
-    "message": "透過樣式設定中的「<INC>」強制套用"
+    "message": "透過樣式設定中的「$INC$」強制套用",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
   },
   "styleFromMozillaFormatError": {
     "message": "從 Mozilla 格式匯入失敗"
@@ -1335,10 +1363,20 @@
     "message": "樣式名稱"
   },
   "styleNotAppliedExcluded": {
-    "message": "在樣式設定中透過「<EXC>」排除"
+    "message": "在樣式設定中透過「$EXC$」排除",
+    "placeholders": {
+      "EXC": {
+        "content": "$1"
+      }
+    }
   },
   "styleNotAppliedOverridden": {
-    "message": "您在樣式設定中的「<INC>」將覆蓋樣式原始設定的原始網站"
+    "message": "您在樣式設定中的「$INC$」將覆蓋樣式原始設定的原始網站",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "因為不正確的 'regexp()' 使用導致未套用"
@@ -1356,7 +1394,7 @@
     "message": "部份 'regexp()' 規則可能不再能被編譯。"
   },
   "styleRegexpPartialExplanation": {
-    "message": "這個樣式使用部份符合的正規表示式，違反了 <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document 規範</a>，其需要完整的 URL 符合。授影響的 CSS 不會討用在頁面上。這個樣式由 Chrome 版 Stylish 所建立，其在早期版本不正確地檢查 'regexp()' 規則（已知的臭蟲）。"
+    "message": "這個樣式使用部份符合的正規表示式，違反了 <a>CSS4 @document 規範</a>，其需要完整的 URL 符合。授影響的 CSS 不會討用在頁面上。這個樣式由 Chrome 版 Stylish 所建立，其在早期版本不正確地檢查 'regexp()' 規則（已知的臭蟲）。"
   },
   "styleRegexpProblemTooltip": {
     "message": "因為不正確的 'regexp()' 使用導致未套用的樣式段數量"
@@ -1451,7 +1489,12 @@
     "message": "要允許存取，開啟 <about:config>，在清單上點選右鍵，點選「新增」，然後再點選「布林」，貼上 <privacy.resistFingerprinting.block_mozAddonManager> 並點選確定→<true>→確定，然後重新整理 <addons.mozilla.org> 頁面。"
   },
   "unreachableCSP": {
-    "message": "嘗試在 Stylus 選項啟用「修補 CSP」。"
+    "message": "嘗試在 Stylus 選項啟用「$optCSP$」。",
+    "placeholders": {
+      "optCSP": {
+        "content": "$1"
+      }
+    }
   },
   "unreachableContentScript": {
     "message": "無法與頁面通訊。嘗試重新載入分頁。"
@@ -1463,7 +1506,7 @@
     "message": "在 Firefox 60 或更新版本上，您必須將此網域從位於 <about:config> 的 <extensions.webextensions.restrictedDomains> 設定值中刪除。"
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "僅 Firefox 59 或更新版本上可以設定為允許 WebExtension 在受 CSP 保護的網站（例如此網站）上新增樣式。"
+    "message": "僅 Firefox 59 或更新版本上可以設定為允許 WebExtension 在受 <CSP> 保護的網站（例如此網站）上新增樣式。"
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "樣式都是最新的。"
@@ -1522,9 +1565,15 @@
     "message": "版本舊於已安裝的樣式。"
   },
   "webRequestBlockingMV3Note": {
-    "message": "需要 webRequestBlocking 權限，可使用下列的其中一個方法在 ManifestV3 中啟用：\n\n1) 匯出備份，為此擴充套件的 ID「$id$」設定 <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> 策略，重新啟動瀏覽器，等待擴充套件安裝完成，在樣式管理器中匯入備份，並可將圖示釘選到工具列上。\n\n2) 修改瀏覽器圖示或啟動器中的命令列：新增空格與 <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
+    "message": "需要 webRequestBlocking 權限，可使用下列的其中一個方法在 ManifestV3 中啟用：\n\n1) 匯出備份，為此擴充套件的 ID「$id$」設定 $policyName$ 策略，重新啟動瀏覽器，等待擴充套件安裝完成，在樣式管理器中匯入備份，並可將圖示釘選到工具列上。\n\n2) 修改瀏覽器圖示或啟動器中的命令列：新增空格與 $cmd$",
     "placeholders": {
+      "cmd": {
+        "content": "$3"
+      },
       "id": {
+        "content": "$2"
+      },
+      "policyName": {
         "content": "$1"
       }
     }

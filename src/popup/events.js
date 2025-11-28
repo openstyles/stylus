@@ -118,6 +118,8 @@ const EntryRoutes = {
   '.style-edit-link': openEditor,
   '.regexp-problem-indicator'(event, entry) {
     const info = template.regexpProblemExplanation.cloneNode(true);
+    const a = info.$('#regexp-partial a');
+    if (a) a.href = 'https://developer.mozilla.org/docs/Web/CSS/@document';
     $id(info.id)?.remove();
     entry.appendChild(info);
   },

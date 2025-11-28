@@ -778,7 +778,7 @@
     "message": "Impossibile comunicare con la pagina. Prova a ricaricare la scheda."
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Solo Firefox 59 e successivi possono essere configurati per consentire alle WebExtensions di aggiungere elementi degli stili su siti CSP-protected come questo."
+    "message": "Solo Firefox 59 e successivi possono essere configurati per consentire alle WebExtensions di aggiungere elementi degli stili su siti <CSP>-protected come questo."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Nessun aggiornamento trovato"

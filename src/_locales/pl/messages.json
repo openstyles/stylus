@@ -64,6 +64,9 @@
   "author": {
     "message": "Autor"
   },
+  "backup": {
+    "message": "Kopia zapasowa"
+  },
   "backupReminder": {
     "message": "<b>Style mogą zostać utracone</b> z powodu awarii zasilania, błędów w przeglądarce lub pomyłek.<hr><b>Utwórz kopię zapasową swoich danych:</b> skonfiguruj opcję „Synchronizuj z chmurą” w opcjach lub ręcznie kliknij przycisk eksportu za każdym razem, gdy wprowadzisz istotne zmiany, lub — co jest lepsze — skonfiguruj automatyczne tworzenie kopii zapasowych wszystkich Twoich danych za pomocą dedykowanej aplikacji."
   },
@@ -308,6 +311,9 @@
   "exportLabel": {
     "message": "Eksportuj"
   },
+  "exportStyles": {
+    "message": "Eksportuj style"
+  },
   "externalFeedback": {
     "message": "Prześlij opinię"
   },
@@ -419,7 +425,7 @@
     "message": "Importuj"
   },
   "importPreprocessor": {
-    "message": "Styl z <code>@preprocessor</code> nie będzie działać w trybie klasycznym. Możesz przełączyć edytor w tryb UserCSS: 1) otwórz menedżer stylów, 2) zaznacz pole wyboru „jako UserCSS”, 3) kliknij „Napisz nowy styl”\n\nCzy mimo to zaimportować teraz?"
+    "message": "Styl z <@preprocessor> nie będzie działać w trybie klasycznym. Możesz przełączyć edytor w tryb UserCSS: 1) otwórz menedżer stylów, 2) zaznacz pole wyboru „jako UserCSS”, 3) kliknij „Napisz nowy styl”\n\nCzy mimo to zaimportować teraz?"
   },
   "importPreprocessorTitle": {
     "message": "Potencjalny problem związany z @preprocessor"
@@ -459,6 +465,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Importowanie zostało cofnięte"
+  },
+  "importStyles": {
+    "message": "Importuj style"
   },
   "installButton": {
     "message": "Zainstaluj styl"
@@ -558,17 +567,11 @@
   "liveReloadLabel": {
     "message": "Przeładuj na żywo"
   },
-  "manageFavicons": {
-    "message": "Ikony ulubionych w kolumnie dotyczących"
-  },
   "manageFaviconsGray": {
     "message": "Wyszarzone"
   },
   "manageFilters": {
     "message": "Filtry"
-  },
-  "manageMaxTargets": {
-    "message": "Liczba dotyczących elementów "
   },
   "manageMinColumnWidth": {
     "message": "Minimalna szerokość kolumny (w pikselach; 9999 wyłącza tryb wielokolumnowy)"
@@ -599,6 +602,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Tylko style UserCSS"
+  },
+  "manageStyles": {
+    "message": "Zarządzaj stylami"
   },
   "masterSwitch": {
     "message": "Przełącznik główny"
@@ -804,6 +810,9 @@
   "numberedLine": {
     "message": "Wiersz:"
   },
+  "openAsPopupWindow": {
+    "message": "...bez pasków narzędzi i kart"
+  },
   "openManage": {
     "message": "Zarządzaj"
   },
@@ -817,10 +826,23 @@
     "message": "Style zastosowane zbyt późno?"
   },
   "optionFOUCMV2": {
-    "message": "Rozważ włączenie „<a>”."
+    "message": "Rozważ włączenie „$optInst$”.",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionFOUCMV3": {
-    "message": "Rozważ włączenie „<a>” i zwiększenie „<b>”."
+    "message": "Rozważ włączenie „$optInst$” i zwiększenie „$optCache$”.",
+    "placeholders": {
+      "optCache": {
+        "content": "$2"
+      },
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionKeepAlive": {
     "message": "Czas trwania pamięci podręcznej stylu"
@@ -834,8 +856,19 @@
   "optionKeepAliveNote": {
     "message": "Zwiększ ją, jeśli napotkasz miganie niestylizowanej zawartości (FOUC) podczas otwierania strony po pewnym czasie niekorzystania z przeglądarki.\n\n-1 = domyślne zachowanie ManifestV2 (bez ograniczeń).\n0 = domyślne zachowanie ManifestV3 (pół minuty).\n\nPamięć podręczna zajmuje 30 MB lub więcej pamięci RAM, ale jej odbudowa może zająć zbyt dużo czasu i spowodować FOUC w zależności od witryny, szybkości sieci, liczby stylów, rozmiaru pamięci RAM i wydajności procesora."
   },
+  "optionTargetIcons": {
+    "message": "Ikony witryn docelowych"
+  },
   "optionTargetIconsNote": {
-    "message": "Stylus korzysta z usługi zewnętrznej <SRV>"
+    "message": "Stylus korzysta z usługi zewnętrznej $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionTargetNum": {
+    "message": "Liczba witryn docelowych"
   },
   "optionsAdvanced": {
     "message": "Zaawansowane"
@@ -853,7 +886,7 @@
     "message": "Dodaj 'Usuń' do menu kontekstowego edytora"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Odsłoń ramki pływające za pomocą HTML[stylus-iframe]"
+    "message": "Odsłoń ramki pływające za pomocą <html[stylus-iframe]>"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Odsłania domenę najwyższego poziomu w każdym elemencie iframe.\nWłącza pisanie CSS specyficznych dla iframe w taki sposób:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
@@ -868,10 +901,10 @@
     "message": "Napisz nowy styl jako UserCSS"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "Załataj <code>CSP</code>, aby zezwolić na zasoby stylu"
+    "message": "Załataj <CSP>, aby zezwolić na zasoby stylu"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "Włącz tę opcję, jeśli style zawierają obrazy lub czcionki, które nie ładują się w witrynach ze ścisłym<code>CSP</code> (<code>Content-Security-Policy</code>).\n\nWłączenie tego ustawienia złagodzi ograniczenia <code>CSP</code>, umożliwiając załadowanie podstawowej zawartości stylu. Ta opcja jest przeznaczona tylko dla zaawansowanych użytkowników, którzy rozumieją potencjalne konsekwencje dla bezpieczeństwa i przyjmują odpowiedzialność za monitorowanie treści, na które zezwalają. Przeczytaj o atakach opartych na CSS, aby uzyskać więcej informacji.\n\nNależy również pamiętać, że to szczególne ustawienie nie jest gwarantowane, jeśli inne zainstalowane rozszerzenie zmodyfikuje najpierw odpowiedź sieci."
+    "message": "Włącz tę opcję, jeśli style zawierają obrazy lub czcionki, które nie ładują się w witrynach ze ścisłym<CSP> (<Content-Security-Policy>).\n\nWłączenie tego ustawienia złagodzi ograniczenia <CSP>, umożliwiając załadowanie podstawowej zawartości stylu. Ta opcja jest przeznaczona tylko dla zaawansowanych użytkowników, którzy rozumieją potencjalne konsekwencje dla bezpieczeństwa i przyjmują odpowiedzialność za monitorowanie treści, na które zezwalają. Przeczytaj o atakach opartych na CSS, aby uzyskać więcej informacji.\n\nNależy również pamiętać, że to szczególne ustawienie nie jest gwarantowane, jeśli inne zainstalowane rozszerzenie zmodyfikuje najpierw odpowiedź sieci."
   },
   "optionsAdvancedSites": {
     "message": "...tylko na dopasownych witrynach"
@@ -880,7 +913,7 @@
     "message": "<abc.com> jedna witryna.\n<*.abc.com> witryna + subdomeny.\n<-m.abc.com> wykluczenie za pomocą prefiksu \"-\".\n<*> wszystkie witryny (przydatne w przypadku wykluczeń).\n<#abc.com> ignorowane z powodu nieprawidłowego znaku.\n<*://abc.*/xyz> prosty wzorzec glob.\n<https://abc.com/xyz> pełny adres URL.\nWpisy są rozdzielone spacją lub nową linią. Tekst jest automatycznie zapisywany po naciśnięciu Ctrl+S lub ⌘S w polu wprowadzania, kliknięciu poza polem wprowadzania lub zamknięciu opcji."
   },
   "optionsAdvancedStyleViaASS": {
-    "message": "Obejdź 'style-src' CSP za pomocą adoptedStyleSheets"
+    "message": "Obejdź <style-src> <CSP> za pomocą <adoptedStyleSheets>"
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "Tryb natychmiastowego wstrzyknięcia"
@@ -1003,6 +1036,14 @@
   "optionsUrlInstaller": {
     "message": "Otwórz instalator podczas przechodzenia do adresu URL .user.css"
   },
+  "optionsUrlInstallerNote": {
+    "message": "Włącz tę opcję, aby zainstalować styl z dowolnej witryny, jeśli spełnione są następujące warunki:\n1) adres URL kończy się ciągiem <code>.user.css</code>, <code>.user.less</code> lub <code>.user.styl</code>,\n2) adres URL wskazuje na zawartość stylu w postaci zwykłego tekstu (zwykle nazywanego „surowym”), tj. nie na stronę internetową w formacie HTML.\n\nWyłącz tę opcję, aby ograniczyć instalacje do dedykowanych galerii stylów:\n$LIST$.",
+    "placeholders": {
+      "LIST": {
+        "content": "$1"
+      }
+    }
+  },
   "overwriteFileExport": {
     "message": "Czy chcesz zastąpić istniejący plik?"
   },
@@ -1116,6 +1157,9 @@
   },
   "saveAsTemplate": {
     "message": "Zapisz jako szablon"
+  },
+  "saved": {
+    "message": "Zapisano"
   },
   "search": {
     "message": "Szukaj"
@@ -1258,17 +1302,19 @@
   "styleEnabledLabel": {
     "message": "Włączony"
   },
-  "styleExcludeLabel": {
-    "message": "Niestandardowe wykluczone witryny"
+  "styleForceApplied": {
+    "message": "Wymuszono za pomocą „$INC$” w ustawieniach stylu",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
   },
   "styleFromMozillaFormatError": {
     "message": "Nie udało się zaimportować z formatu Mozilla"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Wprowadź kod w formacie Mozilla"
-  },
-  "styleIncludeLabel": {
-    "message": "Niestandardowe uwzględnione witryny"
   },
   "styleInjectionImportance": {
     "message": "Przełącz ważność stylu"
@@ -1316,6 +1362,22 @@
   "styleName": {
     "message": "Nazwa stylu"
   },
+  "styleNotAppliedExcluded": {
+    "message": "Wykluczono za pomocą „$EXC$” w ustawieniach stylu",
+    "placeholders": {
+      "EXC": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleNotAppliedOverridden": {
+    "message": "Twoje ustawienia stylu „$INC$” zastępują oryginalne witryny stylu",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
+  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Styl nie został zastosowany z powodu nieprawidłowego użycia 'regexp()'"
   },
@@ -1332,7 +1394,7 @@
     "message": "Niektóre reguły 'regexp()', których nie można było w ogóle skompilować."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Ten styl wykorzystuje częściowo dopasowane regexpy z naruszeniem <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>specyfikacji CSS4 @document</a>, która wymaga pełnego dopasowania adresów URL. Dotyczących sekcji CSS nie zastosowano do strony. Ten styl prawdopodobnie powstał w Stylish-dla-Chrome, który nieprawidłowo sprawdza reguły  'regexp()' od pierwszej wersji (znany błąd)."
+    "message": "Ten styl wykorzystuje częściowo dopasowane regexpy z naruszeniem <a>specyfikacji CSS4 @document</a>, która wymaga pełnego dopasowania adresów URL. Dotyczących sekcji CSS nie zastosowano do strony. Ten styl prawdopodobnie powstał w Stylish-dla-Chrome, który nieprawidłowo sprawdza reguły  'regexp()' od pierwszej wersji (znany błąd)."
   },
   "styleRegexpProblemTooltip": {
     "message": "Liczba sekcji, które nie zostały zastosowane z powodu nieprawidłowego użycia 'regexp()'"
@@ -1363,6 +1425,18 @@
   },
   "styleSettings": {
     "message": "Ustawienia stylu"
+  },
+  "styleSitesExclude": {
+    "message": "Osobiste wykluczone witryny"
+  },
+  "styleSitesInclude": {
+    "message": "Osobiste dołączone witryny"
+  },
+  "styleSitesIncludeNote": {
+    "message": "Witryny, w których ten styl jest włączony na Twoim urządzeniu osobistym, dodane do witryn zdefiniowanych przez styl lub używane zamiast nich, w zależności od zaznaczonego pola wyboru. Przydatne w przypadku stylów zewnętrznych, których nie należy edytować, aby zapewnić ich automatyczną aktualizację. Należy pamiętać, że w stylach wielosekcyjnych wszystkie sekcje są włączone dla dodanej witryny, nawet te przeznaczone dla konkretnych stron oryginalnej witryny."
+  },
+  "styleSitesIncludeOvr": {
+    "message": "zastąp styl"
   },
   "styleToMozillaFormatHelp": {
     "message": "Kod w formacie Mozilla może być przesłany do userstyles.org i użyty z klasycznym dodatkiem Stylish dla Firefoksa"
@@ -1415,7 +1489,12 @@
     "message": "Aby umożliwić dostęp, otwórz <about:config>, kliknij listę prawym przyciskiem myszy, kliknij 'Dodaj ustawienie typu', następnie 'Wartość logiczna (Boolean)', wklej <privacy.resistFingerprinting.block_mozAddonManager> i kliknij OK, <true>, OK, przeładuj stronę <addons.mozilla.org>."
   },
   "unreachableCSP": {
-    "message": "Spróbuj włączyć „Załataj CSP” w opcjach Stylusa."
+    "message": "Spróbuj włączyć „$optCSP$” w opcjach Stylusa.",
+    "placeholders": {
+      "optCSP": {
+        "content": "$1"
+      }
+    }
   },
   "unreachableContentScript": {
     "message": "Nie można połączyć się ze stroną. Spróbuj przeładować kartę."
@@ -1427,7 +1506,7 @@
     "message": "W Firefox 60 i nowszych musisz usunąć tę domenę z <extensions.webextensions.restrictedDomains> w <about:config>."
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Tylko Firefox 59 i nowsze mogą być skonfigurowane tak, aby zezwalały WebExtensions na dodawanie elementów stylu w witrynach chronionych przez CSP, takich jak ta."
+    "message": "Tylko Firefox 59 i nowsze mogą być skonfigurowane tak, aby zezwalały WebExtensions na dodawanie elementów stylu w witrynach chronionych przez <CSP>, takich jak ta."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Nie znaleziono aktualizacji."
@@ -1486,9 +1565,15 @@
     "message": "Wersja jest starsza niż zainstalowany styl."
   },
   "webRequestBlockingMV3Note": {
-    "message": "Wymaga uprawnienia webRequestBlocking, które można włączyć w ManifestV3 za pomocą jednej z następujących metod:\n\n1) Wyeksportuj kopię zapasową, skonfiguruj zasady <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> dla identyfikatora tego rozszerzenia „$id$”, uruchom ponownie przeglądarkę, poczekaj na zainstalowanie rozszerzenia, zaimportuj kopię zapasową w menedżerze stylów i opcjonalnie przypnij ikonę do paska narzędzi.\n\n2) Zmodyfikuj wiersz poleceń w ikonie przeglądarki lub programie uruchamiającym: dodaj spację i <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
+    "message": "Wymaga uprawnienia webRequestBlocking, które można włączyć w ManifestV3 za pomocą jednej z następujących metod:\n\n1) Wyeksportuj kopię zapasową, skonfiguruj zasady $policyName$ dla identyfikatora tego rozszerzenia „$id$”, uruchom ponownie przeglądarkę, poczekaj na zainstalowanie rozszerzenia, zaimportuj kopię zapasową w menedżerze stylów i opcjonalnie przypnij ikonę do paska narzędzi.\n\n2) Zmodyfikuj wiersz poleceń w ikonie przeglądarki lub programie uruchamiającym: dodaj spację i $cmd$",
     "placeholders": {
+      "cmd": {
+        "content": "$3"
+      },
       "id": {
+        "content": "$2"
+      },
+      "policyName": {
         "content": "$1"
       }
     }

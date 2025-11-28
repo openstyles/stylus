@@ -600,7 +600,12 @@
     "message": "Valikud"
   },
   "optionTargetIconsNote": {
-    "message": "Stylus kasutab välist teenust <SRV>"
+    "message": "Stylus kasutab välist teenust $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "Täpsem"
@@ -609,7 +614,7 @@
     "message": "Lisa \"Kustuta\" redaktori kontekstmenüüsse"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Paljasta iframe-id HTML[stylus-iframe] kaudu"
+    "message": "Paljasta <iframe>-id <html[stylus-iframe]> kaudu"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Paljastab tipp-domeeni igas iframe'is.\nVõimaldab iframe'i-põhise CSS-koodi kirjutamise näiteks selliselt:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
@@ -883,7 +888,7 @@
     "message": "Teatud \"regexp()\" reegleid ei suudetud üldse kompileerida."
   },
   "styleRegexpPartialExplanation": {
-    "message": "See stiil kasutab osaliselt vastavaid regulaaravaldisi, olles <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @dokument standardiga</a> vastuolus, mis nõuab terve URLi vastet. Mõjutatud CSS-jaotisi ei rakendatud lehele. See stiil tehti tõenäoliselt Chrome'i Stylish'is, mis kontrollib \"regexp()\" reegleid valesti alates esimesest versioonist (teadaolev viga)."
+    "message": "See stiil kasutab osaliselt vastavaid regulaaravaldisi, olles <a>CSS4 @dokument standardiga</a> vastuolus, mis nõuab terve URLi vastet. Mõjutatud CSS-jaotisi ei rakendatud lehele. See stiil tehti tõenäoliselt Chrome'i Stylish'is, mis kontrollib \"regexp()\" reegleid valesti alates esimesest versioonist (teadaolev viga)."
   },
   "styleRegexpProblemTooltip": {
     "message": "\"regexp()\" vale kasutuse tõttu rakendamata jaotiste arv"
@@ -949,7 +954,7 @@
     "message": "Stylus saab ligi pääseda file:// URLidele ainult siis, kui märgistad vastava kasti Stylus laiendusel chrome://extensions lehel"
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Ainult Firefox 59 ja uuem on võimalik seadistada lubama WebExtensionsil lisada stiilielemente CSP-kaitstud saitidele nagu see."
+    "message": "Ainult Firefox 59 ja uuem on võimalik seadistada lubama WebExtensionsil lisada stiilielemente <CSP>-kaitstud saitidele nagu see."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Uuendusi ei leitud."

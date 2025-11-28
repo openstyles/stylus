@@ -1,5 +1,3 @@
-import {$create} from '@/js/dom';
-import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {debounce, t} from '@/js/util';
@@ -41,26 +39,8 @@ function initFilters() {
   elSearch.oninput = () => router.updateSearch(fltSearch, elSearch.value);
   elSearchMode.oninput = () => router.updateSearch(fltMode, elSearchMode.value);
 
-  $id('search-help').onclick = event => {
-    event.preventDefault();
-    messageBox.show({
-      className: 'help-text center-dialog',
-      title: t(fltSearch),
-      contents:
-        $create('ul',
-          t('searchStylesHelp').split('\n').map(line =>
-            $create('li', line.split(/(<.*?>)/).map((s, i, words) => {
-              if (s.startsWith('<')) {
-                const num = words.length;
-                const className = i === num - 2 && !words[num - 1] ? '.last' : '';
-                return $create('mark' + className, s.slice(1, -1));
-              } else {
-                return s;
-              }
-            })))),
-      buttons: [t('confirmOK')],
-    });
-  };
+  for (const el of [$('#search-wrapper a'), $('#sort-wrapper a')])
+    el.dataset.title = el.title.replace(/.+\n?/g, '<p>$&</p>');
 
   $$('select[id$=".invert"]').forEach(el => {
     const slave = $id(el.id.replace('.invert', ''));

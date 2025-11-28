@@ -544,7 +544,7 @@
     "description": "Label for the button to import a style (editor) or all styles (style manager)"
   },
   "importPreprocessor": {
-    "message": "Style with a <code>@preprocessor</code> won't work in the classic mode. You can switch the editor to UserCSS mode: 1) open the style manager, 2) enable \"as UserCSS\" checkbox, 3) click \"Write new style\"\n\nImport now anyway?"
+    "message": "Style with a <@preprocessor> won't work in the classic mode. You can switch the editor to UserCSS mode: 1) open the style manager, 2) enable \"as UserCSS\" checkbox, 3) click \"Write new style\"\n\nImport now anyway?"
   },
   "importPreprocessorTitle": {
     "message": "Potential problem due to @preprocessor"
@@ -1037,12 +1037,25 @@
     "description": "Shown in the options. Followed by FOUCMV2 or FOUCMV3 message."
   },
   "optionFOUCMV2": {
-    "message": "Consider enabling \"<a>\".",
-    "description": "<a> is replaced with the translation for 'Instant inject mode' option."
+    "message": "Consider enabling \"$optInst$\".",
+    "description": "$optInst$ is replaced with the translation for 'Instant inject mode' option.",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionFOUCMV3": {
-    "message": "Consider enabling \"<a>\" and increasing \"<b>\".",
-    "description": "<a> is replaced with the translation for 'Instant inject mode' option, <b> is replaced with the translation for 'Style cache duration' option."
+    "message": "Consider enabling \"$optInst$\" and increasing \"$optCache$\".",
+    "description": "$optInst$ is replaced with the translation for 'Instant inject mode' option, $optCache$ is replaced with the translation for 'Style cache duration' option.",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      },
+      "optCache": {
+        "content": "$2"
+      }
+    }
   },
   "optionKeepAlive": {
     "message": "Style cache duration"
@@ -1063,8 +1076,13 @@
     "description": "Label for the checkbox that toggles showing icons for style's target sites in various parts of UI"
   },
   "optionTargetIconsNote": {
-    "message": "Stylus uses an external service <SRV>",
-    "description": "Label for the checkbox that toggles icons, <SRV> is replaced with the actual service name"
+    "message": "Stylus uses an external service $SRV$",
+    "description": "Label for the checkbox that toggles icons, $SRV$ is replaced with the actual service name",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionTargetNum": {
     "message": "Number of target sites",
@@ -1086,7 +1104,7 @@
     "message": "Add 'Delete' in editor context menu"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Expose iframes via HTML[stylus-iframe]"
+    "message": "Expose <iframe> via <html[stylus-iframe]>"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Exposes the top site domain in each iframe.\nEnables writing iframe-specific CSS like this:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
@@ -1102,20 +1120,21 @@
     "message": "Write new style as UserCSS"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "Patch <code>CSP</code> to allow style assets"
+    "message": "Patch <CSP> to allow style assets"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "Enable this if styles contain images or fonts which fail to load on sites with a strict <code>CSP</code> (<code>Content-Security-Policy</code>).\n\nEnabling this setting will relax <code>CSP</code> restrictions, allowing essential style content to load. This option is only intended for advanced users who understand the potential security implications, and accept responsibility for monitoring the content which they're allowing. Read about CSS-based attacks for more information.\n\nAlso be aware, this particular setting is not guaranteed to take effect if another installed extension modifies the network response first."
+    "message": "Enable this if styles contain images or fonts which fail to load on sites with a strict <CSP> (<Content-Security-Policy>).\n\nEnabling this setting will relax <CSP> restrictions, allowing essential style content to load. This option is only intended for advanced users who understand the potential security implications, and accept responsibility for monitoring the content which they're allowing. Read about CSS-based attacks for more information.\n\nAlso be aware, this particular setting is not guaranteed to take effect if another installed extension modifies the network response first."
   },
   "optionsAdvancedSites": {
     "message": "...only on matching sites",
     "description": "Label of the advanced option shown below several options with customizable sites like optionsAdvancedStyleViaXhr"
   },
   "optionsAdvancedSitesNote": {
+    "description": "Tooltip for an option. Make sure to preserve newlines, <>, and the text inside as it'll be reformatted on screen",
     "message": "<abc.com> one site.\n<*.abc.com> site + sub-domains.\n<-m.abc.com> exclusion using \"-\" prefix.\n<*> all sites (useful with exclusions).\n<#abc.com> ignored due to invalid character.\n<*://abc.*/xyz> simple glob pattern.\n<https://abc.com/xyz> full URL.\nThe entries are separated with a space or a new line. The text is auto-saved when pressing Ctrl-S or ⌘S in the input or clicking outside the input or closing the options."
   },
   "optionsAdvancedStyleViaASS": {
-    "message": "Circumvent CSP 'style-src' via adoptedStyleSheets"
+    "message": "Circumvent <CSP> <style-src> via <adoptedStyleSheets>"
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "Instant inject mode"
@@ -1240,8 +1259,13 @@
     "message": "Open installer for UserCSS styles on any site"
   },
   "optionsUrlInstallerNote": {
-    "message": "Enable it to install from any site when these conditions are met:\n1) URL ends with <code>.user.css</code> or <code>.user.less</code> or <code>.user.styl</code>,\n2) URL points to a plain text contents of the style (usually called \"raw\") i.e. not to an HTML webpage.\n\nDisable it to limit installations to the dedicated style galleries:\n<LIST>.",
-    "description": "<LIST> is replaced with a list of sites (like 3)."
+    "message": "Enable it to install from any site when these conditions are met:\n1) URL ends with <.user.css> or <.user.less> or <.user.styl>,\n2) URL points to a plain text contents of the style (usually called \"raw\") i.e. not to an HTML webpage.\n\nDisable it to limit installations to the dedicated style galleries:\n$LIST$.",
+    "description": "$LIST$ is replaced with a list of sites (like 3).",
+    "placeholders": {
+      "LIST": {
+        "content": "$1"
+      }
+    }
   },
   "overwriteFileExport": {
     "message": "Do you want to overwrite an existing file?"
@@ -1505,6 +1529,10 @@
   "shortcutsNoteFF": {
     "message": "In Firefox 66+ you can open the built-in shortcuts UI manually:\n1) right-click the Stylus icon in the toolbar and choose 'Manage'\n(alternatively, open about:addons via the main menu or Ctrl-Shift-A),\n2) in the page that opens, click the cog wheel icon in the top right corner,\n3) choose 'Manage extension shortcuts'.\n\nYou can also customize the shortcuts here."
   },
+  "sitesNoteRe": {
+    "description": "Tooltip for an option. Make sure to preserve newlines, <>, and the text inside as it'll be reformatted on screen",
+    "message": "</\\w+://(abc|def)\\.com/(?!xyz).*/> regular expression that must account for the entire URL, e.g. the example has <\\w://> for <https://> and <.*> for the path after the domain. 2) No need to escape </> anywhere. 3) No need to anchor the expression as it's done internally via <^(abc)$$>. 4) To match case-insensitively add <i> like </abc/i>."
+  },
   "sortDateNewestFirst": {
     "message": "newest first",
     "description": "Text added to indicate that sorting a date would add the newest entries at the top"
@@ -1569,8 +1597,13 @@
     "description": "Label for the enabled state of styles"
   },
   "styleForceApplied": {
-    "message": "Force-applied via \"<INC>\" in style settings",
-    "description": "Tooltip in the popup for styles, <INC> = translation for Personal included sites"
+    "message": "Force-applied via \"$INC$\" in style settings",
+    "description": "Tooltip in the popup for styles, $INC$ = translation for Personal included sites",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
   },
   "styleFromMozillaFormatError": {
     "message": "Failed to import from Mozilla format",
@@ -1634,12 +1667,22 @@
     "message": "Style name"
   },
   "styleNotAppliedExcluded": {
-    "message": "Excluded via \"<EXC>\" in style settings",
-    "description": "Tooltip in the popup for styles, <EXC> = translation for Personal excluded sites"
+    "message": "Excluded via \"$EXC$\" in style settings",
+    "description": "Tooltip in the popup for styles, $EXC$ = translation for Personal excluded sites",
+    "placeholders": {
+      "EXC": {
+        "content": "$1"
+      }
+    }
   },
   "styleNotAppliedOverridden": {
-    "message": "Your \"<INC>\" in style settings override style's original sites",
-    "description": "Tooltip in the popup for styles, <INC> = translation for Personal included sites"
+    "message": "Your \"$INC$\" in style settings override style's original sites",
+    "description": "Tooltip in the popup for styles, $INC$ = translation for Personal included sites",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Style was not applied due to its incorrect usage of 'regexp()'",
@@ -1658,7 +1701,7 @@
     "message": "Some 'regexp()' rules that could not be compiled at all."
   },
   "styleRegexpPartialExplanation": {
-    "message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome which incorrectly checks 'regexp()' rules since the very first version (known bug)."
+    "message": "This style uses partially matching regexps in violation of <a>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome which incorrectly checks 'regexp()' rules since the very first version (known bug)."
   },
   "styleRegexpProblemTooltip": {
     "message": "Number of sections not applied due to incorrect usage of 'regexp()'",
@@ -1777,8 +1820,13 @@
     "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
   },
   "unreachableCSP": {
-    "message": "Try enabling \"Patch CSP\" in Stylus options.",
-    "description": "Note in the popup when opened on a site with CSP that breaks injection in Firefox"
+    "message": "Try enabling \"$optCSP$\" in Stylus options.",
+    "description": "Note in the popup when opened on a site with CSP that breaks injection in Firefox, $optCSP$ is replaced with translation for optionsAdvancedPatchCsp",
+    "placeholders": {
+      "optCSP": {
+        "content": "$1"
+      }
+    }
   },
   "unreachableContentScript": {
     "message": "Could not communicate with the page. Try reloading the tab.",
@@ -1793,7 +1841,7 @@
     "description": "Note in the popup when opened on a restricted mozilla site in Firefox >= 60"
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Only Firefox 59 and newer can be configured to allow WebExtensions to add style elements on CSP-protected sites such as this one.",
+    "message": "Only Firefox 59 and newer can be configured to allow WebExtensions to add style elements on <CSP>-protected sites such as this one.",
     "description": "Note in the popup when opened on a restricted mozilla site in Firefox < 59"
   },
   "updateAllCheckSucceededNoUpdate": {
@@ -1867,10 +1915,16 @@
     "description": "Displayed when the version of style is older than the installed one"
   },
   "webRequestBlockingMV3Note": {
-    "message": "Requires webRequestBlocking permission which can be enabled in ManifestV3 using one of these methods:\n\n 1) Export the backup, set up <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> policy for this extension's id \"$id$\", restart the browser, wait for the extension to be installed, import the backup in the style manager, and optionally pin the icon to the toolbar.\n\n 2) Modify the command line in the browser's icon or launcher: add a space and <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
+    "message": "Requires webRequestBlocking permission which can be enabled in ManifestV3 using one of these methods:\n\n 1) Export the backup, set up $policyName$ policy for this extension's id \"$id$\", restart the browser, wait for the extension to be installed, import the backup in the style manager, and optionally pin the icon to the toolbar.\n\n 2) Modify the command line in the browser's icon or launcher: add a space and $cmd$",
     "placeholders": {
-      "id": {
+      "policyName": {
         "content": "$1"
+      },
+      "id": {
+        "content": "$2"
+      },
+      "cmd": {
+        "content": "$3"
       }
     }
   },

@@ -383,7 +383,7 @@
     "message": "Importar"
   },
   "importPreprocessor": {
-    "message": "Estilos com <code>@preprocessor</code> não irão funcionar no modo clássico. Você pode trocar o editor para o modo UserCSS: 1) abre o gerenciador de estilos, 2) ative a caixa \"como UserCSS\", 3) clique \"Escrever novo estilo\"\n\nDeseja importar mesmo assim?"
+    "message": "Estilos com <@preprocessor> não irão funcionar no modo clássico. Você pode trocar o editor para o modo UserCSS: 1) abre o gerenciador de estilos, 2) ative a caixa \"como UserCSS\", 3) clique \"Escrever novo estilo\"\n\nDeseja importar mesmo assim?"
   },
   "importPreprocessorTitle": {
     "message": "Possível problema causado pelo @preprocessor"
@@ -637,7 +637,12 @@
     "message": "Opções"
   },
   "optionTargetIconsNote": {
-    "message": "O Stylus usa um serviço externo <SRV>"
+    "message": "O Stylus usa um serviço externo $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "Avançadas"
@@ -646,7 +651,7 @@
     "message": "Adicionar 'Eliminar' no menu de contexto do editor"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Expor iframes via HTML[stylus-iframe]"
+    "message": "Expor <iframe>s via <html[stylus-iframe]>"
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Escrever novo estilo como UserCSS"
@@ -956,7 +961,7 @@
     "message": "Algumas regras de 'regexp()' que não puderam ser compiladas."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Este estilo usa regexps parcialmente correspondentes em violação da <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> que requer um URL correspondente inteiro. As secções de CSS afetadas não foram aplicadas nesta página. Este estilo foi provavelmente criado no Stylish-for-Chrome o qual verifica incorretamente as regras 'regexp()' desde a primeira versão (bug conhecido)."
+    "message": "Este estilo usa regexps parcialmente correspondentes em violação da <a>CSS4 @document specification</a> que requer um URL correspondente inteiro. As secções de CSS afetadas não foram aplicadas nesta página. Este estilo foi provavelmente criado no Stylish-for-Chrome o qual verifica incorretamente as regras 'regexp()' desde a primeira versão (bug conhecido)."
   },
   "styleRegexpProblemTooltip": {
     "message": "Número de secções não aplicadas devido ao uso incorreto de 'regexp ()'"
@@ -1025,7 +1030,7 @@
     "message": "O Stylus pode aceder URLs file:// apenas se ativar a checkbox correspondente para a extensão Stylus na página chrome://extensions"
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Somente o Firefox 59 e o mais recente podem ser configurados para permitir que WebExtensions incluam elementos de estilo em sites protegidos por CSP como este."
+    "message": "Somente o Firefox 59 e o mais recente podem ser configurados para permitir que WebExtensions incluam elementos de estilo em sites protegidos por <CSP> como este."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Nenhuma atualização encontrada."

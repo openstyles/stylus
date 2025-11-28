@@ -392,7 +392,7 @@
     "message": "Importar"
   },
   "importPreprocessor": {
-    "message": "Los estilos con <code>@preprocessor</code> no funcionarán en el modo clásico. Puedes cambiar el editor al modo UserCSS: 1) Abre el administrador de estilos. 2) Activa la casilla 'como UserCSS'. 3) Haz clic en 'Escribir un estilo nuevo'\n\n¿Quieres importarlo de todos modos?"
+    "message": "Los estilos con <@preprocessor> no funcionarán en el modo clásico. Puedes cambiar el editor al modo UserCSS: 1) Abre el administrador de estilos. 2) Activa la casilla 'como UserCSS'. 3) Haz clic en 'Escribir un estilo nuevo'\n\n¿Quieres importarlo de todos modos?"
   },
   "importPreprocessorTitle": {
     "message": "Posible problema debido a @preprocessor"
@@ -531,17 +531,11 @@
   "liveReloadLabel": {
     "message": "Recarga en tiempo real"
   },
-  "manageFavicons": {
-    "message": "Favicons en la columna 'Se aplica a'"
-  },
   "manageFaviconsGray": {
     "message": "Atenuado"
   },
   "manageFilters": {
     "message": "Filtros"
-  },
-  "manageMaxTargets": {
-    "message": "Número de elementos 'Se aplica a'"
   },
   "manageMinColumnWidth": {
     "message": "Ancho mínimo de columna (en píxeles; 9999 desactiva el modo multicolumna)"
@@ -790,10 +784,23 @@
     "message": "¿Estilos aplicados demasiado tarde?"
   },
   "optionFOUCMV2": {
-    "message": "Considere la posibilidad de activar \"<a>\"."
+    "message": "Considere la posibilidad de activar \"$optInst$\".",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionFOUCMV3": {
-    "message": "Considere la posibilidad de activar \"<a>\" y aumentar \"<b>\"."
+    "message": "Considere la posibilidad de activar \"$optInst$\" y aumentar \"$optCache$\".",
+    "placeholders": {
+      "optCache": {
+        "content": "$2"
+      },
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionKeepAlive": {
     "message": "Duración de la caché de estilos"
@@ -808,7 +815,12 @@
     "message": "Auméntalo si encuentras parpadeo de contenido sin estilo (FOUC) al abrir una página después de no interactuar con el navegador durante un tiempo.\n\n-1 = Comportamiento por defecto de ManifestV2 (sin límite).\n0 = Comportamiento por defecto de ManifestV3 (medio minuto).\n\nLa caché ocupa 30MB o más de RAM, pero reconstruirla puede llevar demasiado tiempo y causar FOUC dependiendo del sitio web, la velocidad de la red, la cantidad de estilos, el tamaño de la RAM y el rendimiento de la CPU."
   },
   "optionTargetIconsNote": {
-    "message": "Stylus usa un servicio externo <SRV>"
+    "message": "Stylus usa un servicio externo $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "Avanzado"
@@ -826,7 +838,7 @@
     "message": "Añadir 'Eliminar' al menú contextual del editor"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Visualizar marcos integrados (iframes) a través de HTML[stylus-iframe]"
+    "message": "Visualizar marcos integrados (<iframe>) a través de <html[stylus-iframe]>"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Muestra el dominio del sitio principal en cada iframe.\nPermite escribir código CSS específico para iframes, como en el ejemplo siguiente:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
@@ -841,13 +853,13 @@
     "message": "Escribir nuevo estilo como UserCSS"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "Cambiar <code>CSP</code> para permitir recursos de estilos"
+    "message": "Cambiar <CSP> para permitir recursos de estilos"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "Activa esta opción si los estilos contienen imágenes o fuentes que no se cargan en un sitio con una configuración estricta de <code>CSP</code> (<code>Política de seguridad de contenido</code>).\n\nAl activar esta opción, se reducen las restricciones de <code>CSP</code> para que puedan cargarse los contenidos de estilo necesarios. Esta opción va dirigida únicamente a usuarios avanzados que comprenden las posibles implicaciones de seguridad y aceptan la responsabilidad de supervisar el contenido que permiten que se cargue. Antes de usar esta opción, obtén más información sobre los ataques basados en CSS.\n\nAdemás, puede que esta opción específica no se aplique si otra extensión modifica antes la respuesta de red."
+    "message": "Activa esta opción si los estilos contienen imágenes o fuentes que no se cargan en un sitio con una configuración estricta de <CSP> (<Content-Security-Policy>, Política de seguridad de contenido).\n\nAl activar esta opción, se reducen las restricciones de <CSP> para que puedan cargarse los contenidos de estilo necesarios. Esta opción va dirigida únicamente a usuarios avanzados que comprenden las posibles implicaciones de seguridad y aceptan la responsabilidad de supervisar el contenido que permiten que se cargue. Antes de usar esta opción, obtén más información sobre los ataques basados en CSS.\n\nAdemás, puede que esta opción específica no se aplique si otra extensión modifica antes la respuesta de red."
   },
   "optionsAdvancedStyleViaASS": {
-    "message": "Evitar 'style-src' de CSP mediante adoptedStyleSheets"
+    "message": "Evitar <style-src> de <CSP> mediante <adoptedStyleSheets>"
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "Modo de inserción instantánea"
@@ -1225,17 +1237,11 @@
   "styleEnabledLabel": {
     "message": "Activado"
   },
-  "styleExcludeLabel": {
-    "message": "Sitios excluidos personalizados"
-  },
   "styleFromMozillaFormatError": {
     "message": "No se pudo importar desde el formato Mozilla"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Pegue el código de formato Mozilla"
-  },
-  "styleIncludeLabel": {
-    "message": "Sitios incluidos personalizados"
   },
   "styleInjectionImportance": {
     "message": "Alternar la importancia del estilo"
@@ -1299,7 +1305,7 @@
     "message": "Algunas reglas «regexp()» que no se pudieron compilar en absoluto."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Este estilo utiliza expresiones regulares (regexps) con coincidencias parciales, infringiendo la <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>especificación @document de CSS4</a> que requiere una coincidencia de URL completa. \nLas secciones CSS correspondientes a estas expresiones regulares no se aplicaron a la página. Este estilo fue probablemente creado con Stylish para Chrome que evalúa incorrectamente las reglas 'regexp()' desde la primera versión (fallo conocido)."
+    "message": "Este estilo utiliza expresiones regulares (regexps) con coincidencias parciales, infringiendo la <a>especificación @document de CSS4</a> que requiere una coincidencia de URL completa. \nLas secciones CSS correspondientes a estas expresiones regulares no se aplicaron a la página. Este estilo fue probablemente creado con Stylish para Chrome que evalúa incorrectamente las reglas 'regexp()' desde la primera versión (fallo conocido)."
   },
   "styleRegexpProblemTooltip": {
     "message": "Número de secciones no aplicadas debido a un uso incorrecto de 'regexp()'"
@@ -1382,7 +1388,12 @@
     "message": "Para permitir el acceso abra <about:config>, haga clic secundario en la lista, pulse 'Nuevo', luego 'Booleano', pegue <privacy.resistFingerprinting.block_mozAddonManager> y pulse Aceptar, <true>, Aceptar, y recargue la página <addons.mozilla.org>."
   },
   "unreachableCSP": {
-    "message": "Prueba a activar \"Parche CSP\" en las opciones de Stylus."
+    "message": "Prueba a activar \"$optCSP$\" en las opciones de Stylus.",
+    "placeholders": {
+      "optCSP": {
+        "content": "$1"
+      }
+    }
   },
   "unreachableContentScript": {
     "message": "No se pudo comunicar con la página. Prueba recargando la pestaña."
@@ -1394,7 +1405,7 @@
     "message": "En Firefox 60 y versiones posteriores, quita este dominio de <extensions.webextensions.restrictedDomains> en <about:config>."
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Se necesita Firefox 59 y versiones posteriores para que las extensiones del tipo WebExtensions agreguen elementos de estilo en sitios protegidos mediante CSP como este."
+    "message": "Se necesita Firefox 59 y versiones posteriores para que las extensiones del tipo WebExtensions agreguen elementos de estilo en sitios protegidos mediante <CSP> como este."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "No se encontraron actualizaciones."
@@ -1453,9 +1464,15 @@
     "message": "La versión es más antigua que el estilo instalado."
   },
   "webRequestBlockingMV3Note": {
-    "message": "Requiere el permiso webRequestBlocking que puede ser activado en ManifestV3 usando uno de estos métodos:\n\n 1) Exporte la copia de seguridad, configure la política <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> para el id \"$id$\" de esta extensión, reinicie el navegador, espere a que se instale la extensión, importe la copia de seguridad en el gestor de estilos y, opcionalmente, fije el icono a la barra de herramientas.\n\n 2) Modifique la línea de comandos en el icono o lanzador del navegador: agregue un espacio y <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
+    "message": "Requiere el permiso webRequestBlocking que puede ser activado en ManifestV3 usando uno de estos métodos:\n\n 1) Exporte la copia de seguridad, configure la política $policyName$ para el id \"$id$\" de esta extensión, reinicie el navegador, espere a que se instale la extensión, importe la copia de seguridad en el gestor de estilos y, opcionalmente, fije el icono a la barra de herramientas.\n\n 2) Modifique la línea de comandos en el icono o lanzador del navegador: agregue un espacio y $cmd$",
     "placeholders": {
+      "cmd": {
+        "content": "$3"
+      },
       "id": {
+        "content": "$2"
+      },
+      "policyName": {
         "content": "$1"
       }
     }

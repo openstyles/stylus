@@ -519,7 +519,12 @@
     "message": "Možnosti"
   },
   "optionTargetIconsNote": {
-    "message": "Stylus používá externí službu <SRV>"
+    "message": "Stylus používá externí službu $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "Pokročilé"
@@ -528,7 +533,7 @@
     "message": "Přidat tlačítko Smazat do kontextové nabídky v editoru"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Obnažit iframe prvky pomocí HTML[stylus-iframe]"
+    "message": "Obnažit <iframe> prvky pomocí <html[stylus-iframe]>"
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Napsat nový styl jako UserCSS"
@@ -769,7 +774,7 @@
     "message": "Některá „regexp()“ pravidla nelze vůbec sestavit."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Tento styl obsahuje částečnou regexp shodu, která je však v rozporu s <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specifikací</a>, která vyžaduje přesnou shodu URL adresy. Dotčené CSS části nebyly na stránku použity. Tento styl byl pravděpodobně vytvořen v rozšíření Stylish pro Chrome, které nesprávně kontroluje regexp() pravidla již od své první verze (známá chyba)."
+    "message": "Tento styl obsahuje částečnou regexp shodu, která je však v rozporu s <a>CSS4 @document specifikací</a>, která vyžaduje přesnou shodu URL adresy. Dotčené CSS části nebyly na stránku použity. Tento styl byl pravděpodobně vytvořen v rozšíření Stylish pro Chrome, které nesprávně kontroluje regexp() pravidla již od své první verze (známá chyba)."
   },
   "styleRegexpProblemTooltip": {
     "message": "Počet sekcí nepoužitých kvůli nesprávnému použití „regexp()“"
@@ -835,7 +840,7 @@
     "message": "Stylus může přistupovat k file:// URL pouze při povolení odpovídající možnosti pro rozšíření Stylus ve správci chrome://extensions."
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Pouze Firefox 59 a novější může být nakonfigurován tak, aby rozšíření typu WebExtensions mohla přidávat styly na stránky chráněné CSP (Content Security Policy) – jako je tato."
+    "message": "Pouze Firefox 59 a novější může být nakonfigurován tak, aby rozšíření typu WebExtensions mohla přidávat styly na stránky chráněné <CSP> (<Content-Security-Policy>) – jako je tato."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Aktualizace nenalezeny."

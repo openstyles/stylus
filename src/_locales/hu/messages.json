@@ -395,7 +395,7 @@
     "message": "Importálás"
   },
   "importPreprocessor": {
-    "message": "Egy stílus <code>@prepocesszorral</code> nem fog működni a hagyományos módban. Át tudja állítani a szerkesztőt UserCSS módra a következőképpen: 1.) Nyissa meg a stíluskezelőt, 2.) pipálja be a „UserCSS-ként” jelölőnégyzetet, majd 3.) kattintson erre: \"Új stílus írása\".\n\nBe akarja tölteni mindenképpen?"
+    "message": "Egy stílus <@preprocessor> nem fog működni a hagyományos módban. Át tudja állítani a szerkesztőt UserCSS módra a következőképpen: 1.) Nyissa meg a stíluskezelőt, 2.) pipálja be a „UserCSS-ként” jelölőnégyzetet, majd 3.) kattintson erre: \"Új stílus írása\".\n\nBe akarja tölteni mindenképpen?"
   },
   "importPreprocessorTitle": {
     "message": "Lehetséges probléma a @preprocesszor miatt"
@@ -747,7 +747,12 @@
     "message": "Beállítások"
   },
   "optionTargetIconsNote": {
-    "message": "A Stylus külső szolgáltatást használ (<SRV>)"
+    "message": "A Stylus külső szolgáltatást használ ($SRV$)",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "Haladó"
@@ -756,7 +761,7 @@
     "message": "'Törlés' parancs a szerkesztő helyi menüjében"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "iframe-ek kitevése HTML[stylus-iframe]-en keresztül"
+    "message": "<iframe>-ek kitevése <html[stylus-iframe]>-en keresztül"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Az oldal felső tartományának jelölése minden iframe-ben.\nLehetővé teszi az iframe-specifikus CSS írását, mint pl.:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
@@ -1064,7 +1069,7 @@
     "message": "Néhány „regexp()” szabály nem lefordítható."
   },
   "styleRegexpPartialExplanation": {
-    "message": "A stílus olyan részlegesen illeszkedő reguláris kifejezéseket használ, amelyek sértik a<a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4@dokumentumspecifikációt</a>, amely megköveteli az URL teljes illeszkedését. Az érintett CSS-szekciók nem kerültek alkalmazásra az oldalon. A stílus valószínűleg a Stylish-for-Chrome  kiegészítőben készült, amely helytelenül ellenőrzi a „regexp()” szabályokat a legelső verziótól fogva (ismert hiba)."
+    "message": "A stílus olyan részlegesen illeszkedő reguláris kifejezéseket használ, amelyek sértik a<a>CSS4@dokumentumspecifikációt</a>, amely megköveteli az URL teljes illeszkedését. Az érintett CSS-szekciók nem kerültek alkalmazásra az oldalon. A stílus valószínűleg a Stylish-for-Chrome  kiegészítőben készült, amely helytelenül ellenőrzi a „regexp()” szabályokat a legelső verziótól fogva (ismert hiba)."
   },
   "styleRegexpProblemTooltip": {
     "message": "A nem alkalmazott szeckiók száma helytelen 'regexp()' használat miatt"
@@ -1130,7 +1135,7 @@
     "message": "A Stylus csak akkor képes hozzáférni a file:// URL-ekhez, ha engedélyezed az erre vonatkozó beállítást a Stylus kiegészítőre a chrome://extensions oldalon."
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Csak a Firefox 59 vagy annál újabb állítható be az ilyen CSP-védett oldalak stílusának átszabása WebExtensions kiegészítőkön keresztül."
+    "message": "Csak a Firefox 59 vagy annál újabb állítható be az ilyen <CSP>-védett oldalak stílusának átszabása WebExtensions kiegészítőkön keresztül."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Nem találhatók frissítések."

@@ -397,7 +397,7 @@
     "message": "Importer"
   },
   "importPreprocessor": {
-    "message": "Un style avec un <code>@preprocessor</code> ne fonctionnera pas en mode classique. Vous pouvez passer l'éditeur en mode UserCSS : 1) Ouvrez le gestionnaire de styles, 2) Activez l'option \"en tant que UserCSS\", 3) Cliquez sur \"écrire un nouveau style\"\n\nPoursuivre l'import malgré tout ?"
+    "message": "Un style avec un <@preprocessor> ne fonctionnera pas en mode classique. Vous pouvez passer l'éditeur en mode UserCSS : 1) Ouvrez le gestionnaire de styles, 2) Activez l'option \"en tant que UserCSS\", 3) Cliquez sur \"écrire un nouveau style\"\n\nPoursuivre l'import malgré tout ?"
   },
   "importPreprocessorTitle": {
     "message": "Problème potentiel à cause de @preprocessor"
@@ -792,10 +792,23 @@
     "message": "Les styles sont appliquées trop tard?"
   },
   "optionFOUCMV2": {
-    "message": "Envisagez d’activer “<a>”."
+    "message": "Envisagez d’activer “$optInst$”.",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionFOUCMV3": {
-    "message": "Envisagez d’activer “<a>” et d’augmenter “<b>”."
+    "message": "Envisagez d’activer “$optInst$” et d’augmenter “$optCache$”.",
+    "placeholders": {
+      "optCache": {
+        "content": "$2"
+      },
+      "optInst": {
+        "content": "$1"
+      }
+    }
   },
   "optionKeepAlive": {
     "message": "Durée du cache de style"
@@ -807,7 +820,12 @@
     "message": "… même si le navigateur est inactif"
   },
   "optionTargetIconsNote": {
-    "message": "Stylus utilise le service externe <SRV>"
+    "message": "Stylus utilise le service externe $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
   },
   "optionsAdvanced": {
     "message": "Avancé"
@@ -825,7 +843,7 @@
     "message": "Ajouter « Supprimer » dans le menu contextuel de l’extension"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Exposer les iframes via HTML[stylus-iframe]"
+    "message": "Exposer les <iframe>s via <html[stylus-iframe]>"
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Expose le domaine principal dans chaque iframe.\nPermet d’écrire du CSS spécifique aux iframe tel que :\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
@@ -840,13 +858,13 @@
     "message": "Écrire un nouveau style en tant que UserCSS"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "Corrige <code>CSP</code> pour permettre les ressources de style"
+    "message": "Corrige <CSP> pour permettre les ressources de style"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "Activez cela si les styles comportent des images ou des polices qui échoue à charger sur les sites avec une politique de sécurité de contenus stricte <code>CSP</code> (<code>Content-Security-Policy</code>).\n\nActiver cette option permettra d'alléger les restrictions du <code>CSP</code>, permettant les styles essentiels de charger. Cette option n'est entendue que pour les utilisateurs expérimentés qui comprennent les potentielles implications de sécurité que cela introduit, et accepte la responsabilité de surveiller le contenu qu'ils autorisent. Veuillez lire les attaques basé sur le CSS pour plus d’information.\n\nAussi sachez, que cette option en particulier n'est pas garanti de fonctionner si une autre extension modifie la réponse réseau avant."
+    "message": "Activez cela si les styles comportent des images ou des polices qui échoue à charger sur les sites avec une politique de sécurité de contenus stricte <CSP> (<Content-Security-Policy>).\n\nActiver cette option permettra d'alléger les restrictions du <CSP>, permettant les styles essentiels de charger. Cette option n'est entendue que pour les utilisateurs expérimentés qui comprennent les potentielles implications de sécurité que cela introduit, et accepte la responsabilité de surveiller le contenu qu'ils autorisent. Veuillez lire les attaques basé sur le CSS pour plus d’information.\n\nAussi sachez, que cette option en particulier n'est pas garanti de fonctionner si une autre extension modifie la réponse réseau avant."
   },
   "optionsAdvancedStyleViaASS": {
-    "message": "Contourner CSP: style-src avec adoptedStyleSheets"
+    "message": "Contourner <CSP>: <style-src> avec <adoptedStyleSheets>"
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "Mode d'injection instantanée"
@@ -1277,7 +1295,7 @@
     "message": "Quelques règles 'regexp()' qui n’ont pas pu être compilées"
   },
   "styleRegexpPartialExplanation": {
-    "message": "Ce style utilise des regexps correspondant partiellement en violation de <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>la spécification CSS4 @document</a> qui demande une correspondance totale de l’URL. Les sections de CSS affectées n’ont pas été appliquées à la page. Ce style a probablement été créé dans Stylish-for-Chrome qui vérifie mal les règles « regexp() » depuis sa toute première version (bug connu)."
+    "message": "Ce style utilise des regexps correspondant partiellement en violation de <a>la spécification CSS4 @document</a> qui demande une correspondance totale de l’URL. Les sections de CSS affectées n’ont pas été appliquées à la page. Ce style a probablement été créé dans Stylish-for-Chrome qui vérifie mal les règles « regexp() » depuis sa toute première version (bug connu)."
   },
   "styleRegexpProblemTooltip": {
     "message": "Nombre de sections non appliquées à cause d’une utilisation incorrecte de 'regexp()'"
@@ -1360,7 +1378,12 @@
     "message": "Pour autoriser l’accès, ouvrir <about:config>, clic-droit sur la liste, cliquez sur « Nouvelle » puis « Valeur booléenne », coller <privacy.resistFingerprinting.block_mozAddonManager> et cliquer sur OK, <true>, OK, et rechargez la page <addons.mozilla.org>."
   },
   "unreachableCSP": {
-    "message": "Essayez d'activer \"Corrige CSP\" dans les options de Stylus."
+    "message": "Essayez d'activer \"$optCSP$\" dans les options de Stylus.",
+    "placeholders": {
+      "optCSP": {
+        "content": "$1"
+      }
+    }
   },
   "unreachableContentScript": {
     "message": "Impossible de communiquer avec la page. Essayez de recharger l’onglet."
@@ -1372,7 +1395,7 @@
     "message": "Dans Firefox 60 et plus récent vous devez retirer ce domaine de <extensions.webextensions.restrictedDomains> dans <about:config>."
   },
   "unreachableMozSiteHintOldFF": {
-    "message": "Seulement dans Firefox 59 et plus récent que les extensions-web peuvent être configurés pour autoriser de rajouter des éléments de style sur les sites protégés CSP comme celui-ci."
+    "message": "Seulement dans Firefox 59 et plus récent que les extensions-web peuvent être configurés pour autoriser de rajouter des éléments de style sur les sites protégés <CSP> comme celui-ci."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Aucune mise à jour trouvée."
@@ -1431,9 +1454,15 @@
     "message": "La version est antérieure à celle déjà installée."
   },
   "webRequestBlockingMV3Note": {
-    "message": "Requiert la permission webRequestBlocking qui peut être activé en ManifestV3 en utilisant une de ces méthodes:\n\n 1) Exportez la sauvegarde, configurez la politique <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> pour l’id “$id$” de cette extension, redémarrez le navigateur, attendez que l’extension soit installée, importez la sauvegarde dans le gestionnaire de style, et si vous le souhaitez, épinglez l’icône à la barre d’outil.\n\n 2) Modifiez la ligne de commande dans l’icône ou lanceur du navigateur: ajoutez une espace et <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
+    "message": "Requiert la permission webRequestBlocking qui peut être activé en ManifestV3 en utilisant une de ces méthodes:\n\n 1) Exportez la sauvegarde, configurez la politique $policyName$ pour l’id “$id$” de cette extension, redémarrez le navigateur, attendez que l’extension soit installée, importez la sauvegarde dans le gestionnaire de style, et si vous le souhaitez, épinglez l’icône à la barre d’outil.\n\n 2) Modifiez la ligne de commande dans l’icône ou lanceur du navigateur: ajoutez une espace et $cmd$",
     "placeholders": {
+      "cmd": {
+        "content": "$3"
+      },
       "id": {
+        "content": "$2"
+      },
+      "policyName": {
         "content": "$1"
       }
     }

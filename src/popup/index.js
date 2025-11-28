@@ -168,7 +168,7 @@ async function initPopup(frames, ping0, tab, urlSupported) {
   } else {
     info.$('label').textContent = t('unreachableAMO');
     const note = [
-      !isStore && t('unreachableCSP'),
+      !isStore && t('unreachableCSP', t('optionsAdvancedPatchCsp')),
       isStore && t(FIREFOX >= 59 ? 'unreachableAMOHint' : 'unreachableMozSiteHintOldFF'),
       FIREFOX >= 60 && t('unreachableMozSiteHint'),
     ].filter(Boolean).join('\n');

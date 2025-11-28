@@ -50,7 +50,7 @@
     }
   },
   "styleRegexpPartialExplanation": {
-    "message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome, which incorrectly checks 'regexp()' rules since the very first version (known bug)."
+    "message": "This style uses partially matching regexps in violation of <a>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome, which incorrectly checks 'regexp()' rules since the very first version (known bug)."
   },
   "styleUpdateDiscardChanges": {
     "message": "The style has been changed outside the editor. Would you like to reload the style?"

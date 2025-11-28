@@ -205,6 +205,13 @@ input[type="checkbox"]:not(.slider) {
   }
 }
 
+code {
+  background: var(--zebra);
+  padding: 0 .25ex;
+  border-radius: .5ex;
+  border: 1px solid var(--c85);
+}
+
 label {
   transition: color .1s;
 }

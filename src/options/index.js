@@ -17,17 +17,21 @@ import shortcutsFF from './shortcuts-ff.html';
 
 tBody();
 $$('input[min], input[max]').forEach(enforceInputRange);
-$('#FOUC .items').textContent = t(__.MV3 ? 'optionFOUCMV3' : 'optionFOUCMV2')
-  .replace('<a>', t('optionsAdvancedStyleViaXhr'))
-  .replace('<b>', t('optionKeepAlive'));
+if (location.hash === '#sync-styles') {
+  $('.cloud-name').focus();
+}
+$('#FOUC .items').textContent = t(__.MV3 ? 'optionFOUCMV3' : 'optionFOUCMV2', [
+  t('optionsAdvancedStyleViaXhr'),
+  t('optionKeepAlive'),
+]);
 $id(pKeepAlive).previousElementSibling.firstChild.textContent +=
   (/^(zh|ja|ko)/.test($root.lang) ? '' : ' ') +
   t('optionKeepAlive2').trim();
 if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
   $id('popupWidth').closest('.items').append(template.popupBorders);
 }
-$('#favs-note').title = t('optionTargetIconsNote').replace('<SRV>', getHost(favicon('')));
-$('#installer-note').title = t('optionsUrlInstallerNote').replace('<LIST>', [
+$('#favs-note').title = t('optionTargetIconsNote', getHost(favicon('')));
+$('#installer-note').dataset.title = t('optionsUrlInstallerNote', [
   usw + 'explore',
   usoa + 'browse/categories',
   'https://greasyfork.org/scripts?language=css',
@@ -36,6 +40,9 @@ window.on('keydown', event => {
   if (getEventKeyName(event) === 'Escape') {
     tellTopToCloseOptions();
   }
+});
+top.on('beforeunload', () => {
+  document.activeElement?.blur(); // auto-save on closing
 });
 $('header i').onclick = tellTopToCloseOptions;
 // actions
@@ -66,6 +73,23 @@ $id('reset').onclick = async () => {
     }
   }
 };
+{
+  const t1 = t('optionsAdvancedSitesNote');
+  const t2 = t('sitesNoteRe');
+  const elNote = template.sites.$('a');
+  elNote.title = `${t1}\n${t2}`;
+  elNote.dataset.title = `${
+    // 1. non-table items
+    t1.replace(/(?:^|\n)<.+(?=\n|$)/g, '').trim()
+  }<table>${
+    // 2. table items
+    t1.replace(/(?:^|\n)[^<].+(?=\n|$)/g, '').replace(/^<([^>]+)>(.+)/gm,
+      (_, a, b) => `<tr><td><code>${a}</code></td><td>${b}</td></tr>`)
+  }</table>\n${
+    // 3. regexp note
+    t2.replace(/<([^>]+)>/g, '<code>$1</code>')
+  }`;
+}
 for (const el of $$('[data-clickable]')) {
   const value = el.dataset.clickable;
   const p = el.textContent.match(new RegExp(`^(.*\\W)(${value})(?=\\W)(.*)`));
@@ -74,51 +98,38 @@ for (const el of $$('[data-clickable]')) {
   const span = $create('span.clickable', {onclick: () => setInputValue(input, value)}, p[2]);
   el.firstChild.replaceWith(p[1], span, p[3]);
 }
-(async () => {
-  const {wrb} = __.MV3 ? prefs.clientData : await prefs.clientData;
-  const note = template.sites.$('[data-cmd=note]');
-  const onTextInput = function () {
-    const rows = this.value.match(/^/gm).length;
-    if (this.rows !== rows) this.rows = rows;
-  };
-  const onTextKey = function (e) {
-    if (e.key === 's' && (e.metaKey === MAC && e.ctrlKey === !MAC) && !e.altKey && !e.shiftKey)
-      this.dispatchEvent(new Event('change'));
-  };
-  note.title = `<table>${
-    note.title.replace(/<([^>]+)>([^<\n]+)/g, (_, a, b) =>
-      `<tr><td><code>${a}</code></td><td>${b}</td></tr>`)
-  }</table>`;
-  for (const el of $$('[show-if]')) {
-    const id = el.getAttribute('show-if').match(/[.\w]+/)[0];
-    prefs.subscribe(id, toggleShowIf, true);
-    if (el.matches('.sites')) {
-      el.appendChild(template.sites.cloneNode(true));
-      for (const elDep of el.$$('[id*="$"]')) {
-        elDep.id = elDep.id.replace('$', id);
-        if (elDep.localName === 'textarea') {
-          elDep.on('keydown', onTextKey);
-          elDep.on('input', onTextInput);
-          onTextInput.call(elDep);
-        }
+for (const el of $$('[show-if]')) {
+  const id = el.getAttribute('show-if').match(/[.\w]+/)[0];
+  prefs.subscribe(id, toggleShowIf, true);
+  if (el.matches('.sites')) {
+    el.appendChild(template.sites.cloneNode(true));
+    for (const elDep of el.$$('[id*="$"]')) {
+      elDep.id = elDep.id.replace('$', id);
+      if (elDep.localName === 'textarea') {
+        elDep.on('keydown', onTextKey);
+        elDep.on('input', onTextInput);
+        onTextInput.call(elDep);
       }
     }
   }
-  if (!wrb) {
-    let icon;
-    for (const el of $$('.webRequestBlocking')) {
-      el.classList.add('disabled');
-      el.$('p').append(icon ? icon.cloneNode(true) : icon = $create('a.broken[data-cmd=note]', {
-        tabIndex: 0,
-        title: t('webRequestBlockingMV3Note', `<code>${chrome.runtime.id}</code>`),
-      }, '⚒'));
-    }
+}
+setupLivePrefs();
+(async () => {
+  const {wrb} = __.MV3 ? prefs.clientData : await prefs.clientData;
+  if (wrb)
+    return;
+  let icon;
+  for (const el of $$('.webRequestBlocking')) {
+    el.classList.add('disabled');
+    el.$('p').append(icon ? icon.cloneNode(true) : icon = $create('a.broken[data-cmd=note]', {
+      tabIndex: 0,
+      title: t('webRequestBlockingMV3Note', [
+        '<a href="https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist">ExtensionInstallForcelist</a>', // eslint-disable-line max-len
+        `<code>${chrome.runtime.id}</code>`,
+        `<nobr><code>--allowlisted-extension-id=${chrome.runtime.id}</code></nobr>`,
+      ]),
+    }, '⚒'));
   }
-  top.on('beforeunload', () => document.activeElement?.blur()); // auto-save on closing
-  if (location.hash === '#sync-styles') {
-    $('.cloud-name').focus();
-  }
-  setupLivePrefs();
 })();
 
 function customizeHotkeys() {
@@ -177,6 +188,17 @@ function enforceInputRange(element) {
   };
   element.on('change', onChange);
   element.on('input', onChange);
+}
+
+function onTextInput() {
+  const rows = this.value.match(/^/gm).length;
+  if (this.rows !== rows) this.rows = rows;
+}
+
+function onTextKey(e) {
+  if (e.key === 's' && (e.metaKey === MAC && e.ctrlKey === !MAC) && !e.altKey && !e.shiftKey) {
+    this.dispatchEvent(new Event('change'));
+  }
 }
 
 function toggleShowIf(key, val) {
