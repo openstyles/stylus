@@ -76,9 +76,7 @@ $id('reset').onclick = async () => {
 {
   const t1 = t('optionsAdvancedSitesNote');
   const t2 = t('sitesNoteRe');
-  const elNote = template.sites.$('a');
-  elNote.title = `${t1}\n${t2}`;
-  elNote.dataset.title = `${
+  template.sites.$('a').dataset.title = `${
     // 1. non-table items
     t1.replace(/(?:^|\n)<.+(?=\n|$)/g, '').trim()
   }<table>${

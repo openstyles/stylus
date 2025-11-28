@@ -1,11 +1,13 @@
 /* postcss-simple-vars */
+$pad: 1rem;
+$pad05: calc(0.5 * $pad);
 $plus-minus-pad: .5rem;
+$popupButtonWidth: 16px;
+$targetGapY: 2px;
 
 :root {
-  --pad: 1rem; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
-  --pad05: calc(0.5 * var(--pad));
-  --popup-button-width: 16px;
-  --target-gapY: 2px;
+  --pad: $pad; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
+  --pad05: $pad05;
 }
 
 #global-progress {
@@ -454,7 +456,7 @@ i,
     display: none;
   }
   .CodeMirror {
-    margin-bottom: calc(1px + var(--target-gapY));
+    margin-bottom: calc(1px + $targetGapY);
     box-sizing: border-box;
     min-height: 20px;
     background-color: var(--bg);
@@ -578,7 +580,7 @@ i,
     list-style-type: none;
     align-items: center;
     padding: 1px 0; /* room for focus outline */
-    margin-bottom: var(--target-gapY);
+    margin-bottom: $targetGapY;
     &.applies-to-everything {
       align-items: unset;
       line-height: var(--input-height);
@@ -608,7 +610,7 @@ i,
     caret-color: auto;
   }
   .select-wrapper, img {
-    margin-right: calc(2px + var(--target-gapY));
+    margin-right: calc(2px + $targetGapY);
   }
   &[data-all] .applies-value-wrapper {
     display: none;
@@ -894,7 +896,7 @@ i,
 .CodeMirror-linewidget {
   .applies-to {
     margin: 0 0 .25em;
-    padding: var(--target-gapY) calc(.25rem + var(--cm-bar-width, 0)) 0 .75rem;
+    padding: $targetGapY calc(.25rem + var(--cm-bar-width, 0)) 0 .75rem;
     font-family: var(--family);
   }
   .applies-to-everything {
@@ -978,11 +980,11 @@ i,
       right: calc(var(--pad05) + 24px);
     }
     #details-wrapper {
-      margin-right: var(--popup-button-width);
+      margin-right: $popupButtonWidth;
     }
   }
   #basic-info {
-    margin: 0 var(--popup-button-width) var(--pad05) 0;
+    margin: 0 $popupButtonWidth var(--pad05) 0;
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
