@@ -144,7 +144,7 @@ function reportUpdateState({updated, style, error, STATES}) {
     newClasses['can-update'] = true;
     entry.updatedCode = style;
     entry.$('.update-note').textContent = '';
-    elOnlyUpdates.classList.remove('hidden');
+    elOnlyUpdates.parentElement.hidden = false;
   } else if (!entry.classList.contains('can-update')) {
     const same = (
       error === STATES.SAME_MD5 ||
@@ -207,7 +207,7 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
   show = show !== undefined ? show : mightUpdate;
   check = check !== undefined ? show && check : checkbox.checked && mightUpdate;
 
-  elOnlyUpdates.classList.toggle('hidden', !show);
+  elOnlyUpdates.parentElement.hidden = !show;
   checkbox.checked = check && show;
   checkbox.dispatchEvent(new Event('change'));
 

@@ -806,3 +806,16 @@ button i {
     background-color: transparent;
   }
 }
+
+:root.touch {
+  $actionGap: 8px;
+  --action-size: calc($actionGap + var(--icon-font-size));
+  &.newUI .actions > * {
+    margin-left: $actionGap;
+  }
+  .filter-selection,
+  #import tr > * {
+    padding-top: .5em;
+    padding-bottom: .5em;
+  }
+}
