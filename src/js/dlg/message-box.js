@@ -26,8 +26,8 @@ export class MessageBox {
   #resolveAsClosed;
   #clickX;
   #clickY;
-  #offsetX;
-  #offsetY;
+  #offsetX = 0;
+  #offsetY = 0;
   /**
    * @typedef MessageBoxParams
    * @prop {String} title
@@ -178,21 +178,32 @@ export class MessageBox {
       window.on('mousemove', this, {passive: true});
       this.#moving = true;
     }
-    this.#clickX = evt.clientX - this.#offsetX;
-    this.#clickY = evt.clientY - this.#offsetY;
+    if (!this.el.style.padding && this.el.matches('.note, .center, .center-dialog')) {
+      const b = this.el.firstChild.getBoundingClientRect();
+      this.el.style.padding = `${b.y | 0}px 0 0 ${b.x | 0}px`;
+    }
+    this.#clickX = evt.x - this.#offsetX;
+    this.#clickY = evt.y - this.#offsetY;
+  }
+
+  /** @param {MouseEvent} evt */
+  #onMouseMove(evt) {
+    if (!evt.buttons) {
+      this.#onMouseUp();
+      return;
+    }
+    this.el.firstChild.style.transform = `translate(${
+      this.#offsetX = clamp(evt.x, 30, innerWidth - 30) - this.#clickX
+    }px,${
+      this.#offsetY = clamp(evt.y, 30, innerHeight - 30) - this.#clickY
+    }px)`;
   }
 
   #onMouseUp(evt) {
-    if (evt.button !== 0) return;
+    if (evt && evt.button !== 0) return;
     window.off('mouseup', this);
     window.off('mousemove', this);
     this.#moving = false;
-  }
-
-  #onMouseMove(evt) {
-    this.#offsetX = clamp(evt.clientX, 30, innerWidth - 30) - this.#clickX;
-    this.#offsetY = clamp(evt.clientY, 30, innerHeight - 30) - this.#clickY;
-    this.el.firstChild.style.transform = `translate(${this.#offsetX}px,${this.#offsetY}px)`;
   }
 
   #onScroll() {

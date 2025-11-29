@@ -46,8 +46,10 @@
   }
 
   &:is(.center, .center-dialog) {
-    align-items: center;
-    justify-content: center;
+    &:not([style*="padding"]) {
+      align-items: center;
+      justify-content: center;
+    }
     > div {
       top: unset;
       right: unset;
