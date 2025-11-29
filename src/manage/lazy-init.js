@@ -27,8 +27,7 @@ if (!__.MV3 && __.BUILD !== 'firefox' && CHROME >= 80 && CHROME <= 88) {
   });
 }
 
-function addEntryTitle(link) {
-  const style = link.closest('.entry').styleMeta;
+export function addEntryTitle(link, style = link.closest('.entry').styleMeta) {
   const {installDate: dIns, updateDate: dUpd, [UCD]: ucd} = style;
   link.title = [
     dUpd || dIns ? `${formatRelativeDate(dUpd || dIns)}` : '',

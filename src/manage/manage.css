@@ -645,17 +645,60 @@ button i {
 
 /* post-import report */
 #import details {
-  &:not([data-id="invalid"]) div:hover {
-    background-color: rgba(128, 128, 128, .3);
+  $padL: 1.5em;
+  padding-left: $padL;
+  summary {
+    margin-left: -$padL;
   }
   &:not(:last-child) {
     margin-bottom: 1em;
   }
-  small > * {
-    margin-left: 1.5em;
+  &[data-id="orphans"] {
+    summary b {
+      border-bottom: 2px solid var(--red1);
+    }
+    button {
+      &:last-child:not([data-undo]) {
+        color: var(--red1);
+      }
+      &:nth-child(n + 2) {
+        margin-left: .5em;
+      }
+    }
+    &[data-del] a, button[data-undo] {
+      text-decoration: line-through;
+    }
+    button[data-undo]::before {
+      content: attr(data-undo);
+      text-decoration: none;
+      display: inline-block; /* workaround to ensure text-decoration is applied */
+      margin-right: .5em;
+    }
+    &[data-off] {
+      a {
+        color: var(--c50);
+      }
+    }
   }
-  > button {
-    margin: .5em 1.25em 0;
+  > p:last-child {
+    overflow-y: auto;
+    max-height: 50vh;
+  }
+  td {
+    text-align: right;
+  }
+  tr {
+    &:not(:hover) td {
+      color: var(--c50);
+    }
+    > a {
+      display: table-cell;
+      vertical-align: middle;
+      overflow-wrap: anywhere;
+      &:not(:hover) {
+        text-decoration: none;
+      }
+    }
   }
 }
 

@@ -291,12 +291,16 @@ export async function preview(style) {
   return res.log;
 }
 
-/** @returns {number} style id */
-export function remove(id, reason) {
+/**
+ * @param {number} id
+ * @param {string} [reason]
+ * @param {boolean | number[] } [many]
+ * @returns {number} style id
+ */
+export function remove(id, reason, many) {
   const {style, appliesTo} = dataMap.get(id);
   const sync = reason !== 'sync';
   const uuid = style._id;
-  db.delete(id);
   if (sync) syncMan.remove(uuid, Date.now());
   for (const url of appliesTo) {
     const cache = cacheData.get(url);
@@ -307,22 +311,43 @@ export function remove(id, reason) {
   }
   dataMap.delete(id);
   uuidIndex.delete(uuid);
-  mapObj(orderWrap.value, (group, type) => {
-    delete order[type][id];
-    const i = group.indexOf(uuid);
-    if (i >= 0) group.splice(i, 1);
-  });
-  setOrderImpl(orderWrap, {calc: false});
+  if (!many) {
+    db.delete(id);
+    draftsDB.delete(id).catch(() => {});
+    for (const [type, group] of Object.entries(orderWrap.value)) {
+      delete order[type][id];
+      const i = group.indexOf(uuid);
+      if (i >= 0) group.splice(i, 1);
+    }
+    setOrderImpl(orderWrap, {calc: false});
+  }
   if (style._usw && style._usw.token) {
     // Must be called after the style is deleted from dataMap
     uswApi.revoke(id);
   }
-  draftsDB.delete(id).catch(() => {});
   broadcast({
     method: 'styleDeleted',
     style: {id},
   });
   return id;
+}
+
+/**
+ * @param {number[]} ids
+ * @param {string} [reason]
+ */
+export function removeMany(ids, reason) {
+  for (const item of ids)
+    remove(item, reason, true);
+  for (const type in orderWrap.value) {
+    for (const id of ids) delete order[type][id];
+    orderWrap.value[type] = orderWrap.value[type].filter(u => !ids.includes(uuidIndex.get(u)));
+  }
+  setOrderImpl(orderWrap, {calc: false});
+  return Promise.all([
+    db.deleteMany(ids),
+    draftsDB.deleteMany(ids).catch(() => {}),
+  ]);
 }
 
 /** @returns {Promise<StyleObj>} */
@@ -339,7 +364,32 @@ export async function setOrder(value) {
 
 /** @returns {Promise<void>} */
 export async function toggle(id, enabled) {
-  await save({...getById(id), enabled}, 'toggle');
+  await save({...getById(id), enabled: !!enabled}, 'toggle');
+}
+
+/**
+ * @param {number[]} ids
+ * @param {boolean | number[]} enabled
+ */
+export async function toggleMany(ids, enabled) {
+  const styles = [];
+  let errors;
+  for (let i = 0; i < ids.length; i++) {
+    try {
+      const {style} = dataMap.get(+ids[i]) || {};
+      onBeforeSave(style);
+      style.enabled = !!(Array.isArray(enabled) ? enabled[i] : enabled);
+      styles.push(style);
+    } catch (err) {
+      (errors ??= {})[ids[i]] = err.message;
+    }
+  }
+  if (styles.length) {
+    await db.putMany(styles);
+    for (const style of styles)
+      onSaved(style, 'toggle', style.id);
+  }
+  if (errors) throw errors;
 }
 
 /** @returns {Promise<void>} */

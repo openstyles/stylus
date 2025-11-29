@@ -569,6 +569,10 @@
     "message": "invalid skipped",
     "description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
   },
+  "importReportLegendOrphans": {
+    "message": "installed styles not in the backup",
+    "description": "Shown right next to the number of missing styles in the post-import report"
+  },
   "importReportLegendUpdatedBoth": {
     "message": "updated both meta info and code",
     "description": "Text after the number of styles updated entirely in the report shown after importing styles"

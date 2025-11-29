@@ -1,12 +1,13 @@
 import * as chromeSync from '@/js/chrome-sync';
 import {IMPORT_THROTTLE, kAppJson, kStyleIdPrefix, UCD} from '@/js/consts';
-import {$create} from '@/js/dom';
+import {$create, $toggleDataset} from '@/js/dom';
 import {animateElement, messageBox, scrollElementIntoView} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleJSONseemsValid, styleSectionsEqual} from '@/js/sections-util';
 import {MOBILE} from '@/js/ua';
-import {clipString, deepEqual, hasOwn, isEmptyObj, RX_META, t} from '@/js/util';
+import {clipString, debounce, deepEqual, hasOwn, isEmptyObj, RX_META, t} from '@/js/util';
+import {addEntryTitle} from './lazy-init'; // safe because this file is imported by lazy-init.js
 import {queue} from './util';
 
 Object.assign($id('export'), {
@@ -97,8 +98,14 @@ async function importFromFile(file) {
 async function importFromString(jsonString) {
   const json = JSON.parse(jsonString);
   const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
+  const oldStylesSet = new Set(oldStyles.sort((a, b) =>
+    (a = a.customName || a.name).toLowerCase() <
+    (b = b.customName || b.name).toLowerCase() ? -1 : a > b));
   const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
   const oldStylesByUuid = new Map(oldStyles.map(style => [style._id, style]));
+  const oldStylesByCustomName = new Map(oldStyles
+    .map(style => style.customName && [style.customName.trim(), style])
+    .filter(Boolean));
   const oldStylesByName = new Map(oldStyles.map(style => [style.name.trim(), style]));
   const oldOrder = await API.styles.getOrder();
   const items = [];
@@ -140,14 +147,15 @@ async function importFromString(jsonString) {
           : typeof item.sourceCode !== 'string'
       )
     ) {
-      stats.invalid.names.push(`#${index}: ${clipString(item && item.name || '')}`);
+      stats.invalid.names.push(`#${index}: ${
+        clipString(item && (item.customName || item.name) || '')
+      }`);
       return;
     }
     item.name = item.name.trim();
     const byId = oldStylesById.get(item.id);
     const byUuid = oldStylesByUuid.get(item._id);
-    const byName = oldStylesByName.get(item.name);
-    oldStylesByName.delete(item.name);
+    const byName = oldStylesByCustomName.get(item.customName) || oldStylesByName.get(item.name);
     let oldStyle = byUuid;
     if (!oldStyle && byId) {
       if (sameStyle(byId, item)) {
@@ -160,6 +168,9 @@ async function importFromString(jsonString) {
       item.id = byName.id;
       oldStyle = byName;
     }
+    oldStylesByCustomName.delete(item.customName);
+    oldStylesByName.delete(item.name);
+    oldStylesSet.delete(oldStyle);
     const metaEqual = oldStyle && deepEqual(oldStyle, item, ['sections', 'sourceCode', '_rev']);
     const codeEqual = oldStyle && sameCode(oldStyle, item);
     if (metaEqual && codeEqual) {
@@ -232,6 +243,8 @@ async function importFromString(jsonString) {
   }
 
   async function done() {
+    if (oldStylesSet.size)
+      renderOrphans();
     scrollTo(0, 0);
     const entries = Object.entries(stats);
     const numChanged = entries.reduce((sum, [, val]) =>
@@ -239,7 +252,6 @@ async function importFromString(jsonString) {
     const report = entries.map(renderStats).filter(Boolean);
     const {button} = await messageBox.show({
       title: t('importReportTitle'),
-      className: 'center-dialog',
       contents: $create('#import', report.length ? report : t('importReportUnchanged')),
       buttons: [t('confirmClose'), numChanged && t('undo')],
       onshow: bindClick,
@@ -248,7 +260,7 @@ async function importFromString(jsonString) {
       undo();
   }
 
-  function renderStats([id, {ids, names, legend, isOptions}]) {
+  function renderStats([id, {ids, names, legend, isOptions, render}]) {
     if (!names.length) return;
     let btn;
     if (isOptions && names.some(_ => _.isValid)) {
@@ -256,14 +268,57 @@ async function importFromString(jsonString) {
       importOptions.call(btn);
     }
     return (
-      $create(`details[data-id=${id}]`, {open: isOptions}, [
+      $create(`details[data-id=${id}]`, {open: isOptions || names.length < 10}, [
         $create('summary',
           $create('b', (isOptions ? '' : names.length + ' ') + t(legend))),
-        $create('small',
-          names.map(ids ? listItemsWithId : isOptions ? listOptions : listItems, ids)),
+        render?.(...arguments),
+        $create('p', ids
+          ? $create('table', names.map(listItemsWithId, ids))
+          : names.map(isOptions ? listOptions : listItems, ids)),
         btn,
       ].filter(Boolean))
     );
+  }
+
+  function renderOrphans() {
+    const ids = Array.from(oldStylesSet, o => o.id);
+    const buttons = [
+      ['exportLabel', exportOld],
+      ['disableStyleLabel', toggleOld],
+      ['deleteStyleLabel', removeOld],
+    ].map(([key, fn]) => Object.assign($tag('button'), {onclick: fn, innerText: t(key)}));
+    const [, elToggle, elDel] = buttons;
+    const elRow = $tag('p');
+    elRow.append(...buttons);
+    stats.orphans = {
+      ids,
+      names: Array.from(oldStylesSet, o => o.customName || o.name),
+      legend: 'importReportLegendOrphans',
+      render: () => elRow,
+    };
+    let del, off;
+    function exportOld() {
+      exportToFile(null, [...oldStylesSet], '-extras');
+    }
+    function removeOld() {
+      del = !del;
+      elToggle.disabled = del;
+      updateDOM(elDel, del, 'del', del
+        ? API.styles.removeMany(ids)
+        : API.styles.importMany([...oldStylesSet]));
+    }
+    function toggleOld() {
+      off = !off;
+      updateDOM(elToggle, off, 'off',
+        API.styles.toggleMany(ids, !off && Array.from(oldStylesSet, s => s.enabled)));
+    }
+    async function updateDOM(btn, state, name, promise) {
+      btn.disabled = true;
+      $toggleDataset(btn, 'undo', state && t('undo'));
+      $toggleDataset(elRow.closest('details'), name, state);
+      await promise.catch(console.warn);
+      btn.disabled = false;
+    }
   }
 
   function listOptions({name, isValid}) {
@@ -280,10 +335,11 @@ async function importFromString(jsonString) {
 
   /** @this stats.<item>.ids */
   function listItemsWithId(name, i) {
-    const el = $tag('div');
-    el.textContent = name;
-    el.dataset.id = this[i];
-    return el;
+    const id = this[i];
+    return $create('tr', [
+      $create('td', `#${id}`),
+      $create(`a[data-id=${id}][href=edit.html?id=${id}]`, name),
+    ]);
   }
 
   async function importOptions() {
@@ -329,18 +385,23 @@ async function importFromString(jsonString) {
     });
   }
 
-  function bindClick() {
-    const highlightElement = event => {
+  function bindClick(box) {
+    for (const block of box.$$('details table')) {
+      block.onclick = highlightElement;
+      block.onmouseover = addTitle;
+    }
+    function addTitle(evt, el) {
+      if (el)
+        addEntryTitle(el, oldStylesById.get(+el.dataset.id));
+      else if ((el = evt.target).href && !el.title)
+        debounce(addTitle, 50, null, evt.target);
+    }
+    function highlightElement(event) {
+      event.preventDefault();
       const styleElement = $id(kStyleIdPrefix + event.target.dataset.id);
       if (styleElement) {
         scrollElementIntoView(styleElement);
         animateElement(styleElement);
-      }
-    };
-    for (const block of $$('#message-box details')) {
-      if (block.dataset.id !== 'invalid') {
-        block.style.cursor = 'pointer';
-        block.onclick = highlightElement;
       }
     }
   }
@@ -352,22 +413,28 @@ async function importFromString(jsonString) {
   }
 }
 
-/** @param {MouseEvent} e */
-async function exportToFile(e) {
-  e.preventDefault();
-  const keepDupSections = e.type === 'contextmenu' || e.shiftKey || e.detail === 'compat';
+/**
+ * @param {MouseEvent} [e]
+ * @param {StyleObj[]} [styles]
+ * @param {string} [suffix]
+ */
+async function exportToFile(e, styles, suffix = '') {
+  e?.preventDefault();
+  const keepDupSections = e && (e.type === 'contextmenu' || e.shiftKey || e.detail === 'compat');
   const data = [
     Object.assign({
       [prefs.STORAGE_KEY]: prefs.__values,
       order: await API.styles.getOrder(),
     }, await chromeSync.getLZValues()),
-    ...(await API.styles.getAll()).map(cleanupStyle),
+    ...(styles || await API.styles.getAll()).map(cleanupStyle),
   ];
   const text = JSON.stringify(data, null, '  ');
   const type = kAppJson;
+  const today = new Date();
   $create('a', {
     href: URL.createObjectURL(new Blob([text], {type})),
-    download: generateFileName(),
+    download: today.toISOString().slice(0, 10) + '-' +
+      today.toTimeString().split(':', 2).join('-') + suffix + '.json',
     type,
   }).dispatchEvent(new MouseEvent('click'));
   /** strip `sections`, `null` and empty objects */
@@ -383,12 +450,5 @@ async function exportToFile(e) {
       }
     }
     return copy;
-  }
-  function generateFileName() {
-    const today = new Date();
-    const dd = ('0' + today.getDate()).substr(-2);
-    const mm = ('0' + (today.getMonth() + 1)).substr(-2);
-    const yyyy = today.getFullYear();
-    return `stylus-${yyyy}-${mm}-${dd}.json`;
   }
 }
