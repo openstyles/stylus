@@ -246,7 +246,10 @@ export function fitSizeColumn(entries = installed.children, entry) {
   $root.style.setProperty('--size-width', res + 'ch');
 }
 
-export async function showStyles(styles = [], matchUrlIds) {
+export async function showStyles(styles, matchUrlIds) {
+  if (!styles?.length)
+    return;
+  const num = styles.length;
   const dummies = styles.map(styleToDummyEntry);
   const sorted = sorter.sort(dummies);
   const scrollY = history.state?.scrollY;
@@ -256,19 +259,16 @@ export async function showStyles(styles = [], matchUrlIds) {
   const renderBin = document.createDocumentFragment();
   fitNameColumn(styles);
   fitSizeColumn(dummies);
-  updateTotal(styles.length);
+  updateTotal(num);
   let numIconized; // keeping it undefined so the comparison is false if favicons are disabled
-  for (let i = 0, t0 = !shouldRenderAll && performance.now(), entry, style, done;
-    !done;
-    await new Promise(requestAnimationFrame)
-  ) {
-    while (!(done = i === numStyles) && (
+  for (let i = 0, t0 = !shouldRenderAll && performance.now(), entry, done; ;) {
+    while (!(done = i === num) && (
       shouldRenderAll ||
       (i & 7) < 7 ||
       performance.now() - t0 < 50
     )) {
-      entry = createStyleElement(style = sorted[i++]);
-      if (matchUrlIds && !matchUrlIds.includes(style.styleMeta.id))
+      entry = createStyleElement(sorted[i++]);
+      if (matchUrlIds && !matchUrlIds.includes(entry.styleMeta.id))
         entry.classList.add('not-matching', 'hidden');
       renderBin.appendChild(entry);
     }
@@ -278,6 +278,9 @@ export async function showStyles(styles = [], matchUrlIds) {
     }
     filterAndAppend({container: renderBin}, matchUrlIds)
       .then(sorter.updateStripes);
+    if (done)
+      break;
+    await new Promise(requestAnimationFrame);
   }
   if (sessionStore.justEditedStyleId)
     setTimeout(highlightEditedStyle); // delaying to avoid forced layout
