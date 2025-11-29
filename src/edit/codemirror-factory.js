@@ -247,7 +247,7 @@ function selectTokenOnDoubleclick(cm, pos) {
   const {line, sticky} = pos;
   const {text, styles} = cm.getLineHandle(line);
 
-  const execAt = (rx, i) => (rx.lastIndex = i) && null || rx.exec(text);
+  const execAt = (rx, i) => ((rx.lastIndex = i), rx.exec(text)) || false;
   const at = (rx, i) => (rx.lastIndex = i) && null || rx.test(text);
   const atWord = i => at(/\w/y, i);
   const atSpace = i => at(/\s/y, i);
@@ -273,8 +273,8 @@ function selectTokenOnDoubleclick(cm, pos) {
 
   let b, found;
 
-  if (isNumber) {
-    b = a + execAt(/[+-]?[\d.]+(e\d+)?|$/yi, a)[0].length;
+  if (isNumber && (found = execAt(/[+-]?[\d.]+(e\d+)?|$/yi, a))) {
+    b = a + found[0].length;
     found = b >= ch;
     if (!found) {
       a = b;
@@ -284,7 +284,8 @@ function selectTokenOnDoubleclick(cm, pos) {
 
   if (!found) {
     wordChars = isCss ? /[-\w\u00A1-\uFFFF]*/yu : new RegExp(wordChars.source + '*', 'uy');
-    b = ch + execAt(wordChars, ch)[0].length;
+    found = execAt(wordChars, ch);
+    if (found) b = ch + found[0].length;
   }
 
   return {

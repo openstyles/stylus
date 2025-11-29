@@ -105,8 +105,8 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
     } else if (c === 58/* : */ || c === 59/* ; */ || c === 123/* { */ || c === 125/* } */
     || c === 91/* [ */ || c === 93/* ] */ || c === 40/* ( */ || c === 41/* ) */) {
       type = String.fromCharCode(c);
-    } else if (c === 45/* - */ || c === 92/* \ */ || c >= 48 && c <= 57 /* 0-9 */
-    || c >= 65 && c <= 90/* A-Z */ || c >= 97 && c <= 122/* a-z */) {
+    } else if (c === 45/* - */ || c === 92/* \ */ || c >= 48 && c <= 57 /* 0-9 */ || c === 95/* _ */
+    || c >= 65 && c <= 90/* A-Z */ || c >= 97 && c <= 122/* a-z */ || c > 160/* Unicode */) {
       stickyMatch(stream, rxUniAny);
       if (str.charCodeAt(res = stream.pos) === 40/* ( */) {
         res -= pos - 1;
