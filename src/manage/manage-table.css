@@ -68,7 +68,7 @@ $iconGapY: .25rem;
     flex: 0 0 var(--name-width);
     min-width: 25%;
     max-width: 50%;
-    #installed:not(.has-targets) & {
+    :root:not(.has-targets) & {
       max-width: none;
       flex-grow: 1;
     }
@@ -170,7 +170,7 @@ $iconGapY: .25rem;
   .applies-to {
     padding: calc(var(--padY) / 2) 0 calc(var(--padY) / 2) 1em;
     flex-grow: 999;
-    #installed:not(.has-targets) & {
+    :root:not(.has-targets) & {
       display: none;
     }
   }

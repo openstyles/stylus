@@ -47,8 +47,6 @@ export async function render(init) {
   $toggleClasses($root, {
     newUI: tableView,
     oldUI: !tableView,
-  });
-  $toggleClasses(installed, {
     'has-targets': !tableView || !!targets,
   });
   let iconsMissing = favicons && !$('#links img');
