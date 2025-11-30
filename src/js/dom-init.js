@@ -118,7 +118,9 @@ function showUnhandledError(err) {
     el.value,
     [FIREFOX && err.message, err.stack].filter(Boolean).join('\n') || `${err}`,
   ].filter(Boolean).join('\n\n').trim().split(ownRoot).join('');
-  const height = fontSize * (text.match(/^/gm).length + .5) + 'px';
+  const lines = text.split('\n');
+  const height = fontSize * (lines.length + .5);
+  const maxLen = lines.map(s => 1e9 + s.length).sort().pop() - 1e9;
   const parent = document.body || document.documentElement;
   el.id = id;
   el.readOnly = true;
@@ -133,16 +135,16 @@ function showUnhandledError(err) {
     color:#fff;
     border-top: 2px solid #fff;
     padding: ${fontSize / 2}px;
-    font-size: ${fontSize}px;
-    line-height: 1;
+    font: ${fontSize}px/1 sans-serif;
     box-sizing: content-box;
-    height: ${height};
+    height: ${height}px;
     max-height: 50vh;
     border: none;
     resize: none;
   `.replace(/;/g, '!important;');
   el.spellcheck = false;
   el.onclick = () => el.select();
-  parent.style.minHeight = height;
+  parent.style.minHeight = height * 2 + 'px';
+  parent.style.minWidth = maxLen * fontSize * .5 + 'px';
   parent.appendChild(el);
 }
