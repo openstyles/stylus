@@ -71,15 +71,14 @@ type TabCache = {[tabId:string]: TabCacheEntry};
 
 declare interface TabCacheEntry {
   id: number;
-  incognito: boolean;
-  nonce: Object;
-  url: Object;
-  styleIds:  StyleIdsFrameMap;
-}
-
-declare interface StyleIdsFrameMap {
-  url: string;
-  styleIds: {[frameId: string]: number[]};
+  url: {[frameId: string]: string};
+  excludedTabs: {[styleId: string]: boolean},
+  incognito?: boolean;
+  nonce?: {[frameId: string]: string};
+  styleIds?: {
+    url: string;
+    styleIds: { [frameId: string]: number[] };
+  };
 }
 
 declare namespace Injection {
@@ -215,7 +214,7 @@ declare interface RemotePortEvent extends MessageEvent {
   _transfer?: Transferable[];
 }
 
-declare interface IDBObjectStoreMany extends IDBObjectStore {
+declare interface IDBObjectStoreMany extends PromisifiedMembers<IDBObjectStore> {
   deleteMany: (ids: any[]) => Promise<any[]>;
   getMany: (ids: any[]) => Promise<any[]>;
   putMany: (items: any[], ids?: any[]) => Promise<any[]>;
@@ -260,6 +259,12 @@ type PickMatchingProps<T,M> = Pick<T,{
 type PickStartingWith<T, S extends string> = {
     [K in keyof T as K extends `${S}${infer R}` ? K : never]: T[K]
 }
+
+type PromisifiedMembers<T> = {
+  [K in keyof T]: T[K] extends (...args: infer A) => infer R
+    ? (...args: A) => Promise<R>
+    : never;
+};
 
 type WritableElementProps = PickMatchingProps<HTMLElement,String>
   & OmitMatchingProps<HTMLOrSVGElement,Function>

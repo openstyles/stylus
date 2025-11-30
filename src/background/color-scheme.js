@@ -13,6 +13,7 @@ const kLight = 'light';
 const kNever = 'never';
 const kSystem = 'system';
 const kTime = 'time';
+/** @typedef {'never'|'dark'|'light'|'system'|'time'} ColorSchemePrefValue */
 const map = {
   [kNever]: false,
   [kDark]: true,
@@ -28,6 +29,7 @@ export const refreshSystemDark = () => !__.MV3
 /** @type {(val: !boolean) => void} */
 export const setSystemDark = update.bind(null, kSystem);
 export let isDark = null;
+/** @type {ColorSchemePrefValue} */
 let prefState;
 let saved;
 let notified;

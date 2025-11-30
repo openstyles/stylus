@@ -44,7 +44,7 @@ export const getByUuid = uuid => getById(uuidIndex.get(uuid));
 
 /**
  * @param {Injection.SectionsMap} secs
- * @param {{[styleId:number]: boolean}} excludedIds
+ * @param {TabCacheEntry['excludedTabs']} excludedIds
  * @return {Injection.Sections[]}
  */
 export function getIncludedSections(secs, excludedIds) {
