@@ -20,10 +20,8 @@ export function buildCacheForStyle(style) {
       (cache.maybeMatch ??= new Set()).add(id);
       continue;
     }
-    const code = styleToApply.enabled && getAppliedCode({url}, styleToApply);
-    if (code) {
+    if (styleToApply.enabled && getAppliedCode({url}, styleToApply, cache)) {
       updated.add(url);
-      buildCacheEntry(cache, styleToApply, code);
     } else if (cache.sections[id]) {
       delete cache.sections[id];
     } else {
@@ -45,34 +43,23 @@ export function buildCache(cache, url, ids) {
     if (ids && !(data = dataMap.get(data)))
       continue;
     const {style} = data;
-    // getSectionsByUrl only needs enabled styles
-    const code = style.enabled && getAppliedCode(query, data.preview || style);
-    if (code) {
-      buildCacheEntry(cache, style, code);
+    if (style.enabled && getAppliedCode(query, data.preview || style, cache, style))
       data.appliesTo.add(url);
-    }
   }
 }
 
-/**
- * @param {MatchCache.Entry} entry
- * @param {StyleObj} style
- * @param {MatchCache.Index} [idx]
- * @param {string[]} [code]
- */
-function buildCacheEntry(entry, style, [idx, code]) {
-  styleCache.make(entry, style, idx, code);
-}
-
-/** Get styles matching a URL, including sloppy regexps and excluded items.
+/** Checks an __enabled__ style against url, theme, overrides, then caches the result.
  * @param {MatchQuery} query
  * @param {StyleObj} style
- * @return {[number[], string[]] | void}
+ * @param {MatchCache.Entry} cache
+ * @param {StyleObj} [styleToCache]
+ * @return {true | void}
  */
-function getAppliedCode(query, style) {
+function getAppliedCode(query, style, cache, styleToCache = style) {
   let v;
   /** Make sure to use the same logic in getAppliedCode and getByUrl */
-  const result = style.enabled &&
+  const result = // skipping checks performed by the caller as a trivial optimization
+    // style.enabled &&
     themeAllowsStyle(style) &&
     (!(v = style[kExclusions]) || !v.length || !v.some(urlMatchOverride, query)) &&
     (!(v = style[kInclusions]) || !v.length || -v.some(urlMatchOverride, query)
@@ -91,5 +78,8 @@ function getAppliedCode(query, style) {
     }
     i++;
   }
-  return code.length && [idx, code];
+  if (code.length) {
+    styleCache.make(cache, styleToCache, idx, code);
+    return true;
+  }
 }
