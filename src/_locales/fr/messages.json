@@ -1006,7 +1006,7 @@
     "message": "Utile pour les thèmes sombres dans le nouveau Chrome qui ne décore plus les bordures sur les côtés"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>, aussi sur le pavé numérique - (dés)active le Nième style (0 correspond à 10)\n<A>-<Z> (dés)active le 1er style avec un nom qui commence par la lettre\n<Shift> ouvre l’éditeur au lieu de (dés)activer\n<Numpad +> active les styles listés\n<Numpad –> désactive les styles listés\n<Numpad *> et <`> (accent grave) — désactive les styles initialement activés ; ne s’applique pas aux styles activés ensuite pendant que la popup est ouverte pour que vous puissiez restaurer la sélection initiale après avoir tester des choses : désactive simplement tout, puis (dés)active par ex. <Numpad –> <Numpad *>\nPlus d’informations sur le wiki"
+    "message": "<1>-<9>, <0>, aussi sur le pavé numérique - (dés)active le Nième style (0 correspond à 10)\n<A>-<Z> (dés)active le 1er style avec un nom qui commence par la lettre\n<Shift> ouvre l’éditeur au lieu de (dés)activer\n<+> active les styles listés\n<–> désactive les styles listés\n<*> et <`> (accent grave) — désactive les styles initialement activés ; ne s’applique pas aux styles activés ensuite pendant que la popup est ouverte pour que vous puissiez restaurer la sélection initiale après avoir tester des choses : désactive simplement tout, puis (dés)active par ex. <–> <*>\nPlus d’informations sur le wiki"
   },
   "popupHotkeysTooltip": {
     "message": "Cliquez pour voir les raccourcis clavier disponibles"

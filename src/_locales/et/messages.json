@@ -713,7 +713,7 @@
     "message": "Kasulik tumedate teemade puhul Chrome'is, kuna see ei joonista enam külje piirjooni"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>, ka numbriklahvidel - lülitab N. stiili (0 on 10)\n<A>-<Z> lülitab esimest stiili, mille nimi algab selle tähega\n<Shift> avab redaktori lülitamise asemel\n<Numpad +> lubab nimekirjas olevad stiilid\n<Numpad –> keelab nimekirjas olevad stiilid\n<Numpad *> ja <`> (graavis) - lülitab esialgu lubatud stiilid; ei rakendu järgnevalt lubatud stiilidele hüpiku avatud olekus, seega saad taastada esialgse valiku peale asjade testimist: lihtsalt keela kõik ning lülita, seega <Numpad –> <Numpad *>\nRohkem teavet vikis"
+    "message": "<1>-<9>, <0>, ka numbriklahvidel - lülitab N. stiili (0 on 10)\n<A>-<Z> lülitab esimest stiili, mille nimi algab selle tähega\n<Shift> avab redaktori lülitamise asemel\n<+> lubab nimekirjas olevad stiilid\n<–> keelab nimekirjas olevad stiilid\n<*> ja <`> (graavis) - lülitab esialgu lubatud stiilid; ei rakendu järgnevalt lubatud stiilidele hüpiku avatud olekus, seega saad taastada esialgse valiku peale asjade testimist: lihtsalt keela kõik ning lülita, seega <–> <*>\nRohkem teavet vikis"
   },
   "popupHotkeysTooltip": {
     "message": "Kiirklahvide nägemiseks klõpsa"

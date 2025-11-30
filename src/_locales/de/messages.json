@@ -996,7 +996,7 @@
     "message": "Nützlich für dunkle Themes im neuen Chrome, da dort die Seitenränder nicht mehr gefärbt werden"
   },
   "popupHotkeysInfo": {
-    "message": "<0>-<9> (auch auf NumPad) schaltet den n-ten Style um (0 ist 10)\n<A>-<Z> schaltet ersten Style, dessen Name mit diesem Buchstaben beginnt, um\n<Shift> öffnet Editor statt umzuschalten\n<Numpad +> aktiviert die aufgeführten Styles\n<Numpad –> deaktiviert die aufgeführten Styles\n<Numpad *> schaltet anfänglich aktivierte Styles um. Trifft nicht auf Styles zu, die erst aktiviert werden, wenn das Popup noch geöffnet ist. Dadurch kann z.B. die Anfangseinstellung nach einem Test wiederhergestellt werden: <Numpad –> <Numpad *>\nMehr dazu im Wiki"
+    "message": "<0>-<9> (auch auf NumPad) schaltet den n-ten Style um (0 ist 10)\n<A>-<Z> schaltet ersten Style, dessen Name mit diesem Buchstaben beginnt, um\n<Shift> öffnet Editor statt umzuschalten\n<+> aktiviert die aufgeführten Styles\n<–> deaktiviert die aufgeführten Styles\n<*> schaltet anfänglich aktivierte Styles um. Trifft nicht auf Styles zu, die erst aktiviert werden, wenn das Popup noch geöffnet ist. Dadurch kann z.B. die Anfangseinstellung nach einem Test wiederhergestellt werden: <–> <*>\nMehr dazu im Wiki"
   },
   "popupHotkeysTooltip": {
     "message": "Klicke, um Tastenkürzel zu sehen"

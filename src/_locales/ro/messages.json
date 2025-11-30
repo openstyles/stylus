@@ -509,7 +509,7 @@
     "message": "Folositor pentru teme întunecate in noul Chrome deoarece nu mai colorează bordurile"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>, de asemenea îm numpad - activează/dezactivează tema numărul N (0 este 10)\n<A>-<Z> activează/dezactivează prima temă cu un nume care începe cu o litera\n<Shift> deschide editorul și nu activează/dezactivează ceva\n<Numpad +> activează temele listate\n<Numpad –> dezactiveaza temele listate\n<Numpad *> și <`> (backtick) - activează/dezactivează temele activate inițial; nu se aplică altor teme activate când popup-ul este deschid pentru a permite restaurarea seleției inițiale pentru a permite testări; dezactivează tot, apoi activează/dezactivează, spre exemplu<Numpad –> <Numpad *>\nMai multe informații sunt avabile în wiki"
+    "message": "<1>-<9>, <0>, de asemenea îm numpad - activează/dezactivează tema numărul N (0 este 10)\n<A>-<Z> activează/dezactivează prima temă cu un nume care începe cu o litera\n<Shift> deschide editorul și nu activează/dezactivează ceva\n<+> activează temele listate\n<–> dezactiveaza temele listate\n<*> și <`> (backtick) - activează/dezactivează temele activate inițial; nu se aplică altor teme activate când popup-ul este deschid pentru a permite restaurarea seleției inițiale pentru a permite testări; dezactivează tot, apoi activează/dezactivează, spre exemplu<–> <*>\nMai multe informații sunt avabile în wiki"
   },
   "popupHotkeysTooltip": {
     "message": "Click pentru a vedea hotkeys avabile"

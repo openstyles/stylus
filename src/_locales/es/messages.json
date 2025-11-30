@@ -1010,7 +1010,7 @@
     "message": "Útil para temas oscuros en el nuevo Chrome ya que no pinta los bordes laterales"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>, también en el teclado numérico - acciona el enésimo estilo (0 es 10)\n<A>-<Z> acciona el primer estilo con un nombre que comienza con la letra\n<Shift> abre el editor en lugar de accionar\n<Numpad +> activa los estilos listados\n<Numpad –> desactiva los estilos listados\n<Numpad *> y < ` > (acento grave) - acciona los estilos inicialmente activados; no se aplica a los estilos posteriormente activados mientras la ventana emergente está abierta para que pueda restaurar la selección inicial después de probar las cosas: simplemente desactive todo, luego accione, por ejemplo <Numpad –> <Numpad *>\nMás información en la wiki"
+    "message": "<1>-<9>, <0>, también en el teclado numérico - acciona el enésimo estilo (0 es 10)\n<A>-<Z> acciona el primer estilo con un nombre que comienza con la letra\n<Shift> abre el editor en lugar de accionar\n<+> activa los estilos listados\n<–> desactiva los estilos listados\n<*> y < ` > (acento grave) - acciona los estilos inicialmente activados; no se aplica a los estilos posteriormente activados mientras la ventana emergente está abierta para que pueda restaurar la selección inicial después de probar las cosas: simplemente desactive todo, luego accione, por ejemplo <–> <*>\nMás información en la wiki"
   },
   "popupHotkeysTooltip": {
     "message": "Haz clic para ver los atajos de teclado disponibles"

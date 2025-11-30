@@ -894,7 +894,7 @@
     "message": "Hasznos az új Chrome sötét témáinál, mert nem színezi át az oldalszegélyeket"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>, a numpaden is - be-/kikapcsolja az n-nedik stílust (a 0 10-et jelent)\n<A>-<Z> az adott betűvel kezdődő első stílust kapcsolja be/ki \n<Shift> kapcsolgatás helyett megnyitja a szerkesztőt\n<Numpad +> listázott stílusokat engedélyez\n<Numpad –> listázott stílusokat tilt le\n<Numpad *> és <`> (fordított félidézőjel) - kezdeti állapotban engedélyezett stílusokat kapcsol; nem vonatkozik azokra a stílusokra, amiket később engedélyeztél, mialatt a felugró ablakocska nyitva volt, hogy vissza tudd állítani a kezdeti kiválasztást tesztelés után: egyszerűen tilts le mindent, majd pl. <Numpad –> vagy <Numpad *>\nTovábbi információ a wikiben"
+    "message": "<1>-<9>, <0>, a numpaden is - be-/kikapcsolja az n-nedik stílust (a 0 10-et jelent)\n<A>-<Z> az adott betűvel kezdődő első stílust kapcsolja be/ki \n<Shift> kapcsolgatás helyett megnyitja a szerkesztőt\n<+> listázott stílusokat engedélyez\n<–> listázott stílusokat tilt le\n<*> és <`> (fordított félidézőjel) - kezdeti állapotban engedélyezett stílusokat kapcsol; nem vonatkozik azokra a stílusokra, amiket később engedélyeztél, mialatt a felugró ablakocska nyitva volt, hogy vissza tudd állítani a kezdeti kiválasztást tesztelés után: egyszerűen tilts le mindent, majd pl. <–> vagy <*>\nTovábbi információ a wikiben"
   },
   "popupHotkeysTooltip": {
     "message": "Elérhető gyorsbillentyűk megtekintése"

@@ -302,6 +302,9 @@
   "excludeStyleByDomainLabel": {
     "message": "Wyklucz bieżącą domenę"
   },
+  "excludeStyleByTab": {
+    "message": "Wyklucz bieżącą kartę"
+  },
   "excludeStyleByUrlLabel": {
     "message": "Wyklucz bieżący adres URL"
   },
@@ -444,6 +447,9 @@
   },
   "importReportLegendInvalid": {
     "message": "nieprawidłowe pominięte"
+  },
+  "importReportLegendOrphans": {
+    "message": "zainstalowane style nie znajdują się w kopii zapasowej"
   },
   "importReportLegendUpdatedBoth": {
     "message": "zaktualizowano meta info i kod"
@@ -1075,7 +1081,7 @@
     "message": "Przydaje się do ciemnych motywów w nowym Chrome, ponieważ nie maluje już bocznych krawędzi"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>, również na klawiaturze numerycznej - przełącza n-ty styl (0 to 10)\n<A>-<Z> przełącza pierwszy styl z nazwą zaczynającą się na literę\n<Shift> otwiera edytor zamiast przełączać\n<Numpad +> włącza wymienione style\n<Numpad –> wyłącza wymienione style\n<Numpad *> oraz <`> (grawis) - przełącza początkowo włączone style; nie ma zastosowania do później włączonych stylów, podczas gdy okienko podręczne jest otwarte, więc możesz przywrócić początkowy wybór po przetestowaniu: po prostu wyłącz wszystkie, a następnie przełącz, np. <Numpad –> <Numpad *>\nWięcej informacji na wiki"
+    "message": "<1>-<9>, <0>, również na klawiaturze numerycznej - przełącza n-ty styl (0 to 10)\n<A>-<Z> przełącza pierwszy styl z nazwą zaczynającą się na literę\n<Shift> otwiera edytor zamiast przełączać\n<+> włącza wymienione style\n<–> wyłącza wymienione style\n<*> oraz <`> (grawis) - przełącza początkowo włączone style; nie ma zastosowania do później włączonych stylów, podczas gdy okienko podręczne jest otwarte, więc możesz przywrócić początkowy wybór po przetestowaniu: po prostu wyłącz wszystkie, a następnie przełącz, np. <–> <*>\nWięcej informacji na wiki"
   },
   "popupHotkeysTooltip": {
     "message": "Kliknij, aby zobaczyć dostępne skróty klawiszowe"
@@ -1372,6 +1378,9 @@
         "content": "$1"
       }
     }
+  },
+  "styleNotAppliedExcludedTab": {
+    "message": "Wykluczono z bieżącej karty w menu stylów"
   },
   "styleNotAppliedOverridden": {
     "message": "Twoje ustawienia stylu „$INC$” zastępują oryginalne witryny stylu",

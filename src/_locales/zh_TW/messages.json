@@ -302,6 +302,9 @@
   "excludeStyleByDomainLabel": {
     "message": "排除目前的網域"
   },
+  "excludeStyleByTab": {
+    "message": "排除目前分頁"
+  },
   "excludeStyleByUrlLabel": {
     "message": "排除目前的 URL"
   },
@@ -447,6 +450,9 @@
   },
   "importReportLegendInvalid": {
     "message": "已跳過無效的"
+  },
+  "importReportLegendOrphans": {
+    "message": "已安裝的樣式未包含在備份中"
   },
   "importReportLegendUpdatedBoth": {
     "message": "後設資訊與程式碼均已更新"
@@ -1075,7 +1081,7 @@
     "message": "對新 Chrome 中的暗色主題很有用，因為其不再繪製邊框"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>、<0>，數字鍵盤也可以 — 切換第 N 個樣式（0 是切換到第 10 個）\n<A>-<Z> 切換以該字母為名稱第一個字的樣式\n<Shift> 開啟編輯器而非切換\n<Numpad +> 啟用列出的樣式\n<Numpad –> 停用列出的樣式\n<Numpad *> 與 <`> （倒引號）— 切換初始啟用的樣式；不要在彈出式視窗開啟時套用到後來啟用的樣式，這樣您就可以在測試完後復原初始選擇：僅停用全部，然後切換。<Numpad –> <Numpad *>\n更多資訊請見 wiki"
+    "message": "<1>-<9>、<0>，數字鍵盤也可以 — 切換第 N 個樣式（0 是切換到第 10 個）\n<A>-<Z> 切換以該字母為名稱第一個字的樣式\n<Shift> 開啟編輯器而非切換\n<+> 啟用列出的樣式\n<–> 停用列出的樣式\n<*> 與 <`> （倒引號）— 切換初始啟用的樣式；不要在彈出式視窗開啟時套用到後來啟用的樣式，這樣您就可以在測試完後復原初始選擇：僅停用全部，然後切換。<–> <*>\n更多資訊請見 wiki"
   },
   "popupHotkeysTooltip": {
     "message": "點選以檢視可用的快速鍵"
@@ -1254,6 +1260,9 @@
   "shortcutsNoteFF": {
     "message": "在 Firefox 66 或更新的版本中，您可以手動開啟內建的快捷鍵使用者介面：\n1) 右鍵點擊工具列中的 Stylus 圖示並選擇「管理」\n（或是透過主選單或 Ctrl-Shift-A 開啟 about:addons），\n2) 在開啟的頁面中點擊右上角的齒輪圖示，\n3) 選擇「管理擴充套件快捷鍵」。\n\n您也可以在此自訂快捷鍵。"
   },
+  "sitesNoteRe": {
+    "message": "</\\w+://(abc|def)\\.com/(?!xyz).*/> 正規表示式必須涵蓋整個網址，例如範例中使用 <\\w://> 表示 <https://>，而 <.*> 則代表網域後面的路徑。2) 不需要在任何位置轉義 </>。3) 不需要錨定表示式，因系統已透過 <^(abc)$$> 內部完成錨定。"
+  },
   "sortDateNewestFirst": {
     "message": "最新的優先"
   },
@@ -1369,6 +1378,9 @@
         "content": "$1"
       }
     }
+  },
+  "styleNotAppliedExcludedTab": {
+    "message": "在樣式選單中排除目前分頁"
   },
   "styleNotAppliedOverridden": {
     "message": "您在樣式設定中的「$INC$」將覆蓋樣式原始設定的原始網站",

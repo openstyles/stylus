@@ -65,7 +65,7 @@
     "message": "Back-up"
   },
   "backupReminder": {
-    "message": "<b>Stijlen kunnen verloren gaan</b> als gevolg van stroomuitval, bugs in de browser, of gebruikersfouten.<hr><b>Maak een back-up van uw gegevens:</b> configureer ‘Synchroniseren met cloud’ in de opties, of klik handmatig op de exporteerknop wanneer u belangrijke wijzigingen aanbrengt. Configureer bij voorkeur het automatisch maken van back-ups van al uw gegevens via een toegewijde app."
+    "message": "<b>Stijlen kunnen verloren gaan</b> als gevolg van stroomuitval, bugs in de browser, of een gebruikersfout.<hr><b>Maak een back-up van uw gegevens:</b> configureer ‘Synchroniseren met cloud’ in de opties, of klik handmatig op de exporteerknop wanneer u belangrijke wijzigingen aanbrengt. Configureer bij voorkeur het automatisch maken van back-ups van al uw gegevens via een toegewijde app."
   },
   "checkAllUpdates": {
     "message": "Alle stijlen controleren op updates"
@@ -283,6 +283,9 @@
   "excludeStyleByDomainLabel": {
     "message": "Het huidige domein uitsluiten"
   },
+  "excludeStyleByTab": {
+    "message": "Het huidige tabblad uitsluiten"
+  },
   "excludeStyleByUrlLabel": {
     "message": "De huidige URL uitsluiten"
   },
@@ -425,6 +428,9 @@
   },
   "importReportLegendInvalid": {
     "message": "ongeldige overgeslagen"
+  },
+  "importReportLegendOrphans": {
+    "message": "geïnstalleerde stijlen niet in back-up"
   },
   "importReportLegendUpdatedBoth": {
     "message": "metagegevens en code bijgewerkt"
@@ -1047,7 +1053,7 @@
     "message": "Handig voor donkere thema’s in Chrome, omdat zijranden niet meer worden gerenderd"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>, ook op het numerieke toetsenbord - schakelt naar de Ne stijl (0 is 10)\n<A>-<Z> schakelt naar de eerste stijl die met de letter begint\n<Shift> opent de editor i.p.v. deze in/uit te schakelen\n<Numpad +> schakelt opgesomde stijlen in\n<Numpad –> schakelt opgesomde stijlen uit\n<Numpad *> en <`> (accent grave) - schakelt tussen initieel ingeschakelde stijlen; niet van toepassing op stijlen die zijn ingeschakeld met het pop-upvenster geopend, zodat u na het uitproberen de initiële selectie kunt herstellen: schakel alles uit en schakel dan om, m.a.w. <Numpad –> <Numpad *>\nMeer info is te vinden in de wiki"
+    "message": "<1>-<9>, <0>, ook op het numerieke toetsenbord - schakelt naar de Ne stijl (0 is 10)\n<A>-<Z> schakelt naar de eerste stijl die met de letter begint\n<Shift> opent de editor i.p.v. deze in/uit te schakelen\n<+> schakelt opgesomde stijlen in\n<–> schakelt opgesomde stijlen uit\n<*> en <`> (accent grave) - schakelt tussen initieel ingeschakelde stijlen; niet van toepassing op stijlen die zijn ingeschakeld met het pop-upvenster geopend, zodat u na het uitproberen de initiële selectie kunt herstellen: schakel alles uit en schakel dan om, m.a.w. <–> <*>\nMeer info is te vinden in de wiki"
   },
   "popupHotkeysTooltip": {
     "message": "Klik om beschikbare sneltoetsen te tonen"
@@ -1206,7 +1212,7 @@
     "message": "Verwijderde sectie herstellen"
   },
   "sectionUserCSS": {
-    "message": "De klassieke in secties verdeelde editor ondersteunt geen UserCSS-syntaxis. Als u dit wilt gebruiken, vink dan dan eerst in de beheerder of pop-up het selectievakje 'UserCSS' aan en maak daarna een nieuwe stijl aan. Kopieer dan uw huidige code door op de knop Exporteren in deze editor te klikken."
+    "message": "De klassieke in secties verdeelde editor ondersteunt geen UserCSS-syntaxis. Als u dit wilt gebruiken, vink dan eerst in de beheerder of pop-up het selectievakje UserCSS aan en maak daarna een nieuwe stijl aan. Kopieer dan uw huidige code door op de knop Exporteren in deze editor te klikken."
   },
   "sections": {
     "message": "Secties"
@@ -1222,6 +1228,9 @@
   },
   "shortcutsNoteFF": {
     "message": "In Firefox 66+ kunt u de ingebouwde UI voor sneltoetsen handmatig openen:\n1) klik met rechts op het Stylus-pictogram in de werkbalk en kies ‘Extensie beheren’\n(als alternatief kunt u about:addons openen via het hoofdmenu of Ctrl-Shift-A),\n2) klik in de pagina die wordt geopend op het tandwielpictogram in de rechterbovenhoek,\n3) kies ‘Extensiesneltoetsen beheren’.\n\nHier kunt u ook de sneltoetsen aanpassen."
+  },
+  "sitesNoteRe": {
+    "message": "</\\w+://(abc|def)\\.com/(?!xyz).*/> reguliere expressie die voor de hele URL moet gelden. Het voorbeeld gebruikt bv. <\\w://> voor <https://> en <.*> voor het pad na het domein. 2) Escape-tekens </> zijn nergens nodig. 3) Verankering van de expressie is niet nodig, omdat dit intern gebeurt via <^(abc)$$>."
   },
   "sortDateNewestFirst": {
     "message": "nieuwste eerst"
@@ -1339,6 +1348,9 @@
       }
     }
   },
+  "styleNotAppliedExcludedTab": {
+    "message": "Uitgesloten voor het huidige tabblad in het stijlmenu"
+  },
   "styleNotAppliedOverridden": {
     "message": "Uw ‘$INC$’ in de stijlinstellingen hebben voorrang op oorspronkelijke websites van de stijl",
     "placeholders": {
@@ -1403,6 +1415,9 @@
   },
   "styleSitesIncludeNote": {
     "message": "Websites waar deze stijl is ingeschakeld op uw persoonlijke apparaat, ofwel hieraan toegevoegd ofwel gebruikt in plaats van de websites zoals vastgelegd door de stijl, afhankelijk van het selectievakje. Handig voor externe stijlen die u beter niet kunt bewerken, zodat ze automatisch bijgewerkt kunnen blijven. Let er op dat in stijlen met meerdere secties, alle secties voor uw toegevoegde website zijn ingeschakeld, zelfs die welke voor bepaalde pagina’s van de oorspronkelijke website waren bedoeld."
+  },
+  "styleSitesIncludeOvr": {
+    "message": "hebben voorrang op de stijl"
   },
   "styleToMozillaFormatHelp": {
     "message": "De Mozilla-opmaak van de code kan bij userstyles.org worden ingediend en met het klassieke Stylish voor Firefox worden gebruikt."
