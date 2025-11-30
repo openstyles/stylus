@@ -22,6 +22,7 @@ import './popup.css';
 const installed = $id('installed');
 const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
 export const styleFinder = {};
+export let tabId;
 export let tabUrl;
 export let tabUrlSupported;
 export let isBlocked;
@@ -123,6 +124,7 @@ async function initPopup(frames, ping0, tab, urlSupported) {
     el.removeAttribute('media');
   }
 
+  tabId = tab.id;
   tabUrl = frames[0].url;
   tabUrlSupported = urlSupported;
   frames.forEach(createWriterElement);
@@ -148,7 +150,7 @@ async function initPopup(frames, ping0, tab, urlSupported) {
   }
 
   for (let t2 = performance.now() + 1000; performance.now() < t2;) {
-    if (await API.pingTab(tab.id)) {
+    if (await API.pingTab(tabId)) {
       blockPopup(false);
       return;
     }
@@ -227,10 +229,10 @@ export function resortEntries(entries) {
   }
 }
 
-async function handleUpdate({style, reason}) {
+export async function handleUpdate({style, reason}) {
   const entry = $id(kStyleIdPrefix + style.id);
   if (reason !== 'toggle' || !entry) {
-    [style] = await API.styles.getByUrl(tabUrl, style.id);
+    [style] = await API.styles.getByUrl(tabUrl, style.id, tabId);
     if (!style) return;
     style = Object.assign(style.style, style);
   }

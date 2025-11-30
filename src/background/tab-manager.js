@@ -21,7 +21,7 @@ export const get = (tabId, ...keyPath) => {
  * (tabId, 'foo', 123) will set tabId's meta to {foo: 123},
  * (tabId, 'foo', 'bar', 'etc', 123) will set tabId's meta to {foo: {bar: {etc: 123}}}
  */
-export const set = (tabId, ...args) => {
+export const set = function (tabId, ...args) {
   const value = args.pop();
   const lastKey = args.pop();
   const del = value === undefined;
@@ -37,7 +37,7 @@ export const set = (tabId, ...args) => {
   if (!del) obj[lastKey] = value;
   else if (obj) delete obj[lastKey];
   if (__.MV3 && bgMortal) stateDB.put(obj0, tabId);
-  return value;
+  return this === Object ? obj : value;
 };
 
 export const someInjectable = () => {

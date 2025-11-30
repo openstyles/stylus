@@ -44,7 +44,7 @@ export default async function makePopupData() {
         unknown.set(id, {
           frameId: id,
           parentFrameId: 0,
-          styles: getByUrl(frameUrl),
+          styles: getByUrl(frameUrl, undefined, tab.id),
           url: frameUrl,
         });
       }
@@ -82,7 +82,7 @@ export default async function makePopupData() {
     if (bgBusy) await bgBusy;
     for (const f of frames) {
       if (f.url && !f.isDupe)
-        f.styles ??= getByUrl(f.url);
+        f.styles ??= getByUrl(f.url, undefined, tab.id);
     }
   }
   return [frames, ping0, tab, urlSupported];

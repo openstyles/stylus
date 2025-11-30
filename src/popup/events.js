@@ -1,10 +1,11 @@
+import {kExcludedTabs} from '@/js/consts';
 import {configDialog, getEventKeyName, moveFocus} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {FIREFOX} from '@/js/ua';
 import {t} from '@/js/util';
 import {getActiveTab} from '@/js/util-webext';
-import {resortEntries, tabUrl} from '.';
+import {handleUpdate, resortEntries, tabId, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
 
 const menu = $id('menu');
@@ -94,10 +95,10 @@ const EntryRoutes = {
     const {url} = style;
     const [elTitle, elHome] = menu.$('header').children;
     const exc = style.exclusions || [];
-    for (const x of menuExclusions) {
-      x.el.title = x.rule;
-      x.el.classList.toggle('enabled',
-        x.input.checked = exc.includes(x.rule));
+    for (const {el, input, rule} of menuExclusions) {
+      el.title = rule;
+      el.classList.toggle('enabled',
+        input.checked = rule ? exc.includes(rule) : style[kExcludedTabs]);
     }
     menu.classList.remove('delete');
     menu.styleId = style.id;
@@ -151,12 +152,14 @@ function menuInit() {
   const u = new URL(tabUrl);
   for (const el of $$('[data-exclude]')) {
     const input = el.$('input');
-    const rule = u.origin +
-      (el.dataset.exclude === 'domain' ? '/*' : u.pathname.replace(/\*/g, '\\*'));
+    const type = el.dataset.exclude;
+    const tab = type === 'tab';
+    const rule = tab ? '' : u.origin + (type === 'domain' ? '/*' : u.pathname.replace(/\*/g, '\\*'));
     menuExclusions.push({el, input, rule});
     input.onchange = () => {
       el.classList.toggle('enabled', input.checked);
-      API.styles.toggleOverride(menu.styleId, rule, false, input.checked);
+      API.styles.toggleOverride(menu.styleId, rule, tab && tabId, input.checked);
+      if (tab) handleUpdate({style: {id: menu.styleId}});
     };
   }
 }

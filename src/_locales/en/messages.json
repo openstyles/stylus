@@ -390,6 +390,9 @@
   "excludeStyleByUrlLabel": {
     "message": "Exclude the current URL"
   },
+  "excludeStyleByTab": {
+    "message": "Exclude the current tab"
+  },
   "exportCompatible": {
     "message": "Export (compatible mode)"
   },
@@ -1678,6 +1681,10 @@
         "content": "$1"
       }
     }
+  },
+  "styleNotAppliedExcludedTab": {
+    "message": "Excluded for the current tab in style menu",
+    "description": "Tooltip in the popup for styles"
   },
   "styleNotAppliedOverridden": {
     "message": "Your \"$INC$\" in style settings override style's original sites",

@@ -52,15 +52,16 @@ export default function initStyleViaApi() {
     updateIconBadge.call({sender}, Object.keys(frameStyles));
   }
 
-  async function styleApply({id = null, ignoreUrlCheck = false}, {tab, frameId, url}) {
+  async function styleApply({id = null, ignoreUrlCheck = false}, sender) {
     if (prefs.__values['disableAll']) {
       return;
     }
+    const {tab, frameId, url} = sender;
     const {tabFrames, frameStyles} = getCachedData(tab.id, frameId);
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
       return;
     }
-    const {sections} = getSectionsByUrl(url, {id});
+    const {sections} = getSectionsByUrl.call({sender}, url, {id});
     const tasks = [];
     for (const sec of sections.sort((a, b) => calcOrder(a) - calcOrder(b))) {
       const styleId = sec.id;

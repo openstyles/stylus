@@ -1,17 +1,17 @@
 import {
-  IMPORT_THROTTLE, k_size, kExclusions, kInclusions, kOverridden, kUrl, pDisableAll,
+  IMPORT_THROTTLE, k_size, kExcludedTabs, kExclusions, kInclusions, kOverridden, kUrl, pDisableAll,
   pExposeIframes, pKeepAlive, pStyleViaASS, pStyleViaXhr, UCD,
 } from '@/js/consts';
 import {__values} from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
-import {calcObjSize, mapObj} from '@/js/util';
-import {broadcast} from '../broadcast';
+import {calcObjSize, isEmptyObj, mapObj} from '@/js/util';
+import {broadcast, sendTab} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {uuidIndex} from '../common';
 import {db, draftsDB} from '../db';
 import {isOptionSite, optionSites} from '../option-sites';
 import * as syncMan from '../sync-manager';
-import tabCache from '../tab-manager';
+import tabCache, {set as tabSet} from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
 import * as usercssMan from '../usercss-manager';
 import * as uswApi from '../usw-api';
@@ -84,13 +84,15 @@ export function getAllOrdered(keys) {
 /**
  * @param {string} url
  * @param {number} [id]
+ * @param {number} [tabId]
  * @returns {MatchUrlResult[]}
  */
-export function getByUrl(url, id) {
+export function getByUrl(url, id, tabId) {
   // FIXME: do we want to cache this? Who would like to open popup rapidly
   // or search the DB with the same URL?
   const results = [];
   const query = {url};
+  const excludedTabs = tabId != null && tabCache[tabId]?.[kExcludedTabs] || {};
   for (const {style} of id ? [dataMap.get(id)].filter(Boolean) : dataMap.values()) {
     let ovr;
     let matching;
@@ -99,6 +101,7 @@ export function getByUrl(url, id) {
       excluded: (ovr = style.exclusions) && ovr.some(urlMatchOverride, query),
       excludedScheme: !colorScheme.themeAllowsStyle(style),
       included: matching = (ovr = style[kInclusions]) && ovr.some(urlMatchOverride, query),
+      [kExcludedTabs]: style.id in excludedTabs,
       [kOverridden]: !matching && style[kOverridden] && ovr?.length,
     };
     const isIncluded = matching;
@@ -219,9 +222,21 @@ export function getSectionsByUrl(url, {id, init, dark} = {}) {
   }
   styleCache.add(cache);
   v = cache.sections;
-  v = id
-    ? ((v = v[id])) ? [v] : []
-    : Object.values(v);
+  const excludedIds = td[kExcludedTabs];
+  if (!id) {
+    if (excludedIds) {
+      const copy = [];
+      for (const k in v)
+        if (!excludedIds[k])
+          copy.push(v[k]);
+      v = copy;
+    }
+    v = Object.values(v);
+  } else if ((v = v[id]) && !excludedIds?.[id]) {
+    v = [v];
+  } else {
+    v = [];
+  }
   if (init === true && v.length) {
     (td[kUrl] ??= {})[frameId] ??= url;
   }
@@ -393,17 +408,24 @@ export async function toggleMany(ids, enabled) {
 }
 
 /** @returns {Promise<void>} */
-export async function toggleOverride(id, rule, isInclusion, isAdd) {
-  const style = Object.assign({}, getById(id));
-  const type = isInclusion ? kInclusions : kExclusions;
-  let list = style[type];
+export async function toggleOverride(id, rule, type, isAdd) {
+  if (typeof type === 'number') {
+    const obj = tabSet.call(Object, type, kExcludedTabs, id, isAdd || undefined);
+    if (!isAdd && isEmptyObj(obj))
+      delete obj[kExcludedTabs];
+    sendTab(type, {
+      method: 'styleUpdated',
+      style: {id, enabled: !isAdd},
+    });
+    return;
+  }
+  const style = getById(id);
+  const list = style[type ? kInclusions : kExclusions] ??= [];
   if (isAdd) {
-    if (!list) list = style[type] = [];
-    else if (list.includes(rule)) throw new Error('The rule already exists');
+    if (list.includes(rule)) throw new Error('The rule already exists');
     list.push(rule);
-  } else if (list) {
-    const i = list.indexOf(rule);
-    if (i >= 0) list.splice(i, 1);
+  } else if ((rule = list.indexOf(rule)) >= 0) {
+    list.splice(rule, 1);
   } else {
     return;
   }
