@@ -29,7 +29,7 @@ export const set = function (tabId, ...args) {
   let obj0 = obj;
   if (!obj) {
     if (del) return;
-    cache[tabId] = obj = obj0 = {};
+    cache[tabId] = obj = obj0 = {id: tabId};
   }
   for (let i = 0, key; obj && i < args.length; i++) {
     obj = obj[key = args[i]] || !del && (obj[key] = {});
@@ -68,11 +68,12 @@ bgInit.push(async () => {
       && stateDB.getAll(IDBKeyRange.bound(0, 1e99)),
     browser.tabs.query({}),
   ]);
+  const savedById = __.MV3 && saved && new Map(saved.map(obj => [obj.id, obj]));
   let toPut;
   for (const {id, url} of tabs) {
     let data;
-    if (!__.MV3 || !saved || !(data = saved[id]) || data[kUrl]?.[0] !== url) {
-      data = {[kUrl]: {0: url}};
+    if (!__.MV3 || !saved || !(data = savedById.get(id)) || data[kUrl]?.[0] !== url) {
+      data = {id, [kUrl]: {0: url}};
       if (__.MV3 && saved)
         (toPut ??= {})[id] = data;
     }
@@ -81,7 +82,7 @@ bgInit.push(async () => {
   if (__.MV3) {
     if (saved) {
       let toDel;
-      for (const id in saved)
+      for (const id of savedById.keys())
         if (!cache[id])
           (toDel ??= []).push(id);
       if (toDel) stateDB.deleteMany(toDel);
@@ -109,7 +110,7 @@ bgBusy.then(() => {
         else delete obj[kStyleIds];
       }
     } else {
-      cache[tabId] = obj = {};
+      cache[tabId] = obj = {id: tabId};
     }
     if (navType === kCommitted && !frameId)
       obj[kUrl] = {0: url};
