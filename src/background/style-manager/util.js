@@ -42,6 +42,19 @@ export const getById = id => dataMap.get(+id)?.style;
 /** @returns {StyleObj|void} */
 export const getByUuid = uuid => getById(uuidIndex.get(uuid));
 
+/**
+ * @param {Injection.SectionsMap} secs
+ * @param {{[styleId:number]: boolean}} excludedIds
+ * @return {Injection.Sections[]}
+ */
+export function getIncludedSections(secs, excludedIds) {
+  const res = [];
+  for (const k in secs)
+    if (!excludedIds[k])
+      res.push(secs[k]);
+  return res;
+}
+
 /** @returns {StyleObj} */
 export const mergeWithMapped = style => ({
   ...getById(style.id) || createNewStyle(),

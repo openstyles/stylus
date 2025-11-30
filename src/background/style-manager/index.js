@@ -21,8 +21,8 @@ import './init';
 import {onBeforeSave, onSaved} from './fixer';
 import {urlMatchOverride, urlMatchSection} from './matcher';
 import {
-  broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, mergeWithMapped, order,
-  orderWrap, setOrderImpl,
+  broadcastStyleUpdated, calcRemoteId, dataMap, getIncludedSections, getById, getByUuid,
+  mergeWithMapped, order, orderWrap, setOrderImpl,
 } from './util';
 
 export * from '../style-search-db';
@@ -213,34 +213,23 @@ export function getSectionsByUrl(url, {id, init, dark} = {}) {
        TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
     url = v || url;
   }
-  cache = cacheData.get(url);
-  if (!cache) {
-    cache = {url, sections: {}};
-    buildCache(cache, url);
-  } else if ((v = cache.maybeMatch)) {
+  v = cacheData.get(url);
+  if (v ? v = (cache = v).maybeMatch : cache = {url, sections: {}})
     buildCache(cache, url, v);
-  }
   styleCache.add(cache);
-  v = cache.sections;
   const excludedIds = td[kExcludedTabs];
-  if (!id) {
-    if (excludedIds) {
-      const copy = [];
-      for (const k in v)
-        if (!excludedIds[k])
-          copy.push(v[k]);
-      v = copy;
-    }
-    v = Object.values(v);
-  } else if ((v = v[id]) && !excludedIds?.[id]) {
-    v = [v];
-  } else {
-    v = [];
-  }
-  if (init === true && v.length) {
+  const secs = cache.sections;
+  const secsArr = id
+    ? (v = secs[id]) && !excludedIds?.[id]
+      ? [v]
+      : []
+    : excludedIds
+      ? getIncludedSections(secs, excludedIds)
+      : Object.values(secs);
+  if (init === true && secsArr.length) {
     (td[kUrl] ??= {})[frameId] ??= url;
   }
-  res.sections = v;
+  res.sections = secsArr;
   return res;
 }
 
