@@ -15,13 +15,12 @@ import {setSystemDark} from './color-scheme';
 import {bgBusy, bgInit, bgPreInit, dataHub} from './common';
 import reinjectContentScripts from './content-scripts';
 import initContextMenus from './context-menus';
-import {draftsDB, mirrorStorage, prefsDB, stateDB} from './db';
+import {draftsDB, mirrorStorage, prefsDB} from './db';
 import download from './download';
 import {refreshIconsWhenReady, updateIconBadge} from './icon-manager';
 import {setPrefs} from './prefs-api';
 import setClientData from './set-client-data';
 import * as styleMan from './style-manager';
-import * as styleCache from './style-manager/cache';
 import {dataMap} from './style-manager/util';
 import initStyleViaApi from './style-via-api';
 import './style-via-webrequest';
@@ -86,12 +85,8 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   if (previousVersion === '1.5.30') {
     prefsDB.delete(kBadFavs); // old Stylus marked all icons as bad when network was offline
   }
-  (bgPreInit.length ? bgPreInit : bgInit).push(
-    styleCache.clear(),
-  );
   if (__.MV3) {
     (bgPreInit.length ? bgPreInit : bgInit).push(
-      stateDB.clear(),
       DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules)))
         .then(() => prefs.ready)
         .then(() => usercssMan.toggleUrlInstaller()),
