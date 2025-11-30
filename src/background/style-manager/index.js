@@ -1,11 +1,12 @@
 import {
-  IMPORT_THROTTLE, k_size, kExcludedTabs, kExclusions, kInclusions, kOverridden, kUrl, pDisableAll,
+  IMPORT_THROTTLE, k_size, kExclusions, kInclusions, kOverridden, kTabOvr, kUrl, pDisableAll,
   pExposeIframes, pKeepAlive, pStyleViaASS, pStyleViaXhr, UCD,
 } from '@/js/consts';
 import {__values} from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
+import {ownRoot} from '@/js/urls';
 import {calcObjSize, isEmptyObj, mapObj} from '@/js/util';
-import {broadcast, sendTab} from '../broadcast';
+import {broadcast, broadcastExtension, sendTab} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {uuidIndex} from '../common';
 import {db, draftsDB} from '../db';
@@ -19,18 +20,18 @@ import cacheData, * as styleCache from './cache';
 import {buildCache} from './cache-builder';
 import './init';
 import {onBeforeSave, onSaved} from './fixer';
-import {urlMatchOverride, urlMatchSection} from './matcher';
+import {matchOverrides, urlMatchOverride, urlMatchSection} from './matcher';
 import {
-  broadcastStyleUpdated, calcRemoteId, dataMap, getIncludedSections, getById, getByUuid,
-  mergeWithMapped, order, orderWrap, setOrderImpl,
+  broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, mergeWithMapped, order,
+  orderWrap, setOrderImpl,
 } from './util';
 
 export * from '../style-search-db';
-export {getById as get};
+export {getById as get, matchOverrides};
 
 /** @returns {Promise<void>} */
 export async function config(id, prop, value) {
-  const style = Object.assign({}, getById(id));
+  const style = getById(id);
   const d = dataMap.get(id);
   style[prop] = (d.preview || {})[prop] = value;
   if (prop === kInclusions || prop === kOverridden || prop === kExclusions)
@@ -85,24 +86,27 @@ export function getAllOrdered(keys) {
  * @param {string} url
  * @param {number} [id]
  * @param {number} [tabId]
+ * @param {boolean} [needsOvrs]
  * @returns {MatchUrlResult[]}
  */
-export function getByUrl(url, id, tabId) {
+export function getByUrl(url, id, tabId, needsOvrs) {
   // FIXME: do we want to cache this? Who would like to open popup rapidly
   // or search the DB with the same URL?
   const results = [];
   const query = {url};
-  const excludedTabs = tabId != null && tabCache[tabId]?.[kExcludedTabs] || {};
+  const tabOverrides = tabId != null && tabCache[tabId]?.[kTabOvr];
   for (const {style} of id ? [dataMap.get(id)].filter(Boolean) : dataMap.values()) {
     let ovr;
     let matching;
-    /** Make sure to use the same logic in getAppliedCode and getByUrl */
+    /** Make sure to use the same logic in getAppliedCode and getByUrl
+     * @type {MatchUrlResult} */
     const res = {
-      excluded: (ovr = style.exclusions) && ovr.some(urlMatchOverride, query),
+      excluded: !!(ovr = style.exclusions) && ovr.some(urlMatchOverride, query),
       excludedScheme: !colorScheme.themeAllowsStyle(style),
-      included: matching = (ovr = style[kInclusions]) && ovr.some(urlMatchOverride, query),
-      [kExcludedTabs]: style.id in excludedTabs,
-      [kOverridden]: !matching && style[kOverridden] && ovr?.length,
+      included: matching = !!(ovr = style[kInclusions]) && ovr.some(urlMatchOverride, query),
+      [kTabOvr]: tabOverrides?.[style.id] ?? null,
+      incOvr: !!(!matching && style[kOverridden] && ovr?.length),
+      matchedOvrs: needsOvrs ? matchOverrides(style, url) : '',
     };
     const isIncluded = matching;
     let empty = true;
@@ -180,7 +184,7 @@ export function getSectionsByUrl(url, {id, init, dark} = {}) {
   if (init && __values[pDisableAll]) {
     return {cfg: {off: true}};
   }
-  let cache, v;
+  let v;
   const res = {};
   const {sender = {}} = this || {};
   const {tab = {}, frameId, TDM} = sender;
@@ -213,19 +217,23 @@ export function getSectionsByUrl(url, {id, init, dark} = {}) {
        TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
     url = v || url;
   }
-  v = cacheData.get(url);
-  if (v ? v = (cache = v).maybeMatch : cache = {url, sections: {}})
-    buildCache(cache, url, v);
+  const tabOverrides = td[kTabOvr];
+  const cache = (v = cacheData.get(url)) || {
+    url,
+    maybe: null,
+    sections: {},
+  };
+  if (!v || (v = cache.maybe) || tabOverrides)
+    buildCache(cache, url, v, tab.id, tabOverrides);
   styleCache.add(cache);
-  const excludedIds = td[kExcludedTabs];
   const secs = cache.sections;
   const secsArr = id
-    ? (v = secs[id]) && !excludedIds?.[id]
+    ? (v = secs[id]) && tabOverrides?.[id] !== false
       ? [v]
       : []
-    : excludedIds
-      ? getIncludedSections(secs, excludedIds)
-      : Object.values(secs);
+    : (v = Object.values(secs)) && tabOverrides
+      ? v.filter(sec => sec[kTabOvr] !== false)
+      : v;
   if (init === true && secsArr.length) {
     (td[kUrl] ??= {})[frameId] ??= url;
   }
@@ -302,17 +310,11 @@ export async function preview(style) {
  * @returns {number} style id
  */
 export function remove(id, reason, many) {
-  const {style, appliesTo} = dataMap.get(id);
+  const {style} = dataMap.get(id);
   const sync = reason !== 'sync';
   const uuid = style._id;
   if (sync) syncMan.remove(uuid, Date.now());
-  for (const url of appliesTo) {
-    const cache = cacheData.get(url);
-    if (cache) {
-      delete cache.sections[id];
-      styleCache.hit(cache);
-    }
-  }
+  styleCache.delSections(id);
   dataMap.delete(id);
   uuidIndex.delete(uuid);
   if (!many) {
@@ -396,28 +398,47 @@ export async function toggleMany(ids, enabled) {
   if (errors) throw errors;
 }
 
-/** @returns {Promise<void>} */
-export async function toggleOverride(id, rule, type, isAdd) {
-  if (typeof type === 'number') {
-    const obj = tabSet.call(Object, type, kExcludedTabs, id, isAdd || undefined);
+/**
+ * @param {number} id
+ * @param {string|number} val - pattern or tab id
+ * @param {boolean} type - true: inclusions, false: exclusions
+ * @param {boolean} isAdd - true: add val to the list, false: remove it
+ * @returns {Promise<void>}
+ */
+export async function toggleOverride(id, val, type, isAdd) {
+  const styleData = dataMap.get(id);
+  const style = styleData.style;
+  const msg = {
+    method: 'styleUpdated',
+    style: {id, enabled: isAdd ? type : style.enabled},
+  };
+  if (typeof val === 'number') {
+    const url = tabCache[val].url[0];
+    const cache = cacheData.get(url);
+    const obj = tabSet.call(Object, val, kTabOvr, id, isAdd ? type : undefined);
     if (!isAdd && isEmptyObj(obj))
-      delete obj[kExcludedTabs];
-    sendTab(type, {
-      method: 'styleUpdated',
-      style: {id, enabled: !isAdd},
-    });
+      delete obj[kTabOvr];
+    if (cache)
+      (cache.maybe ??= new Set()).add(id);
+    if (!url.startsWith(ownRoot))
+      sendTab(val, msg);
+    broadcastExtension(msg);
     return;
   }
-  const style = getById(id);
-  const list = style[type ? kInclusions : kExclusions] ??= [];
+  type = type ? kInclusions : kExclusions;
+  let list = style[type];
   if (isAdd) {
-    if (list.includes(rule)) throw new Error('The rule already exists');
-    list.push(rule);
-  } else if ((rule = list.indexOf(rule)) >= 0) {
-    list.splice(rule, 1);
+    if (!list) list = style[type] = [];
+    else if (list.includes(val)) throw new Error('The rule already exists');
+    list.push(val);
+  } else if (list && (val = list.indexOf(val)) >= 0) {
+    if (list.length > 1) list.splice(val, 1);
+    else style[type] = null; // to overwrite the prop in a style of broadcast receiver
   } else {
     return;
   }
   styleCache.clear();
-  await save(style, 'config');
+  await save(style, false);
+  msg.reason = 'config';
+  broadcast(msg);
 }

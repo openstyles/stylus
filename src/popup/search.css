@@ -6,7 +6,7 @@
   body {
     overflow-y: auto;
   }
-  #installed-wrapper, #main-actions, #popup-options {
+  #installed, #main-actions, #popup-options {
     flex-shrink: 0;
   }
 }

@@ -1,85 +1,70 @@
-import {kExclusions, kInclusions, kOverridden} from '@/js/consts';
+import {kExclusions, kInclusions, kOverridden, kTabOvr} from '@/js/consts';
 import {styleCodeEmpty} from '@/js/sections-util';
 import {themeAllowsStyle} from '../color-scheme';
-import cacheData, * as styleCache from './cache';
 import {urlMatchOverride, urlMatchSection} from './matcher';
 import {dataMap} from './util';
-
-/** @param {StyleObj} style
- * @return {void} */
-export function buildCacheForStyle(style) {
-  const {id} = style;
-  const data = dataMap.get(id);
-  // FIXME: ideally, when preview is available, there is no need to rebuild the cache when original style change.
-  // we should lift this logic to parent function.
-  const styleToApply = data.preview || style;
-  const updated = new Set();
-  for (const cache of cacheData.values()) {
-    const url = cache.url;
-    if (!data.appliesTo.has(url)) {
-      (cache.maybeMatch ??= new Set()).add(id);
-      continue;
-    }
-    if (styleToApply.enabled && getAppliedCode({url}, styleToApply, cache)) {
-      updated.add(url);
-    } else if (cache.sections[id]) {
-      delete cache.sections[id];
-    } else {
-      continue;
-    }
-    styleCache.hit(cache);
-  }
-  data.appliesTo = updated;
-}
 
 /**
  * @param {MatchCache.Entry} cache
  * @param {string} url
- * @param {Iterable<number>} [ids]
+ * @param {MatchCache.Entry['maybe']} [maybe]
+ * @param {number} tabId
+ * @param {TabCacheEntry['tabOvr']} [tabOverrides]
  * @return {void} */
-export function buildCache(cache, url, ids) {
+export function buildCache(cache, url, maybe, tabId, tabOverrides) {
   const query = {url};
-  for (let data of ids || dataMap.values()) {
-    if (ids && !(data = dataMap.get(data)))
-      continue;
-    const {style} = data;
-    if (style.enabled && getAppliedCode(query, data.preview || style, cache, style))
-      data.appliesTo.add(url);
+  for (const src of maybe || dataMap.values()) {
+    const data = !maybe ? src : dataMap.get(src);
+    if (data) {
+      const {style} = data;
+      const id = style.id;
+      const ovr = tabOverrides?.[id];
+      if ((ovr ?? style.enabled)
+      && getAppliedCode(query, data.preview || style, cache, style, ovr)) {
+        data.urls.add(url);
+      } else {
+        delete cache.sections[id];
+        if (ovr == null) data.urls.delete(url);
+      }
+    }
+    if (maybe?.delete(src) && !maybe.size)
+      cache.maybe = null;
   }
 }
 
 /** Checks an __enabled__ style against url, theme, overrides, then caches the result.
  * @param {MatchQuery} query
  * @param {StyleObj} style
- * @param {MatchCache.Entry} cache
+ * @param {MatchCache.Entry} [cache]
  * @param {StyleObj} [styleToCache]
+ * @param {boolean} [tabOvr]
  * @return {true | void}
  */
-function getAppliedCode(query, style, cache, styleToCache = style) {
-  let v;
+function getAppliedCode(query, style, cache, styleToCache = style, tabOvr) {
+  let v, isIncluded;
+  v = tabOvr ||
   /** Make sure to use the same logic in getAppliedCode and getByUrl */
-  const result = // skipping checks performed by the caller as a trivial optimization
-    // style.enabled &&
+    // style.enabled is checked in the caller for optimization
     themeAllowsStyle(style) &&
     (!(v = style[kExclusions]) || !v.length || !v.some(urlMatchOverride, query)) &&
-    (!(v = style[kInclusions]) || !v.length || -v.some(urlMatchOverride, query)
+    (!(v = style[kInclusions]) || !v.length || (isIncluded = v.some(urlMatchOverride, query))
       || !style[kOverridden]);
-  if (!result)
+  if (!v)
     return;
-  const isIncluded = result < 0;
   const code = [];
-  const idx = [];
-  let i = 0;
   for (const section of style.sections) {
-    if ((isIncluded || urlMatchSection(query, section) === true)
-    && !styleCodeEmpty(section)) {
+    if ((isIncluded || urlMatchSection(query, section) === true) && !styleCodeEmpty(section)) {
       code.push(section.code);
-      idx.push(i);
     }
-    i++;
   }
   if (code.length) {
-    styleCache.make(cache, styleToCache, idx, code);
+    const id = styleToCache.id;
+    cache.sections[id] = {
+      id,
+      code,
+      name: styleToCache.customName || styleToCache.name,
+      [kTabOvr]: tabOvr,
+    };
     return true;
   }
 }

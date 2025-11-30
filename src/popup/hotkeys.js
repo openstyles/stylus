@@ -1,150 +1,155 @@
-import {$create, $createLink} from '@/js/dom';
+import {kTabOvr} from '@/js/consts';
+import {$createLink, $isTextInput, $toggleClasses} from '@/js/dom';
+import {moveFocus} from '@/js/dom-util';
 import {tBody} from '@/js/localization';
 import {API} from '@/js/msg-api';
+import {CHROME, MAC} from '@/js/ua';
 import {t} from '@/js/util';
+import {handleUpdate} from './events';
+import {closeMenu, menu} from './menu';
+import {tabId} from '.';
 
 tBody();
 
 const entries = document.getElementsByClassName('entry');
-const container = $id('hotkey-info');
-const {title} = container;
-let togglablesShown = true;
-let togglables = getTogglables();
-let enabled;
+const kEnabled = 'enabled';
+const kDisabled = 'disabled';
+let infoOn;
+let oldBodyHeight;
+let toggledOn;
+let togglables;
+let wikiText;
 
-initHotkeyInfo();
-setState(true);
+initInfo();
+getTogglables();
+window.on('keydown', onKeyDown);
 
 export async function pause(fn, ...args) {
-  setState(false);
+  window.off('keydown', onKeyDown);
   await fn(...args);
-  setState(true);
+  window.on('keydown', onKeyDown);
 }
 
-function setState(newState = !enabled) {
-  if (!newState !== !enabled) {
-    window[newState ? 'on' : 'off']('keydown', onKeyDown, true);
-    enabled = newState;
-  }
-}
-
-function onKeyDown(event) {
-  if (event.ctrlKey || event.altKey || event.metaKey || !enabled ||
-      /^(text|search)$/.test(document.activeElement?.type)) {
+function onKeyDown(evt) {
+  if (evt.metaKey)
     return;
-  }
   let entry;
-  let {key, code, shiftKey} = event;
-  if (key === 'Escape' && !shiftKey && container.dataset.active) {
-    event.preventDefault();
-    hideInfo();
+  let {code, key, altKey, ctrlKey, shiftKey} = evt;
+  const mkey = (altKey ? '!' : '') + (ctrlKey ? '^' : '') + (shiftKey ? '+' : '') + key;
+  if (infoOn) {
+    if (mkey === 'Escape') {
+      evt.preventDefault();
+      hideInfo();
+    }
     return;
   }
-  if (key >= '0' && key <= '9') {
-    entry = entries[(Number(key) || 10) - 1];
-  } else if (code >= 'Digit0' && code <= 'Digit9') {
-    entry = entries[(Number(code.slice(-1)) || 10) - 1];
-  } else if (key === '`' || key === '*' || code === 'Backquote' || code === 'NumpadMultiply') {
-    invertTogglables();
-  } else if (key === '-' || code === 'NumpadSubtract') {
-    toggleState(entries, 'enabled', false);
-  } else if (key === '+' || code === 'NumpadAdd') {
-    toggleState(entries, 'disabled', true);
+  if (menu.isConnected) {
+    if (mkey === 'Escape') {
+      closeMenu();
+    } else if (mkey === 'Tab' || mkey === '+Tab') {
+      moveFocus(menu, shiftKey ? -1 : 1);
+    } else {
+      return;
+    }
+    evt.preventDefault();
+    return;
+  }
+  if (ctrlKey) {
+    if (mkey === '^f') {
+      evt.preventDefault();
+      $id('find-styles-btn').click();
+    }
+    return;
+  }
+  if ($isTextInput())
+    return;
+  if (key === '`' || key === '*' || code === 'Backquote') {
+    if (!togglables.length) getTogglables();
+    toggleState(togglables, toggledOn = !toggledOn, altKey);
+  } else if (key === '-') {
+    toggleState(entries, false, altKey);
+  } else if (key === '+') {
+    toggleState(entries, true, altKey);
+  } else if (key >= '0' && key <= '9' || /^Digit\d$/.test(code) && (key = code.slice(-1))) {
+    entry = entries[(+key || 10) - 1];
+  } else if (key === '?' && !altKey) {
+    $('#help').click();
   } else if (key.length === 1) {
     shiftKey = false; // typing ':' etc. needs Shift so we hide it here to avoid opening editor
     key = key.toLocaleLowerCase();
     entry = [...entries].find(e => e.innerText.toLocaleLowerCase().startsWith(key));
   }
-  entry?.$(shiftKey ? '.style-edit-link' : 'input').click();
+  if (entry) {
+    if (altKey) toggleState([entry], null, true);
+    else entry.$(shiftKey ? '.style-edit-link' : 'input').click();
+  }
 }
 
 function getTogglables() {
-  return [...$('.entry.enabled') ? $$('.entry.enabled') : entries]
-    .map(entry => entry.id);
-}
-
-function countEnabledTogglables() {
   let num = 0;
-  for (const id of togglables) {
-    num += $id(id).classList.contains('enabled');
+  togglables = [];
+  for (const el of $$('.entry.' + kEnabled)) {
+    togglables.push(el.id);
+    num += el.styleMeta[kTabOvr] !== false;
   }
-  return num;
+  toggledOn = num >= togglables.length / 2;
 }
 
-function invertTogglables() {
-  togglables = togglables.length ? togglables : getTogglables();
-  togglablesShown = countEnabledTogglables() > togglables.length / 2;
-  toggleState(togglables, null, !togglablesShown);
-  togglablesShown = !togglablesShown;
-}
-
-function toggleState(list, match, enable) {
-  const results = [];
-  let task = Promise.resolve();
+/**
+ * @param {HTMLElement[]} list
+ * @param {boolean} enable
+ * @param {boolean} [inTab]
+ */
+function toggleState(list, enable, inTab) {
+  const ids = [];
   for (let entry of list) {
-    entry = typeof entry === 'string' ? $id(entry) : entry;
-    if (!match && entry.$('input').checked !== enable || entry.classList.contains(match)) {
-      results.push(entry.id);
-      task = task
-        .then(() => API.styles.toggle(entry.styleId, enable))
-        .then(() => {
-          entry.classList.toggle('enabled', enable);
-          entry.classList.toggle('disabled', !enable);
-          entry.$('input').checked = enable;
-        });
+    if (typeof entry === 'string' && !(entry = $id(entry)))
+      continue;
+    const style = entry.styleMeta;
+    const {id, enabled, [kTabOvr]: ovr} = style;
+    let enabledInTab;
+    if (inTab && enable !== (enabledInTab = ovr ?? enabled)) {
+      API.styles.toggleOverride(id, tabId,
+        enable ?? !enabledInTab,
+        ovr == null || (ovr ? enabled : !enabled));
+      handleUpdate({style: {id}});
+    } else if (!inTab && enable !== enabled) {
+      ids.push(id);
+      entry.$('input').checked = enable;
+      $toggleClasses(entry, {[kEnabled]: enable, [kDisabled]: !enable});
     }
   }
-  return results;
+  if (ids.length)
+    API.styles.toggleMany(ids, enable);
+}
+
+function initInfo() {
+  const el = $('#help');
+  const tAll = t('popupHotkeysInfo');
+  let tTab = t('popupHotkeysInfoTab');
+  if (MAC) tTab = tTab.replace('<Alt>', '<⌥>');
+  el.onShowNote = showInfo;
+  el.onHideNote = hideInfo;
+  el.title = `${tTab}\n${tAll}`;
+  el.dataset.title = (tTab + '\n' + tAll.replace(/\n.+$/, '')).replace(/\n/g, '<hr>');
+  wikiText = tAll.match(/(.+)?$/)[0] || t('linkStylusWiki');
 }
 
 function hideInfo() {
-  delete container.dataset.active;
-  document.body.style.height = '';
-  container.title = title;
+  document.body.style.minHeight = oldBodyHeight;
+  infoOn = false;
 }
 
-function initHotkeyInfo() {
-  container.onclick = ({target}) => {
-    if (target.localName === 'button') {
-      hideInfo();
-    } else if (!container.dataset.active) {
-      open();
-    }
-  };
-
-  function open() {
-    container.title = '';
-    container.style = '';
-    container.dataset.active = true;
-    if (!container.firstElementChild) {
-      buildElement();
-    }
-    const height = 3 +
-      container.firstElementChild.scrollHeight +
-      container.lastElementChild.scrollHeight;
-    if (height > document.body.clientHeight) {
-      document.body.style.height = height + 'px';
-    }
-  }
-
-  function buildElement() {
-    const keysToElements = line =>
-      line
-        .split(/(<.*?>)/)
-        .map(s => (!s.startsWith('<') ? s :
-          $create('mark', s.slice(1, -1))));
-    const linesToElements = text =>
-      text
-        .trim()
-        .split('\n')
-        .map((line, i, array) => i < array.length - 1
-          ? $create('p', keysToElements(line))
-          : $createLink('https://github.com/openstyles/stylus/wiki/Popup', line));
-    [
-      linesToElements(t('popupHotkeysInfo')),
-      $create('button', t('confirmOK')),
-    ].forEach(child => {
-      container.appendChild($create('div', child));
-    });
-  }
+/** @this {MessageBox} */
+function showInfo(box) {
+  const el = box.firstChild;
+  const wikiUrl = 'https://github.com/openstyles/stylus/wiki/Popup';
+  const a = $createLink({href: wikiUrl, title: CHROME ? wikiUrl : ''}, wikiText);
+  box.$('#message-box-buttons').append(a);
+  box.classList.add('hotkeys');
+  oldBodyHeight = document.body.style.minHeight;
+  el.setAttribute('style', 'max-height:none !important');
+  document.body.style.minHeight = el.clientHeight + 24 + 'px';
+  el.removeAttribute('style');
+  infoOn = true;
 }

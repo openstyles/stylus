@@ -1,7 +1,7 @@
 import '@/js/dom-init';
 import {kAboutBlank, kPopup, kStyleIdPrefix} from '@/js/consts';
 import {$create, $createFragment} from '@/js/dom';
-import {getEventKeyName, setupLivePrefs} from '@/js/dom-util';
+import {setupLivePrefs} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
@@ -106,12 +106,6 @@ async function initPopup(frames, ping0, tab, urlSupported) {
   elFind.on('split-btn', async e => {
     if (!styleFinder.on) await import('./search');
     styleFinder.inSite(e);
-  });
-  window.on('keydown', e => {
-    if (getEventKeyName(e) === 'Ctrl-F') {
-      e.preventDefault();
-      elFind.click();
-    }
   });
 
   Object.assign($id('popup-manage-button'), {

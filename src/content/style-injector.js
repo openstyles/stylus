@@ -22,12 +22,12 @@ const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !__.ENTRY && 'style', 
 const docRewriteObserver = !__.ENTRY && RewriteObserver(updateRoot);
 const docRootObserver = RootObserver(restoreOrder);
 const toSafeChar = c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20);
-/** @type {Injection.Sections[]} */
+/** @type {Injection.SectionsContent[]} */
 export const list = [];
 const randomIds = {};
 const calcOrder = ({id}) => orderPrio[id] * 1e6 || orderMain[id] || id + .5e6;
 const compare = (a, b) => calcOrder(a) - calcOrder(b);
-/** @type {Map<number,Injection.Sections>} */
+/** @type {Map<number,Injection.SectionsContent>} */
 export const table = new Map();
 /** @type {CSSStyleSheet[]} V1: frozen array in old Chrome, the reference changes */
 let ass;

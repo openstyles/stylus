@@ -149,7 +149,7 @@ export default function SourceEditor() {
     updateLinterSwitch();
   });
   setTimeout(linterMan.enableForEditor, 0, cm);
-  if (!$isTextInput(document.activeElement)) {
+  if (!$isTextInput()) {
     cm.focus();
   }
 

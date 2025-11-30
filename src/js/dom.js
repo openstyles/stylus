@@ -13,7 +13,7 @@ const detachments = new WeakMap();
 const getObjectType = /*@__PURE__*/Object.call.bind({}.toString);
 export const urlParams = new URLSearchParams(location.search);
 
-export const $isTextInput = ({localName, type} = {}) =>
+export const $isTextInput = ({localName, type} = document.activeElement || {}) =>
   localName === 'textarea' ||
   localName === 'input' && (
     type === 'text' ||

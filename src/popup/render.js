@@ -1,5 +1,5 @@
 import '@/js/dom-init';
-import {kExcludedTabs, kOverridden, kStyleIdPrefix, UCD} from '@/js/consts';
+import {kStyleIdPrefix, kTabOvr, UCD} from '@/js/consts';
 import {$create, $toggleClasses} from '@/js/dom';
 import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
@@ -113,6 +113,7 @@ function makeCrumb(key, val, name, body, isDomain) {
 }
 
 export function createStyleElement(style, entry) {
+  const oldEntry = entry;
   if (entry) {
     style = Object.assign(entry.styleMeta, style);
   } else {
@@ -133,9 +134,9 @@ export function createStyleElement(style, entry) {
     'empty': style.empty,
     'disabled': !enabled,
     'enabled': enabled,
-    'force-applied': style.included,
-    'not-applied': style.excluded || style.sloppy || style.excludedScheme || style[kOverridden]
-      || style[kExcludedTabs],
+    'force-applied': style.included || !!style[kTabOvr],
+    'not-applied': style.excluded || style.sloppy || style.excludedScheme || style.incOvr
+      || style[kTabOvr] === false,
     'regexp-partial': style.sloppy,
     'frame': frameUrl,
   });
@@ -163,6 +164,7 @@ export function createStyleElement(style, entry) {
     frameEl.onmousedown = Events.maybeEdit;
   }
 
+  if (oldEntry) xo.unobserve(name); // forcing recalc of the title
   xo.observe(name);
   return entry;
 }
@@ -172,16 +174,17 @@ export function onIntersect(results) {
   for (const {target: $name, boundingClientRect: r} of results) {
     /** @type {StyleObj & MatchUrlResult} */
     const style = $name.$entry.styleMeta;
+    const tabOvr = style[kTabOvr];
     $name.title = [
+      $name.scrollWidth > r.width + 1 && $name.textContent,
       style.sloppy && t('styleNotAppliedRegexpProblemTooltip'),
       style.excluded && t('styleNotAppliedExcluded', t('styleSitesExclude')),
       style.excludedScheme && t(`styleNotAppliedScheme${capitalize(style.preferScheme)}`),
       style.included && t('styleForceApplied', t('styleSitesInclude')),
-      style[kExcludedTabs] && t('styleNotAppliedExcludedTab'),
-      style[kOverridden] && t('styleNotAppliedOverridden', t('styleSitesInclude')),
-    ].filter(Boolean).join('\n') ||
-      $name.scrollWidth > r.width + 1 && $name.textContent ||
-      '';
+      tabOvr ? t('styleForceAppliedTab') :
+        tabOvr === false && t('styleNotAppliedExcludedTab'),
+      style.incOvr && t('styleNotAppliedOverridden', t('styleSitesInclude')),
+    ].filter(Boolean).join('\n') || '';
   }
 }
 

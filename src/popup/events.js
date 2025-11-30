@@ -1,27 +1,29 @@
-import {kExcludedTabs, kStyleIdPrefix} from '@/js/consts';
-import {configDialog, getEventKeyName, moveFocus} from '@/js/dom-util';
+import {kStyleIdPrefix} from '@/js/consts';
+import {configDialog, moveFocus} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
-import {FIREFOX} from '@/js/ua';
-import {t} from '@/js/util';
 import {getActiveTab} from '@/js/util-webext';
+import {closeMenu, menu, renderMenu} from './menu';
 import {tabId, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
 import {createStyleElement, installed, resortEntries} from './render';
 
-const menu = $id('menu');
-const menuExclusions = [];
-
 export async function handleUpdate({style, reason}) {
-  const entry = $id(kStyleIdPrefix + style.id);
+  const id = style.id;
+  const entry = $id(kStyleIdPrefix + id);
+  const inMenu = id === menu.styleId && menu.isConnected;
   if (reason !== 'toggle' || !entry) {
-    [style] = await API.styles.getByUrl(tabUrl, style.id, tabId);
-    if (!style) return;
+    [style] = await API.styles.getByUrl(tabUrl, id, tabId, inMenu);
+    if (!style) {
+      closeMenu();
+      return;
+    }
     style = Object.assign(style.style, style);
   }
   const el = createStyleElement(style, entry);
   if (!el.isConnected) installed.append(el);
   resortEntries();
+  if (inMenu) renderMenu(el);
 }
 
 export function configure(event, entry) {
@@ -83,7 +85,7 @@ const GlobalRoutes = {
       if (menu.classList.toggle('delete')) return;
       API.styles.remove(menu.styleId);
     }
-    menuHide();
+    closeMenu();
   },
   '.copy'({target}) {
     navigator.clipboard.writeText(target.textContent);
@@ -94,39 +96,15 @@ const GlobalRoutes = {
   },
 };
 
-const EntryRoutes = {
-  async input(event, entry) {
+export const EntryRoutes = {
+  async input(event, entry = this) {
     event.stopPropagation(); // preventing .style-name from double-processing the click
     await API.styles.toggle(entry.styleId, this.checked);
     resortEntries();
   },
   '.configure': configure,
   '.menu-button'(event, entry) {
-    if (!menuExclusions.length) menuInit();
-    const be = entry.getBoundingClientRect();
-    const style = /**@type{StyleObj}*/entry.styleMeta;
-    const {url} = style;
-    const [elTitle, elHome] = menu.$('header').children;
-    const exc = style.exclusions || [];
-    for (const {el, input, rule} of menuExclusions) {
-      el.title = rule;
-      el.classList.toggle('enabled',
-        input.checked = rule ? exc.includes(rule) : style[kExcludedTabs]);
-    }
-    menu.classList.remove('delete');
-    menu.styleId = style.id;
-    menu.hidden = false;
-    window.on('keydown', menuOnKey);
-    elTitle.textContent = entry.$('.style-name').textContent;
-    elHome.hidden = !url;
-    if (url) Object.assign(elHome, {
-      href: url,
-      // Firefox already shows the target of links in a popup
-      title: t('externalHomepage') + (FIREFOX ? '' : '\n' + url),
-    });
-    const menuH = menu.firstElementChild.offsetHeight + 1;
-    const popupH = $root.clientHeight;
-    menu.style.paddingTop = Math.min(be.bottom, popupH - menuH - 8) + 'px';
+    renderMenu(entry);
     moveFocus(menu, 0);
   },
   '.style-edit-link': openEditor,
@@ -160,39 +138,3 @@ document.on('click', event => {
     if (map === GlobalRoutes) break;
   }
 });
-
-function menuInit() {
-  const u = new URL(tabUrl);
-  for (const el of $$('[data-exclude]')) {
-    const input = el.$('input');
-    const type = el.dataset.exclude;
-    const tab = type === 'tab';
-    const rule = tab ? '' : u.origin + (type === 'domain' ? '/*' : u.pathname.replace(/\*/g, '\\*'));
-    menuExclusions.push({el, input, rule});
-    input.onchange = () => {
-      el.classList.toggle('enabled', input.checked);
-      API.styles.toggleOverride(menu.styleId, rule, tab && tabId, input.checked);
-      if (tab) handleUpdate({style: {id: menu.styleId}});
-    };
-  }
-}
-
-function menuHide() {
-  menu.hidden = true;
-  window.off('keydown', menuOnKey);
-}
-
-function menuOnKey(e) {
-  switch (getEventKeyName(e)) {
-    case 'Tab':
-    case 'Shift-Tab':
-      e.preventDefault();
-      moveFocus(menu, e.shiftKey ? -1 : 1);
-      break;
-    case 'Escape': {
-      e.preventDefault();
-      menuHide();
-      break;
-    }
-  }
-}

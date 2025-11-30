@@ -1,6 +1,8 @@
+import {kExclusions, kInclusions} from '@/js/consts';
 import {styleCodeEmpty} from '@/js/sections-util';
 import {ownRoot} from '@/js/urls';
 import {globAsRegExpStr, RX_MAYBE_REGEXP, tryURL} from '@/js/util';
+import {getById} from './util';
 
 const BAD_MATCHER = /^$/;
 const EXT_RE = /\bextension\b/;
@@ -49,6 +51,19 @@ function compile(text) {
     setInterval(trimCache, 5 * 60e3);
   }
   return re;
+}
+
+/**
+ * @param {number|StyleObj} what
+ * @param {string} url
+ * @return {string}
+ */
+export function matchOverrides(what, url) {
+  if (+what) what = getById(what);
+  url = {url};
+  const inc = what[kInclusions]?.filter(urlMatchOverride, url).join('\n+');
+  const exc = what[kExclusions]?.filter(urlMatchOverride, url).join('\n-');
+  return (inc ? '+' + inc : '') + (exc ? `${inc ? '\n' : ''}-${exc}` : '');
 }
 
 /** Trim the cache in a long-lived bg (MV2 or MV3 with keepAlive) */

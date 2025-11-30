@@ -36,7 +36,7 @@ export default async function configDialog(style) {
   let elCfg;
   return messageBox.show({
     title: `${style.customName || style.name} v${ucd.version}`,
-    className: 'config-dialog',
+    className: 'config-dialog' + (isPopup ? ' center-dialog' : ''),
     contents: [
       $create('.config-heading', ucd.supportURL &&
         $createLink({className: '.external-support', href: ucd.supportURL},

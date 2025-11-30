@@ -384,14 +384,8 @@
     "message": "Enable",
     "description": "Label for the button to enable a style"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Exclude the current domain"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "Exclude the current URL"
-  },
-  "excludeStyleByTab": {
-    "message": "Exclude the current tab"
+  "exclude": {
+    "message": "Exclude"
   },
   "exportCompatible": {
     "message": "Export (compatible mode)"
@@ -606,6 +600,9 @@
   },
   "importStyles": {
     "message": "Import styles"
+  },
+  "include": {
+    "message": "Include"
   },
   "installButton": {
     "message": "Install style",
@@ -1314,6 +1311,10 @@
     "message": "<1>-<9>, <0>, also on numpad - toggles Nth style (0 is 10)\n<A>-<Z> toggles first style with a name that starts with the letter\n<Shift> opens editor instead of toggling\n<+> enables listed styles\n<–> disables listed styles\n<*> and <`> (backtick) - toggles initially enabled styles; doesn't apply to subsequently enabled styles while the popup is open so you can restore the initial selection after testing stuff: simply disable all, then toggle i.e. <–> <*>\nMore info on wiki",
     "description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
   },
+  "popupHotkeysInfoTab": {
+    "message": "Hold <Alt> to toggle styles only for the current tab.",
+    "description": "Preserve < and > symbols so that <hotkey> is styled as a key"
+  },
   "popupHotkeysTooltip": {
     "message": "Click to see available hotkeys",
     "description": "Tooltip displayed when hovering the right edge of the extension popup"
@@ -1612,6 +1613,13 @@
       }
     }
   },
+  "styleForceAppliedTab": {
+    "message": "Force-applied for the current tab in style menu",
+    "description": "Tooltip in the popup for styles"
+  },
+  "styleForceTab": {
+    "message": "Current tab only"
+  },
   "styleFromMozillaFormatError": {
     "message": "Failed to import from Mozilla format",
     "description": "Label for the import error"
@@ -1753,6 +1761,17 @@
   "styleSettings": {
     "message": "Style settings",
     "description": "Label/title for style settings dialog"
+  },
+  "styleSitesMatchingRules": {
+    "message": "Your personal site rules that match the current URL.\n\"+\" prefix means inclusions.\n\"-\" prefix means exclusions.",
+    "description": "1) This hint is followed by a list like 'URLs on the domain', 'URLs', etc.\n2) <br> is replaced with a checkbox and translation of styleSitesIncludeOvr i.e. Force-include (and [x] override style) or exclude ...."
+  },
+  "styleSitesPopupHeading": {
+    "message": "Include (and <br>) or exclude the style when visiting:",
+    "description": "1) This hint is followed by a list like 'URLs on the domain', 'URLs', etc.\n2) <br> is replaced with a checkbox and translation of styleSitesIncludeOvr i.e. Force-include (and [x] override style) or exclude ...."
+  },
+  "styleSitesPopupEdit": {
+    "message": "Edit the full list of personal sites in \"Style settings\" in the editor"
   },
   "styleSitesExclude": {
     "message": "Personal excluded sites"

@@ -1,11 +1,12 @@
 import {bgBusy} from '../common';
+import {dataMap} from './util';
 
 let onDeleted;
 let timer;
 const MAX = 1000;
 /** @type {Map<string,MatchCache.Entry>} keyed on URL */
 const cache = new Map();
-/** @type {Set<MatchCache.Entry | MatchCache.DbEntry>} */
+/** @type {Set<MatchCache.Entry>} */
 const toWrite = new Set();
 
 export default cache;
@@ -19,46 +20,19 @@ export function add(val) {
 
 /** @return {void} */
 export function clear() {
+  // TODO: clear only entries for a given style id?
   if (onDeleted) cache.forEach(onDeleted);
   if (timer) timer = clearTimeout(timer);
   cache.clear();
 }
 
-/**
- * @param {MatchCache.DbEntry} entry
- * @param {StyleObj} style
- * @param {MatchCache.Index} [idx]
- * @param {string[]} [code]
- * @return {?boolean}
- */
-export function make(entry, style, idx, code) {
-  const id = style.id;
-  const entrySections = entry.sections;
-  if (idx || (idx = entrySections[id]) && !idx.idx) {
-    if (!code) {
-      code = [];
-      for (const i of idx) {
-        const sec = style.sections[i];
-        if (sec) code.push(sec.code);
-        else return;
-      }
-    }
-    entrySections[id] = {
-      id,
-      idx,
-      code,
-      name: style.customName || style.name,
-    };
-  }
-  return !!idx;
-}
-
+/** @param {(cache: MatchCache.Entry) => any} fn */
 export function setOnDeleted(fn) {
   onDeleted = fn;
 }
 
 /** @sideeffects Overwrites the array
- * @param {MatchCache.Entry}
+ * @param {MatchCache.Entry} items
  * @return {void} */
 function del(items) {
   if (!items[0]) return;
@@ -66,6 +40,17 @@ function del(items) {
     val = items[i];
     cache.delete(items[i] = val.url);
     onDeleted(val);
+  }
+}
+
+export function delSections(id) {
+  for (const url of dataMap.get(id).urls) {
+    const entry = cache.get(url);
+    if (entry) {
+      (entry.maybe ??= new Set()).add(id);
+      delete entry.sections[id];
+      hit(entry);
+    }
   }
 }
 

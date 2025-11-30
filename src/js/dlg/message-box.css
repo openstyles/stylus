@@ -12,12 +12,6 @@
   pointer-events: auto;
   -moz-user-select: none;
 
-  #stylus-popup & {
-    align-items: center;
-    justify-content: center;
-    animation: none;
-  }
-
   > div {
     top: var(--gap);
     right: var(--gap);
@@ -71,6 +65,13 @@
 
   &.pre-line #message-box-contents {
     white-space: pre-line;
+  }
+
+  [id=stylus-popup] & {
+    animation: none;
+    > div {
+      max-height: 100dvh;
+    }
   }
 }
 

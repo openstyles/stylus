@@ -54,7 +54,7 @@ type StyleDataMap = Map<number, StyleDataMapEntry>;
 declare interface StyleDataMapEntry {
   style: StyleObj;
   preview?: StyleObj;
-  appliesTo: Set<string>;
+  urls: Set<string>;
 }
 
 declare interface StyleSection {
@@ -72,13 +72,13 @@ type TabCache = {[tabId:string]: TabCacheEntry};
 declare interface TabCacheEntry {
   id: number;
   url: {[frameId: string]: string};
-  excludedTabs: {[styleId: string]: boolean},
   incognito?: boolean;
   nonce?: {[frameId: string]: string};
   styleIds?: {
     url: string;
     styleIds: { [frameId: string]: number[] };
   };
+  tabOvr?: {[styleId: string]: boolean},
 }
 
 declare namespace Injection {
@@ -91,13 +91,12 @@ declare namespace Injection {
   }
   interface Sections {
     id: number,
-    /** Added in style-manager::cache */
-    idx?: MatchCache.Index,
-    /** array in bg, string in content */
     code: string[] | string,
     name: string,
-    /** Added in style-injector */
-    el?: HTMLStyleElement|CSSStyleSheet;
+  }
+  interface SectionsContent extends Sections {
+    code: string,
+    el: HTMLStyleElement|CSSStyleSheet;
   }
   interface Config {
     ass?: boolean;
@@ -119,16 +118,10 @@ declare namespace Injection {
 declare namespace MatchCache {
   interface Entry {
     url: string;
-    maybeMatch?: Set<number>;
+    maybe?: Set<number>;
     sections: Injection.SectionsMap;
+    tabOvr?: boolean;
   }
-  type DbEntry = {
-    url: string;
-    d: Date[];
-    sections: IndexMap;
-  }
-  type IndexMap = {[styleId: string]: Index};
-  type Index = number[];
 }
 
 declare interface MatchQuery {
@@ -144,10 +137,13 @@ declare interface MatchUrlResult {
   excluded: boolean;
   excludedScheme: boolean;
   included: boolean;
-  /** not included and not matching the original sites */
-  overridden: boolean;
+  /** true = using the overridden includes while not matching the original target sites */
+  incOvr: boolean;
+  matchedOvrs?: string;
   sloppy: boolean;
   style: StyleObj;
+  /** truthy: included, false: excluded, nullish: no override */
+  tabOvr?: boolean;
 }
 
 declare interface UsercssData {

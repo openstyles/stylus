@@ -211,16 +211,17 @@ function suppressFocusRingOnClick({target}) {
 }
 
 function showTooltipNote(event) {
-  let note = event.target.closest('[data-cmd=note]');
+  const note = event.target.closest('[data-cmd=note]');
   if (note) {
     event.preventDefault();
     const internal = note.dataset.title;
-    note = internal || tooltips.get(note) || note.title;
+    const text = internal || tooltips.get(note) || note.title;
     messageBox.show({
-      className: 'note center-dialog',
-      contents: note.includes('<') ? sanitizeHtml(note, internal) : note,
+      className: 'note',
+      contents: text.includes('<') ? sanitizeHtml(text, internal) : text,
       buttons: [t('confirmClose')],
-    });
+      onshow: note.onShowNote,
+    }).then(note.onHideNote);
   }
 }
 
@@ -228,9 +229,10 @@ function splitLongTooltips() {
   for (const el of $$('[title], [data-title]')) {
     if (tooltips.has(el))
       continue;
-    const internal = el.dataset.title;
-    const old = internal ? el.title = internal : el.title;
+    const old = el.title || (el.title = el.dataset.title || '');
     const hls = [];
+    if (!old)
+      continue;
     tooltips.set(el, old);
     let res = old.includes('</') ? old.replace(rxTag, '')
       : old.replace(rxTaglike, s => '\x00'.repeat(s.length - 1 || 1) +

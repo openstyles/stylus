@@ -7,6 +7,7 @@ import {bgBusy, bgInit, onTabUrlChange, onUnload, onUrlChange} from './common';
 import {stateDB} from './db';
 import {kCommitted} from './navigation-manager';
 
+/** @type {TabCache} */
 const cache = {__proto__: null};
 export default cache;
 

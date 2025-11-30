@@ -6,7 +6,7 @@ import broadcastInjectorConfig from '../broadcast-injector-config';
 import {uuidIndex} from '../common';
 import {prefsDB} from '../db';
 import * as syncMan from '../sync-manager';
-import {buildCacheForStyle} from './cache-builder';
+import {delSections} from './cache';
 
 /** @type {StyleDataMap} */
 export const dataMap = new Map();
@@ -42,34 +42,18 @@ export const getById = id => dataMap.get(+id)?.style;
 /** @returns {StyleObj|void} */
 export const getByUuid = uuid => getById(uuidIndex.get(uuid));
 
-/**
- * @param {Injection.SectionsMap} secs
- * @param {TabCacheEntry['excludedTabs']} excludedIds
- * @return {Injection.Sections[]}
- */
-export function getIncludedSections(secs, excludedIds) {
-  const res = [];
-  for (const k in secs)
-    if (!excludedIds[k])
-      res.push(secs[k]);
-  return res;
-}
-
 /** @returns {StyleObj} */
 export const mergeWithMapped = style => ({
   ...getById(style.id) || createNewStyle(),
   ...style,
 });
 
-export function broadcastStyleUpdated(style, reason, isNew) {
-  buildCacheForStyle(style);
+export function broadcastStyleUpdated({enabled, id}, reason, isNew) {
+  delSections(id);
   return broadcast({
     method: isNew ? 'styleAdded' : 'styleUpdated',
     reason,
-    style: {
-      id: style.id,
-      enabled: style.enabled,
-    },
+    style: {id, enabled},
   });
 }
 
@@ -114,7 +98,7 @@ export async function setOrderImpl(data, {
 export function storeInMap(style) {
   dataMap.set(style.id, {
     style,
-    appliesTo: new Set(),
+    urls: new Set(),
   });
   uuidIndex.set(style._id, style.id);
 }

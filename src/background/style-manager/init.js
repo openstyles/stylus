@@ -1,4 +1,4 @@
-import {DB, kInjectionOrder, kResolve} from '@/js/consts';
+import {DB, kInjectionOrder, kResolve, kTabOvr} from '@/js/consts';
 import {onConnect, onDisconnect} from '@/js/msg';
 import {STORAGE_KEY} from '@/js/prefs';
 import * as colorScheme from '../color-scheme';
@@ -34,8 +34,9 @@ onSchemeChange.add(() => {
 });
 
 styleCache.setOnDeleted(val => {
-  for (const id in val.sections) {
-    dataMap.get(+id)?.appliesTo.delete(val.url);
+  for (const sec of Object.values(val.sections)) {
+    if (sec[kTabOvr] == null)
+      dataMap.get(sec.id)?.urls.delete(val.url);
   }
 });
 

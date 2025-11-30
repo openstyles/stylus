@@ -57,10 +57,7 @@
     <p i18n="stylusUnavailableForURLdetails"></p>
   </div>
 
-  <main id="installed-wrapper" class="rel">
-    <aside id="hotkey-info" i18n="title:popupHotkeysTooltip"></aside>
-    <div id="installed" i18n="data-no-styles:noStylesForSite, data-find:findStylesOnline"></div>
-  </main>
+  <main id="installed" i18n="data-no-styles:noStylesForSite, data-find:findStylesOnline"></main>
 
   <div class="actions flex" id="main-actions">
     <div id="write-wrapper">
@@ -86,40 +83,63 @@
       ><button class="if-not-blocked split-btn-pedal" i18n="menu-site:popupManageSiteStyles"></button>
     </div>
     <div class="split-btn" id="find-split">
-      <button id="find-styles-btn" i18n="find" title="Ctrl-F"></button
+      <button id="find-styles-btn" i18n="find" title="<Ctrl-F>"></button
       ><button class="split-btn-pedal"
                menu-usoa="UserStyles Archive"
                menu-usw="UserStyles World"
                menu-uso="UserStyles"
                menu-gf="GreasyFork"></button>
     </div>
-    <button id="options-btn" i18n="title:openOptions">
+    <button class="icon">
+      <a id="help" data-cmd="note" tabindex="0">
+        <i class="i-info"></i>
+      </a>
+    </button>
+    <button id="options-btn" i18n="title:openOptions" class="icon">
       <svg class="hollow-gear" viewBox="0 0 20 20">
         <text y="100%">⚙</text>
       </svg>
     </button>
   </div>
-
-  <div id="menu" hidden>
+</template>
+<template data-id="menu">
+  <div id="menu">
     <div>
       <header>
-        <span class="ellipsis"></span>
+        <label class="ellipsis"><input type=checkbox><span></span></label>
         <a id="home" class="icon" target="_blank"><i class="i-external"></i></a>
       </header>
       <main>
-        <label data-exclude="domain" i18n="+excludeStyleByDomainLabel"><input type="checkbox"></label>
-        <label data-exclude="url" i18n="+excludeStyleByUrlLabel"><input type="checkbox"></label>
-        <label data-exclude="tab" i18n="+excludeStyleByTab"><input type="checkbox"></label>
+        <% _.forEach({
+          tab: /*i18n*/'styleForceTab',
+          domain: /*i18n*/'appliesDomainOption',
+          prefix: /*i18n*/'appliesUrlPrefixOption',
+          url: /*i18n*/'appliesUrlOption',
+        }, (text, type) => { %>
+        <div data-ovr="<%= type %>">
+          <span i18n="<%= text %>"></span>
+          <label><input type="checkbox" i18n="title:include"><i class="i-plus"></i></label>
+          <label><input type="checkbox" i18n="title:exclude"><i class="i-minus"></i></label>
+        </div>
+        <% if (type == 'tab') { %><p i18n="styleSitesPopupHeading"></p><% } %>
+        <% }); %>
+        <p id="matchedOvr" i18n="title:styleSitesMatchingRules"></p>
       </main>
       <main class="delete">
         <span i18n="deleteStyleConfirm"></span>
       </main>
       <footer>
         <button data-cmd="delete" i18n="confirmDelete"></button>
+        <button data-cmd="edit" i18n="editStyleLabel, title:styleSitesPopupEdit"></button>
         <button data-cmd="cancel" i18n="confirmClose"></button>
       </footer>
     </div>
   </div>
+</template>
+<template data-id="incOvr">
+  <label id="incOvr" i18n="title:styleSitesIncludeNote">
+    <input type="checkbox"><span i18n="styleSitesIncludeOvr"></span>
+  </label>
 </template>
 </head>
 
