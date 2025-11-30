@@ -1,15 +1,28 @@
-import {kExcludedTabs} from '@/js/consts';
+import {kExcludedTabs, kStyleIdPrefix} from '@/js/consts';
 import {configDialog, getEventKeyName, moveFocus} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {FIREFOX} from '@/js/ua';
 import {t} from '@/js/util';
 import {getActiveTab} from '@/js/util-webext';
-import {handleUpdate, resortEntries, tabId, tabUrl} from '.';
+import {tabId, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
+import {createStyleElement, installed, resortEntries} from './render';
 
 const menu = $id('menu');
 const menuExclusions = [];
+
+export async function handleUpdate({style, reason}) {
+  const entry = $id(kStyleIdPrefix + style.id);
+  if (reason !== 'toggle' || !entry) {
+    [style] = await API.styles.getByUrl(tabUrl, style.id, tabId);
+    if (!style) return;
+    style = Object.assign(style.style, style);
+  }
+  const el = createStyleElement(style, entry);
+  if (!el.isConnected) installed.append(el);
+  resortEntries();
+}
 
 export function configure(event, entry) {
   if (!this.target) {

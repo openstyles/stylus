@@ -2,22 +2,48 @@ import '@/js/dom-init';
 import {kExcludedTabs, kOverridden, kStyleIdPrefix, UCD} from '@/js/consts';
 import {$create, $toggleClasses} from '@/js/dom';
 import {template} from '@/js/localization';
+import * as prefs from '@/js/prefs';
 import {ownRoot} from '@/js/urls';
 import {capitalize, clipString, stringAsRegExpStr, t} from '@/js/util';
 import {MF} from '@/js/util-webext';
-import {tabUrlSupported} from '.';
+import {isBlocked, tabUrlSupported} from '.';
 import * as Events from './events';
 
 const EXT_NAME = `<${MF.name}>`;
 const TPL_STYLE = template.style;
 const xo = new IntersectionObserver(onIntersect);
+/** @type {HTMLElement} */
+export const installed = $id('installed');
 
-export function toggleSideBorders(_key, state) {
-  const style = $root.style;
-  if (state) {
-    style.cssText += 'left right'.replace(/\S+/g, 'border-$&: 2px solid white !important;');
-  } else if (style.borderLeft) {
-    style.borderLeft = style.borderRight = '';
+export function showStyles(frames) {
+  const entries = new Map();
+  for (let i = 0; i < frames.length; i++) {
+    if (isBlocked && !i) continue; // skip a blocked main frame
+    const frame = frames[i];
+    for (let fs of frame.styles || []) {
+      const id = fs.style.id;
+      if (!entries.has(id)) {
+        fs = Object.assign(fs.style, fs);
+        fs.frameUrl = !i ? '' : frame.url;
+        entries.set(id, createStyleElement(fs));
+      }
+    }
+  }
+  resortEntries([...entries.values()]);
+}
+
+function sortStyles(entries) {
+  const enabledFirst = prefs.__values['popup.enabledFirst'];
+  return entries.sort(({styleMeta: a}, {styleMeta: b}) =>
+    Boolean(a.frameUrl) - Boolean(b.frameUrl) ||
+    enabledFirst && Boolean(b.enabled) - Boolean(a.enabled) ||
+    (a.customName || a.name).localeCompare(b.customName || b.name));
+}
+
+export function resortEntries(entries) {
+  // `entries` is specified only at startup, after that we respect the prefs
+  if (entries || prefs.__values['popup.autoResort']) {
+    installed.append(...sortStyles(entries || [...installed.children]));
   }
 }
 

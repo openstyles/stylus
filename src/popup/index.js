@@ -11,15 +11,12 @@ import {CHROME, FIREFOX, MOBILE, OPERA} from '@/js/ua';
 import {clamp, sleep0, t} from '@/js/util';
 import {CHROME_POPUP_BORDER_BUG, getActiveTab} from '@/js/util-webext';
 import * as Events from './events';
+import {handleUpdate} from './events';
 import './hotkeys';
-import {
-  createStyleElement, createWriterElement, toggleSideBorders, updateStateIcon,
-} from './render';
+import {createWriterElement, showStyles, updateStateIcon} from './render';
 import '@/css/onoffswitch.css';
 import './popup.css';
 
-/** @type {HTMLElement} */
-const installed = $id('installed');
 const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
 export const styleFinder = {};
 export let tabId;
@@ -51,7 +48,14 @@ prefs.subscribe('disableAll', (key, val) => {
     t(val ? 'disableAllStylesOff' : 'genericEnabledLabel');
 }, true);
 if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
-  prefs.subscribe('popup.borders', toggleSideBorders, true);
+  prefs.subscribe('popup.borders', (_key, state) => {
+    const style = $root.style;
+    if (state) {
+      style.cssText += 'left right'.replace(/\S+/g, 'border-$&: 2px solid white !important;');
+    } else if (style.borderLeft) {
+      style.borderLeft = style.borderRight = '';
+    }
+  }, true);
 }
 if (!__.MV3 && CHROME >= 66 && CHROME <= 69) {
   // Chrome 66-69 adds a gap, https://crbug.com/821143
@@ -195,50 +199,6 @@ async function initPopup(frames, ping0, tab, urlSupported) {
   const elInfo = $('.blocked-info');
   if (elInfo) elInfo.replaceWith(info);
   else document.body.prepend(info);
-}
-
-function sortStyles(entries) {
-  const enabledFirst = prefs.__values['popup.enabledFirst'];
-  return entries.sort(({styleMeta: a}, {styleMeta: b}) =>
-    Boolean(a.frameUrl) - Boolean(b.frameUrl) ||
-    enabledFirst && Boolean(b.enabled) - Boolean(a.enabled) ||
-    (a.customName || a.name).localeCompare(b.customName || b.name));
-}
-
-function showStyles(frames) {
-  const entries = new Map();
-  for (let i = 0; i < frames.length; i++) {
-    if (isBlocked && !i) continue; // skip a blocked main frame
-    const frame = frames[i];
-    for (let fs of frame.styles || []) {
-      const id = fs.style.id;
-      if (!entries.has(id)) {
-        fs = Object.assign(fs.style, fs);
-        fs.frameUrl = !i ? '' : frame.url;
-        entries.set(id, createStyleElement(fs));
-      }
-    }
-  }
-  resortEntries([...entries.values()]);
-}
-
-export function resortEntries(entries) {
-  // `entries` is specified only at startup, after that we respect the prefs
-  if (entries || prefs.__values['popup.autoResort']) {
-    installed.append(...sortStyles(entries || [...installed.children]));
-  }
-}
-
-export async function handleUpdate({style, reason}) {
-  const entry = $id(kStyleIdPrefix + style.id);
-  if (reason !== 'toggle' || !entry) {
-    [style] = await API.styles.getByUrl(tabUrl, style.id, tabId);
-    if (!style) return;
-    style = Object.assign(style.style, style);
-  }
-  const el = createStyleElement(style, entry);
-  if (!el.isConnected) installed.append(el);
-  resortEntries();
 }
 
 function blockPopup(val = true) {
