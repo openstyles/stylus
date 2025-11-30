@@ -10,6 +10,7 @@ import {$create} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
 import {onMessage} from './msg';
 import {clientData} from './prefs';
+import {actionPopupUrl} from './urls';
 import {MF_ICON_EXT, MF_ICON_PATH} from './util-webext';
 import '@/css/global.css';
 import '@/css/global-dark.css';
@@ -35,7 +36,7 @@ export let isDark;
   });
   if (favicon
   && window === top
-  && location.pathname !== '/popup.html') {
+  && !location.href.startsWith(actionPopupUrl)) {
     document.head.append(...[32, 16].map(size => $create('link', {
       rel: 'icon',
       href: `${MF_ICON_PATH}${isDark ? '' : 'light/'}${size}${MF_ICON_EXT}`,

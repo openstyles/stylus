@@ -1,5 +1,5 @@
 import {CodeMirror, THEMES} from '@/cm';
-import {kEditorSettings} from '@/js/consts';
+import {kEditorSettings, kExclusions, kInclusions, kOverridden} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {templateCache, htmlToTemplate, template} from '@/js/localization';
@@ -43,7 +43,7 @@ function StyleSettings(ui) {
   const pendingSetters = new Map();
   const updaters = [
     initCheckbox(elUpd, 'updatable', tryURL(style.updateUrl).href),
-    initCheckbox('#ss-overridden', 'overridden', false),
+    initCheckbox('#ss-overridden', kOverridden, false),
     initInput('#ss-update-url', 'updateUrl', '', {
       validate(el) {
         elUpd.disabled = !el.value || !el.validity.valid;
@@ -51,8 +51,8 @@ function StyleSettings(ui) {
       },
     }),
     initRadio('ss-scheme', 'preferScheme', 'none'),
-    initArea('inclusions'),
-    initArea('exclusions'),
+    initArea(kInclusions),
+    initArea(kExclusions),
   ];
   update();
   prefs.subscribe('schemeSwitcher.enabled', (_, val) => {

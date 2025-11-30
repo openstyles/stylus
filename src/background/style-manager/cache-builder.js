@@ -1,3 +1,4 @@
+import {kExclusions, kInclusions, kOverridden} from '@/js/consts';
 import {styleCodeEmpty} from '@/js/sections-util';
 import {themeAllowsStyle} from '../color-scheme';
 import cacheData, * as styleCache from './cache';
@@ -73,8 +74,9 @@ function getAppliedCode(query, style) {
   /** Make sure to use the same logic in getAppliedCode and getByUrl */
   const result = style.enabled &&
     themeAllowsStyle(style) &&
-    (!(v = style.exclusions) || !v.length || !v.some(urlMatchOverride, query)) &&
-    (!(v = style.inclusions) || !v.length || -v.some(urlMatchOverride, query) || !style.overridden);
+    (!(v = style[kExclusions]) || !v.length || !v.some(urlMatchOverride, query)) &&
+    (!(v = style[kInclusions]) || !v.length || -v.some(urlMatchOverride, query)
+      || !style[kOverridden]);
   if (!result)
     return;
   const isIncluded = result < 0;

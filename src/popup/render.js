@@ -1,5 +1,5 @@
 import '@/js/dom-init';
-import {kStyleIdPrefix, UCD} from '@/js/consts';
+import {kOverridden, kStyleIdPrefix, UCD} from '@/js/consts';
 import {$create, $toggleClasses} from '@/js/dom';
 import {template} from '@/js/localization';
 import {ownRoot} from '@/js/urls';
@@ -108,7 +108,7 @@ export function createStyleElement(style, entry) {
     'disabled': !enabled,
     'enabled': enabled,
     'force-applied': style.included,
-    'not-applied': style.excluded || style.sloppy || style.excludedScheme || style.overridden,
+    'not-applied': style.excluded || style.sloppy || style.excludedScheme || style[kOverridden],
     'regexp-partial': style.sloppy,
     'frame': frameUrl,
   });
@@ -150,7 +150,7 @@ export function onIntersect(results) {
       style.excluded && t('styleNotAppliedExcluded', t('styleSitesExclude')),
       style.excludedScheme && t(`styleNotAppliedScheme${capitalize(style.preferScheme)}`),
       style.included && t('styleForceApplied', t('styleSitesInclude')),
-      style.overridden && t('styleNotAppliedOverridden', t('styleSitesInclude')),
+      style[kOverridden] && t('styleNotAppliedOverridden', t('styleSitesInclude')),
     ].filter(Boolean).join('\n') ||
       $name.scrollWidth > r.width + 1 && $name.textContent ||
       '';

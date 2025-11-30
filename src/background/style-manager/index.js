@@ -1,6 +1,6 @@
 import {
-  IMPORT_THROTTLE, k_size, kUrl, pDisableAll, pExposeIframes, pKeepAlive, pStyleViaASS,
-  pStyleViaXhr, UCD,
+  IMPORT_THROTTLE, k_size, kExclusions, kInclusions, kOverridden, kUrl, pDisableAll,
+  pExposeIframes, pKeepAlive, pStyleViaASS, pStyleViaXhr, UCD,
 } from '@/js/consts';
 import {__values} from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
@@ -33,7 +33,7 @@ export async function config(id, prop, value) {
   const style = Object.assign({}, getById(id));
   const d = dataMap.get(id);
   style[prop] = (d.preview || {})[prop] = value;
-  if (prop === 'inclusions' || prop === 'overridden' || prop === 'exclusions')
+  if (prop === kInclusions || prop === kOverridden || prop === kExclusions)
     styleCache.clear();
   await save(style, 'config');
 }
@@ -98,8 +98,8 @@ export function getByUrl(url, id) {
     const res = {
       excluded: (ovr = style.exclusions) && ovr.some(urlMatchOverride, query),
       excludedScheme: !colorScheme.themeAllowsStyle(style),
-      included: matching = (ovr = style.inclusions) && ovr.some(urlMatchOverride, query),
-      overridden: !matching && style.overridden && ovr?.length,
+      included: matching = (ovr = style[kInclusions]) && ovr.some(urlMatchOverride, query),
+      [kOverridden]: !matching && style[kOverridden] && ovr?.length,
     };
     const isIncluded = matching;
     let empty = true;
@@ -395,7 +395,7 @@ export async function toggleMany(ids, enabled) {
 /** @returns {Promise<void>} */
 export async function toggleOverride(id, rule, isInclusion, isAdd) {
   const style = Object.assign({}, getById(id));
-  const type = isInclusion ? 'inclusions' : 'exclusions';
+  const type = isInclusion ? kInclusions : kExclusions;
   let list = style[type];
   if (isAdd) {
     if (!list) list = style[type] = [];
