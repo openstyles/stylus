@@ -94,7 +94,6 @@ function toggleState(list, match, enable) {
         });
     }
   }
-  if (results.length) task.then(API.refreshAllTabs);
   return results;
 }
 
