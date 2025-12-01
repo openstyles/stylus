@@ -52,7 +52,7 @@
   font-weight: bold;
   padding: 5px;
   text-align: center;
-  + :not([hidden]) {
+  :not([hidden]) + :not([hidden]) {
     margin-top: var(--outer-padding);
   }
 }

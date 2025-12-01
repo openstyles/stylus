@@ -644,7 +644,6 @@ a:hover i {
     > :first-child {
       margin-top: 0;
     }
-    padding-bottom: var(--outer-padding);
   }
   #search-results {
     order: 3;
