@@ -13,6 +13,9 @@
   color: inherit;
   background-color: var(--bg);
   font-size: 113%; /* most monospace fonts are optically smaller */
+  textarea {
+    white-space: pre;
+  }
 }
 .CodeMirror-gutters {
   background-color: var(--c95);
