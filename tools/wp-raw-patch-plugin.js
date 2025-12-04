@@ -222,7 +222,7 @@ function flattenExports(str, ids) {
       return match;
     });
   if (str.replace(/\s+/g, '') !== `${RG.definePropertyGetters}(${RG.exports},{});`)
-    flat2 += str;
+    flat1 += str;
   return [flat1, flat2];
 }
 
