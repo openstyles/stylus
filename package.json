@@ -43,6 +43,7 @@
     "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.5",
     "html-webpack-processing-plugin": "^1.0.2",
+    "husky": "^9.1.7",
     "jszip": "^3.10.1",
     "mini-css-extract-plugin": "^2.9.4",
     "postcss": "^8.5.6",
@@ -81,6 +82,7 @@
     "version": "node tools/sync-manifest-version.js && git add .",
     "bump": "pnpm version patch",
     "bump-stable": "pnpm version minor",
+    "prepare": "husky",
     "postinstall": "node tools/build-cm-css-data.js"
   },
   "engines": {
