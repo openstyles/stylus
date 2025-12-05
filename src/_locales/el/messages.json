@@ -299,12 +299,6 @@
   "enableStyleLabel": {
     "message": "Ενεργοποίηση"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Εξαίρεση του τρέχοντος τομέα"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "Εξαίρεση της τρέχουσας διεύθυνσης URL"
-  },
   "exportCompatible": {
     "message": "Εξαγωγή (λειτουργία συμβατότητας)"
   },

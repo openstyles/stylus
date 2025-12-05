@@ -226,12 +226,6 @@
   "enableStyleLabel": {
     "message": "Etkinleştir"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Mevcut alan adını hariç tut"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "Mevcut URL'yi hariç tut"
-  },
   "exportCompatible": {
     "message": "Dışa Aktar (uyumlu mod)"
   },

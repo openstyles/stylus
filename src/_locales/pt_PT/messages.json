@@ -240,12 +240,6 @@
   "enableStyleLabel": {
     "message": "Ativar"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Excluir o domínio atual"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "Excluir a URL atual"
-  },
   "exportLabel": {
     "message": "Exportar"
   },

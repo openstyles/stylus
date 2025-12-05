@@ -302,15 +302,6 @@
   "enableStyleLabel": {
     "message": "تمكين"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "استبعاد النطاق الحالي"
-  },
-  "excludeStyleByTab": {
-    "message": "استبعاد علامة التبويب الحالية"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "استبعاد عنوان URL الحالي"
-  },
   "exportCompatible": {
     "message": "تصدير (وضع متوافق)"
   },

@@ -299,12 +299,6 @@
   "enableStyleLabel": {
     "message": "启用"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "排除当前域名"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "排除当前链接"
-  },
   "exportCompatible": {
     "message": "导出（兼容模式）"
   },

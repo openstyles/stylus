@@ -290,12 +290,6 @@
   "enableStyleLabel": {
     "message": "Увімкнути"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Виключити поточний домен"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "Виключити поточний URL"
-  },
   "exportCompatible": {
     "message": "Експорт (режим сумісності)"
   },

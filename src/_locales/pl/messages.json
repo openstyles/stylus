@@ -299,15 +299,6 @@
   "enableStyleLabel": {
     "message": "Włącz"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Wyklucz bieżącą domenę"
-  },
-  "excludeStyleByTab": {
-    "message": "Wyklucz bieżącą kartę"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "Wyklucz bieżący adres URL"
-  },
   "exportCompatible": {
     "message": "Eksportuj (tryb kompatybilny)"
   },

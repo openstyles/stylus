@@ -299,12 +299,6 @@
   "enableStyleLabel": {
     "message": "Включить"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Исключить текущий домен"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "Исключить текущий URL"
-  },
   "exportCompatible": {
     "message": "Экспорт (режим совместимости)"
   },

@@ -226,12 +226,6 @@
   "enableStyleLabel": {
     "message": "אפשר"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "אל תכלול את הדומיין הנוכחי"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "אל תכלול את כתובת האתר הנוכחית"
-  },
   "exportLabel": {
     "message": "ייצא"
   },

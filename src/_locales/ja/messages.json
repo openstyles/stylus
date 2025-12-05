@@ -261,15 +261,6 @@
   "enableStyleLabel": {
     "message": "有効化"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "現在のドメインを除外"
-  },
-  "excludeStyleByTab": {
-    "message": "現在のタブを除外"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "現在のURLを除外"
-  },
   "exportCompatible": {
     "message": "エクスポート（互換モード）"
   },

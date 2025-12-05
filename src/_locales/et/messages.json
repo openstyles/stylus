@@ -223,12 +223,6 @@
   "enableStyleLabel": {
     "message": "Luba"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Välista praegune domeen"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "Välista praegune URL"
-  },
   "exportLabel": {
     "message": "Ekspordi"
   },

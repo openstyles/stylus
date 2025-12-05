@@ -299,15 +299,6 @@
   "enableStyleLabel": {
     "message": "啟用"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "排除目前的網域"
-  },
-  "excludeStyleByTab": {
-    "message": "排除目前分頁"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "排除目前的 URL"
-  },
   "exportCompatible": {
     "message": "匯出（相容模式）"
   },

@@ -281,12 +281,6 @@
   "enableStyleLabel": {
     "message": "Engedélyezés"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Aktuális tartományt kivéve"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "Aktuális URL-t kivéve"
-  },
   "exportCompatible": {
     "message": "Exportálás (kompatibilis mód)"
   },

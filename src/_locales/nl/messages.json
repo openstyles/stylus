@@ -280,15 +280,6 @@
   "enableStyleLabel": {
     "message": "Inschakelen"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Het huidige domein uitsluiten"
-  },
-  "excludeStyleByTab": {
-    "message": "Het huidige tabblad uitsluiten"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "De huidige URL uitsluiten"
-  },
   "exportCompatible": {
     "message": "Exporteren (compatibele modus)"
   },

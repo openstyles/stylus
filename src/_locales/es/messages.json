@@ -269,12 +269,6 @@
   "enableStyleLabel": {
     "message": "Activar"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Excluir el dominio actual"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "Excluir la URL actual"
-  },
   "exportCompatible": {
     "message": "Exportar (modo compatible)"
   },

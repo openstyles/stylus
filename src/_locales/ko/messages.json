@@ -235,12 +235,6 @@
   "enableStyleLabel": {
     "message": "활성화"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "현재 도메인 제외"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "현재 URL 제외"
-  },
   "exportLabel": {
     "message": "내보내기"
   },

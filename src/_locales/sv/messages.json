@@ -223,12 +223,6 @@
   "enableStyleLabel": {
     "message": "Aktivera"
   },
-  "excludeStyleByDomainLabel": {
-    "message": "Uteslut den aktuella domänen"
-  },
-  "excludeStyleByUrlLabel": {
-    "message": "Uteslut den aktuella webbadressen"
-  },
   "exportLabel": {
     "message": "Exportera"
   },
