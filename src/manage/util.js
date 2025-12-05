@@ -1,6 +1,7 @@
 import {k_size} from '@/js/consts';
 import {cssFieldSizing} from '@/js/dom';
 import {template} from '@/js/localization';
+import {NOP} from '@/js/util';
 import * as UI from './ui';
 
 export {UI};
@@ -66,7 +67,7 @@ export function styleToDummyEntry(style) {
   };
 }
 
-self.fitSelectBox = cssFieldSizing ? () => {} : ((
+self.fitSelectBox = cssFieldSizing ? NOP : ((
   showOpts = function (evt) {
     if (evt.button || this[1]) return;
     const opts = this._opts;

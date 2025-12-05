@@ -1,6 +1,6 @@
 import '@/js/browser';
 import * as prefs from '@/js/prefs';
-import {isEmptyObj} from '@/js/util';
+import {isEmptyObj, NOP} from '@/js/util';
 import {webNavigation} from '@/js/util-webext';
 import {updateIconBadge} from './icon-manager';
 import {getSectionsByUrl} from './style-manager';
@@ -19,7 +19,7 @@ export default function initStyleViaApi() {
     injectorConfig,
     updateCount,
   };
-  const onError = () => {};
+  const onError = NOP;
   const calcOrder = ({id}) =>
     (order.prio[id] || 0) * 1e6 ||
     order.main[id] ||

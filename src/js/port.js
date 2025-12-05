@@ -1,4 +1,4 @@
-import {sleep} from '@/js/util';
+import {NOP, sleep} from '@/js/util';
 
 export const CLIENT = Symbol('client');
 export const COMMANDS = {__proto__: null};
@@ -10,7 +10,6 @@ const willAutoClose = __.ENTRY === 'worker' || __.ENTRY === 'offscreen';
 // SW can't nest workers, https://crbug.com/40772041
 const SharedWorker = __.ENTRY !== 'sw' && global.SharedWorker;
 const kWorker = '_worker';
-const NOP = () => {};
 let numJobs = 0;
 let lastBusy = 0;
 let bgLock;

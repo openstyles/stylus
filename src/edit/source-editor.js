@@ -5,7 +5,7 @@ import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleToCss} from '@/js/sections-util';
-import {RX_META, t} from '@/js/util';
+import {NOP, RX_META, t} from '@/js/util';
 import {CodeMirror} from '@/cm';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';
@@ -131,7 +131,7 @@ export default function SourceEditor() {
         showSaveError(err, res && res.style || style);
       }
     },
-    scrollToEditor: () => {},
+    scrollToEditor: NOP,
   });
 
   savedGeneration = cm.changeGeneration();
