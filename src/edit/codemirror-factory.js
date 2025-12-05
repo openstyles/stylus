@@ -1,8 +1,8 @@
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
 import {rerouteHotkeys} from '@/edit/util';
 import {kCodeMirror} from '@/js/consts';
-import editor from './editor';
 import * as prefs from '@/js/prefs';
+import editor from './editor';
 
 /*
   All cm instances created by this module are collected so we can broadcast prefs
@@ -45,6 +45,7 @@ const cmFactory = {
 
 // focus and blur
 
+const kLineWrapping = 'lineWrapping';
 const onCmFocus = cm => {
   rerouteHotkeys.toggle(false);
   cm.display.wrapper.classList.add('CodeMirror-active');
@@ -59,9 +60,30 @@ const onCmBlur = cm => {
     wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
   });
 };
+const onCmBeforeChange = (cm, {text}) => {
+  const max = Math.max(cm.options.maxHighlightLength, 100e3);
+  for (const line of text) {
+    if (line.length > max) {
+      const el = $('#lineWrapping-label + a');
+      el.hidden = false;
+      el.title = (line.length / 1000 | 0) + 'k long line detected, text wrapping was disabled ' +
+        "to ensure the browser doesn't crash or hang";
+      el.parentElement.on('change', evt => !evt.target.checked && (el.hidden = true), {once: true});
+      cm.setOption(kLineWrapping, false);
+      break;
+    }
+  }
+};
+const onCmOption = (cm, name) => {
+  if (name === kLineWrapping) {
+    cm[cm.options[name] ? 'on' : 'off']('beforeChange', onCmBeforeChange);
+  }
+};
 CodeMirror.defineInitHook(cm => {
   cm.on('focus', onCmFocus);
   cm.on('blur', onCmBlur);
+  cm.on('optionChange', onCmOption);
+  if (cm.options[kLineWrapping]) cm.on('beforeChange', onCmBeforeChange);
 });
 
 // propagated preferences
@@ -112,7 +134,7 @@ prefs.subscribe(prefKeys, (key, val) => {
 // lazy propagation
 
 const lazyOpt = {
-  names: ['theme', 'lineWrapping'],
+  names: ['theme', kLineWrapping],
   set(key, value) {
     const {observer, queue} = lazyOpt;
     for (const cm of cms) {
