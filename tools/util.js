@@ -3,7 +3,6 @@
 const fs = require('fs');
 const path = require('path');
 const babel = require('@babel/core');
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 
 const MANIFEST = 'manifest.json';
 const ROOT = path.dirname(__dirname.replaceAll('\\', '/')) + '/';
@@ -20,17 +19,6 @@ const RX_HTML_ATTR = /(?<=<[^<>]+\s[-\w]+=)"([^"'`=<>\s]+)"(?:\s+?(?=>|\s\S))?/g
  * The only exception we use is a same-line space e.g. <b>foo</b> <b>bar</b>  */
 const RX_HTML_WS = /^\s+|(?<=>|&nbsp;)[ \t]*[\r\n]\s*|<!--.*?-->|\s+$/gs;
 const nukeHtmlSpaces = str => str.replace(RX_HTML_WS, '').replace(RX_HTML_ATTR, '$1');
-
-function addReport(base, {entry}) {
-  base.plugins = [
-    ...base.plugins || [],
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
-      openAnalyzer: false,
-      reportFilename: base.output.path + '/.' + Object.keys(entry).join('-') + '.report.html',
-    }),
-  ];
-}
 
 function anyPathSep(str) {
   return str.replace(/[\\/]/g, /[\\/]/.source);
@@ -107,7 +95,6 @@ module.exports = {
   SRC,
   TARGET,
   ZIP,
-  addReport,
   anyPathSep,
   escapeForRe,
   escapeToRe,

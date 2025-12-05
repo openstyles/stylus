@@ -39,7 +39,7 @@ const PAGES = [
   'popup',
   !MV3 && PAGE_BG,
 ].filter(Boolean);
-const FS_CACHE = !DEV && !GITHUB_ACTIONS && process.env.STYLUS_FS_CACHE;
+const FS_CACHE = !DEV && !GITHUB_ACTIONS && +process.env.FS_CACHE;
 const GET_CLIENT_DATA = 'get-client-data';
 const GET_CLIENT_DATA_TAG = {
   toString: () => `<script src="${JS}${GET_CLIENT_DATA}.js"></script>`,
@@ -289,7 +289,7 @@ function mergeCfg(ovr, base) {
         name: [MV3 ? 'mv3' : 'mv2', ...entry].join('-'),
       };
     }
-    if (process.env.REPORT != null) {
+    if (+process.env.REPORT) {
       (ovr.plugins || (ovr.plugins = [])).push(
         new BundleAnalyzerPlugin({
           analyzerMode: 'static',
