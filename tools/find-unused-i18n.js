@@ -49,8 +49,7 @@ const notFound = Object.keys(all).map(k => {
   return `${chalk.bold.red(k)}: ${msg.length > 50 ? msg.slice(0, 50) + '...' : msg}` +
     (sus ? '\x00' + chalk.green(sus) : '');
 }).filter(Boolean);
-console.log(`${notFound.length} keys not found:\n` +
-  notFound.sort().join('\x00').replaceAll('\n', '\\n').replaceAll('\x00', '\n'));
+console.log(`${notFound.length} keys not found:\n` + notFound.sort().join('\n'));
 
 function testJSON(f, text) {
   if (!text.includes('__MSG_'))
@@ -62,9 +61,9 @@ function testJSON(f, text) {
 }
 
 function testHTML(f, text) {
-  if (!text.includes('i18n='))
+  if (!text.includes('i18n'))
     return;
-  const rx = /(?:^|[\s"'])i18n\s*=\s*(?:(["'])([^"']+)(\1)?|(\w+))/g;
+  const rx = /(?:^|[\s"']|\/\*\s*)i18n\s*(?:=\s*|\*\/)(?:(["'])([^"']+)(\1)?|(\w+))/g;
   let prev = '';
   text.split(/\r?\n/).forEach((str, i) => {
     for (const [m0, q1, i18n, q2, id] of (prev + str).matchAll(rx)) {
