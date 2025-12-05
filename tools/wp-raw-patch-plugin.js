@@ -33,7 +33,9 @@ const MakeNamespaceObjectRuntimeModule =
 const rxVar = /\b__\.([$_A-Z][$_A-Z\d]*)\b/g;
 /** Patching (0,module.export) */
 const rxCall = /^\(0,([$\w]+\.[$\w]+)\)$/;
-const rxUnmangled = /\b[$a-z]\w{2,}\b/gi;
+/** Preserve names of exports, functions, classes, global vars, and arrow funcs */
+const rxUnmangled = /(?:export )?(?:function|class|\n(?:const|let)|const (?=\w+ = .+?=>))\s+([$a-z]\w+)\b/gi;
+const rxWebpackCmt = /^\/\*+\/.*/;
 const MANGLE = ['document', 'global', 'window', 'moduleId', 'cachedModule'];
 const STAGE = (/**@type {typeof import('webpack/types').Compilation}*/webpack.Compilation)
   .PROCESS_ASSETS_STAGE_OPTIMIZE_COMPATIBILITY;
@@ -74,9 +76,8 @@ class RawEnvPlugin {
           const assetSource = assets[assetName];
           const str = assetSource.source();
           if (reserved) {
-            `${str}`.replace(/^\/\*+\/.*/, '') // skip lines with webpack machinery
-              .match(rxUnmangled)
-              .forEach(reserved.add, reserved);
+            for (const m of `${str}`.replace(rxWebpackCmt, '').matchAll(rxUnmangled))
+              reserved.add(m[1]);
             MANGLE.forEach(reserved.delete, reserved);
           }
           let replacer;
