@@ -268,7 +268,7 @@ async function importFromString(jsonString) {
       importOptions.call(btn);
     }
     return (
-      $create(`details[data-id=${id}]`, {open: isOptions || names.length < 10}, [
+      $create(`details[data-id=${id}]`, {open: names.length < 10}, [
         $create('summary',
           $create('b', (isOptions ? '' : names.length + ' ') + t(legend))),
         render?.(...arguments),
@@ -391,9 +391,10 @@ async function importFromString(jsonString) {
       block.onmouseover = addTitle;
     }
     function addTitle(evt, el) {
-      if (el)
-        addEntryTitle(el, oldStylesById.get(+el.dataset.id));
-      else if ((el = evt.target).href && !el.title)
+      if (el) {
+        const style = oldStylesById.get(+el.dataset.id);
+        if (style) addEntryTitle(el, style);
+      } else if ((el = evt.target).href && !el.title)
         debounce(addTitle, 50, null, evt.target);
     }
     function highlightElement(event) {
