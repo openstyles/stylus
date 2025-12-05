@@ -245,9 +245,9 @@ export function getSectionsByUrl(url, {id, init, dark} = {}) {
 export async function importMany(items) {
   const res = [];
   const styles = [];
-  for (const style of items) {
+  for (let style of items) {
     try {
-      onBeforeSave(style);
+      style = onBeforeSave(style) || style;
       if (style.sourceCode && style[UCD]) {
         await usercssMan.buildCode(style);
       }
@@ -358,8 +358,7 @@ export function removeMany(ids, reason) {
 
 /** @returns {Promise<StyleObj>} */
 export async function save(style, reason) {
-  onBeforeSave(style);
-  const newId = await db.put(style);
+  const newId = await db.put(onBeforeSave(style) || style);
   return onSaved(style, reason, newId);
 }
 
@@ -370,7 +369,9 @@ export async function setOrder(value) {
 
 /** @returns {Promise<void>} */
 export async function toggle(id, enabled) {
-  await save({...getById(id), enabled: !!enabled}, 'toggle');
+  const style = getById(id);
+  style.enabled = !!enabled;
+  await save(style, 'toggle');
 }
 
 /**

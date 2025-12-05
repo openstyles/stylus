@@ -45,10 +45,14 @@ export function fixKnownProblems(style, revive) {
   for (const key in style) {
     v = style[key];
     if (v == null || typeof v === 'object' && isEmptyObj(v)) {
+      if (res < 2 && !revive)
+        style = {...style};
       delete style[key];
-      res = 1;
+      res = 2;
     }
   }
+  if (!revive)
+    return res && style;
   /* Upgrade the old way of customizing local names */
   const {originalName} = style;
   if (originalName) {
@@ -104,17 +108,8 @@ export function fixKnownProblems(style, revive) {
 }
 
 export function onBeforeSave(style) {
-  if (!style.name) {
-    throw new Error('Style name is empty');
-  }
-  if (!style._id) {
-    style._id = makeRandomUUID();
-  }
-  if (!style.id) {
-    delete style.id;
-  }
-  style._rev = Date.now();
-  fixKnownProblems(style);
+  if (!style.id) delete style.id;
+  return fixKnownProblems(style);
 }
 
 /**
