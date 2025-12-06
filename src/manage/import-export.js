@@ -7,8 +7,7 @@ import * as prefs from '@/js/prefs';
 import {styleJSONseemsValid, styleSectionsEqual} from '@/js/sections-util';
 import {MOBILE} from '@/js/ua';
 import {clipString, debounce, deepEqual, hasOwn, isEmptyObj, RX_META, t} from '@/js/util';
-import {addEntryTitle} from './lazy-init'; // safe because this file is imported by lazy-init.js
-import {queue} from './util';
+import {addEntryTitle, queue} from './util';
 
 Object.assign($id('export'), {
   onclick: exportToFile,
@@ -333,7 +332,7 @@ async function importFromString(jsonString) {
     return el;
   }
 
-  /** @this stats.<item>.ids */
+  /** @this {number[]} */
   function listItemsWithId(name, i) {
     const id = this[i];
     return $create('tr', [

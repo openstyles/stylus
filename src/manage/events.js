@@ -12,11 +12,13 @@ import {filterAndAppend, showFiltersStats} from './filters';
 import {createStyleElement, createTargetsElement, updateTotal} from './render';
 import * as sorter from './sorter';
 import {checkUpdate, handleUpdateInstalled} from './updater-ui';
-import {installed, objectDiff, queue, styleToDummyEntry, UI} from './util';
+import {installed, lazyAddEntryTitle, objectDiff, queue, styleToDummyEntry, UI} from './util';
 
 for (const a of $$('#header a[href^="http"]')) a.onclick = openLink;
 installed.on('click', onEntryClicked);
 installed.on('contextmenu', onEntryClicked);
+installed.on('mouseover', lazyAddEntryTitle, {passive: true});
+installed.on('mouseout', lazyAddEntryTitle, {passive: true});
 window.on('pageshow', handleVisibilityChange);
 window.on('pagehide', handleVisibilityChange);
 onMessage.set(m => {

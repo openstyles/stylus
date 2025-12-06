@@ -3,6 +3,7 @@ import DraggableList from '@eight04/draggable-list';
 import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import {t} from '@/js/util';
+import './injection-order.css';
 
 /** @type {MessageBox} */
 let ui;
@@ -14,10 +15,7 @@ export default async function InjectionOrder(show, el, selector) {
     return;
   }
   const SEL_ENTRY = '.injection-order-entry';
-  const [groups] = await Promise.all([
-    API.styles.getAllOrdered(['_id', 'id', 'name', 'enabled']),
-    import('./injection-order.css'),
-  ]);
+  const groups = await API.styles.getAllOrdered(['_id', 'id', 'name', 'enabled']);
   const ols = {};
   const parts = {};
   const entry = $create('li' + SEL_ENTRY, [

@@ -246,7 +246,7 @@ const getBaseConfig = () => ({
   plugins: [
     // new webpack.debug.ProfilingPlugin({outputPath: DST + '.profile.json'}),
     new RawEnvPlugin(VARS, RAW_VARS),
-    new webpack.ids.NamedChunkIdsPlugin({context: SRC}),
+    new webpack.ids.NamedChunkIdsPlugin({context: SRC + JS}),
     new InlineConstantExportsPlugin([/[/\\]consts\.js$/]),
   ],
   stats: {
@@ -419,12 +419,12 @@ module.exports = [
             enforce: true,
           },
           ...Object.fromEntries([
-            [2, 'common-ui', `^${SRC_ESC}(content/|js/(dom|header|localization|themer))`],
-            [1, 'common', `^${SRC_ESC}js/|/lz-string(-unsafe)?/`],
+            [2, 'color', `^${SRC_ESC}js/color/`],
+            [1, 'common', `^${SRC_ESC}(content|js)/|/lz-string(-unsafe)?/`],
             [-10, 'vendors', /node_modules/],
           ].map(([priority, name, test]) => [name, {
             test: test instanceof RegExp ? test :
-              new RegExp(String.raw`(${test.replaceAll('/', SEP_ESC)})[^./\\]*\.js$`),
+              new RegExp(String.raw`(${test.replaceAll('/', SEP_ESC)}).*\.(css|js)$`),
             name,
             priority,
           }])),

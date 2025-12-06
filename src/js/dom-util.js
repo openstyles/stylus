@@ -2,19 +2,12 @@ import {kHocused, kHocusedAttr} from '@/js/consts';
 import {mqCompact} from '@/js/dom-init';
 import {notIncludedInArray} from '@/js/util';
 import {$create, $toggleDataset, cssFieldSizing} from './dom';
+import * as messageBox from './dlg/message-box';
 import * as prefs from './prefs';
 import '@/css/spinner.css';
 
-export let configDialog = async (...args) => (
-  configDialog = (await import('./dlg/config-dialog')).default
-)(...args);
-
-/** @type {typeof import('./dlg/message-box')} */
-export let messageBox = /*@__PURE__*/new Proxy({}, {
-  get: (_, key) => async (...args) => (
-    messageBox = (await import('./dlg/message-box'))
-  )[key](...args),
-});
+export {default as configDialog} from './dlg/config-dialog';
+export {messageBox};
 
 /**
  * Hocus-focus.

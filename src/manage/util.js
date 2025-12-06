@@ -1,15 +1,39 @@
-import {k_size} from '@/js/consts';
+import {k_size, UCD} from '@/js/consts';
 import {cssFieldSizing} from '@/js/dom';
-import {template} from '@/js/localization';
-import {NOP} from '@/js/util';
+import {formatDate, formatRelativeDate, tBody} from '@/js/localization';
+import {debounce, NOP, t} from '@/js/util';
 import * as UI from './ui';
 
+tBody();
+
 export {UI};
-export const installed = template.body.$('#installed');
+export const installed = $('#installed');
 
 export const queue = Object.assign([], {
   styles: new Map(),
 });
+
+export function addEntryTitle(link, style = link.closest('.entry').styleMeta) {
+  const {installDate: dIns, updateDate: dUpd, [UCD]: ucd} = style;
+  link.title = [
+    dUpd || dIns ? `${formatRelativeDate(dUpd || dIns)}` : '',
+    `${t('dateInstalled')}: ${formatDate(dIns, true) || '—'}`,
+    `${t('dateUpdated')}: ${formatDate(dUpd, true) || '—'}`,
+    ucd ? `UserCSS, v.${ucd.version}` : '',
+  ].filter(Boolean).join('\n');
+}
+
+export function lazyAddEntryTitle({type, target}) {
+  const cell = target.closest('h2.style-name, [data-type=age]');
+  if (cell) {
+    const link = cell.$('.style-name-link') || cell;
+    if (type === 'mouseover' && !link.title) {
+      debounce(addEntryTitle, 50, link);
+    } else {
+      debounce.unregister(addEntryTitle);
+    }
+  }
+}
 
 /** Adding spaces so CSS can detect "bigness" of a value via amount of spaces at the beginning */
 export function padLeft(val, width) {
