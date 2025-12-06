@@ -123,6 +123,10 @@ button {
   border-color: var(--c50);
 }
 
+#unhandledError:not(:hover) {
+  opacity: .5;
+}
+
 input {
   font: inherit;
   border: 1px solid var(--c65);

@@ -75,10 +75,14 @@ function showUnhandledError(err) {
   const id = 'unhandledError';
   const fontSize = 12;
   const el = document.getElementById(id) || document.createElement('textarea');
-  const text = el.value = [
-    el.value,
-    [FIREFOX && err.message, err.stack].filter(Boolean).join('\n') || `${err}`,
-  ].filter(Boolean).join('\n\n').trim().split(ownRoot).join('');
+  const old = el.value;
+  const cur = ([FIREFOX && err.message, err.stack].filter(Boolean).join('\n') || `${err}`)
+    .trim().split(ownRoot).join('');
+  const i = old.indexOf(cur);
+  const text = el.value = i < 0
+    ? [old, cur].filter(Boolean).join('\n\n')
+    : old.slice(0, i).replace(/\((\d+) times\) $|$/, (s, num) => `(${++num || 1} times) `) +
+      old.slice(i);
   const lines = text.split('\n');
   const height = fontSize * (lines.length + .5);
   const maxLen = lines.map(s => 1e9 + s.length).sort().pop() - 1e9;
@@ -92,7 +96,9 @@ function showUnhandledError(err) {
     left:0;
     right:0;
     bottom:0;
-    background:red;
+    background:darkred;
+    transition:opacity .25s;
+    cursor:copy;
     color:#fff;
     border-top: 2px solid #fff;
     padding: ${fontSize / 2}px;
@@ -104,7 +110,12 @@ function showUnhandledError(err) {
     resize: none;
   `.replace(/;/g, '!important;');
   el.spellcheck = false;
-  el.onclick = () => el.select();
+  el.title = chrome.i18n.getMessage('copy');
+  el.onclick ??= () => {
+    el.select();
+    if (document.execCommand('copy'))
+      el.remove();
+  };
   parent.style.minHeight = height * 2 + 'px';
   parent.style.minWidth = maxLen * fontSize * .5 + 'px';
   parent.appendChild(el);
