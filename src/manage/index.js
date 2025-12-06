@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import {$toggleDataset} from '@/js/dom';
-import {setupLivePrefs} from '@/js/dom-util';
+import {setupLiveDetails, setupLivePrefs} from '@/js/dom-util';
 import {tBody} from '@/js/localization';
 import {onMessage} from '@/js/msg';
 import * as prefs from '@/js/prefs';
@@ -18,6 +18,7 @@ tBody();
 
 (async () => {
   const data = __.MV3 ? prefs.clientData : await prefs.clientData;
+  setupLiveDetails();
   setupLivePrefs();
   UI.render(true);
   sorter.init();

@@ -1,8 +1,7 @@
 import {pFavicons, pFaviconsGray} from '@/js/consts';
 import {ownRoot} from '@/js/urls';
-import {$toggleClasses, dom} from './dom';
+import {$toggleClasses, header} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
-import {tBody} from './localization';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
 import './msg-init';
@@ -53,57 +52,19 @@ if ($rootCL.contains('normal-layout')) {
   }, true);
 }
 
-{
-  // set up header width resizer
-  const HW = 'headerWidth.';
-  const HWprefId = HW + location.pathname.match(/^.(\w*)/)[1];
-  if (prefs.knownKeys.includes(HWprefId)) {
-    Object.assign(dom, {
-      HW,
-      HWprefId,
-      setHWProp(width) {
-        // If this is a small window on a big monitor the user can maximize it later
-        const max = (innerWidth < 850 ? screen.availWidth : innerWidth) / 3;
-        width = Math.round(Math.max(200, Math.min(max, Number(width) || 0)));
-        $root.style.setProperty('--header-width', width + 'px');
-        dom.HWval = width;
-        return width;
-      },
-    });
-    prefs.ready.then(() => dom.setHWProp(prefs.__values[HWprefId]));
-  }
-}
-
-prefs.ready.then(() => tBody(() => {
-  const mo = new MutationObserver(saveOnChange);
-  const moCfg = {attributes: true, attributeFilter: ['open']};
-  const SEL = 'details[data-pref]';
-  for (const el of $$(SEL)) {
-    prefs.subscribe(el.dataset.pref, updateOnPrefChange, true);
-    mo.observe(el, moCfg);
-  }
-  mqCompact?.(val => {
-    for (const el of $$(SEL))
-      if (!el.matches('.ignore-pref'))
-        el.open = (!val || !el.classList.contains('ignore-pref-if-compact'))
-          && prefs.__values[el.dataset.pref];
-  });
-  function canSave(el) {
-    return !el.matches('.ignore-pref, .compact-layout .ignore-pref-if-compact');
-  }
-  /** @param {MutationRecord[]} _ */
-  function saveOnChange([{target: el}]) {
-    if (canSave(el)) {
-      prefs.set(el.dataset.pref, el.open);
-    }
-  }
-  function updateOnPrefChange(key, value) {
-    const el = $(`details[data-pref="${key}"]`);
-    if (el.open !== value && canSave(el)) {
-      el.open = value;
-    }
-  }
-}));
+if (prefs.knownKeys.includes(
+  header.prefId = (header.prefHub = 'headerWidth.') + location.pathname.match(/^.(\w*)/)[1]
+)) (async () => {
+  if (!__.MV3) await prefs.ready;
+  (header.setWidth = width => {
+    // If this is a small window on a big monitor the user can maximize it later
+    const max = (innerWidth < 850 ? screen.availWidth : innerWidth) / 3;
+    width = Math.round(Math.max(200, Math.min(max, Number(width) || 0)));
+    $root.style.setProperty('--header-width', width + 'px');
+    header.width = width;
+    return width;
+  })(prefs.__values[header.prefId]);
+})();
 
 window.on('load', () => import('./dom-on-load'), {once: true});
 window.on('error', e => showUnhandledError(e.error));

@@ -1,5 +1,5 @@
 import {CodeMirror, extraKeys} from '@/cm';
-import {setInputValue, setupLivePrefs} from '@/js/dom-util';
+import {setInputValue, setupLiveDetails, setupLivePrefs} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
 import {sleep, t} from '@/js/util';
 import {initBeautifyButton} from './beautify';
@@ -8,6 +8,7 @@ import editor from './editor';
 export default function EditorHeader() {
   initBeautifyButton($id('beautify'));
   initNameArea();
+  setupLiveDetails();
   setupLivePrefs();
   window.on('load', () => {
     prefs.subscribe('editor.keyMap', showHotkeyInTooltip, true);

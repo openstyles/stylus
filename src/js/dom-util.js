@@ -1,4 +1,5 @@
 import {kHocused, kHocusedAttr} from '@/js/consts';
+import {mqCompact} from '@/js/dom-init';
 import {notIncludedInArray} from '@/js/util';
 import {$create, $toggleDataset, cssFieldSizing} from './dom';
 import * as prefs from './prefs';
@@ -182,6 +183,39 @@ export function setInputValue(input, value) {
   if (input.value !== value) {
     input.value = value;
     input.dispatchEvent(new Event('input', {bubbles: true}));
+  }
+}
+
+export function setupLiveDetails() {
+  const mo = new MutationObserver(saveOnChange);
+  const moCfg = {attributes: true, attributeFilter: ['open']};
+  const SEL = 'details[data-pref]';
+  for (const el of $$(SEL)) {
+    prefs.subscribe(el.dataset.pref, updateOnPrefChange, true);
+    mo.observe(el, moCfg);
+  }
+  mqCompact?.(val => {
+    for (const el of $$(SEL)) {
+      if (!el.matches('.ignore-pref')) {
+        el.open = (!val || !el.classList.contains('ignore-pref-if-compact'))
+          && prefs.__values[el.dataset.pref];
+      }
+    }
+  });
+  function canSave(el) {
+    return !el.matches('.ignore-pref, .compact-layout .ignore-pref-if-compact');
+  }
+  /** @param {MutationRecord[]} _ */
+  function saveOnChange([{target: el}]) {
+    if (canSave(el)) {
+      prefs.set(el.dataset.pref, el.open);
+    }
+  }
+  function updateOnPrefChange(key, value) {
+    const el = $(`details[data-pref="${key}"]`);
+    if (el.open !== value && canSave(el)) {
+      el.open = value;
+    }
   }
 }
 

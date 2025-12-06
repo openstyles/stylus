@@ -1,10 +1,10 @@
-import {dom} from './dom';
+import {header} from '@/js/dom';
 import * as prefs from './prefs';
 
 export default function HeaderResizer() {
   let curW = $id('header').offsetWidth;
   let offset, perPage;
-  prefs.subscribe(dom.HWprefId, (key, val) => setWidth(val));
+  prefs.subscribe(header.prefId, (key, val) => setWidth(val));
   $id('header-resizer').onmousedown = e => {
     if (e.button) return;
     offset = curW - e.clientX;
@@ -27,16 +27,17 @@ export default function HeaderResizer() {
 
   function save() {
     if (perPage) {
-      prefs.set(dom.HWprefId, curW);
+      prefs.set(header.prefId, curW);
     } else {
       for (const k of prefs.knownKeys) {
-        if (k.startsWith(dom.HW)) prefs.set(k, curW);
+        if (k.startsWith(header.prefHub))
+          prefs.set(k, curW);
       }
     }
   }
 
   function setWidth(w) {
-    const delta = (w = dom.setHWProp(w)) - curW;
+    const delta = (w = header.setWidth(w)) - curW;
     if (delta) {
       curW = w;
       for (const el of $$('.CodeMirror-linewidget[style*="width:"]')) {
