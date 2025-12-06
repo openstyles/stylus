@@ -29,6 +29,7 @@ const rxNonWordEnd = /[^-\w]$/u;
 const rxPropOrEnd = /^([-a-z]*)(: ?|\()?$/i;
 const rxPropChars = /(\s*[-a-z(]+)?/yi;
 const rxPropEnd = /[\s:()]*/y;
+const rxSupports = /(^|[\s()])supports\(\s*$/i;
 const rxVarEnv = /(?:^|[^-.\w\u0080-\uFFFF])(?:var|(e)nv)\(-?/iyu;
 /** Using a string to avoid syntax error while loading this script in old browsers */
 const rxWordStart = __.MV3 ? /(?<![-\w]|#[0-9a-f]*)/
@@ -41,7 +42,7 @@ const docFuncs = addSuffix(cssMime.documentTypes, '(');
 const docFuncsStr = '\n' + docFuncs.join('\n');
 const {tokenHooks} = cssMime;
 const originalCommentHook = tokenHooks[47/* / */];
-const originalHelper = CodeMirror.hint.css || (() => {});
+const originalHelper = CodeMirror.hint.css || (() => ({list: []}));
 
 const AOT_ID = 'autocompleteOnTyping';
 const AOT_PREF_ID = 'editor.' + AOT_ID;
@@ -69,23 +70,25 @@ async function helper(cm) {
     prevData &&
     prevLine === line &&
     prevCh <= ch &&
+    prevData.from.ch < ch &&
     prevMatch === text.slice(prevCh - prevMatch.length, prevCh) &&
     (i = text.slice(prevCh, ch).match(rxPropOrEnd)) &&
     (prevMatch += i[1], !i[2])
   ) {
-    prevData.len = prevMatch.length;
-    prevData.to.ch = ch;
-    for (let arr = prevData.list, a = 0, ok = 0, v;
-         a < arr.length || ok && !(arr.length = ok);
+    list = prevData.list;
+    for (let a = 0, ok = 0, v;
+         a < list.length || ok && !(list.length = ok);
          a++) {
-      v = arr[a];
+      v = list[a];
       if ((v.text || v).indexOf(prevMatch) === v.i) {
-        if (ok < a) arr[ok] = v;
+        if (ok < a) list[ok] = v;
         ok++;
       }
     }
     prevLine = line;
-    prevCh = ch;
+    prevCh = prevData.to.ch = list.length !== 1 ? ch
+      : prevData.from.ch + ((i = list[0]).text || i).length;
+    prevData.len = prevMatch.length;
     return prevData;
   }
   prevData = null;
@@ -118,7 +121,7 @@ async function helper(cm) {
       isSameToken(text, style, end)
     ) i += 2;
     rxFilterable.lastIndex = prev;
-    prev = Math.max(prev, text.search(rxFilterable));
+    prev = Math.max(prev, text.slice(0, end).search(rxFilterable));
     str = text.slice(prev, end);
     const left = text.slice(prev, ch).trim();
     const L = (leftLC = left.toLowerCase())[0];
@@ -219,7 +222,8 @@ async function helper(cm) {
         prev += leftLC.length;
         leftLC = '';
       }
-      list = state === 'atBlock_parens' ? cssMedia : cssPropNames;
+      list = state === 'atBlock_parens' && !rxSupports.test(text.slice(0, prev))
+        ? cssMedia : cssPropNames;
       end -= rxNonWordEnd.test(str); // e.g. don't consume ) when inside ()
       end += execAt(rxConsume, end, text)[0].length;
     }
@@ -233,7 +237,7 @@ async function helper(cm) {
       : rxWord;
     const any = CodeMirror.hint.anyword(cm, {word}).list;
     if (!cssColors) await initCssProps();
-    list = [...new Set(simple.list.concat(any, cssColors.split('\n')))];
+    list = [...new Set([].concat(simple?.list || [], any, cssColors.split('\n')))];
     list.sort();
   }
   const len = leftLC.length;
