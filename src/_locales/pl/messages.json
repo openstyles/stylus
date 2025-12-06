@@ -299,6 +299,9 @@
   "enableStyleLabel": {
     "message": "Włącz"
   },
+  "exclude": {
+    "message": "Wyklucz"
+  },
   "exportCompatible": {
     "message": "Eksportuj (tryb kompatybilny)"
   },
@@ -465,6 +468,9 @@
   },
   "importStyles": {
     "message": "Importuj style"
+  },
+  "include": {
+    "message": "Uwzględnij"
   },
   "installButton": {
     "message": "Zainstaluj styl"
@@ -1074,6 +1080,9 @@
   "popupHotkeysInfo": {
     "message": "<1>-<9>, <0>, również na klawiaturze numerycznej - przełącza n-ty styl (0 to 10)\n<A>-<Z> przełącza pierwszy styl z nazwą zaczynającą się na literę\n<Shift> otwiera edytor zamiast przełączać\n<+> włącza wymienione style\n<–> wyłącza wymienione style\n<*> oraz <`> (grawis) - przełącza początkowo włączone style; nie ma zastosowania do później włączonych stylów, podczas gdy okienko podręczne jest otwarte, więc możesz przywrócić początkowy wybór po przetestowaniu: po prostu wyłącz wszystkie, a następnie przełącz, np. <–> <*>\nWięcej informacji na wiki"
   },
+  "popupHotkeysInfoTab": {
+    "message": "Przytrzymaj <Alt>, aby przełączać style tylko dla bieżącej karty."
+  },
   "popupHotkeysTooltip": {
     "message": "Kliknij, aby zobaczyć dostępne skróty klawiszowe"
   },
@@ -1310,6 +1319,12 @@
       }
     }
   },
+  "styleForceAppliedTab": {
+    "message": "Wymuszone zastosowanie dla bieżącej karty w menu stylu"
+  },
+  "styleForceTab": {
+    "message": "Tylko bieżąca karta"
+  },
   "styleFromMozillaFormatError": {
     "message": "Nie udało się zaimportować z formatu Mozilla"
   },
@@ -1433,13 +1448,22 @@
     "message": "Osobiste wykluczone witryny"
   },
   "styleSitesInclude": {
-    "message": "Osobiste dołączone witryny"
+    "message": "Osobiste uwzględnione witryny"
   },
   "styleSitesIncludeNote": {
     "message": "Witryny, w których ten styl jest włączony na Twoim urządzeniu osobistym, dodane do witryn zdefiniowanych przez styl lub używane zamiast nich, w zależności od zaznaczonego pola wyboru. Przydatne w przypadku stylów zewnętrznych, których nie należy edytować, aby zapewnić ich automatyczną aktualizację. Należy pamiętać, że w stylach wielosekcyjnych wszystkie sekcje są włączone dla dodanej witryny, nawet te przeznaczone dla konkretnych stron oryginalnej witryny."
   },
   "styleSitesIncludeOvr": {
     "message": "zastąp styl"
+  },
+  "styleSitesMatchingRules": {
+    "message": "Twoje osobiste zasady witryny, które odpowiadają bieżącemu adresowi URL.\nPrefiks „+” oznacza uwzględnienia.\nPrefiks „-” oznacza wykluczenia."
+  },
+  "styleSitesPopupEdit": {
+    "message": "Edytuj pełną listę witryn osobistych w „Ustawieniach stylu” w edytorze"
+  },
+  "styleSitesPopupHeading": {
+    "message": "Uwzględnij (i <br>) lub wyklucz styl podczas odwiedzania:"
   },
   "styleToMozillaFormatHelp": {
     "message": "Kod w formacie Mozilla może być przesłany do userstyles.org i użyty z klasycznym dodatkiem Stylish dla Firefoksa"
