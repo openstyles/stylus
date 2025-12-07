@@ -13,20 +13,32 @@ const rxHexColor = /#[\da-f]{3}(?:[\da-f](?:[\da-f]{2}(?:[\da-f]{2})?)?)?/yi;
 const rxNumberDigit = /\d*(?:\.\d*)?(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxNumberDot = /\d+(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxNumberSign = /(?:\d+(?:\.\d*)?|\.?\d+)(?:e[-+]\d+)?(?:\w+|%)?/y;
+const rxSpace = /[\s\u00a0]+/yu;
+/** [1] = whether the comment is closed */
+const rxCommentTail = /(?:[^*]+|\*(?!\/))*(\*\/|$)/y;
+const rxStringDoubleQ = /(?:[^\n\\"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|\n|$))*"/y;
+const rxStringSingleQ = /(?:[^\n\\']+|\\(?:[0-9a-fA-F]{1,6}\s?|.|\n|$))*'/y;
 const rxUniAny = /[-\w\\\u00A1-\uFFFF]*/yu;
 const rxUniVar = /-[-\w\\\u00A1-\uFFFF]*/yu;
 const rxUniClass = /-?[_a-zA-Z\\\u00A1-\uFFFF][-\w\\\u00A1-\uFFFF]*/yu;
+const rxUnquotedUrl = /(?:[^)\s\\]+|\\(?:[0-9a-fA-F]{1,6}\s|.|$))+/y;
 /**
- * @param {import('codemirror').StringStream} stream
+ * @param {CodeMirror.StringStream} stream
  * @param {RegExp} rx - must be sticky
  * @param {boolean} [consume]
- * @return {RegExp}
+ * @return {boolean}
  */
 const stickyMatch = (stream, rx, consume = true) => {
   rx.lastIndex = stream.pos;
-  rx = rx.exec(stream.string);
-  if (rx && consume !== false) stream.pos += rx[0].length;
-  return rx;
+  return rx.test(stream.string) && (consume && (stream.pos = rx.lastIndex), true);
+};
+
+let tokenStringDouble, tokenStringSingle, tokenStringUrl;
+
+// TODO: patch `eatWhile` and `match` + use WeakMap for converted non-sticky regexps
+CodeMirror.StringStream.prototype.eatSpace = function () {
+  rxSpace.lastIndex = this.pos;
+  return rxSpace.test(this.string) && !!(this.pos = rxSpace.lastIndex);
 };
 
 CodeMirror.defineMode('css', function (config, parserConfig) {
@@ -55,8 +67,8 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
   // Tokenizers
 
   /**
-   * @param {import('codemirror').StringStream} stream
-   * @param {{}} state
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
    */
   function tokenBase(stream, state) {
     let res;
@@ -68,13 +80,15 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
       if (res === false) res = null;
     } else if (c === 64/* @ */ && stickyMatch(stream, /[-\w\\]+/y)) {
       res = 'def';
-      type = stream.current();
+      type = stream.current().toLowerCase();
     } else if (c === 61/* = */
     || (c === 126/* ~ */ || c === 124/* | */ || c === 42/* * */ || c === 36/* $ */)
     && str.charCodeAt(pos) === 61/* = */ && stream.pos++) {
       type = 'compare';
-    } else if (c === 34/* " */ || c === 39/* ' */) {
-      state.tokenize = tokenString(c);
+    } else if (
+      c === 34/* " */ ? res = tokenStringDouble ??= tokenString.bind(rxStringDoubleQ, c)
+        : c === 39/* ' */ && (res = tokenStringSingle ??= tokenString.bind(rxStringSingleQ, c))) {
+      state.tokenize = res;
       return state.tokenize(stream, state);
     } else if (c === 35/* # */) {
       stickyMatch(stream, rxUniAny);
@@ -129,26 +143,29 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
     return res;
   }
 
-  function tokenString(quote) {
-    return function (stream, state) {
-      let escaped, c;
-      while ((c = stream.string.charCodeAt(stream.pos)) >= 0 /* anti-NaN */) {
-        stream.pos++;
-        if (c === quote && !escaped) {
-          if (quote === 41/* ) */) stream.pos--;
-          break;
-        }
-        escaped = !escaped && c === 92/* \ */;
-      }
-      if (c === quote || !escaped && quote !== 41/* ) */) state.tokenize = null;
-      type = 'string';
-      return type;
-    };
+  /**
+   * @this {RegExp}
+   * @param {number} quote - bound param
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  function tokenString(quote, stream, state) {
+    this.lastIndex = stream.pos;
+    this.test(stream.string);
+    type = stream.string.charCodeAt(stream.pos = this.lastIndex);
+    if (type === quote || type !== 92/* \ */ && quote !== 41/* ) */)
+      state.tokenize = null;
+    type = 'string';
+    return type;
   }
 
+  /**
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
   function tokenParenthesized(stream, state) {
     stream.pos++; // Must be '('
-    state.tokenize = tokenString(41/* ) */);
+    state.tokenize = tokenStringUrl ??= tokenString.bind(rxUnquotedUrl, 41);
     type = '(';
   }
 
@@ -160,12 +177,19 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
     this.prev = prev;
   }
 
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   * @param {boolean} [indent=true]
+   */
   function pushContext(state, stream, type, indent) {
     state.context = new Context(type, stream.indentation() + (indent === false ? 0 : indentUnit),
       state.context);
     return type;
   }
 
+  /** @param {CodeMirror.CSS.State} state */
   function popContext(state) {
     if (state.context.prev) {
       state.context = state.context.prev;
@@ -173,10 +197,21 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
     return state.context.type;
   }
 
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
   function pass(type, stream, state) {
     return states[state.context.type](type, stream, state);
   }
 
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   * @param {number} [n=1]
+   */
   function popAndPass(type, stream, state, n) {
     for (let i = n || 1; i > 0; i--) {
       state.context = state.context.prev;
@@ -186,6 +221,7 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
 
   // Parser
 
+  /** @param {CodeMirror.StringStream} stream */
   function wordAsValue(stream) {
     const word = stream.current().toLowerCase();
     if (valueKeywords.has(word)) {
@@ -199,119 +235,204 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
 
   const states = {};
 
-  states.top = function (type, stream, state) {
-    if (type === '{') {
-      return pushContext(state, stream, 'block');
-    } else if (type === '}' && state.context.prev) {
-      return popContext(state);
-    } else if (supportsAtComponent && /@component/i.test(type)) {
-      return pushContext(state, stream, 'atComponentBlock');
-    } else if (/^@(-moz-)?document$/i.test(type)) {
-      return pushContext(state, stream, 'documentTypes');
-    } else if (/^@(media|supports|(-moz-)?document|import)$/i.test(type)) {
-      return pushContext(state, stream, 'atBlock');
-    } else if (/^@(font-face|counter-style)/i.test(type)) {
-      state.stateArg = type;
-      return 'restricted_atBlock_before';
-    } else if (/^@(-(moz|ms|o|webkit)-)?keyframes$/i.test(type)) {
-      return 'keyframes';
-    } else if (type && type.charAt(0) === '@') {
-      return pushContext(state, stream, 'at');
-    } else if (type === 'hash') {
-      override = 'builtin';
-    } else if (type === 'word') {
-      override = 'tag';
-    } else if (type === 'variable-definition') {
-      return 'maybeprop';
-    } else if (type === 'interpolation') {
-      return pushContext(state, stream, 'interpolation');
-    } else if (type === ':') {
-      return 'pseudo';
-    } else if (allowNested && type === '(') {
-      return pushContext(state, stream, 'parens');
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.top = (type, stream, state) => {
+    switch (type) {
+      case '{':
+        return pushContext(state, stream, 'block');
+      case '}':
+        return state.context.prev ? popContext(state) : state.context.type;
+      case 'hash':
+        override = 'builtin';
+        break;
+      case 'word':
+        override = 'tag';
+        break;
+      case 'variable-definition':
+        return 'maybeprop';
+      case 'interpolation':
+        return pushContext(state, stream, 'interpolation');
+      case ':':
+        return 'pseudo';
+      case '(':
+        if (allowNested) return pushContext(state, stream, 'parens');
+        break;
+      case '@component':
+        return pushContext(state, stream, supportsAtComponent ? 'atComponentBlock' : 'at');
+      case '@document':
+      case '@-moz-document':
+        return pushContext(state, stream, 'documentTypes');
+      case '@import':
+      case '@media':
+      case '@page':
+      case '@supports':
+      case '@starting-style':
+      case '@view-transition':
+        return pushContext(state, stream, 'atBlock');
+      case '@counter-style':
+      case '@container':
+      case '@font-face':
+      case '@font-palette-values':
+      case '@function':
+      case '@property':
+        state.stateArg = type;
+        return 'restricted_atBlock_before';
+      case '@keyframes':
+      case '@-moz-keyframes':
+      case '@-ms-keyframes':
+      case '@-o-keyframes':
+      case '@-webkit-keyframes':
+        return 'keyframes';
+      default:
+        if (type && type.charCodeAt(0) === 64/* @ */)
+          return pushContext(state, stream, 'at');
     }
     return state.context.type;
   };
 
-  states.block = function (type, stream, state) {
-    if (type === 'word') {
-      const word = stream.current().toLowerCase();
-      if (propertyKeywords.has(word)) {
-        override = 'property';
-        return 'maybeprop';
-      } else if (nonStandardPropertyKeywords.has(word)) {
-        override = highlightNonStandardPropertyKeywords ? 'string-2' : 'property';
-        return 'maybeprop';
-      } else if (allowNested) {
-        override = stickyMatch(stream, /\s*:(?:\s|$)/y, false) ? 'property' : 'tag';
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.block = (type, stream, state) => {
+    switch (type) {
+      case 'word':
+        type = stream.current().toLowerCase();
+        if (propertyKeywords.has(type)) {
+          override = 'property';
+          type = 'maybeprop';
+        } else if (nonStandardPropertyKeywords.has(type)) {
+          override = highlightNonStandardPropertyKeywords ? 'string-2' : 'property';
+          type = 'maybeprop';
+        } else if (allowNested) {
+          override = stickyMatch(stream, /\s*:(?:\s|$)/y, false) ? 'property' : 'tag';
+          type = 'block';
+        } else {
+          override += ' error';
+          type = 'maybeprop';
+        }
+        return type;
+      case 'meta':
         return 'block';
-      } else {
-        override += ' error';
-        return 'maybeprop';
-      }
-    } else if (type === 'meta') {
-      return 'block';
-    } else if (!allowNested && (type === 'hash' || type === 'qualifier')) {
-      override = 'error';
-      return 'block';
-    } else {
-      return states.top(type, stream, state);
+      case 'hash':
+      case 'qualifier':
+        if (!allowNested) {
+          override = 'error';
+          return 'block';
+        }
+        // fallthrough to default
+      default:
+        return states.top(type, stream, state);
     }
   };
 
-  states.maybeprop = function (type, stream, state) {
-    if (type === ':') return pushContext(state, stream, 'prop');
-    return pass(type, stream, state);
-  };
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.maybeprop = (type, stream, state) =>
+    type === ':'
+      ? pushContext(state, stream, 'prop')
+      : pass(type, stream, state);
 
-  states.prop = function (type, stream, state) {
-    if (type === ';') return popContext(state);
-    if (type === '{' && allowNested) return pushContext(state, stream, 'propBlock');
-    if (type === '}' || type === '{') return popAndPass(type, stream, state);
-    if (type === '(') return pushContext(state, stream, 'parens');
-
-    if (type === 'hash') {
-      rxHexColor.lastIndex = stream.start;
-      if (!rxHexColor.exec(stream.string) || rxHexColor.lastIndex !== stream.pos)
-        override += ' error';
-    } else if (type === 'word') {
-      wordAsValue(stream);
-    } else if (type === 'interpolation') {
-      return pushContext(state, stream, 'interpolation');
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.prop = (type, stream, state) => {
+    switch (type) {
+      case ';':
+        return popContext(state);
+      case '{':
+        if (allowNested) return pushContext(state, stream, 'propBlock');
+        // fallthrough to '}'
+      case '}':
+        return popAndPass(type, stream, state);
+      case '(':
+        return pushContext(state, stream, 'parens');
+      case 'hash':
+        rxHexColor.lastIndex = stream.start;
+        if (!rxHexColor.exec(stream.string))
+          override += ' error';
+        break;
+      case 'word':
+        wordAsValue(stream);
+        break;
+      case 'interpolation':
+        return pushContext(state, stream, 'interpolation');
     }
     return 'prop';
   };
 
-  states.propBlock = function (type, _stream, state) {
-    if (type === '}') return popContext(state);
-    if (type === 'word') {
-      override = 'property';
-      return 'maybeprop';
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.propBlock = (type, stream, state) => {
+    switch (type) {
+      case '}':
+        return popContext(state);
+      case 'word':
+        override = 'property';
+        return 'maybeprop';
     }
     return state.context.type;
   };
 
-  states.parens = function (type, stream, state) {
-    if (type === '{' || type === '}') return popAndPass(type, stream, state);
-    if (type === ')') return popContext(state);
-    if (type === '(') return pushContext(state, stream, 'parens');
-    if (type === 'interpolation') return pushContext(state, stream, 'interpolation');
-    if (type === 'word') wordAsValue(stream);
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.parens = (type, stream, state) => {
+    switch (type) {
+      case '{':
+      case '}':
+        return popAndPass(type, stream, state);
+      case ')':
+        return popContext(state);
+      case '(':
+        return pushContext(state, stream, 'parens');
+      case 'interpolation':
+        return pushContext(state, stream, 'interpolation');
+      case 'word':
+        wordAsValue(stream);
+        break;
+    }
     return 'parens';
   };
 
-  states.pseudo = function (type, stream, state) {
-    if (type === 'meta') return 'pseudo';
-
-    if (type === 'word') {
-      override = 'variable-3';
-      return state.context.type;
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.pseudo = (type, stream, state) => {
+    switch (type) {
+      case 'meta':
+        return 'pseudo';
+      case 'word':
+        override = 'variable-3';
+        return state.context.type;
     }
     return pass(type, stream, state);
   };
 
-  states.documentTypes = function (type, stream, state) {
-    if (type === 'word' && documentTypes.has(stream.current())) {
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.documentTypes = (type, stream, state) => {
+    if (type === 'word' && documentTypes.has(stream.current().toLowerCase())) {
       override = 'tag';
       return state.context.type;
     } else {
@@ -319,127 +440,200 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
     }
   };
 
-  states.atBlock = function (type, stream, state) {
-    if (type === '(') return pushContext(state, stream, 'atBlock_parens');
-    if (type === '}' || type === ';') return popAndPass(type, stream, state);
-    if (type === '{') {
-      return popContext(state) &&
-        pushContext(state, stream, allowNested ? 'block' : 'top');
-    }
-
-    if (type === 'interpolation') return pushContext(state, stream, 'interpolation');
-
-    if (type === 'word') {
-      const word = stream.current().toLowerCase();
-      if (word === 'only' || word === 'not' || word === 'and' || word === 'or') {
-        override = 'keyword';
-      } else if (mediaTypes.has(word)) {
-        override = 'attribute';
-      } else if (mediaFeatures.has(word)) {
-        override = 'property';
-      } else if (mediaValueKeywords.has(word)) {
-        override = 'keyword';
-      } else if (propertyKeywords.has(word)) {
-        override = 'property';
-      } else if (nonStandardPropertyKeywords.has(word)) {
-        override = highlightNonStandardPropertyKeywords ? 'string-2' : 'property';
-      } else if (valueKeywords.has(word)) {
-        override = 'atom';
-      } else if (colorKeywords.has(word)) {
-        override = 'keyword';
-      } else {
-        override = 'error';
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.atBlock = (type, stream, state) => {
+    switch (type) {
+      case '(':
+        return pushContext(state, stream, 'atBlock_parens');
+      case '}':
+      case ';':
+        return popAndPass(type, stream, state);
+      case '{':
+        return popContext(state) && pushContext(state, stream, allowNested ? 'block' : 'top');
+      case 'interpolation':
+        return pushContext(state, stream, 'interpolation');
+      case 'word': {
+        const word = stream.current().toLowerCase();
+        if (word === 'only' || word === 'not' || word === 'and' || word === 'or') {
+          override = 'keyword';
+        } else if (mediaTypes.has(word)) {
+          override = 'attribute';
+        } else if (mediaFeatures.has(word)) {
+          override = 'property';
+        } else if (mediaValueKeywords.has(word)) {
+          override = 'keyword';
+        } else if (propertyKeywords.has(word)) {
+          override = 'property';
+        } else if (nonStandardPropertyKeywords.has(word)) {
+          override = highlightNonStandardPropertyKeywords ? 'string-2' : 'property';
+        } else if (valueKeywords.has(word)) {
+          override = 'atom';
+        } else if (colorKeywords.has(word)) {
+          override = 'keyword';
+        } else {
+          override = 'error';
+        }
       }
     }
     return state.context.type;
   };
 
-  states.atComponentBlock = function (type, stream, state) {
-    if (type === '}') {
-      return popAndPass(type, stream, state);
-    }
-    if (type === '{') {
-      return popContext(state) && pushContext(state, stream, allowNested ? 'block' : 'top', false);
-    }
-    if (type === 'word') {
-      override = 'error';
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.atComponentBlock = (type, stream, state) => {
+    switch (type) {
+      case '}':
+        return popAndPass(type, stream, state);
+      case '{':
+        return popContext(state) &&
+          pushContext(state, stream, allowNested ? 'block' : 'top', false);
+      case 'word':
+        override = 'error';
+        break;
     }
     return state.context.type;
   };
 
-  states.atBlock_parens = function (type, stream, state) {
-    if (type === ')') return popContext(state);
-    if (type === '{' || type === '}') return popAndPass(type, stream, state, 2);
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.atBlock_parens = (type, stream, state) => {
+    switch (type) {
+      case ')':
+        return popContext(state);
+      case '{':
+      case '}':
+        return popAndPass(type, stream, state, 2);
+    }
     return states.atBlock(type, stream, state);
   };
 
-  states.restricted_atBlock_before = function (type, stream, state) {
-    if (type === '{') {
-      return pushContext(state, stream, 'restricted_atBlock');
-    }
-    if (type === 'word' && state.stateArg === '@counter-style') {
-      override = 'variable';
-      return 'restricted_atBlock_before';
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.restricted_atBlock_before = (type, stream, state) => {
+    switch (type) {
+      case '{':
+        return pushContext(state, stream, 'restricted_atBlock');
+      case 'word':
+        if (state.stateArg === '@counter-style') {
+          override = 'variable';
+          return 'restricted_atBlock_before';
+        }
+        break;
     }
     return pass(type, stream, state);
   };
 
-  states.restricted_atBlock = function (type, stream, state) {
-    if (type === '}') {
-      state.stateArg = null;
-      return popContext(state);
-    }
-    if (type === 'word') {
-      if ((state.stateArg === '@font-face' &&
-          !fontProperties.has(stream.current().toLowerCase())) ||
-        (state.stateArg === '@counter-style' &&
-          !counterDescriptors.has(stream.current().toLowerCase()))) {
-        override = 'error';
-      } else {
-        override = 'property';
-      }
-      return 'maybeprop';
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.restricted_atBlock = (type, stream, state) => {
+    switch (type) {
+      case '}':
+        state.stateArg = null;
+        return popContext(state);
+      case 'word':
+        type = state.stateArg;
+        override = (
+          type === '@font-face' ? !fontProperties.has(stream.current().toLowerCase())
+            : type === '@counter-style' && !counterDescriptors.has(stream.current().toLowerCase())
+        ) ? 'error'
+          : 'property';
+        return 'maybeprop';
     }
     return 'restricted_atBlock';
   };
 
-  states.keyframes = function (type, stream, state) {
-    if (type === 'word') {
-      override = 'variable';
-      return 'keyframes';
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.keyframes = (type, stream, state) => {
+    switch (type) {
+      case 'word':
+        override = 'variable';
+        return 'keyframes';
+      case '{':
+        return pushContext(state, stream, 'top');
     }
-    if (type === '{') return pushContext(state, stream, 'top');
     return pass(type, stream, state);
   };
 
-  states.at = function (type, stream, state) {
-    if (type === ';') return popContext(state);
-    if (type === '{' || type === '}') return popAndPass(type, stream, state);
-    if (type === 'word') {
-      override = 'tag';
-    } else if (type === 'hash') override = 'builtin';
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.at = (type, stream, state) => {
+    switch (type) {
+      case ';':
+        return popContext(state);
+      case '{':
+      case '}':
+        return popAndPass(type, stream, state);
+      case 'word':
+        override = 'tag';
+        break;
+      case 'hash':
+        override = 'builtin';
+        break;
+    }
     return 'at';
   };
 
-  states.interpolation = function (type, stream, state) {
-    if (type === '}') return popContext(state);
-    if (type === '{' || type === ';') return popAndPass(type, stream, state);
-    if (type === 'word') {
-      override = 'variable';
-    } else if (type !== 'variable' && type !== '(' && type !== ')') override = 'error';
+  /**
+   * @param {string} type
+   * @param {CodeMirror.StringStream} stream
+   * @param {CodeMirror.CSS.State} state
+   */
+  states.interpolation = (type, stream, state) => {
+    switch (type) {
+      case '}':
+        return popContext(state);
+      case '{':
+      case ';':
+        return popAndPass(type, stream, state);
+      case 'word':
+        override = 'variable';
+        break;
+      case 'variable':
+      case '(':
+      case ')':
+        break;
+      default:
+        override = 'error';
+    }
     return 'interpolation';
   };
 
   return {
-    startState: function (base) {
-      return {
-        tokenize: null,
-        state: inline ? 'block' : 'top',
-        stateArg: null,
-        context: new Context(inline ? 'block' : 'top', base || 0, null),
-      };
-    },
+    /** @namespace CodeMirror.CSS.State */
+    startState: base => ({
+      tokenize: null,
+      state: inline ? 'block' : 'top',
+      stateArg: null,
+      context: new Context(inline ? 'block' : 'top', base || 0, null),
+    }),
 
+    /**
+     * @param {CodeMirror.StringStream} stream
+     * @param {CodeMirror.CSS.State} state
+     */
     token: function (stream, state) {
       if (!state.tokenize && stream.eatSpace()) return null;
       let style = (state.tokenize || tokenBase)(stream, state);
@@ -506,36 +700,45 @@ CodeMirror.registerHelper('hintWords', 'css', [
   ...cssData.valueKeywords,
 ]);
 
+/**
+ * @param {CodeMirror.StringStream} stream
+ * @param {CodeMirror.CSS.State} state
+ */
 function hookLineComment(stream, state) {
   const c = stream.string.charCodeAt(stream.pos);
-  if (c === 47/* / */) {
-    stream.skipToEnd();
-    return ['comment', 'comment'];
-  } else if (c === 42/* * */) {
-    stream.pos++;
-    state.tokenize = tokenCComment;
-    return tokenCComment(stream, state);
-  } else {
-    return ['operator', 'operator'];
+  switch (c) {
+    case 47/* / */:
+      stream.skipToEnd();
+      return ['comment', 'comment'];
+    case 42/* * */:
+      stream.pos++;
+      state.tokenize = tokenCComment;
+      return tokenCComment(stream, state);
+    default:
+      return ['operator', 'operator'];
   }
 }
 
+/**
+ * @param {CodeMirror.StringStream} stream
+ * @param {CodeMirror.CSS.State} state
+ */
 function tokenCComment(stream, state) {
-  let maybeEnd = false, ch;
-  while ((ch = stream.next()) != null) {
-    if (maybeEnd && ch === '/') {
-      state.tokenize = null;
-      break;
-    }
-    maybeEnd = (ch === '*');
-  }
+  rxCommentTail.lastIndex = stream.pos;
+  if (rxCommentTail.exec(stream.string)?.[1])
+    state.tokenize = null;
+  stream.pos = rxCommentTail.lastIndex;
   return ['comment', 'comment'];
 }
 
 CodeMirror.defineMIME('text/css', {
   ...keywords,
   tokenHooks: {
-    47/* / */: function (stream, state) {
+    /**
+     * @param {CodeMirror.StringStream} stream
+     * @param {CodeMirror.CSS.State} state
+     */
+    47/* / */: (stream, state) => {
       if (stream.string.charCodeAt(stream.pos) !== 42/* * */)
         return false;
       stream.pos++;
@@ -552,20 +755,21 @@ CodeMirror.defineMIME('text/x-scss', {
   lineComment: '//',
   tokenHooks: {
     47/* / */: hookLineComment,
-    58/* : */: function (stream) {
+    58/* : */: stream => {
       if (stickyMatch(stream, /\s*\{/y, false)) {
         return [null, null];
       }
       return false;
     },
-    36/* $ */: function (stream) {
+    36/* $ */: stream => {
       stickyMatch(stream, /[\w-]+/y);
       if (stickyMatch(stream, /\s*:/y, false)) {
         return ['variable-2', 'variable-definition'];
       }
       return ['variable-2', 'variable'];
     },
-    35/* # */: function (stream) {
+    /** @param {CodeMirror.StringStream} stream */
+    35/* # */: stream => {
       if (stream.string.charCodeAt(stream.pos) !== 123/* { */)
         return false;
       stream.pos++;
@@ -582,7 +786,8 @@ CodeMirror.defineMIME('text/x-less', {
   lineComment: '//',
   tokenHooks: {
     47/* / */: hookLineComment,
-    64/* @ */: function (stream) {
+    /** @param {CodeMirror.StringStream} stream */
+    64/* @ */: stream => {
       if (stream.string.charCodeAt(stream.pos) === 123/* { */) {
         stream.pos++;
         return [null, 'interpolation'];
@@ -608,7 +813,11 @@ CodeMirror.defineMIME('text/x-gss', {
   ...keywords,
   supportsAtComponent: true,
   tokenHooks: {
-    47/* / */: function (stream, state) {
+    /**
+     * @param {CodeMirror.StringStream} stream
+     * @param {CodeMirror.CSS.State} state
+     */
+    47/* / */: (stream, state) => {
       if (stream.string.charCodeAt(stream.pos) !== 42/* * */)
         return false;
       stream.pos++;
