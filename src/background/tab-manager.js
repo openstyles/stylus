@@ -8,8 +8,7 @@ import {stateDB} from './db';
 import {kCommitted} from './navigation-manager';
 
 /** @type {TabCache} */
-const cache = {__proto__: null};
-export default cache;
+export const cache = {__proto__: null};
 
 export const get = (tabId, ...keyPath) => {
   let res = cache[tabId];

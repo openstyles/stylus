@@ -8,7 +8,7 @@ import {getHost, RX_META} from '@/js/util';
 import {bgBusy, onTabUrlChange, WRB} from './common';
 import download from './download';
 import {findHeader} from './style-via-webrequest';
-import tabCache, * as tabMan from './tab-manager';
+import {cache as tabCache, set as tabSet} from './tab-manager';
 import {openURL} from './tab-util';
 
 const installCodeCache = {};
@@ -123,7 +123,7 @@ function maybeInstallByMime({tabId, url, responseHeaders}) {
   /** Ignoring .user.css response that is not a plain text but a web page.
    * Not using a whitelist of types as the possibilities are endless e.g. text/x-css-stylus */
   const isText = h && /^text\/(?!html)/i.test(h.value);
-  tabMan.set(tabId, MIME, isText);
+  tabSet(tabId, MIME, isText);
   if (isText) {
     openInstallerPage(tabId, url, {});
     // Silently suppress navigation.

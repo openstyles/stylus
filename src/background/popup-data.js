@@ -7,7 +7,7 @@ import {pingTab} from './broadcast';
 import {bgBusy} from './common';
 import reinjectContentScripts from './content-scripts';
 import {getByUrl} from './style-manager';
-import tabCache, * as tabMan from './tab-manager';
+import {cache as tabCache, set as tabSet} from './tab-manager';
 import {waitForTabUrl} from './tab-util';
 
 export default async function makePopupData() {
@@ -23,7 +23,7 @@ export default async function makePopupData() {
   const isOwn = url.startsWith(ownRoot);
   const [
     ping0 = __.MV3 && !td?.[kPopup] && (
-      tabMan.set(tab.id, kPopup, true),
+      tabSet(tab.id, kPopup, true),
       await reinjectContentScripts(tab)
     ),
     frames,

@@ -6,7 +6,7 @@ import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgInit, onSchemeChange, onUnload} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
-import tabCache, * as tabMan from './tab-manager';
+import {cache as tabCache, set as tabSet} from './tab-manager';
 
 const browserAction = (__.MV3 ? chrome.action : chrome.browserAction) || {};
 const staleBadges = new Set();
@@ -74,8 +74,8 @@ export function updateIconBadge(styleIds, lazyBadge, iid) {
   const {tab: {id: tabId}, TDM} = this.sender;
   const frameId = TDM > 0 ? 0 : this.sender.frameId;
   const value = styleIds.length ? styleIds.map(Number) : undefined;
-  tabMan.set(tabId, kStyleIds, frameId, value);
-  if (iid) tabMan.set(tabId, 'iid', frameId, (!__.MV3 || value) && iid);
+  tabSet(tabId, kStyleIds, frameId, value);
+  if (iid) tabSet(tabId, 'iid', frameId, (!__.MV3 || value) && iid);
   debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
   staleBadges.add(tabId);
   if (!frameId) refreshIcon(tabId, true);
@@ -125,7 +125,7 @@ function refreshIcon(tabId, force = false) {
   if (!force && oldIcon === newIcon) {
     return;
   }
-  tabMan.set(tabId, 'icon', newIcon);
+  tabSet(tabId, 'icon', newIcon);
   setIcon({
     path: getIconPath(newIcon),
     tabId,

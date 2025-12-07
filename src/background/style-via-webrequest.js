@@ -15,7 +15,7 @@ import offscreen from './offscreen';
 import {isOptionSite, optionSites} from './option-sites';
 import makePopupData from './popup-data';
 import {getSectionsByUrl} from './style-manager';
-import tabCache, * as tabMan from './tab-manager';
+import * as tabMan from './tab-manager';
 
 const REVOKE_TIMEOUT = 10e3;
 const kRuleIds = 'ruleIds';
@@ -56,7 +56,7 @@ subscribe([pDisableAll], setup, true);
 bgBusy.then(() => {
   const tabIds = [];
   for (let key in ruleIdKeys) {
-    if (!tabCache[key = parseInt(key)]) {
+    if (!tabMan.cache[key = parseInt(key)]) {
       tabIds.push(key);
     }
   }

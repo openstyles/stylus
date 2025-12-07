@@ -6,7 +6,7 @@ import {deepEqual} from '@/js/util';
 import {ignoreChromeError, MF, webNavigation} from '@/js/util-webext';
 import {pingTab, sendTab} from './broadcast';
 import {bgBusy, onUrlChange} from './common';
-import tabCache from './tab-manager';
+import {cache as tabCache} from './tab-manager';
 
 /** @type {{ url: chrome.events.UrlFilter[] }} */
 const WEBNAV_FILTER_STYLABLE = {

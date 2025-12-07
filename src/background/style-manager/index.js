@@ -12,7 +12,7 @@ import {uuidIndex} from '../common';
 import {db, draftsDB} from '../db';
 import {isOptionSite, optionSites} from '../option-sites';
 import * as syncMan from '../sync-manager';
-import tabCache, {set as tabSet} from '../tab-manager';
+import {cache as tabCache, set as tabSet} from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
 import * as usercssMan from '../usercss-manager';
 import * as uswApi from '../usw-api';
