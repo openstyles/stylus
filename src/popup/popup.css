@@ -277,6 +277,10 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
     .style-name {
       font-weight: bold;
       color: var(--accent-2);
+      input {
+        border-color: var(--accent-1);
+        box-shadow: inset 0 0 6px var(--accent-2);
+      }
     }
     &:hover .style-name {
       color: var(--accent-1);
