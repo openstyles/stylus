@@ -1,10 +1,10 @@
 import {NAMED_COLORS} from '@/js/color/color-converter';
-import {COLORVIEW_SWATCH_CLASS, COLORVIEW_SWATCH_PROP} from '@/js/color/color-view';
+import {SWATCH_CLS, SWATCH_PROP} from '@/js/color/color-view';
 import {kCssPropSuffix} from '@/js/consts';
 import {debounce} from '@/js/util';
 
 const MARK = $tag('b');
-const SWATCH = Object.assign($tag('span'), {className: COLORVIEW_SWATCH_CLASS});
+const SWATCH = Object.assign($tag('span'), {className: SWATCH_CLS});
 const USO_VAR = 'uso-variable';
 export const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
 export const USO_INVALID_VAR = 'error ' + USO_VAR;
@@ -47,7 +47,7 @@ export class Completion {
   render(el, {len}, {i, text, val}) {
     let color, mark;
     if (NAMED_COLORS.has(val || text))
-      (color = SWATCH.cloneNode()).style.setProperty(COLORVIEW_SWATCH_PROP, val || text);
+      (color = SWATCH.cloneNode()).style.setProperty(SWATCH_PROP, val || text);
     if (len)
       (mark = MARK.cloneNode()).append((val || text).slice(i, i + len));
     el.className +=

@@ -6,9 +6,10 @@ import {CHROME, FIREFOX} from '@/js/ua';
 
 //#region Constants
 
-const COLORVIEW_CLASS = 'colorview';
-export const COLORVIEW_SWATCH_CLASS = COLORVIEW_CLASS + '-swatch';
-export const COLORVIEW_SWATCH_PROP = `--${COLORVIEW_SWATCH_CLASS}`;
+export const SWATCH_CLS = 'colorview-swatch';
+export const SWATCH_PROP = `--${SWATCH_CLS}`;
+const DUMB = 'Modern color support is not implemented yet...';
+const DUMB_ATTRS = {title: DUMB};
 const CLOSE_POPUP_EVENT = 'close-colorpicker-popup';
 
 const {RX_COLOR, testAt} = colorConverter;
@@ -125,7 +126,7 @@ class ColorSwatch {
     const {cm} = this;
     const {curOp} = cm;
     if (!curOp) cm.startOperation();
-    cm.getAllMarks().forEach(m => m.className === COLORVIEW_CLASS && m.clear());
+    cm.getAllMarks().forEach(m => m.className === SWATCH_CLS && m.clear());
     if (!curOp) cm.endOperation();
     cm.state.colorpicker = null;
   }
@@ -345,7 +346,7 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
   // all comments may get blanked out in the loop
   const endsWithComment = text.endsWith('*/');
 
-  for (let i = styleIndex, j; i + 1 < styles.length; i += 2) {
+  for (let i = styleIndex, j, rxFunc; i + 1 < styles.length; i += 2) {
     style = styles[i + 1];
     if (!style || !RX_STYLE.test(style)) continue;
 
@@ -376,15 +377,16 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
       end = start + j;
     }
     const spanState = markedSpans && checkSpan();
-    if (spanState === 'same') continue;
+    if (spanState === 'same')
+      continue;
     if (isHex ? testAt(RX_COLOR.hex, 0, color)
-        : func ? !RX_COLOR[func] || testAt(RX_COLOR[func], 0, color.slice(func.length + 1, -1))
+        : func
+          ? !(rxFunc = RX_COLOR[func.slice(0, 3)])
+            || testAt(rxFunc, 0, color.slice(func.length + 1, -1))
           : colorConverter.NAMED_COLORS.has(color.toLowerCase())) {
-      (spanState ? redeem : mark)(
-        !__.MV3 && (isHex || func && RX_COLOR[func]) && RX_UNSUPPORTED?.test(color)
-          ? colorConverter.format(colorConverter.parse(color), 'rgb')
-          : color
-      );
+      if (!__.MV3 && (isHex || rxFunc) && RX_UNSUPPORTED?.test(color))
+        color = colorConverter.format(colorConverter.parse(color), 'rgb');
+      (spanState ? redeem : mark)(color, isHex || !func || rxFunc);
     }
   }
 
@@ -393,12 +395,13 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
   state.inComment = style && style.includes('comment') && !endsWithComment;
   state.line++;
 
-  function mark(colorValue) {
+  function mark(colorValue, pickable) {
     const {line} = state;
-    state.cm.markText({line, ch: start}, {line, ch: end}, {
-      className: COLORVIEW_CLASS,
-      startStyle: COLORVIEW_SWATCH_CLASS,
-      css: COLORVIEW_SWATCH_PROP + ':' + colorValue,
+    state.cm.markText({line, ch: start}, {line, ch: start + len}, {
+      className: SWATCH_CLS,
+      css: SWATCH_PROP + ':' + colorValue,
+      attributes: !pickable && DUMB_ATTRS,
+      len: end - start,
       color,
     });
   }
@@ -416,7 +419,7 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
       } else {
         break;
       }
-      if (span.from === start && span.marker.className === COLORVIEW_CLASS) {
+      if (span.from === start && span.marker.className === SWATCH_CLS) {
         spansZombies--;
         span.generation = spanGeneration;
         const same = color === span.marker.color &&
@@ -428,22 +431,26 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
     }
   }
 
-  function redeem(colorValue) {
+  function redeem(colorValue, pickable) {
     spansZombies++;
     state.markersToRemove.pop();
     state.markersToRepaint.push(span);
-    span.to = end;
+    span.to = start + len;
     span.line = state.line;
     span.index = spanIndex - 1;
-    span.marker.color = color;
-    span.marker.css = COLORVIEW_SWATCH_PROP + ':' + colorValue;
+    /** @type {CodeMirror.TextMarker} */
+    const m = span.marker;
+    m.attributes = !pickable && DUMB_ATTRS;
+    m.color = color;
+    m.css = SWATCH_PROP + ':' + colorValue;
+    m.len = end - start;
   }
 
   function removeDeadSpans() {
     if (!spansZombies) return;
     for (const m of markedSpans) {
       if (m.generation !== spanGeneration &&
-          m.marker.className === COLORVIEW_CLASS) {
+          m.marker.className === SWATCH_CLS) {
         state.markersToRemove.push(m.marker);
       }
     }
@@ -464,7 +471,7 @@ function openPopupForCursor(state, defaultColor) {
 
   let found;
   for (const {from, marker} of lineHandle.markedSpans || []) {
-    if (marker.className === COLORVIEW_CLASS &&
+    if (marker.className === SWATCH_CLS &&
         from <= ch && ch < from + marker.color.length) {
       found = {color: marker.color, ch: from};
       break;
@@ -482,9 +489,9 @@ function openPopupForSwatch(state, swatch) {
   const {line: {markedSpans} = {}} = cm.display.renderedView.find(v => v.node === lineDiv) || {};
   if (!markedSpans) return;
 
-  let swatchIndex = [...lineDiv.getElementsByClassName(COLORVIEW_SWATCH_CLASS)].indexOf(swatch);
+  let swatchIndex = [...lineDiv.getElementsByClassName(SWATCH_CLS)].indexOf(swatch);
   for (const {marker} of markedSpans.sort((a, b) => a.from - b.from)) {
-    if (marker.className === COLORVIEW_CLASS && swatchIndex-- === 0) {
+    if (marker.className === SWATCH_CLS && swatchIndex-- === 0) {
       const data = Object.assign({color: marker.color}, marker.find().from);
       highlightColor(state, data);
       doOpenPopup(state, data);
@@ -533,7 +540,7 @@ function makePalette({cm, options}) {
     ++i;
     if (!markedSpans) return;
     for (const {from, marker: m} of markedSpans) {
-      if (from == null || m.className !== COLORVIEW_CLASS) continue;
+      if (from == null || m.className !== SWATCH_CLS) continue;
       const color = m.color.toLowerCase();
       nums = palette.get(color);
       if (!nums) palette.set(color, (nums = []));
@@ -549,8 +556,8 @@ function makePalette({cm, options}) {
       if (!el) {
         el = $tag('div');
         el.__color = color; // also used in color-picker.js
-        el.className = COLORVIEW_SWATCH_CLASS;
-        el.style.setProperty(COLORVIEW_SWATCH_PROP, color);
+        el.className = SWATCH_CLS;
+        el.style.setProperty(SWATCH_PROP, color);
       }
       if (el.__str !== str) {
         el.__str = str;
@@ -582,22 +589,25 @@ function paletteCallback(el) {
 //#region Utility
 
 function updateMarkers(state) {
-  state.markersToRemove.forEach(m => m.clear());
+  for (const m of state.markersToRemove)
+    m.clear();
   state.markersToRemove.length = 0;
 
   const {cm: {display: {viewFrom, viewTo, view}}} = state;
   let viewIndex = 0;
   let lineView = view[0];
   let lineViewLine = viewFrom;
+  let el;
   for (const {line, index, marker} of state.markersToRepaint) {
     if (line < viewFrom || line >= viewTo) continue;
     while (lineViewLine < line && lineView) {
       lineViewLine += lineView.size;
       lineView = view[++viewIndex];
     }
-    if (!lineView) break;
-    const el = lineView.text.getElementsByClassName(COLORVIEW_SWATCH_CLASS)[index];
-    if (el) el.style = marker.css;
+    if (lineView && (el = lineView.text.getElementsByClassName(SWATCH_CLS)[index])) {
+      el.style = marker.css;
+      el.title = marker.attributes ? DUMB : '';
+    }
   }
   state.markersToRepaint.length = 0;
 }
@@ -645,7 +655,7 @@ function highlightColor(state, data) {
     return;
   }
   const first = cm.charCoords(data);
-  const colorEnd = data.ch + data.color.length - 1;
+  const colorEnd = data.ch + data.len - 1;
   let last = cm.charCoords({line, ch: colorEnd});
   if (last.top !== first.top) {
     const funcEnd = data.ch + data.color.indexOf('(') - 1;
@@ -669,8 +679,10 @@ function highlightColor(state, data) {
 
 function hitTest({button, target, offsetX, offsetY}) {
   if (button) return;
-  const swatch = target.closest('.' + COLORVIEW_CLASS);
-  if (!swatch) return;
+  /** @type {HTMLElement} */
+  const swatch = target.closest('.' + SWATCH_CLS);
+  if (!swatch || swatch.title === DUMB)
+    return;
   const {left, width, height} = getComputedStyle(swatch, '::before');
   const bounds = swatch.getBoundingClientRect();
   const swatchClicked =

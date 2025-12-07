@@ -19,6 +19,8 @@
     background-repeat: repeat;
     background-position: center;
     border: 1px solid #8e8e8e;
+  }
+  &:not([title])::before {
     cursor: pointer;
   }
   &:hover::before {
