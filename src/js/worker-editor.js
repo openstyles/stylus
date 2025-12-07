@@ -114,7 +114,7 @@ Object.assign(COMMANDS, {
 const ruleRetriever = {
 
   csslint() {
-    importScriptsOnce('csslint.js');
+    importScriptsOnce('parserlib.js', 'csslint.js');
     return CSSLint.getRuleList().map(rule => {
       const output = {};
       for (const [key, value] of Object.entries(rule)) {
