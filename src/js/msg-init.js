@@ -1,16 +1,18 @@
 /** Don't use this file in content script context! */
 import './browser';
 import {k_busy, k_deepCopy, k_msgExec, kInvokeAPI} from '@/js/consts';
-import {apiHandler, apiSendProxy} from './msg-api';
+import {apiHandler, apiSendProxy, isPopup} from './msg-api';
 import {createPortExec, createPortProxy} from './port';
 import {swPath, workerPath} from './urls';
 import {deepCopy} from './util';
-import {getOwnTab} from './util-webext';
+import {getOwnTab, ownTab} from './util-webext';
 
-const needsTab = [
-  'updateIconBadge',
-  'styleViaAPI',
-];
+/** falsy: reuse ownTab, truthy: real tab object */
+const needsTab = {
+  'styles.getSectionsByUrl': 0,
+  updateIconBadge: 1,
+  styleViaAPI: 1,
+};
 /** @type {MessagePort} */
 const swExec = __.MV3 &&
   createPortExec(() => navigator.serviceWorker.controller, {lock: swPath});
@@ -25,10 +27,10 @@ async function invokeAPI({name: path}, _thisObj, args) {
     workerProxy ??= createPortProxy(workerPath);
     return workerProxy[path.slice(workerApiPrefix.length)](...args);
   }
-  let tab = false;
+  let tab = !isPopup; // popup doesn't have a tab
   // Using a fake id for our Options frame as we want to fetch styles early
   const frameId = window === top ? 0 : 1;
-  if (!needsTab.includes(path) || !frameId && (tab = await getOwnTab())) {
+  if (!tab || !frameId && (tab = !(tab = needsTab[path]) && ownTab || await getOwnTab())) {
     const msg = {method: kInvokeAPI, path, args};
     const sender = {url: location.href, tab, frameId};
     if (__.MV3) {

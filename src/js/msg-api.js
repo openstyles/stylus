@@ -19,12 +19,19 @@ export const API = __.IS_BG
   ? global[__.API]
   : global[__.API] = new Proxy({name: ''}, apiHandler);
 export const isFrame = !__.IS_BG && window !== top;
+export let isPopup;
 
 export let bgReadySignal;
 let bgReadying = !__.MV3 && new Promise(fn => (bgReadySignal = fn));
 /** @type {number} top document mode
  * -1 = top prerendered, 0 = iframe, 1 = top, 2 = top reified */
 export let TDM = isFrame ? 0 : !__.IS_BG && document.prerendering ? -1 : 1;
+
+if (__.ENTRY === true && !__.IS_BG && (
+  isPopup = location.pathname === '/popup.html'
+)) chrome.tabs.getCurrent(tab => {
+  isPopup = !tab;
+});
 
 export function updateTDM(value) {
   TDM = value;
