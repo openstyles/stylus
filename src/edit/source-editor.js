@@ -28,11 +28,6 @@ export default function SourceEditor() {
   let savedGeneration;
   let prevMode = NaN;
   let prevSel;
-  /** @type {MozSectionFinder} */
-  let sectionFinder;
-  let sectionWidget;
-  /** @type {MozSection[]} */
-  let mozSections;
   let updateTocFocusPending;
 
   $$remove('.sectioned-only');
@@ -45,19 +40,8 @@ export default function SourceEditor() {
   const cm = cmFactory.create($('.single-editor'), {
     value: style.id ? style.sourceCode : setupNewStyle(editor.template),
     finishInit(me) {
-      const kToc = 'editor.toc.expanded';
-      const kWidget = 'editor.appliesToLineWidget';
       const si = editor.applyScrollInfo(me) || {};
       editor.viewTo = si.viewTo;
-      sectionFinder = MozSectionFinder(me);
-      sectionWidget = MozSectionWidget(me, sectionFinder);
-      mozSections = editor.sections = sectionFinder.sections;
-      prevSel = me.doc.sel;
-      prefs.subscribe([kToc, kWidget], (k, val) => {
-        sectionFinder.onOff(updateToc, prefs.__values[kToc] || prefs.__values[kWidget]);
-        if (k === kWidget) sectionWidget.toggle(val);
-        if (k === kToc) me[val ? 'on' : 'off']('cursorActivity', onCursorActivity);
-      }, true);
       Object.assign(me.curOp, si.scroll);
       editor.viewTo = 0;
     },
@@ -77,6 +61,17 @@ export default function SourceEditor() {
     style.url = meta.homepageURL || style.installationUrl;
     updateMeta();
   });
+  const kToc = 'editor.toc.expanded';
+  const kWidget = 'editor.appliesToLineWidget';
+  const sectionFinder = MozSectionFinder(cm);
+  const sectionWidget = MozSectionWidget(cm, sectionFinder);
+  const mozSections = editor.sections = sectionFinder.sections;
+  prevSel = cm.doc.sel;
+  prefs.subscribe([kToc, kWidget], (k, val) => {
+    sectionFinder.onOff(updateToc, prefs.__values[kToc] || prefs.__values[kWidget]);
+    if (k === kWidget) sectionWidget.toggle(val);
+    if (k === kToc) cm[val ? 'on' : 'off']('cursorActivity', onCursorActivity);
+  }, true);
   updateMeta();
   // Subsribing outside of finishInit() because it uses `cm` that's still not initialized
   prefs.subscribe('editor.linter', updateLinterSwitch, true);
