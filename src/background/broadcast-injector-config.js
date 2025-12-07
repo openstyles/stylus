@@ -1,6 +1,5 @@
 import {pDisableAll, pExposeIframes, pKeepAlive, pStyleViaASS} from '@/js/consts';
 import * as prefs from '@/js/prefs';
-import {isEmptyObj} from '@/js/util';
 import {broadcast} from './broadcast';
 import {bgBusy, onSchemeChange} from './common';
 
@@ -33,16 +32,9 @@ export default function broadcastInjectorConfig(key, val) {
   }
 }
 
-const data = {
-  method: 'injectorConfig',
-  cfg,
-};
-
 function throttle() {
-  if (!isEmptyObj(cfg)) {
-    data.cfg = cfg;
-    broadcast(data);
-  }
+  if (Object.keys(cfg).length)
+    broadcast(null, cfg);
   sentCfg = cfg;
   cfg = null;
 }

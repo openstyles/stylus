@@ -4,7 +4,6 @@ import {
 } from '@/js/consts';
 import {__values} from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
-import {ownRoot} from '@/js/urls';
 import {calcObjSize, isEmptyObj, mapObj} from '@/js/util';
 import {broadcast, broadcastExtension, sendTab} from '../broadcast';
 import * as colorScheme from '../color-scheme';
@@ -422,8 +421,7 @@ export async function toggleOverride(id, val, type, isAdd) {
       delete obj[kTabOvr];
     if (cache)
       (cache.maybe ??= new Set()).add(id);
-    if (!url.startsWith(ownRoot))
-      sendTab(val, msg);
+    sendTab(val, msg);
     broadcastExtension(msg);
     return;
   }

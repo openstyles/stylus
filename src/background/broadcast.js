@@ -1,16 +1,27 @@
 import '@/js/browser';
-import {pExposeIframes, pStyleViaASS} from '@/js/consts';
+import {kTabOvr, pExposeIframes, pStyleViaASS} from '@/js/consts';
 import {rxIgnorableError} from '@/js/msg-api';
 import {ownRoot} from '@/js/urls';
 import {sleep0} from '@/js/util';
 import {isOptionSite, optionSites} from './option-sites';
+import {cache as tabCache} from './tab-manager';
 import {getWindowClients} from './util';
 
 let toBroadcast;
+let toBroadcastCfg;
+let toBroadcastUpdStyles;
+const OLD = Symbol('old');
 
-export function broadcast(data) {
+export function broadcast(data, cfg) {
   toBroadcast ??= (setTimeout(doBroadcast), []);
-  toBroadcast.push(data);
+  if (cfg) {
+    toBroadcastCfg = cfg;
+  } else {
+    toBroadcast.push(data);
+    if (data.method === 'styleUpdated') {
+      (toBroadcastUpdStyles ??= new Map()).set(data.style.id, data);
+    }
+  }
 }
 
 async function doBroadcast() {
@@ -19,20 +30,31 @@ async function doBroadcast() {
     browser.tabs.query({}),
   ]);
   const data = toBroadcast;
-  const {cfg} = data;
+  const cfg = toBroadcastCfg;
+  const updStyles = toBroadcastUpdStyles;
   const assSites = cfg?.ass && optionSites[pStyleViaASS];
   const iframeSites = cfg?.top && optionSites[pExposeIframes];
-  toBroadcast = null;
+  toBroadcastCfg = toBroadcastUpdStyles = toBroadcast = null;
+  if (cfg)
+    data.push({method: 'injectorConfig', cfg});
+  if (updStyles)
+    data.push(...updStyles.values());
   if (!__.MV3 || clients[0])
     broadcastExtension(data, true);
   let cnt = 0;
   let url;
   tabs.sort((a, b) => b.active - a.active); // start with active tabs in all windows
   for (const t of tabs) {
-    if (!t.discarded && (url = t.url) && !url.startsWith(ownRoot)) {
+    if (t.discarded || !(url = t.url))
+      continue;
+    const tabOverrides = tabCache[t.id]?.[kTabOvr];
+    const patched = tabOverrides && Object.keys(tabOverrides).length &&
+      patchStyles(updStyles, tabOverrides);
+    if (!url.startsWith(ownRoot) || patched) {
       if (assSites) cfg.ass = isOptionSite(assSites, url);
       if (iframeSites) cfg.top = isOptionSite(iframeSites, url);
       sendTab(t.id, data, null, true);
+      if (patched) for (const p of patched) p.enabled = p[OLD];
       /* Broadcast messages are tiny, but sending them takes some time anyway,
          so we're yielding for a possible navigation/messaging event. */
       if (++cnt > 50) {
@@ -44,7 +66,19 @@ async function doBroadcast() {
 }
 
 export function broadcastExtension(data, multi) {
-  return unwrap(browser.runtime.sendMessage({data, multi}));
+  return unwrap(browser.runtime.sendMessage({data, multi, broadcast: true}));
+}
+
+function patchStyles(styleUpdates, tabOverrides) {
+  let res, ovr, old;
+  for (const {style} of styleUpdates.values()) {
+    if ((ovr = tabOverrides[style.id]) != null && ovr !== (old = style.enabled)) {
+      style[OLD] = old;
+      style.enabled = ovr;
+      (res ??= []).push(style);
+    }
+  }
+  return res;
 }
 
 export function pingTab(tabId, frameId = 0) {

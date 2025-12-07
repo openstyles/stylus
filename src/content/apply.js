@@ -153,7 +153,8 @@ function applyOnMessage(req, sender, multi) {
       break;
 
     case 'styleUpdated':
-      if (!own.sections && own.cfg.off) break;
+      if (req.broadcast && !isPopup || !own.sections && own.cfg.off)
+        break;
       if (style.enabled) {
         getStyles({id: style.id}).then(res =>
           res.sections.length

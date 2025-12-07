@@ -27,7 +27,7 @@ if (__.ENTRY) {
   });
 }
 
-export function _execute(data, sender, multi) {
+export function _execute(data, sender, multi, broadcast) {
   let result;
   let res;
   let i = 0;
@@ -38,6 +38,7 @@ export function _execute(data, sender, multi) {
   do {
     for (const [fn, replyAllowed] of onMessage) {
       try {
+        data.broadcast = broadcast;
         res = fn(data, sender, !!multi);
       } catch (err) {
         res = Promise.reject(err);
@@ -50,7 +51,7 @@ export function _execute(data, sender, multi) {
   return result;
 }
 
-function onRuntimeMessage({data, multi, TDM}, sender, sendResponse) {
+function onRuntimeMessage({data, multi, TDM, broadcast}, sender, sendResponse) {
   if (!__.MV3 && !__.IS_BG && data.method === 'backgroundReady') {
     bgReadySignal?.(true);
   }
@@ -60,8 +61,8 @@ function onRuntimeMessage({data, multi, TDM}, sender, sendResponse) {
   sender.TDM = TDM;
   let res = __.IS_BG && global[k_busy];
   res = res
-    ? res.then(_execute.bind(null, data, sender, multi))
-    : _execute(data, sender, multi);
+    ? res.then(_execute.bind(null, data, sender, multi, broadcast))
+    : _execute(data, sender, multi, broadcast);
   if (res instanceof Promise) {
     res.then(wrapData, wrapError).then(sendResponse);
     return true;
