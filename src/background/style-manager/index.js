@@ -267,7 +267,8 @@ export async function importMany(items) {
       messages.push([style, 'import', method]);
       res[i] = {
         style: {
-          ...style,
+          id,
+          enabled: style.enabled,
           [k_size]: calcObjSize(style),
         },
       };
