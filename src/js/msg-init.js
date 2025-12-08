@@ -9,6 +9,7 @@ import {getOwnTab, ownTab} from './util-webext';
 
 /** falsy: reuse ownTab, truthy: real tab object */
 const needsTab = {
+  __proto__: null,
   'styles.getSectionsByUrl': 0,
   updateIconBadge: 1,
   styleViaAPI: 1,
@@ -27,10 +28,13 @@ async function invokeAPI({name: path}, _thisObj, args) {
     workerProxy ??= createPortProxy(workerPath);
     return workerProxy[path.slice(workerApiPrefix.length)](...args);
   }
-  let tab = !isPopup; // popup doesn't have a tab
+  let tab = false;
   // Using a fake id for our Options frame as we want to fetch styles early
   const frameId = window === top ? 0 : 1;
-  if (!tab || !frameId && (tab = !(tab = needsTab[path]) && ownTab || await getOwnTab())) {
+  if (isPopup
+  || !(path in needsTab)
+  || !frameId && (tab = !needsTab[path] && ownTab || await getOwnTab())
+  ) {
     const msg = {method: kInvokeAPI, path, args};
     const sender = {url: location.href, tab, frameId};
     if (__.MV3) {
