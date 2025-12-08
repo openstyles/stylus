@@ -8,20 +8,22 @@ import CodeMirror from 'codemirror';
 import * as cssData from './css-data';
 
 const rxColon = /(?:\s+|\/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$))*:/y;
-const rxDocFuncUnquoted = /(?:url(?:-prefix)?|domain|regexp)\((?!['")])/iy;
+const rxDocFunc = /(?:url(?:-prefix)?|domain|regexp)\(\s*(['")])?/iy;
 const rxHexColor = /#[\da-f]{3}(?:[\da-f](?:[\da-f]{2}(?:[\da-f]{2})?)?)?/yi;
 const rxNumberDigit = /\d*(?:\.\d*)?(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxNumberDot = /\d+(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxNumberSign = /(?:\d+(?:\.\d*)?|\.?\d+)(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxSpace = /[\s\u00a0]+/yu;
+const rxSpaceRParenEOL = /[\s\u00a0]*(?=\)|$)/yu;
 /** [1] = whether the comment is closed */
 const rxCommentTail = /(?:[^*]+|\*(?!\/))*(\*\/|$)/y;
-const rxStringDoubleQ = /(?:[^\n\\"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|\n|$))*"/y;
-const rxStringSingleQ = /(?:[^\n\\']+|\\(?:[0-9a-fA-F]{1,6}\s?|.|\n|$))*'/y;
+const rxStringDoubleQ = /\s*(?:[^\\"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*/y;
+const rxStringSingleQ = /\s*(?:[^\\']+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*/y;
 const rxUniAny = /[-\w\\\u00A1-\uFFFF]*/yu;
 const rxUniVar = /-[-\w\\\u00A1-\uFFFF]*/yu;
 const rxUniClass = /-?[_a-zA-Z\\\u00A1-\uFFFF][-\w\\\u00A1-\uFFFF]*/yu;
-const rxUnquotedUrl = /(?:[^)\s\\]+|\\(?:[0-9a-fA-F]{1,6}\s|.|$))+/y;
+const rxUnquotedUrl = /\s*(?:[^()\s\\'"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*\s*/y;
+const rxUnquotedBadUrl = /(?:[^)\\]|\\[^)])+/y;
 /**
  * @param {CodeMirror.StringStream} stream
  * @param {RegExp} rx - must be sticky
@@ -33,7 +35,7 @@ const stickyMatch = (stream, rx, consume = true) => {
   return rx.test(stream.string) && (consume && (stream.pos = rx.lastIndex), true);
 };
 
-let tokenStringDouble, tokenStringSingle, tokenStringUrl;
+let tokenStringDouble, tokenStringSingle, tokenUrl, tokenUrlEnd, tokenBadUrl;
 
 // TODO: patch `eatWhile` and `match` + use WeakMap for converted non-sticky regexps
 CodeMirror.StringStream.prototype.eatSpace = function () {
@@ -128,8 +130,8 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
           res === 6 ? /*domain*/c === 100 || c === 68 || /*regexp*/c === 114 || c === 82
           : res === 3 /*url*/ || res === 10 /*url-prefix*/ && (c === 117 || c === 85)
         ) && (
-          rxDocFuncUnquoted.lastIndex = pos - 1,
-          rxDocFuncUnquoted.test(str)
+          rxDocFunc.lastIndex = pos - 1,
+          (res = rxDocFunc.exec(str)) && !res[1]
         )) state.tokenize = tokenParenthesized;
         res = 'variable callee';
         type = 'variable';
@@ -150,12 +152,21 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
    * @param {CodeMirror.CSS.State} state
    */
   function tokenString(quote, stream, state) {
-    this.lastIndex = stream.pos;
-    this.test(stream.string);
-    type = stream.string.charCodeAt(stream.pos = this.lastIndex);
-    if (type === quote || type !== 92/* \ */ && quote !== 41/* ) */)
+    type = !stickyMatch(stream, this) || this === rxUnquotedBadUrl ? 'error' : 'string';
+    const next = stream.string.charCodeAt(stream.pos);
+    if (next === quote) {
+      stream.pos += quote !== 41/* ) */;
       state.tokenize = null;
-    type = 'string';
+    } else if (next) {
+      state.tokenize = quote === 41
+        ? tokenBadUrl ??= tokenString.bind(rxUnquotedBadUrl, 41/* ) */)
+        : (type = 'error', null);
+    } else if (quote === 41) {
+      state.tokenize = tokenUrlEnd ??= tokenString.bind(rxSpaceRParenEOL, 41/* ) */);
+    } else if (stream.string.charCodeAt(stream.pos - 1) !== 92/* \ */) {
+      type = 'error';
+      state.tokenize = null;
+    }
     return type;
   }
 
@@ -165,7 +176,7 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
    */
   function tokenParenthesized(stream, state) {
     stream.pos++; // Must be '('
-    state.tokenize = tokenStringUrl ??= tokenString.bind(rxUnquotedUrl, 41);
+    state.tokenize = tokenUrl ??= tokenString.bind(rxUnquotedUrl, 41/* ) */);
     type = '(';
   }
 
