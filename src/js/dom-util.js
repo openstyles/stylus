@@ -227,7 +227,7 @@ export function setupLivePrefs(ids) {
   init = false;
   function onChange() {
     if (this.checkValidity() && (this.type !== 'radio' || this.checked)) {
-      prefs.set(this.id || this.name, getValue(this));
+      prefs.set(this.id || this.name, getValue(this), undefined, updateElement);
     }
   }
   function getValue(el) {

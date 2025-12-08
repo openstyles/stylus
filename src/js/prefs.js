@@ -191,7 +191,7 @@ export const getDbArray = async key => {
   return Array.isArray(key) ? key : null;
 };
 
-export const set = (key, val, isSynced) => {
+export const set = (key, val, isSynced, fnToSuppress) => {
   const old = values[key];
   const def = defaults[key];
   const type = typeof def;
@@ -204,7 +204,8 @@ export const set = (key, val, isSynced) => {
   }
   if (val === old || type === 'object' && deepEqual(val, old)) return;
   values[key] = val;
-  if (!global[k_busy] || !__.IS_BG) onChange[key]?.forEach(fn => fn(key, val));
+  if (!global[k_busy] || !__.IS_BG)
+    onChange[key]?.forEach(fn => fn !== fnToSuppress && fn(key, val));
   if (!isSynced && !__.IS_BG) (toUpload ??= Promise.resolve().then(upload) && {})[key] = val;
   /* browser.storage is slow and can randomly lose values if the tab was closed immediately,
    so we're sending the value to the background script which will save it to the storage;
