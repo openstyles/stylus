@@ -69,6 +69,8 @@ export default function SourceEditor() {
   prevSel = cm.doc.sel;
   prefs.subscribe([kToc, kWidget], (k, val) => {
     sectionFinder.onOff(updateToc, prefs.__values[kToc] || prefs.__values[kWidget]);
+    // TODO: detect global sections
+    if (!mozSections.length) editor.updateToc([]);
     if (k === kWidget) sectionWidget.toggle(val);
     if (k === kToc) cm[val ? 'on' : 'off']('cursorActivity', onCursorActivity);
   }, true);
