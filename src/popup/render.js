@@ -122,7 +122,6 @@ export function createStyleElement(style, entry) {
       id: kStyleIdPrefix + style.id,
       styleId: style.id,
       styleMeta: style,
-      onmousedown: Events.maybeEdit,
     });
   }
   const {enabled, frameUrl, url, [UCD]: ucd} = style;
@@ -161,7 +160,6 @@ export function createStyleElement(style, entry) {
     const sel = 'span.frame-url';
     const frameEl = entry.$(sel) || name.insertBefore($create(sel), name.lastChild);
     frameEl.title = frameUrl;
-    frameEl.onmousedown = Events.maybeEdit;
   }
 
   if (oldEntry) xo.unobserve(name); // forcing recalc of the title

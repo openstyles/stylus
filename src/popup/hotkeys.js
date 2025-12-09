@@ -5,7 +5,6 @@ import {tBody} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {CHROME, MAC} from '@/js/ua';
 import {t} from '@/js/util';
-import {handleUpdate} from './events';
 import {closeMenu, menu} from './menu';
 import {tabId} from '.';
 
@@ -100,7 +99,7 @@ function getTogglables() {
  * @param {boolean} enable
  * @param {boolean} [inTab]
  */
-function toggleState(list, enable, inTab) {
+export function toggleState(list, enable, inTab) {
   const ids = [];
   for (let entry of list) {
     if (typeof entry === 'string' && !(entry = $id(entry)))
@@ -112,7 +111,6 @@ function toggleState(list, enable, inTab) {
       API.styles.toggleOverride(id, tabId,
         enable ?? !enabledInTab,
         ovr == null || (ovr ? enabled : !enabled));
-      handleUpdate({style: {id}});
     } else if (!inTab && enable !== enabled) {
       ids.push(id);
       entry.$('input').checked = enable;

@@ -1,31 +1,98 @@
 import {kStyleIdPrefix} from '@/js/consts';
-import {configDialog, moveFocus} from '@/js/dom-util';
+import {configDialog} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
+import {MAC} from '@/js/ua';
 import {getActiveTab} from '@/js/util-webext';
-import {closeMenu, menu, renderMenu} from './menu';
 import {tabId, tabUrl} from '.';
+import {toggleState} from './hotkeys';
 import * as hotkeys from './hotkeys';
+import {closeMenu, menu, renderMenu} from './menu';
 import {createStyleElement, installed, resortEntries} from './render';
 
-export async function handleUpdate({style, reason}) {
+/** @type {{[sel: string]: (this: HTMLElement, evt: MouseEvent, entry?: HTMLElement) => any}} */
+export const OnClick = {
+  '.style-name': Object.assign((evt, entry) => {
+    if (evt.button
+    || !evt.button && (evt.altKey || evt.ctrlKey || MAC && evt.metaKey)
+      && (evt.preventDefault()/*prevent toggling of checkbox*/, 1)
+    ) {
+      if (evt.altKey) toggleState([entry], null, true);
+      else openEditor(evt, entry);
+    }
+  }, {
+    btn1: true,
+    btn2: true,
+  }),
+  async input(evt, entry = this) {
+    await API.styles.toggle(entry.styleId, this.checked);
+    resortEntries();
+  },
+  '.configure': configure,
+  '.menu-button': Object.assign((event, entry) => renderMenu(entry), {
+    btn2: true,
+  }),
+  '.style-edit-link': openEditor,
+  '.regexp-problem-indicator'(event, entry) {
+    const info = template.regexpProblemExplanation.cloneNode(true);
+    const a = info.$('#regexp-partial a');
+    if (a) a.href = 'https://developer.mozilla.org/docs/Web/CSS/@document';
+    $id(info.id)?.remove();
+    entry.appendChild(info);
+  },
+  '#regexp-explanation a': openURLandHide,
+  '#regexp-explanation button'() {
+    $id('regexp-explanation').remove();
+  },
+};
+
+installed.on('click', () => {
+  if (!installed.firstChild)
+    $id('find-styles-btn').click();
+});
+window.onclick =
+window.onauxclick =
+window.oncontextmenu = event => {
+  let {button} = event;
+  if (button === 1 && event.type !== 'auxclick'
+  || button === 2 && event.type !== 'contextmenu')
+    return;
+  const {target} = event;
+  const entry = target.closest('.entry');
+  if (!entry)
+    return;
+  let el = target;
+  let fn = OnClick['.' + el.className] || OnClick[el.localName];
+  button = button && `btn${button}`;
+  for (const selector in OnClick) {
+    if (fn || (fn = (el = target.closest(selector)) && OnClick[selector])) {
+      if (!button || fn[button]) {
+        if (button) event.preventDefault();
+        fn.call(el, event, entry);
+      }
+      return;
+    }
+  }
+};
+
+export async function handleUpdate({style}) {
   const id = style.id;
   const entry = $id(kStyleIdPrefix + id);
   const inMenu = id === menu.styleId && menu.isConnected;
-  if (reason !== 'toggle' || !entry) {
-    [style] = await API.styles.getByUrl(tabUrl, id, tabId, inMenu);
-    if (!style) {
-      closeMenu();
-      return;
-    }
+  [style] = await API.styles.getByUrl(tabUrl, id, tabId, inMenu);
+  if (style) {
     style = Object.assign(style.style, style);
+    const el = createStyleElement(style, entry);
+    if (!el.isConnected) installed.append(el);
+    resortEntries();
+    if (inMenu) renderMenu(el);
+  } else {
+    entry?.remove();
+    if (inMenu) closeMenu();
   }
-  const el = createStyleElement(style, entry);
-  if (!el.isConnected) installed.append(el);
-  resortEntries();
-  if (inMenu) renderMenu(el);
 }
 
+/** @this {HTMLAnchorElement} either <a target=_blank href=...> or <a> for a config icon */
 export function configure(event, entry) {
   if (!this.target) {
     hotkeys.pause(() => configDialog(entry.styleId));
@@ -34,25 +101,8 @@ export function configure(event, entry) {
   }
 }
 
-export function maybeEdit(event) {
-  if (!(
-    event.button === 0 && (event.ctrlKey || event.metaKey) ||
-    event.button === 1 ||
-    event.button === 2)) {
-    return;
-  }
-  // open an editor on middleclick
-  const el = event.target;
-  if (el.matches('.entry, .style-edit-link') || el.closest('.style-name')) {
-    this.onmouseup = () => this.$('.style-edit-link').click();
-    this.oncontextmenu = e => e.preventDefault();
-    event.preventDefault();
-  }
-}
-
 export async function openEditor(event, entry) {
-  event.preventDefault();
-  await API.openEditor(this.search || {id: entry.styleId});
+  await API.openEditor(entry ? {id: entry.styleId} : this.search);
   window.close();
 }
 
@@ -75,66 +125,3 @@ export async function openURLandHide(event) {
 export function toggleUrlLink({type}) {
   this.parentElement.classList.toggle('url()', type === 'mouseenter' || type === 'focus');
 }
-
-const GlobalRoutes = {
-  '#installed:empty'() {
-    $id('find-styles-btn').click();
-  },
-  '#menu [data-cmd]'() {
-    if (this.dataset.cmd === 'delete') {
-      if (menu.classList.toggle('delete')) return;
-      API.styles.remove(menu.styleId);
-    }
-    closeMenu();
-  },
-  '.copy'({target}) {
-    navigator.clipboard.writeText(target.textContent);
-    target.classList.add('copied');
-    setTimeout(() => {
-      target.classList.remove('copied');
-    }, 1000);
-  },
-};
-
-export const EntryRoutes = {
-  async input(event, entry = this) {
-    event.stopPropagation(); // preventing .style-name from double-processing the click
-    await API.styles.toggle(entry.styleId, this.checked);
-    resortEntries();
-  },
-  '.configure': configure,
-  '.menu-button'(event, entry) {
-    renderMenu(entry);
-    moveFocus(menu, 0);
-  },
-  '.style-edit-link': openEditor,
-  '.regexp-problem-indicator'(event, entry) {
-    const info = template.regexpProblemExplanation.cloneNode(true);
-    const a = info.$('#regexp-partial a');
-    if (a) a.href = 'https://developer.mozilla.org/docs/Web/CSS/@document';
-    $id(info.id)?.remove();
-    entry.appendChild(info);
-  },
-  '#regexp-explanation a': openURLandHide,
-  '#regexp-explanation button'() {
-    $id('regexp-explanation').remove();
-  },
-};
-
-document.on('click', event => {
-  const {target} = event;
-  const entry = target.closest('.entry');
-  for (let map = entry ? EntryRoutes : GlobalRoutes; ; map = GlobalRoutes) {
-    const fn = map['.' + target.className] || map[target.localName];
-    if (fn) return fn.call(target, event, entry);
-    for (const selector in map) {
-      for (let el = target; el && el !== entry; el = el.parentElement) {
-        if (el.matches(selector)) {
-          map[selector].call(el, event, entry);
-          return;
-        }
-      }
-    }
-    if (map === GlobalRoutes) break;
-  }
-});

@@ -1,10 +1,11 @@
 import {kExclusions, kInclusions, kOverridden, kTabOvr} from '@/js/consts';
+import {moveFocus} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {FIREFOX} from '@/js/ua';
 import {NOP, t} from '@/js/util';
 import {tabId, tabUrl} from '.';
-import {EntryRoutes, openEditor} from './events';
+import {OnClick, openEditor} from './events';
 
 export const menu = template.menu;
 /** @type {PopupMenuOvr[]} */
@@ -34,8 +35,15 @@ function initMenu() {
     API.styles.config(menu.styleId, kOverridden, chkOvr.checked);
     return false;
   };
-  (chkStyle = menu.$('input')).onclick = EntryRoutes.input;
+  (chkStyle = menu.$('input')).onclick = OnClick.input;
   (btnEdit = menu.$('[data-cmd="edit"]')).onclick = openEditor;
+  menu.$('[data-cmd="cancel"]').onclick = closeMenu;
+  menu.$('[data-cmd="delete"]').onclick = () => {
+    if (!menu.classList.toggle('delete')) {
+      API.styles.remove(menu.styleId);
+      closeMenu();
+    }
+  };
   elMatched = menu.$('#matchedOvr');
   ITEMS = [];
   for (const el of menu.$$('[data-ovr]')) {
@@ -95,6 +103,7 @@ export async function renderMenu(entry) {
   if (menuH > popupH) document.body.style.minHeight = menuH + 'px';
   else menu.style.paddingTop = Math.min(be.bottom, popupH - menuH - 8) + 'px';
   menuCL.remove('measure');
+  moveFocus(menu, 0);
 }
 
 /** @this {PopupMenuOvr} */

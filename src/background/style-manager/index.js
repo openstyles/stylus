@@ -409,11 +409,13 @@ export async function toggleMany(ids, enabled) {
 export async function toggleOverride(id, val, type, isAdd) {
   const styleData = dataMap.get(id);
   const style = styleData.style;
+  const inTab = typeof val === 'number';
   const msg = {
     method: 'styleUpdated',
+    reason: inTab ? kTabOvr : 'config',
     style: {id, enabled: isAdd ? type : style.enabled},
   };
-  if (typeof val === 'number') {
+  if (inTab) {
     const url = tabCache[val].url[0];
     const cache = cacheData.get(url);
     const obj = tabSet.call(Object, val, kTabOvr, id, isAdd ? type : undefined);
@@ -439,6 +441,5 @@ export async function toggleOverride(id, val, type, isAdd) {
   }
   styleCache.clear();
   await save(style, false);
-  msg.reason = 'config';
   broadcast(msg);
 }
