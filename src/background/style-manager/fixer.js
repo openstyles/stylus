@@ -3,7 +3,7 @@ import * as URLS from '@/js/urls';
 import {isEmptyObj} from '@/js/util';
 import * as syncMan from '../sync-manager';
 import * as usercssMan from '../usercss-manager';
-import {delSections} from './cache';
+import {updateSections} from './cache';
 import {broadcastStyleUpdated, dataMap, storeInMap} from './util';
 
 /** uuidv4 helper: converts to a 4-digit hex string and adds "-" at required positions */
@@ -129,7 +129,7 @@ export function onSaved(style, reason, id = style.id) {
   if (reason !== false) {
     broadcastStyleUpdated(style, reason, !data);
   } else {
-    delSections(style.id);
+    updateSections(style.id);
   }
   if (reason !== 'sync') {
     syncMan.putDoc(style);

@@ -314,7 +314,7 @@ export function remove(id, reason, many) {
   const sync = reason !== 'sync';
   const uuid = style._id;
   if (sync) syncMan.remove(uuid, Date.now());
-  styleCache.delSections(id);
+  styleCache.updateSections(id, true);
   dataMap.delete(id);
   uuidIndex.delete(uuid);
   if (!many) {

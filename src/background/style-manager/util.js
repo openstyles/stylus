@@ -6,7 +6,7 @@ import broadcastInjectorConfig from '../broadcast-injector-config';
 import {uuidIndex} from '../common';
 import {prefsDB} from '../db';
 import * as syncMan from '../sync-manager';
-import {delSections} from './cache';
+import {updateSections} from './cache';
 
 /** @type {StyleDataMap} */
 export const dataMap = new Map();
@@ -49,7 +49,7 @@ export const mergeWithMapped = style => ({
 });
 
 export function broadcastStyleUpdated({enabled, id}, reason, isNew) {
-  delSections(id);
+  updateSections(id);
   return broadcast({
     method: isNew ? 'styleAdded' : 'styleUpdated',
     reason,

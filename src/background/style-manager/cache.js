@@ -43,13 +43,13 @@ function del(items) {
   }
 }
 
-export function delSections(id) {
+export function updateSections(id, removed) {
   for (const url of dataMap.get(id).urls) {
     const entry = cache.get(url);
     if (entry) {
-      (entry.maybe ??= new Set()).add(id);
-      delete entry.sections[id];
-      hit(entry);
+      if (!removed) (entry.maybe ??= new Set()).add(id);
+      if (!removed || entry.sections[id] && delete entry.sections[id])
+        hit(entry);
     }
   }
 }
