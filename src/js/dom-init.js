@@ -87,6 +87,7 @@ function showUnhandledError(err) {
   const height = fontSize * (lines.length + .5);
   const maxLen = lines.map(s => 1e9 + s.length).sort().pop() - 1e9;
   const parent = document.body || document.documentElement;
+  const oldStyle = parent.style.cssText;
   el.id = id;
   el.readOnly = true;
   // using an inline style because we don't know if our CSS is loaded at this stage
@@ -113,8 +114,10 @@ function showUnhandledError(err) {
   el.title = chrome.i18n.getMessage('copy');
   el.onclick ??= () => {
     el.select();
-    if (document.execCommand('copy'))
+    if (document.execCommand('copy')) {
       el.remove();
+      parent.style.cssText = oldStyle;
+    }
   };
   parent.style.minHeight = height * 2 + 'px';
   parent.style.minWidth = maxLen * fontSize * .5 + 'px';
