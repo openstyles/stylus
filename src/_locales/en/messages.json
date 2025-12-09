@@ -1311,6 +1311,10 @@
     "message": "<1>-<9>, <0>, also on numpad - toggles Nth style (0 is 10)\n<A>-<Z> toggles first style with a name that starts with the letter\n<Shift> opens editor instead of toggling\n<+> enables listed styles\n<–> disables listed styles\n<*> and <`> (backtick) - toggles initially enabled styles; doesn't apply to subsequently enabled styles while the popup is open so you can restore the initial selection after testing stuff: simply disable all, then toggle i.e. <–> <*>\nMore info on wiki",
     "description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
   },
+  "popupHotkeysInfoMenu": {
+    "message": "Hold <Enter> (or <▤>) and press a digit to open the corresponding style's menu.",
+    "description": "Preserve < and > symbols so that <hotkey> is styled as a key"
+  },
   "popupHotkeysInfoTab": {
     "message": "Hold <Alt> to toggle styles only for the current tab.",
     "description": "Preserve < and > symbols so that <hotkey> is styled as a key"

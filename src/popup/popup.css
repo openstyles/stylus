@@ -402,6 +402,9 @@ a.configure[target="_blank"] .i-config {
     }
   }
   [data-ovr] {
+    &::before {
+      content: attr(data-index) ":\A0";
+    }
     &:not([hidden]) {
       display: flex;
       align-items: center;
@@ -800,6 +803,7 @@ button.icon {
     border-radius: 4px;
     box-shadow: 1px 1px 4px rgba(0, 0, 0, .3);
     font-weight: bold;
+    font-size: 13px;
     white-space: nowrap;
   }
 }

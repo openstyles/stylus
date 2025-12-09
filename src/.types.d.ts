@@ -216,6 +216,11 @@ declare interface IDBObjectStoreMany extends PromisifiedMembers<IDBObjectStore> 
   putMany: (items: any[], ids?: any[]) => Promise<any[]>;
 }
 
+declare interface StyleEntryElement<T=StyleObj> extends HTMLElement {
+  styleId: number;
+  styleMeta: T;
+}
+
 declare var $: typeof document.querySelector;
 declare var $$: typeof document.querySelectorAll;
 declare var $id: typeof document.getElementById;

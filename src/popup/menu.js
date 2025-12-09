@@ -12,6 +12,7 @@ export const menu = template.menu;
 let ITEMS;
 /** @type {HTMLAnchorElement} */
 let btnEdit;
+export let btnDel;
 /** @type {HTMLInputElement} */
 let chkStyle, chkOvr;
 /** @type {HTMLElement} */
@@ -37,8 +38,9 @@ function initMenu() {
   };
   (chkStyle = menu.$('input')).onclick = OnClick.input;
   (btnEdit = menu.$('[data-cmd="edit"]')).onclick = openEditor;
+  btnEdit.title = '<F2>: ' + t('styleSitesPopupEdit');
   menu.$('[data-cmd="cancel"]').onclick = closeMenu;
-  menu.$('[data-cmd="delete"]').onclick = () => {
+  (btnDel = menu.$('[data-cmd="delete"]')).onclick = () => {
     if (!menu.classList.toggle('delete')) {
       API.styles.remove(menu.styleId);
       closeMenu();
@@ -57,15 +59,20 @@ function initMenu() {
     const item = {el, elInc, elExc, rule, handleEvent: onOvrChanged};
     ITEMS.push(item);
     el.on('change', item);
+    let i = +el.dataset.index;
+    i = `<${i}>` + (i ? '' : ', <`>') + ': ';
+    elInc.title = `${i}${t('include')}`;
+    elExc.title = `${i.replace(/</g, '<Shift-')}${t('exclude')}`;
   }
 }
 
-export async function renderMenu(entry) {
+/** @param {StyleEntryElement<StyleObjMatch>} entry */
+export async function openMenu(entry) {
   if (!ITEMS) initMenu();
   if (!bodyStyle) bodyStyle = document.body.style.cssText;
   const menuCL = menu.classList;
   const be = entry.getBoundingClientRect();
-  const style = /**@type{StyleObj & MatchUrlResult}*/entry.styleMeta;
+  const style = entry.styleMeta;
   const id = style.id;
   const {url} = style;
   const [elTitle, elHome] = menu.$('header').children;

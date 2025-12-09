@@ -12,6 +12,7 @@ import * as Events from './events';
 const EXT_NAME = `<${MF.name}>`;
 const TPL_STYLE = template.style;
 const xo = new IntersectionObserver(onIntersect);
+/** @typedef {StyleObj & MatchUrlResult} StyleObjMatch */
 /** @type {HTMLElement} */
 export const installed = $id('installed');
 
@@ -112,6 +113,11 @@ function makeCrumb(key, val, name, body, isDomain) {
   }, body);
 }
 
+/**
+ * @param {StyleObjMatch} style
+ * @param {StyleEntryElement<StyleObjMatch>} [entry]
+ * @return {StyleEntryElement}
+ */
 export function createStyleElement(style, entry) {
   const oldEntry = entry;
   if (entry) {
@@ -170,7 +176,7 @@ export function createStyleElement(style, entry) {
 /** @param {IntersectionObserverEntry[]} results */
 export function onIntersect(results) {
   for (const {target: $name, boundingClientRect: r} of results) {
-    /** @type {StyleObj & MatchUrlResult} */
+    /** @type {StyleObjMatch} */
     const style = $name.$entry.styleMeta;
     const tabOvr = style[kTabOvr];
     $name.title = [

@@ -7,7 +7,7 @@ import {getActiveTab} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
 import {toggleState} from './hotkeys';
 import * as hotkeys from './hotkeys';
-import {closeMenu, menu, renderMenu} from './menu';
+import {closeMenu, menu, openMenu} from './menu';
 import {createStyleElement, installed, resortEntries} from './render';
 
 /** @type {{[sel: string]: (this: HTMLElement, evt: MouseEvent, entry?: HTMLElement) => any}} */
@@ -29,7 +29,7 @@ export const OnClick = {
     resortEntries();
   },
   '.configure': configure,
-  '.menu-button': Object.assign((event, entry) => renderMenu(entry), {
+  '.menu-button': Object.assign((event, entry) => openMenu(entry), {
     btn2: true,
   }),
   '.style-edit-link': openEditor,
@@ -85,7 +85,7 @@ export async function handleUpdate({style}) {
     const el = createStyleElement(style, entry);
     if (!el.isConnected) installed.append(el);
     resortEntries();
-    if (inMenu) renderMenu(el);
+    if (inMenu) openMenu(el);
   } else {
     entry?.remove();
     if (inMenu) closeMenu();

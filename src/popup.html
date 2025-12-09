@@ -110,16 +110,16 @@
         <a id="home" class="icon" target="_blank"><i class="i-external"></i></a>
       </header>
       <main>
-        <% _.forEach({
-          tab: /*i18n*/'styleForceTab',
-          domain: /*i18n*/'appliesDomainOption',
-          prefix: /*i18n*/'appliesUrlPrefixOption',
-          url: /*i18n*/'appliesUrlOption',
-        }, (text, type) => { %>
-        <div data-ovr="<%= type %>">
-          <span i18n="<%= text %>"></span>
-          <label><input type="checkbox" i18n="title:include"><i class="i-plus"></i></label>
-          <label><input type="checkbox" i18n="title:exclude"><i class="i-minus"></i></label>
+        <% _.forEach([
+          ['tab', /*i18n*/'styleForceTab'],
+          ['domain', /*i18n*/'appliesDomainOption'],
+          ['prefix', /*i18n*/'appliesUrlPrefixOption'],
+          ['url', /*i18n*/'appliesUrlOption'],
+        ], ([type, text], i) => { %>
+        <div data-ovr="<%= type %>" data-index="<%= i %>">
+          <span i18n="+<%= text %>"></span>
+          <label><input type="checkbox"><i class="i-plus"></i></label>
+          <label><input type="checkbox"><i class="i-minus"></i></label>
         </div>
         <% if (type == 'tab') { %><p i18n="styleSitesPopupHeading"></p><% } %>
         <% }); %>
@@ -129,9 +129,9 @@
         <span i18n="deleteStyleConfirm"></span>
       </main>
       <footer>
-        <button data-cmd="delete" i18n="confirmDelete"></button>
-        <button data-cmd="edit" i18n="editStyleLabel, title:styleSitesPopupEdit"></button>
-        <button data-cmd="cancel" i18n="confirmClose"></button>
+        <button data-cmd="delete" i18n="confirmDelete" title="<Delete>"></button>
+        <button data-cmd="edit" i18n="editStyleLabel"></button>
+        <button data-cmd="cancel" i18n="confirmClose" title="<Esc>"></button>
       </footer>
     </div>
   </div>
