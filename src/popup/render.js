@@ -139,8 +139,8 @@ export function createStyleElement(style, entry) {
     'regexp-partial': style.sloppy,
     'frame': frameUrl,
   });
-  if (enabled)
-    entry.$('input').checked = true;
+  if (enabled || oldEntry)
+    entry.$('input').checked = enabled;
 
   name.$entry = entry;
   name.lastChild.textContent = style.customName || style.name;

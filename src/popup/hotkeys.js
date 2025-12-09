@@ -1,18 +1,16 @@
 import {kTabOvr} from '@/js/consts';
-import {$createLink, $isTextInput, $toggleClasses} from '@/js/dom';
+import {$createLink, $isTextInput} from '@/js/dom';
 import {moveFocus} from '@/js/dom-util';
 import {tBody} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {CHROME, MAC} from '@/js/ua';
 import {t} from '@/js/util';
+import {styleFinder, tabId} from '.';
 import {closeMenu, menu} from './menu';
-import {tabId} from '.';
 
 tBody();
 
 const entries = document.getElementsByClassName('entry');
-const kEnabled = 'enabled';
-const kDisabled = 'disabled';
 let infoOn;
 let oldBodyHeight;
 let toggledOn;
@@ -60,7 +58,7 @@ function onKeyDown(evt) {
     }
     return;
   }
-  if ($isTextInput())
+  if (styleFinder.on && $isTextInput())
     return;
   if (key === '`' || key === '*' || code === 'Backquote') {
     if (!togglables.length) getTogglables();
@@ -87,7 +85,7 @@ function onKeyDown(evt) {
 function getTogglables() {
   let num = 0;
   togglables = [];
-  for (const el of $$('.entry.' + kEnabled)) {
+  for (const el of $$('.entry.enabled')) {
     togglables.push(el.id);
     num += el.styleMeta[kTabOvr] !== false;
   }
@@ -106,15 +104,16 @@ export function toggleState(list, enable, inTab) {
       continue;
     const style = entry.styleMeta;
     const {id, enabled, [kTabOvr]: ovr} = style;
-    let enabledInTab;
-    if (inTab && enable !== (enabledInTab = ovr ?? enabled)) {
-      API.styles.toggleOverride(id, tabId,
-        enable ?? !enabledInTab,
-        ovr == null || (ovr ? enabled : !enabled));
-    } else if (!inTab && enable !== enabled) {
-      ids.push(id);
-      entry.$('input').checked = enable;
-      $toggleClasses(entry, {[kEnabled]: enable, [kDisabled]: !enable});
+    let siteOn;
+    let tabOn;
+    if (enable !== (inTab ? tabOn = ovr ?? (siteOn = !style.incOvr && enabled) : enabled)) {
+      if (inTab) {
+        API.styles.toggleOverride(id, tabId,
+          enable ?? !tabOn,
+          ovr == null || (ovr ? siteOn : !siteOn));
+      } else {
+        ids.push(id);
+      }
     }
   }
   if (ids.length)
