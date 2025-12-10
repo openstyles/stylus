@@ -16,6 +16,7 @@ const MENU_KEYS = {
   ContextMenu: 1,
   Enter: 1,
 };
+const isEnabled = () => $id(kStyleIdPrefix + togglables[0]).styleMeta.enabled;
 let infoOn;
 let menuKey = 0;
 let oldBodyStyle;
@@ -32,6 +33,18 @@ window.on('keyup', /** @param {KeyboardEvent} evt */ evt => {
     if (menuKey > 1) evt.preventDefault();
     menuKey = 0;
   }
+});
+$('header').on('click', evt => {
+  const el = evt.target;
+  const cmd = el.dataset.toggle;
+  if (!cmd)
+    return;
+  evt.preventDefault();
+  const cycle = cmd[0] === '*';
+  const enable = cmd[0] === '+';
+  const list = cycle ? togglables : entries;
+  if (cmd[1]) toggleStateInTab(list, cycle ? null : enable);
+  else toggleState(list, cycle ? !isEnabled() : enable);
 });
 
 export async function pause(fn, ...args) {
@@ -89,7 +102,7 @@ function onKeyDown(evt) {
     if (!togglables.length) getTogglables(true);
     if (!togglables.length) return;
     if (!altKey) {
-      toggleState(togglables, !$id(kStyleIdPrefix + togglables[0]).styleMeta.enabled);
+      toggleState(togglables, !isEnabled());
     } else if ((toggledTab = (toggledTab + 1) % 3) < 2) {
       toggleStateInTab(togglables, !!toggledTab);
     } else {
@@ -178,14 +191,16 @@ export function initHotkeys(data) {
   getTogglables();
   const el = $('#help');
   const tAll = t('popupHotkeysInfo');
+  const tMain = tAll.replace(/\n.+$/, '');
+  const tWiki = tAll.match(/(.+)?$/)[0];
   const tMenu = t('popupHotkeysInfoMenu');
   let tTab = t('popupHotkeysInfoTab');
   if (MAC) tTab = tTab.replace('<Alt>', '<⌥>');
   el.onShowNote = showInfo;
   el.onHideNote = hideInfo;
-  el.title = `${tTab}\n${tMenu}\n${tAll}`;
-  el.dataset.title = `${tTab}\n${tMenu}\n${tAll.replace(/\n.+$/, '')}`.replace(/\n/g, '<hr>');
-  wikiText = tAll.match(/(.+)?$/)[0] || t('linkStylusWiki');
+  el.title = [tMain, tTab, tMenu].join('\n');
+  el.dataset.title = el.title.replace(/\n/g, '<hr>');
+  wikiText = tWiki || t('linkStylusWiki');
 }
 
 function hideInfo() {

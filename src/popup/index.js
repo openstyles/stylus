@@ -62,6 +62,8 @@ if (!__.MV3 && CHROME >= 66 && CHROME <= 69) {
   // Chrome 66-69 adds a gap, https://crbug.com/821143
   $root.style.overflow = 'overlay';
 }
+for (const el of $$('header input[style]'))
+  el.indeterminate = true;
 
 function onRuntimeMessage(msg) {
   if (!tabUrl) return;

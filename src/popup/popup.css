@@ -35,6 +35,44 @@ body {
   display: flex;
   flex-direction: column;
 }
+header {
+  $headerBorderH: 3px;
+  padding: var(--outer-padding) var(--outer-padding) calc(var(--outer-padding) - $headerBorderH);
+  border-bottom: $headerBorderH double var(--c75);
+  display: flex;
+  align-items: center;
+  background: var(--c95);
+  user-select: none;
+  > :first-child {
+    flex: 1;
+  }
+  div {
+    margin-top: 1ex;
+  }
+  div, summary {
+    transition: opacity .25s;
+  }
+  label:hover, #help:hover i {
+    color: var(--accent-1);
+  }
+  #help {
+    i {
+      color: var(--c50);
+      font-size: 18px;
+    }
+  }
+  .touch & {
+    div {
+      margin-top: var(--outer-padding);
+    }
+    input {
+      margin-right: var(--outer-padding) !important;
+    }
+  }
+  .non-touch &:not(:hover) :is(div, summary) {
+    opacity: .7;
+  }
+}
 #installed {
   overflow-y: auto;
 }
@@ -697,15 +735,6 @@ a:hover i {
     max-width: calc(50% - var(--btn-gap) - var(--inner-padding));
   }
 }
-#help {
-  $helpIconSize: 18px;
-  line-height: $helpIconSize;
-  padding: 0 1px;
-  i {
-    color: var(--c40);
-    font-size: $helpIconSize;
-  }
-}
 button.icon {
   padding: 2px;
   border-radius: 50%;
@@ -729,6 +758,7 @@ button.icon {
     flex-direction: column;
   }
   .blocked-info,
+  header,
   #installed {
     order: 2;
   }
@@ -798,7 +828,8 @@ button.icon {
     color: var(--fg);
     background: linear-gradient(var(--c80), var(--bg));
     padding: 1px 6px 0;
-    margin: 2px;
+    margin: 0 2px;
+    line-height: 1.1;
     border: 1px solid var(--bg);
     border-radius: 4px;
     box-shadow: 1px 1px 4px rgba(0, 0, 0, .3);

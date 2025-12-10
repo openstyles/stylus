@@ -1837,6 +1837,20 @@
     "message": "Toggle style",
     "description": "Label for the checkbox to enable/disable a style"
   },
+  "toggleStylesHeading": {
+    "message": "Toggle styles"
+  },
+  "toggleStylesHint": {
+    "message": "Toggle the initially enabled styles, same as ✱"
+  },
+  "toggleStylesPerm": {
+    "message": "permanently",
+    "description": "Label for controls that reads like a continuation of the heading above:\nToggle these styles\n[x] [ ] [*] permanently\n[x] [ ] [*] in this tab only"
+  },
+  "toggleStylesTab": {
+    "message": "in this tab only",
+    "description": "Label for controls that reads like a continuation of the heading above:\nToggle these styles\n[x] [ ] [*] permanently\n[x] [ ] [*] in this tab only"
+  },
   "undo": {
     "message": "Undo",
     "description": "Button label"
