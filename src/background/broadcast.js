@@ -16,11 +16,10 @@ export function broadcast(data, cfg) {
   toBroadcast ??= (setTimeout(doBroadcast), []);
   if (cfg) {
     toBroadcastCfg = cfg;
+  } else if (data.method === 'styleUpdated') {
+    (toBroadcastUpdStyles ??= new Map()).set(data.style.id, data);
   } else {
     toBroadcast.push(data);
-    if (data.method === 'styleUpdated') {
-      (toBroadcastUpdStyles ??= new Map()).set(data.style.id, data);
-    }
   }
 }
 
