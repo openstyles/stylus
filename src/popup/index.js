@@ -7,7 +7,7 @@ import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {isDark, onDarkChanged} from '@/js/themer';
-import {CHROME, FIREFOX, MOBILE, OPERA} from '@/js/ua';
+import {CHROME, FIREFOX, MAC, MOBILE, OPERA} from '@/js/ua';
 import {clamp, sleep0, t} from '@/js/util';
 import {CHROME_POPUP_BORDER_BUG, getActiveTab} from '@/js/util-webext';
 import * as Events from './events';
@@ -62,8 +62,13 @@ if (!__.MV3 && CHROME >= 66 && CHROME <= 69) {
   // Chrome 66-69 adds a gap, https://crbug.com/821143
   $root.style.overflow = 'overlay';
 }
-for (const el of $$('header input[style]'))
+for (let el of $$('header input[style]')) {
   el.indeterminate = true;
+  if (el.dataset.toggle === '*t') {
+    el = el.parentElement;
+    el.title = el.title.replace('<', MAC ? '<⌥' : '<Alt-');
+  }
+}
 
 function onRuntimeMessage(msg) {
   if (!tabUrl) return;

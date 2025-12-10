@@ -1,4 +1,5 @@
 /* postcss-simple-vars */
+$pad: var(--outer-padding);
 $powerWidth: 30px;
 $powerOverlap: 4px; /* must be >= 1px (transparent edge) */
 
@@ -17,6 +18,7 @@ $powerOverlap: 4px; /* must be >= 1px (transparent edge) */
 }
 :root.touch {
   --inner-padding: 25px;
+  --outer-padding: 12px;
   --entry-h: 36px;
 }
 [data-ui-theme="dark"] {
@@ -36,21 +38,35 @@ body {
   flex-direction: column;
 }
 header {
+  --gap: calc($pad/4);
+  border-bottom: var(--border);
+  display: flex;
+  align-items: center;
+  user-select: none;
   .no-styles & {
     display: none;
   }
-  $headerBorderH: 3px;
-  padding: var(--outer-padding) var(--outer-padding) calc(var(--outer-padding) - $headerBorderH);
-  border-bottom: $headerBorderH double var(--c75);
-  display: flex;
-  align-items: center;
-  background: var(--c95);
-  user-select: none;
-  > :first-child {
+  details {
     flex: 1;
+    &[open] {
+      position: relative;
+      summary {
+        position: absolute;
+        color: transparent;
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
-  div {
-    margin-top: 1ex;
+  summary {
+    padding: var(--outer-padding);
+    box-sizing: border-box;
+  }
+  div:nth-of-type(1) {
+    padding: $pad $pad var(--gap);
+  }
+  div:nth-of-type(2) {
+    padding: var(--gap) $pad $pad;
   }
   div, summary {
     transition: opacity .25s;
@@ -59,17 +75,16 @@ header {
     color: var(--accent-1);
   }
   #help {
+    margin: 0 $pad;
     i {
       color: var(--c50);
       font-size: 18px;
     }
   }
   .touch & {
-    div {
-      margin-top: var(--outer-padding);
-    }
+    --gap: calc($pad/2);
     input {
-      margin-right: var(--outer-padding) !important;
+      margin-right: $pad !important;
     }
   }
   .non-touch &:not(:hover) :is(div, summary) {
@@ -85,8 +100,8 @@ header {
 }
 
 body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colorpicker-popup) {
-  padding-left: var(--outer-padding);
-  padding-right: var(--outer-padding);
+  padding-left: $pad;
+  padding-right: $pad;
 }
 
 :root:not(.blocked) .if-blocked,
@@ -105,7 +120,7 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
   z-index: 4;
   padding: 0;
   > * {
-    padding: var(--outer-padding);
+    padding: $pad;
     display: flex;
   }
   > :nth-last-child(n + 2) {
@@ -114,8 +129,7 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
 }
 
 :root:not(.blocked) #installed:empty {
-  padding: var(--outer-padding);
-  background-color: var(--c98);
+  padding: $pad;
   flex-flow: column;
   display: flex;
   &::before {
@@ -196,7 +210,7 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
   img {
     position: absolute;
     filter: drop-shadow(1px 1px 2px #0008);
-    right: calc(var(--outer-padding) - $powerOverlap);
+    right: calc($pad - $powerOverlap);
   }
 }
 #disableAll {
@@ -243,7 +257,7 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 1px 0 0 var(--outer-padding);
+  padding: 1px 0 0 $pad;
   flex: 1;
 }
 
@@ -724,9 +738,8 @@ a:hover i {
 /* action buttons */
 
 #popup-options {
-  --btn-gap: var(--outer-padding);
   display: flex;
-  padding: var(--outer-padding);
+  padding: $pad;
   background: var(--bg);
   justify-content: space-between;
   button:not(:hover) {
@@ -735,7 +748,7 @@ a:hover i {
   }
   > * {
     display: flex;
-    max-width: calc(50% - var(--btn-gap) - var(--inner-padding));
+    max-width: calc(50% - 2px - var(--inner-padding));
   }
 }
 button.icon {
@@ -785,15 +798,15 @@ button.icon {
 .blocked-info {
   background-color: var(--c98);
   label {
-    padding: .75em var(--outer-padding) .5em;
+    padding: .75em $pad .5em;
     display: block;
     font-weight: bold;
-    margin: 0 calc(-1 * var(--outer-padding)) .5em;
+    margin: 0 calc(-1 * $pad) .5em;
     background-color: var(--bg);
     border-bottom: var(--border);
   }
   p {
-    padding: 1px 0 var(--outer-padding);
+    padding: 1px 0 $pad;
     margin: 0;
   }
   .copy {
