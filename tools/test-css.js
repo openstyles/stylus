@@ -44,7 +44,8 @@ async function testParserlibOnFiles() {
   });
   let logStr = '';
   parser.fire = (e, tok = e) => {
-    if ((e.type === 'warning' || e.type === 'error') && !/TEST PASSED/.test(e.message)) {
+    if (!parser._events
+    && (e.type === 'warning' || e.type === 'error') && !/TEST PASSED/.test(e.message)) {
       const p = e.property;
       logStr += `  * ${tok.line}:${tok.col} [${e.type}] ${p ? p.text + ': ' : ''}${e.message}\n`;
     }
