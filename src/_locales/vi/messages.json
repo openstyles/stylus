@@ -55,11 +55,23 @@
   "appliesUrlPrefixOption": {
     "message": "URL bắt đầu bằng"
   },
+  "applyAllUpdates": {
+    "message": "Áp dụng tất cả các bản cập nhật"
+  },
   "author": {
     "message": "Tác giả"
   },
   "backup": {
     "message": "Sao lưu"
+  },
+  "backupReminder": {
+    "message": "<b>Kiểu có thể bị mất</b> do mất điện, lỗi trong trình duyệt, lỗi cá nhân. <hr><b>Sao lưu dữ liệu của bạn:</b> định cấu hình \"Đồng bộ hóa với đám mây\" trong tùy chọn hoặc nhấp vào nút xuất theo cách thủ công bất cứ khi nào bạn thực hiện các thay đổi quan trọng hoặc tốt nhất là thiết lập sao lưu tự động tất cả dữ liệu của bạn bằng ứng dụng chuyên dụng."
+  },
+  "checkAllUpdates": {
+    "message": "Kiểm tra tất cả các kiểu để cập nhật"
+  },
+  "checkAllUpdatesForce": {
+    "message": "Kiểm tra lại, tôi không chỉnh sửa bất kỳ kiểu nào!"
   },
   "checkForUpdate": {
     "message": "Kiểm tra bản cập nhật mới"
@@ -69,6 +81,9 @@
   },
   "clickToUninstall": {
     "message": "Nhấp để huỷ kích hoạt"
+  },
+  "cm_arrowKeysTraverse": {
+    "message": "Phím mũi tên ↑↓ mặt cắt ngang"
   },
   "cm_autoCloseBrackets": {
     "message": "Tự động đóng ngoặc và nháy"
@@ -85,6 +100,9 @@
   "cm_indentWithTabs": {
     "message": "Lùi đầu dòng thông minh bằng tab"
   },
+  "cm_keyMap": {
+    "message": "Sơ đồ bàn phím"
+  },
   "cm_lineWrapping": {
     "message": "Gập dòng dài"
   },
@@ -100,6 +118,9 @@
   "cm_matchHighlightToken": {
     "message": "Token nằm dưới con trỏ văn bản"
   },
+  "cm_resizeGripHint": {
+    "message": "Nhấp đúp để tối đa hóa/khôi phục chiều cao"
+  },
   "cm_selectByTokens": {
     "message": "Nhấp đúp để chọn token"
   },
@@ -114,6 +135,9 @@
   },
   "cm_theme": {
     "message": "Chủ đề"
+  },
+  "colorpickerPaletteHint": {
+    "message": "Nhấp chuột phải vào một mẫu màu để duyệt qua các dòng nguồn của nó"
   },
   "colorpickerSwitchFormatTooltip": {
     "message": "Đổi định dạng: HEX → RGB → HSL.\nNhấn giữ phím Shift khi nhấp để đảo thứ tự.\nPhím tắt: PgUp và PgDn."
@@ -163,6 +187,12 @@
   "copy": {
     "message": "Chép vào khay nhớ tạm"
   },
+  "customNameHint": {
+    "message": "Nhập tên tùy chỉnh vào đây để đổi tên kiểu trong giao diện người dùng mà không làm hỏng các bản cập nhật của nó"
+  },
+  "customNameResetHint": {
+    "message": "Dừng sử dụng tên tùy chỉnh, chuyển sang tên riêng của kiểu"
+  },
   "dateAbbrDay": {
     "message": "$value$ ngày",
     "placeholders": {
@@ -201,6 +231,9 @@
   "dateUpdated": {
     "message": "Ngày cập nhật"
   },
+  "dbError": {
+    "message": "Đã xảy ra lỗi khi sử dụng cơ sở dữ liệu Stylus. Bạn có muốn truy cập một trang web với các giải pháp khả thi không?"
+  },
   "defaultTheme": {
     "message": "mặc định"
   },
@@ -209,6 +242,9 @@
   },
   "deleteStyleLabel": {
     "message": "Xoá"
+  },
+  "description": {
+    "message": "Thiết kế lại trang web bằng Stylus, trình quản lý kiểu người dùng. Stylus cho phép bạn dễ dàng cài đặt các chủ đề và giao diện cho nhiều trang web phổ biến."
   },
   "disableAllStyles": {
     "message": "Tắt tất cả bảng định kiểu"
@@ -222,6 +258,20 @@
   "draftAction": {
     "message": "Chọn \"Có\" để tải bản nháp hoặc \"Không\" để xoá nó đi."
   },
+  "draftTitle": {
+    "message": "Khôi phục bản nháp, đã tạo $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "dragDropMessage": {
+    "message": "Thả tệp sao lưu của bạn vào bất cứ đâu trên trang này để nhập."
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Để cài đặt tệp, hãy thả tệp đó vào dải tab (khu vực hiển thị tiêu đề tab)."
+  },
   "editDeleteText": {
     "message": "Xoá"
   },
@@ -234,8 +284,14 @@
   "editStyleLabel": {
     "message": "Sửa"
   },
+  "editTargetsFirst": {
+    "message": "Hiển thị mục tiêu trước code"
+  },
   "editorSettings": {
     "message": "Cài đặt trình soạn thảo"
+  },
+  "emptyCode": {
+    "message": "Phần kiểu cho URL này trống"
   },
   "enableStyleLabel": {
     "message": "Kích hoạt"

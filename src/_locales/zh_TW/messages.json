@@ -299,6 +299,9 @@
   "enableStyleLabel": {
     "message": "啟用"
   },
+  "exclude": {
+    "message": "排除"
+  },
   "exportCompatible": {
     "message": "匯出（相容模式）"
   },
@@ -468,6 +471,9 @@
   },
   "importStyles": {
     "message": "匯入樣式"
+  },
+  "include": {
+    "message": "包含"
   },
   "installButton": {
     "message": "安裝樣式"
@@ -1074,6 +1080,12 @@
   "popupHotkeysInfo": {
     "message": "<1>-<9>、<0>，數字鍵盤也可以 — 切換第 N 個樣式（0 是切換到第 10 個）\n<A>-<Z> 切換以該字母為名稱第一個字的樣式\n<Shift> 開啟編輯器而非切換\n<+> 啟用列出的樣式\n<–> 停用列出的樣式\n<*> 與 <`> （倒引號）— 切換初始啟用的樣式；不要在彈出式視窗開啟時套用到後來啟用的樣式，這樣您就可以在測試完後復原初始選擇：僅停用全部，然後切換。<–> <*>\n更多資訊請見 wiki"
   },
+  "popupHotkeysInfoMenu": {
+    "message": "按住 <Enter>（或 <▤>）並按下數字鍵，即可開啟對應樣式的選單。"
+  },
+  "popupHotkeysInfoTab": {
+    "message": "按住 <Alt> 鍵僅切換目前分頁的樣式。"
+  },
   "popupHotkeysTooltip": {
     "message": "點選以檢視可用的快速鍵"
   },
@@ -1310,6 +1322,12 @@
       }
     }
   },
+  "styleForceAppliedTab": {
+    "message": "強制套用於目前分頁的樣式選單"
+  },
+  "styleForceTab": {
+    "message": "僅目前分頁"
+  },
   "styleFromMozillaFormatError": {
     "message": "從 Mozilla 格式匯入失敗"
   },
@@ -1440,6 +1458,15 @@
   },
   "styleSitesIncludeOvr": {
     "message": "覆寫樣式"
+  },
+  "styleSitesMatchingRules": {
+    "message": "與目前網址相符的個人網站規則。\n\"+\" 前綴代表包含。\n\"-\" 前綴代表排除。"
+  },
+  "styleSitesPopupEdit": {
+    "message": "在編輯器的「樣式設定」中編輯個人網站的完整清單"
+  },
+  "styleSitesPopupHeading": {
+    "message": "造訪包含（與 <br>）或排除樣式："
   },
   "styleToMozillaFormatHelp": {
     "message": "Mozilla格式的樣式代碼能在火狐版Stylus使用，也可以提交至 userstyles.org 。"

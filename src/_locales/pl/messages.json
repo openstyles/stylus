@@ -1080,6 +1080,9 @@
   "popupHotkeysInfo": {
     "message": "<1>-<9>, <0>, również na klawiaturze numerycznej - przełącza n-ty styl (0 to 10)\n<A>-<Z> przełącza pierwszy styl z nazwą zaczynającą się na literę\n<Shift> otwiera edytor zamiast przełączać\n<+> włącza wymienione style\n<–> wyłącza wymienione style\n<*> oraz <`> (grawis) - przełącza początkowo włączone style; nie ma zastosowania do później włączonych stylów, podczas gdy okienko podręczne jest otwarte, więc możesz przywrócić początkowy wybór po przetestowaniu: po prostu wyłącz wszystkie, a następnie przełącz, np. <–> <*>\nWięcej informacji na wiki"
   },
+  "popupHotkeysInfoMenu": {
+    "message": "Przytrzymaj <Enter> (lub <▤>) i naciśnij cyfrę, aby otworzyć menu odpowiedniego stylu."
+  },
   "popupHotkeysInfoTab": {
     "message": "Przytrzymaj <Alt>, aby przełączać style tylko dla bieżącej karty."
   },
