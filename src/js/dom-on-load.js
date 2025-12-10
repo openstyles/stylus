@@ -15,9 +15,8 @@ const SPLIT_BTN_MENU = '.split-btn-menu';
 const tooltips = new WeakMap();
 /** Strips all normal html tags but allows <invalid-html-tags> which we use to emphasize stuff */
 const rxTag = /<(?:\/[a-z]+|[a-z]+(?:\s+[^>]*)?)>/g;
-const rxTaglike = /<[^\s<>][^<>]*>/g;
-const rxLong1 = /([.?!]\s+|[．。？！]\s*|.{55,70},)\s+/gu;
-const rxLong2 = /(.{55,70}(?=.{50,}))\s+/gu;
+const rxLong1 = /([.?!]\s+|[．。？！]\s*|(?:<[^\s<>][^<>]*>)?.{55,70},)\s+/gu;
+const rxLong2 = /((?:<[^\s<>][^<>]*>)?.{55,70}(?=.{50,}))\s+/gu;
 
 splitLongTooltips();
 addTooltipsToEllipsized();
@@ -230,13 +229,10 @@ function splitLongTooltips() {
     if (tooltips.has(el))
       continue;
     const old = el.title || (el.title = el.dataset.title || '');
-    const hls = [];
     if (!old)
       continue;
     tooltips.set(el, old);
-    let res = old.includes('</') ? old.replace(rxTag, '')
-      : old.replace(rxTaglike, s => '\x00'.repeat(s.length - 1 || 1) +
-        String.fromCharCode(hls.push(s)));
+    let res = old.includes('</') ? old.replace(rxTag, '') : old;
     if (res.length > 60) {
       for (let arr = res.split(/\n+/), a = res = '', b, cut, i = 0; i < arr.length; i++) {
         a = arr[i];
@@ -246,8 +242,6 @@ function splitLongTooltips() {
         cut = b !== a;
       }
     }
-    if (hls.length)
-      res = res.replace(/\x00+(.)/g, (_, c) => hls[c.charCodeAt(0) - 1]);
     if (res !== old)
       el.title = res;
   }
