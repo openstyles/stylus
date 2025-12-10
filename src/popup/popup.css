@@ -15,7 +15,7 @@ $powerOverlap: 4px; /* must be >= 1px (transparent edge) */
   --hover-disabled: var(--c40);
   scrollbar-width: none; /* suppressing the redundant overall scrollbar */
 }
-:root.mobile {
+:root.touch {
   --inner-padding: 25px;
   --entry-h: 36px;
 }

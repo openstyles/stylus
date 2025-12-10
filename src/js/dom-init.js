@@ -24,6 +24,7 @@ $root.classList.add(
   WINDOWS ? 'windows' : 'non-windows',
   FIREFOX ? 'firefox' : 'chromium',
   ...OPERA ? ['opera'] : VIVALDI ? ['vivaldi'] : [],
+  navigator.maxTouchPoints ? 'touch' : 'non-touch',
 );
 // set language for a) CSS :lang pseudo and b) hyphenation
 $root.lang = chrome.i18n.getUILanguage();
