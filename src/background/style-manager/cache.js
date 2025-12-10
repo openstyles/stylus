@@ -1,5 +1,4 @@
 import {bgBusy} from '../common';
-import {dataMap} from './util';
 
 let onDeleted;
 let timer;
@@ -44,13 +43,11 @@ function del(items) {
 }
 
 export function updateSections(id, removed) {
-  for (const url of dataMap.get(id).urls) {
-    const entry = cache.get(url);
-    if (entry) {
-      if (!removed) (entry.maybe ??= new Set()).add(id);
-      if (!removed || entry.sections[id] && delete entry.sections[id])
-        hit(entry);
-    }
+  for (const entry of cache.values()) {
+    if (!removed)
+      (entry.maybe ??= new Set()).add(id);
+    if (!removed || entry.sections[id] && delete entry.sections[id])
+      hit(entry);
   }
 }
 
