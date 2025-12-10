@@ -45,6 +45,7 @@ export function resortEntries(entries) {
   if (entries || prefs.__values['popup.autoResort']) {
     installed.append(...sortStyles(entries || [...installed.children]));
   }
+  $rootCL.toggle('no-styles', !installed.firstChild);
 }
 
 /**

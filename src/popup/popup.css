@@ -36,6 +36,9 @@ body {
   flex-direction: column;
 }
 header {
+  .no-styles & {
+    display: none;
+  }
   $headerBorderH: 3px;
   padding: var(--outer-padding) var(--outer-padding) calc(var(--outer-padding) - $headerBorderH);
   border-bottom: $headerBorderH double var(--c75);
