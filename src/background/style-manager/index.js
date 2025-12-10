@@ -426,7 +426,7 @@ export function toggleSiteOvr(id, val, type, isAdd) {
 export function toggleTabOvrMany(tabId, overrides) {
   const messages = [];
   const td = tabCache[tabId];
-  const tabOvr = td[kTabOvr] || {};
+  const tabOvr = td[kTabOvr] || {}; // not assigning it yet as it may end up empty
   const url = td[kUrl][0];
   const cache = cacheData.get(url);
   for (const key in overrides) {
@@ -444,6 +444,7 @@ export function toggleTabOvrMany(tabId, overrides) {
     });
   }
   if (messages.length) {
+    td[kTabOvr] = tabOvr; // now we can assign it since we know it's modified
     stateDB.put(td, tabId);
     sendTab(tabId, messages, null, /*multi=*/true);
     broadcastExtension(messages, /*multi=*/true);

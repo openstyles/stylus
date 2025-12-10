@@ -19,10 +19,10 @@ export default async function makePopupData() {
   // when a newly created tab is still connecting to `pendingUrl`.
   let url = tab.url || tab.pendingUrl || '';
   let tmp;
-  const td = tabCache[tab.id];
+  const td = tabCache[tab.id] || false;
   const isOwn = url.startsWith(ownRoot);
   const [
-    ping0 = __.MV3 && !td?.[kPopup] && (
+    ping0 = __.MV3 && !td[kPopup] && (
       tabSet(tab.id, kPopup, true),
       await reinjectContentScripts(tab)
     ),
