@@ -12,7 +12,7 @@ import {clamp, sleep0, t} from '@/js/util';
 import {CHROME_POPUP_BORDER_BUG, getActiveTab} from '@/js/util-webext';
 import * as Events from './events';
 import {handleUpdate} from './events';
-import './hotkeys';
+import {initHotkeys} from './hotkeys';
 import {createWriterElement, showStyles, updateStateIcon} from './render';
 import '@/css/onoffswitch.css';
 import './popup.css';
@@ -27,8 +27,9 @@ let prevHeight;
 
 (async () => {
   const data = (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
-  initPopup(...data);
-  showStyles(...data);
+  initPopup(data);
+  showStyles(data);
+  initHotkeys(data);
   prevHeight = Math.max(innerHeight, 150);
   if (!MOBILE) window.on('resize', onWindowResize);
 })();
@@ -89,7 +90,7 @@ function onWindowResize() {
   prevHeight = h;
 }
 
-async function initPopup(frames, ping0, tab, urlSupported) {
+async function initPopup({frames, ping0, tab, urlSupported}) {
   const kPopupWidth = 'popupWidth';
   prefs.subscribe([kPopupWidth, 'popupWidthMax'], (key, val) => {
     document.body.style[`${key === kPopupWidth ? 'min' : 'max'}-width`] = MOBILE ? 'none'

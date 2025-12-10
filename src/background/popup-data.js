@@ -1,5 +1,5 @@
 import '@/js/browser';
-import {kAboutBlank, kPopup, kStyleIds, kUrl} from '@/js/consts';
+import {kAboutBlank, kPopup, kStyleIds, kTabOvr, kUrl} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {chromeProtectsNTP, ownRoot, supported} from '@/js/urls';
 import {getActiveTab} from '@/js/util-webext';
@@ -85,7 +85,13 @@ export default async function makePopupData() {
         f.styles ??= getByUrl(f.url, undefined, tab.id);
     }
   }
-  return [frames, ping0, tab, urlSupported];
+  return {
+    frames,
+    ping0,
+    tab,
+    urlSupported,
+    [kTabOvr]: td[kTabOvr + '*'],
+  };
 }
 
 /** webNavigation.getAllFrames doesn't work in Chrome on own pages */

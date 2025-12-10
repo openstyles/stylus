@@ -25,6 +25,7 @@ import {dataMap} from './style-manager/util';
 import initStyleViaApi from './style-via-api';
 import './style-via-webrequest';
 import * as syncMan from './sync-manager';
+import * as tabMan from './tab-manager';
 import {openEditor, openManager, openURL} from './tab-util';
 import * as updateMan from './update-manager';
 import * as usercssMan from './usercss-manager';
@@ -54,6 +55,16 @@ Object.assign(API, /** @namespace API */ {
 
   styles: styleMan,
   sync: syncMan,
+  tabs: {
+    get: tabMan.get,
+    set(tabId, ...args) {
+      // `undefined` cannot be sent via JSON-based messaging in Chrome
+      // TODO: remove this when minimum_chrome_version >= version that implements structured clone
+      if (args[args.length - 1]?.undef === tabId)
+        args[args.length - 1] = undefined;
+      tabMan.set(tabId);
+    },
+  },
   updater: updateMan,
   usercss: usercssMan,
   uso: usoApi,

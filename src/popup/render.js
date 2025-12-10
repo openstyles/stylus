@@ -12,11 +12,10 @@ import * as Events from './events';
 const EXT_NAME = `<${MF.name}>`;
 const TPL_STYLE = template.style;
 const xo = new IntersectionObserver(onIntersect);
-/** @typedef {StyleObj & MatchUrlResult} StyleObjMatch */
 /** @type {HTMLElement} */
 export const installed = $id('installed');
 
-export function showStyles(frames) {
+export function showStyles({frames}) {
   const entries = new Map();
   for (let i = 0; i < frames.length; i++) {
     if (isBlocked && !i) continue; // skip a blocked main frame
@@ -134,23 +133,21 @@ export function createStyleElement(style, entry) {
   const name = entry.$('.style-name');
   const cfg = entry.$('.configure');
   const hasVars = ucd ? ucd.vars : url && /\?[^#=]/.test(style.updateUrl);
-
+  const tabOvr = entry.dataset.tab = style[kTabOvr];
   $toggleClasses(entry, {
     'empty': style.empty,
     'disabled': !enabled,
     'enabled': enabled,
-    'force-applied': style.included || !!style[kTabOvr],
+    'force-applied': style.included || !!tabOvr,
     'not-applied': style.excluded || style.sloppy || style.excludedScheme || style.incOvr
-      || style[kTabOvr] === false,
+      || tabOvr === false,
     'regexp-partial': style.sloppy,
     'frame': frameUrl,
   });
   if (enabled || oldEntry)
     entry.$('input').checked = enabled;
-
   name.$entry = entry;
   name.lastChild.textContent = style.customName || style.name;
-
   if (!hasVars)
     cfg.hidden = true;
   else if (ucd)
@@ -161,13 +158,11 @@ export function createStyleElement(style, entry) {
     cfg.title = t('configureStyleOnHomepage') + '\n' + url;
     cfg.$('i').className = 'i-external';
   }
-
   if (frameUrl) {
     const sel = 'span.frame-url';
     const frameEl = entry.$(sel) || name.insertBefore($create(sel), name.lastChild);
     frameEl.title = frameUrl;
   }
-
   if (oldEntry) xo.unobserve(name); // forcing recalc of the title
   xo.observe(name);
   return entry;

@@ -146,6 +146,8 @@ declare interface MatchUrlResult {
   tabOvr?: boolean;
 }
 
+type StyleObjMatch = StyleObj & MatchUrlResult;
+
 declare interface UsercssData {
   name: string;
   namespace: string;

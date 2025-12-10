@@ -4,14 +4,14 @@ import {
 } from '@/js/consts';
 import {__values} from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
-import {calcObjSize, isEmptyObj, mapObj} from '@/js/util';
+import {calcObjSize, mapObj} from '@/js/util';
 import {broadcast, broadcastExtension, sendTab} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {uuidIndex} from '../common';
-import {db, draftsDB} from '../db';
+import {db, draftsDB, stateDB} from '../db';
 import {isOptionSite, optionSites} from '../option-sites';
 import * as syncMan from '../sync-manager';
-import {cache as tabCache, set as tabSet} from '../tab-manager';
+import {cache as tabCache} from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
 import * as usercssMan from '../usercss-manager';
 import * as uswApi from '../usw-api';
@@ -22,7 +22,7 @@ import {onBeforeSave, onSaved} from './fixer';
 import {matchOverrides, urlMatchOverride, urlMatchSection} from './matcher';
 import {
   broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, mergeWithMapped, order,
-  orderWrap, setOrderImpl,
+  orderWrap, setOrderImpl, toggleSiteOvrImpl,
 } from './util';
 
 export * from '../style-search-db';
@@ -401,45 +401,51 @@ export async function toggleMany(ids, enabled) {
 
 /**
  * @param {number} id
- * @param {string|number} val - pattern or tab id
+ * @param {string} val - pattern
  * @param {boolean} type - true: inclusions, false: exclusions
  * @param {boolean} isAdd - true: add val to the list, false: remove it
  * @returns {Promise<void>}
  */
-export async function toggleOverride(id, val, type, isAdd) {
-  const styleData = dataMap.get(id);
-  const style = styleData.style;
-  const inTab = typeof val === 'number';
-  const msg = {
-    method: 'styleUpdated',
-    reason: inTab ? kTabOvr : 'config',
-    style: {id, enabled: isAdd ? type : style.enabled},
-  };
-  if (inTab) {
-    const url = tabCache[val].url[0];
-    const cache = cacheData.get(url);
-    const obj = tabSet.call(Object, val, kTabOvr, id, isAdd ? type : undefined);
-    if (!isAdd && isEmptyObj(obj))
-      delete obj[kTabOvr];
-    if (cache)
-      (cache.maybe ??= new Set()).add(id);
-    sendTab(val, msg);
-    broadcastExtension(msg);
-    return;
+export function toggleSiteOvr(id, val, type, isAdd) {
+  const style = dataMap.get(id).style;
+  if (toggleSiteOvrImpl(style, val, type, isAdd) + toggleSiteOvrImpl(style, val, !type, false)) {
+    styleCache.clear();
+    return save(style, {
+      method: 'styleUpdated',
+      reason: 'config',
+      style: {id, enabled: isAdd ? type : style.enabled},
+    });
   }
-  type = type ? kInclusions : kExclusions;
-  let list = style[type];
-  if (isAdd) {
-    if (!list) list = style[type] = [];
-    else if (list.includes(val)) throw new Error('The rule already exists');
-    list.push(val);
-  } else if (list && (val = list.indexOf(val)) >= 0) {
-    if (list.length > 1) list.splice(val, 1);
-    else style[type] = null; // to overwrite the prop in a style of broadcast receiver
-  } else {
-    return;
+}
+
+/**
+ * @param {number} tabId
+ * @param {TabCacheEntry['tabOvr']} overrides - `null` to remove
+ * @returns {Promise<void>}
+ */
+export function toggleTabOvrMany(tabId, overrides) {
+  const messages = [];
+  const td = tabCache[tabId];
+  const tabOvr = td[kTabOvr] || {};
+  const url = td[kUrl][0];
+  const cache = cacheData.get(url);
+  for (const key in overrides) {
+    const id = +key;
+    const val = overrides[key];
+    const data = dataMap.get(id);
+    const dirty = tabOvr[key] != val; // eslint-disable-line eqeqeq
+    if (!data || !dirty) continue;
+    if (val == null) delete tabOvr[key]; else tabOvr[key] = val;
+    if (cache) (cache.maybe ??= new Set()).add(id);
+    messages.push({
+      method: 'styleUpdated',
+      reason: kTabOvr,
+      style: {id, enabled: val ?? data.style.enabled},
+    });
   }
-  styleCache.clear();
-  await save(style, false);
-  broadcast(msg);
+  if (messages.length) {
+    stateDB.put(td, tabId);
+    sendTab(tabId, messages, null, /*multi=*/true);
+    broadcastExtension(messages, /*multi=*/true);
+  }
 }

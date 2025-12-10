@@ -1,4 +1,4 @@
-import {kInjectionOrder, UCD} from '@/js/consts';
+import {kExclusions, kInclusions, kInjectionOrder, UCD} from '@/js/consts';
 import * as URLS from '@/js/urls';
 import {deepEqual, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
@@ -50,7 +50,7 @@ export const mergeWithMapped = style => ({
 
 export function broadcastStyleUpdated({enabled, id}, reason, isNew) {
   updateSections(id);
-  return broadcast({
+  return broadcast(typeof reason === 'object' ? reason : {
     method: isNew ? 'styleAdded' : 'styleUpdated',
     reason,
     style: {id, enabled},
@@ -101,6 +101,21 @@ export function storeInMap(style) {
     urls: new Set(),
   });
   uuidIndex.set(style._id, style.id);
+}
+
+export function toggleSiteOvrImpl(style, val, type, add) {
+  type = type ? kInclusions : kExclusions;
+  let list = style[type];
+  if (add) {
+    if (!list) list = style[type] = [val];
+    else if (!list.includes(val)) list.push(val);
+  } else if (list && (val = list.indexOf(val)) >= 0) {
+    if (list.length > 1) list.splice(val, 1);
+    else style[type] = null; // to overwrite the prop in a style of broadcast receiver
+  } else {
+    type = false;
+  }
+  return !!type;
 }
 
 uuidIndex.addCustom(orderWrap, {set: setOrderImpl});

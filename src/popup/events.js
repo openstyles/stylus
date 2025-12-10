@@ -5,7 +5,7 @@ import {API} from '@/js/msg-api';
 import {MAC} from '@/js/ua';
 import {getActiveTab} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
-import {toggleState} from './hotkeys';
+import {toggleStateInTab} from './hotkeys';
 import * as hotkeys from './hotkeys';
 import {closeMenu, menu, openMenu} from './menu';
 import {createStyleElement, installed, resortEntries} from './render';
@@ -17,7 +17,7 @@ export const OnClick = {
     || !evt.button && (evt.altKey || evt.ctrlKey || MAC && evt.metaKey)
       && (evt.preventDefault()/*prevent toggling of checkbox*/, 1)
     ) {
-      if (evt.altKey) toggleState([entry], null, true);
+      if (evt.altKey) toggleStateInTab([entry], null);
       else openEditor(evt, entry);
     }
   }, {

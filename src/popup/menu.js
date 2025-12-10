@@ -120,12 +120,8 @@ function onOvrChanged(evt) {
   const ctl = evt.target;
   const isInc = ctl === this.elInc;
   const val = ctl.checked;
-  const ctlOther = this[isInc ? 'elExc' : 'elInc'];
-  this.el.classList.toggle('enabled', isInc && val);
-  this.el.classList.toggle('disabled', !isInc && val);
-  API.styles.toggleOverride(id, rule || tabId, isInc, val).catch(NOP);
-  if (rule && val && ctlOther.checked) {
-    ctlOther.checked = false;
-    API.styles.toggleOverride(id, rule, !isInc, false).catch(NOP);
-  }
+  (rule
+    ? API.styles.toggleSiteOvr(id, rule, isInc, val)
+    : API.styles.toggleTabOvrMany(tabId, {[id]: val ? isInc : null})
+  ).catch(NOP);
 }

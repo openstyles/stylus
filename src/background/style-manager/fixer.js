@@ -114,7 +114,7 @@ export function onBeforeSave(style) {
 
 /**
  * @param {StyleObj} style
- * @param {string|false} [reason] - false = no broadcast
+ * @param {string|false|{}} [reason] - false = no broadcast, Object = custom message
  * @param {number} [id]
  * @returns {StyleObj}
  */

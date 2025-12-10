@@ -2,6 +2,7 @@ import {kApplyPort, kStyleIds, kUrl, pKeepAlive} from '@/js/consts';
 import {onDisconnect} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {supported} from '@/js/urls';
+import {isEmptyObj} from '@/js/util';
 import {ignoreChromeError} from '@/js/util-webext';
 import {bgBusy, bgInit, onTabUrlChange, onUnload, onUrlChange} from './common';
 import {stateDB} from './db';
@@ -22,20 +23,24 @@ export const get = (tabId, ...keyPath) => {
  * (tabId, 'foo', 'bar', 'etc', 123) will set tabId's meta to {foo: {bar: {etc: 123}}}
  */
 export const set = function (tabId, ...args) {
-  const value = args.pop();
-  const lastKey = args.pop();
+  const depth = args.length - 2;
+  const lastKey = args[depth];
+  const value = args[depth + 1];
   const del = value === undefined;
   let obj = cache[tabId];
   let obj0 = obj;
+  let parent;
   if (!obj) {
     if (del) return;
     cache[tabId] = obj = obj0 = {id: tabId};
   }
-  for (let i = 0, key; obj && i < args.length; i++) {
+  for (let i = 0, key; obj && i < depth; i++) {
+    parent = obj;
     obj = obj[key = args[i]] || !del && (obj[key] = {});
   }
   if (!del) obj[lastKey] = value;
-  else if (obj) delete obj[lastKey];
+  else if (obj && delete obj[lastKey] && this === Object && isEmptyObj(obj))
+    delete (parent || cache)[depth ? args[depth - 1] : tabId];
   if (__.MV3 && bgMortal) stateDB.put(obj0, tabId);
   return this === Object ? obj : value;
 };

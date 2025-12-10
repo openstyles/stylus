@@ -1,4 +1,4 @@
-import {kTabOvr} from '@/js/consts';
+import {kStyleIdPrefix, kTabOvr} from '@/js/consts';
 import {$createLink, $isTextInput} from '@/js/dom';
 import {moveFocus} from '@/js/dom-util';
 import {tBody} from '@/js/localization';
@@ -19,14 +19,14 @@ const MENU_KEYS = {
 let infoOn;
 let menuKey = 0;
 let oldBodyStyle;
-let toggledOn;
+let savedTabOvrs;
+/** @typedef {number[] | StyleEntryElement<StyleObjMatch>[]} Togglables */
+/** @type {Togglables} */
 let togglables;
+let toggledTab;
 let wikiText;
 
-initInfo();
-getTogglables();
 window.on('keydown', onKeyDown);
-
 window.on('keyup', /** @param {KeyboardEvent} evt */ evt => {
   if (menuKey && !evt.repeat && MENU_KEYS[evt.key]) {
     if (menuKey > 1) evt.preventDefault();
@@ -86,12 +86,19 @@ function onKeyDown(evt) {
   if (styleFinder.on && $isTextInput())
     return;
   if (key === '`' || key === '*' || code === 'Backquote') {
-    if (!togglables.length) getTogglables();
-    toggleState(togglables, toggledOn = !toggledOn, altKey);
+    if (!togglables.length) getTogglables(true);
+    if (!togglables.length) return;
+    if (!altKey) {
+      toggleState(togglables, !$id(kStyleIdPrefix + togglables[0]).styleMeta.enabled);
+    } else if ((toggledTab = (toggledTab + 1) % 3) < 2) {
+      toggleStateInTab(togglables, !!toggledTab);
+    } else {
+      API.styles.toggleTabOvrMany(tabId, savedTabOvrs);
+    }
   } else if (key === '-') {
-    toggleState(entries, false, altKey);
+    (altKey ? toggleStateInTab : toggleState)(entries, false);
   } else if (key === '+') {
-    toggleState(entries, true, altKey);
+    (altKey ? toggleStateInTab : toggleState)(entries, true);
   } else if (key >= '0' && key <= '9'
   || code >= 'Digit0' && code <= 'Digit9' && (key = code.slice(-1))) {
     entry = entries[(+key || 10) - 1];
@@ -106,50 +113,69 @@ function onKeyDown(evt) {
   }
   if (entry) {
     if (menuKey && ++menuKey) openMenu(entry);
-    else if (altKey) toggleState([entry], null, true);
+    else if (altKey) toggleStateInTab([entry], null);
     else entry.$(shiftKey ? '.style-edit-link' : 'input').click();
   }
 }
 
-function getTogglables() {
-  let num = 0;
-  togglables = [];
-  for (const el of $$('.entry.enabled')) {
-    togglables.push(el.id);
-    num += el.styleMeta[kTabOvr] !== false;
+function getTogglables(force) {
+  if (!savedTabOvrs || !(
+    togglables = Object.keys(savedTabOvrs).map(id => $id(kStyleIdPrefix + id)).filter(Boolean)
+  )[0]) {
+    if (!(togglables = [...$$('.entry.enabled')])[0] && force)
+      togglables = [...entries];
+    savedTabOvrs = {};
+    let off = 0;
+    for (let i = 0, el, id; (el = togglables[i]); i++) {
+      id = togglables[i] = el.styleId;
+      savedTabOvrs[id] = el.styleMeta[kTabOvr];
+      off += !el.classList.contains('not-applied');
+    }
+    toggledTab = off === togglables.length ? 1 : off ? 2 : 0;
+    API.tabs.set(tabId, kTabOvr + '*',
+      togglables[0] ? [toggledTab, savedTabOvrs] : {undef: tabId});
   }
-  toggledOn = num >= togglables.length / 2;
 }
 
 /**
- * @param {HTMLElement[]} list
- * @param {boolean} enable
- * @param {boolean} [inTab]
+ * @param {Togglables} list
+ * @param {boolean|null} enable
  */
-export function toggleState(list, enable, inTab) {
+export function toggleState(list, enable) {
   const ids = [];
-  for (let entry of list) {
-    if (typeof entry === 'string' && !(entry = $id(entry)))
-      continue;
-    const style = entry.styleMeta;
-    const {id, enabled, [kTabOvr]: ovr} = style;
-    let siteOn;
-    let tabOn;
-    if (enable !== (inTab ? tabOn = ovr ?? (siteOn = !style.incOvr && enabled) : enabled)) {
-      if (inTab) {
-        API.styles.toggleOverride(id, tabId,
-          enable ?? !tabOn,
-          ovr == null || (ovr ? siteOn : !siteOn));
-      } else {
-        ids.push(id);
-      }
-    }
-  }
+  for (let el of list)
+    if ((el.id || (el = $id(kStyleIdPrefix + el))) && enable !== el.styleMeta.enabled)
+      ids.push(el.styleId);
   if (ids.length)
     API.styles.toggleMany(ids, enable);
 }
 
-function initInfo() {
+/**
+ * @param {Togglables} list
+ * @param {boolean|null} enable
+ */
+export function toggleStateInTab(list, enable) {
+  let ids;
+  for (let el of list) {
+    if (el.id || (el = $id(kStyleIdPrefix + el))) {
+      const style = el.styleMeta;
+      const ovr = style[kTabOvr];
+      const siteOn = !style.incOvr && style.enabled;
+      const tabOn = ovr ?? siteOn;
+      if (enable !== tabOn) {
+        (ids ??= {})[style.id] = ovr == null || (ovr ? siteOn : !siteOn)
+          ? enable ?? !tabOn
+          : null;
+      }
+    }
+  }
+  if (ids)
+    API.styles.toggleTabOvrMany(tabId, ids);
+}
+
+export function initHotkeys(data) {
+  [toggledTab, savedTabOvrs] = data[kTabOvr] || [];
+  getTogglables();
   const el = $('#help');
   const tAll = t('popupHotkeysInfo');
   const tMenu = t('popupHotkeysInfoMenu');
