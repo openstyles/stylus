@@ -1,3 +1,4 @@
+/* postcss-simple-vars */
 @supports not (accent-color: red) {
   /* This suppresses a bug in all? browsers: they apply transitions during page load.
    * It was fixed by crrev.com/886802 in Chrome 93, which we detect via `accent-color`.
@@ -418,7 +419,7 @@ html:not(.all-disabled) {
   bottom: 0;
   width: var(--header-resizer-width);
   box-sizing: border-box;
-  cursor: e-resize;
+  cursor: col-resize;
   border-width: 0 1px;
   border-style: solid;
   color: var(--c80);
@@ -428,6 +429,14 @@ html:not(.all-disabled) {
   z-index: 10000000;
   &:active {
     border-color: var(--c50);
+  }
+  &::before {
+    $HRExtra: 5px;
+    content: '';
+    position: absolute;
+    left: -$HRExtra;
+    right: -$HRExtra;
+    height: 100%;
   }
   &::after {
     content: '';
