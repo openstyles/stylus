@@ -73,8 +73,7 @@ export async function openMenu(entry) {
   const menuCL = menu.classList;
   const be = entry.getBoundingClientRect();
   const style = entry.styleMeta;
-  const id = style.id;
-  const {url} = style;
+  const {enabled, id, url} = style;
   const [elTitle, elHome] = menu.$('header').children;
   const inc = style[kInclusions] || [];
   const exc = style[kExclusions] || [];
@@ -90,9 +89,10 @@ export async function openMenu(entry) {
   }
   menu.styleId = id;
   menuCL.remove('delete');
+  menuCL.toggle('enabled', enabled);
   chkOvr.checked = style[kOverridden];
   chkStyle.styleId = id;
-  chkStyle.checked = style.enabled;
+  chkStyle.checked = enabled;
   btnEdit.search = '?id=' + id;
   elTitle.children[1].textContent = style.customName || style.name;
   elHome.hidden = !url;

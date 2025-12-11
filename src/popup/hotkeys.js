@@ -34,7 +34,7 @@ window.on('keyup', /** @param {KeyboardEvent} evt */ evt => {
     menuKey = 0;
   }
 });
-$('header').on('click', evt => {
+$('#multi-toggler').on('click', evt => {
   const el = evt.target;
   const cmd = el.dataset.toggle;
   if (!cmd)

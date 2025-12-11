@@ -37,7 +37,10 @@ body {
   display: flex;
   flex-direction: column;
 }
-header {
+#installed {
+  overflow-y: auto;
+}
+#multi-toggler {
   --gap: calc($pad/4);
   background: var(--zebra);
   border-bottom: var(--border);
@@ -69,6 +72,12 @@ header {
     box-sizing: border-box;
     line-height: 1;
     padding: calc((var(--entry-h) - var(--font-size)) / 2) var(--outer-padding);
+    list-style: none;
+    &::before {
+      content: "⬔";
+      width: 16px; /* checkbox + its margin */
+      display: inline-block;
+    }
   }
   div {
     display: inline-flex;
@@ -81,6 +90,12 @@ header {
   }
   label:hover, #help:hover i {
     color: var(--accent-1);
+  }
+  input[data-toggle^="*"]::after {
+    content: "";
+    border: 1px solid var(--fg);
+    width: 100%;
+    margin: 2px;
   }
   #help {
     /* aligning to the menu button */
@@ -96,9 +111,6 @@ header {
       margin-right: $pad !important;
     }
   }
-}
-#installed {
-  overflow-y: auto;
 }
 
 .firefox button {
@@ -462,6 +474,9 @@ a.configure[target="_blank"] .i-config {
       font-size: 20px;
     }
   }
+  &.enabled header {
+    background: var(--accent-5);
+  }
   [data-ovr] {
     &::before {
       content: attr(data-index) ":\A0";
@@ -780,7 +795,7 @@ button.icon {
     flex-direction: column;
   }
   .blocked-info,
-  header,
+  #multi-toggler,
   #installed {
     order: 2;
   }

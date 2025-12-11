@@ -25,7 +25,9 @@
     --cmax: hsl(0, 0%, 0%);
     --accent-1: hsl(180, 50%, 65%);
     --accent-2: hsl(180, 45%, 40%);
-    --accent-3: hsl(180, 30%, 18%);
+    --accent-3: hsl(180, 30%, 20%);
+    --accent-4: hsl(180, 27%, 17%);
+    --accent-5: hsl(180, 25%, 14%);
     --input-bg: var(--c95);
     --gold1: darkgoldenrod;
     --red1: hsl(0, 100%, 65%);

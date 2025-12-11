@@ -59,7 +59,7 @@
 
   <main id="installed" i18n="data-no-styles:noStylesForSite, data-find:findStylesOnline"></main>
 
-  <header>
+  <aside id="multi-toggler">
     <details>
       <summary i18n="toggleStylesHeading"></summary>
       <% _.forEach([
@@ -69,14 +69,14 @@
       <div>
         <input type="checkbox" data-toggle="+<%= i %>" i18n="title:enableStyleLabel" checked>
         <input type="checkbox" data-toggle="-<%= i %>" i18n="title:disableStyleLabel">
-        <label i18n="+<%= text %>, title:toggleStylesHint"><input type="checkbox" data-toggle="*<%= i %>" style="-webkit-appearance: auto"></label>
+        <label i18n="+<%= text %>, title:toggleStylesHint"><input type="checkbox" data-toggle="*<%= i %>"></label>
       </div>
       <% }) %>
     </details>
     <a id="help" data-cmd="note" tabindex="0">
       <i class="i-info"></i>
     </a>
-  </header>
+  </aside>
 
   <div class="actions flex" id="main-actions">
     <div id="write-wrapper">

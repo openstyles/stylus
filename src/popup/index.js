@@ -62,13 +62,6 @@ if (!__.MV3 && CHROME >= 66 && CHROME <= 69) {
   // Chrome 66-69 adds a gap, https://crbug.com/821143
   $root.style.overflow = 'overlay';
 }
-for (let el of $$('header input[style]')) {
-  el.indeterminate = true;
-  if (el.dataset.toggle === '*t') {
-    el = el.parentElement;
-    el.title = el.title.replace('<', MAC ? '<⌥' : '<Alt-');
-  }
-}
 
 function onRuntimeMessage(msg) {
   if (!tabUrl) return;
@@ -126,7 +119,10 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
     window.close();
   };
 
-  for (const el of $$('link[media=print]')) {
+  let el = $$('#multi-toggler label')[1];
+  el.title = el.title.replace('<', MAC ? '<⌥' : '<Alt-');
+
+  for (el of $$('link[media=print]')) {
     el.removeAttribute('media');
   }
 
