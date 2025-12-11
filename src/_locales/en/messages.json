@@ -1841,7 +1841,7 @@
     "message": "Toggle styles"
   },
   "toggleStylesHint": {
-    "message": "Toggle the initially enabled styles, same as ✱"
+    "message": "Toggle the initially enabled styles, same as <✱>"
   },
   "toggleStylesPerm": {
     "message": "permanently",

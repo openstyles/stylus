@@ -1506,6 +1506,18 @@
   "toggleStyle": {
     "message": "Przełącz styl"
   },
+  "toggleStylesHeading": {
+    "message": "Przełącz style"
+  },
+  "toggleStylesHint": {
+    "message": "Przełącz początkowo włączone style, tak samo jak <✱>"
+  },
+  "toggleStylesPerm": {
+    "message": "na stałe"
+  },
+  "toggleStylesTab": {
+    "message": "tylko na tej karcie"
+  },
   "undo": {
     "message": "Cofnij"
   },

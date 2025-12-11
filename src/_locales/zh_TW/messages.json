@@ -1506,6 +1506,18 @@
   "toggleStyle": {
     "message": "切換樣式"
   },
+  "toggleStylesHeading": {
+    "message": "切換樣式"
+  },
+  "toggleStylesHint": {
+    "message": "切換初始啟用的樣式，等同於 <✱>"
+  },
+  "toggleStylesPerm": {
+    "message": "永久"
+  },
+  "toggleStylesTab": {
+    "message": "僅於此分頁"
+  },
   "undo": {
     "message": "還原"
   },
