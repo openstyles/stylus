@@ -1468,6 +1468,18 @@
   "toggleStyle": {
     "message": "スタイルの有効/無効の切り替え"
   },
+  "toggleStylesHeading": {
+    "message": "スタイルを切り替える"
+  },
+  "toggleStylesHint": {
+    "message": "最初に有効になったスタイルを切り替える。<✱>と同じ"
+  },
+  "toggleStylesPerm": {
+    "message": "永続的"
+  },
+  "toggleStylesTab": {
+    "message": "このタブのみ"
+  },
   "undo": {
     "message": "元に戻す"
   },

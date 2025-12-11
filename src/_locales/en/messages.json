@@ -1845,11 +1845,11 @@
   },
   "toggleStylesPerm": {
     "message": "permanently",
-    "description": "Label for controls that reads like a continuation of the heading above:\nToggle these styles\n[x] [ ] [*] permanently\n[x] [ ] [*] in this tab only"
+    "description": "Label for controls that reads like a continuation of the heading above:\nToggle styles\n[x] [ ] [*] permanently\n[x] [ ] [*] in this tab only"
   },
   "toggleStylesTab": {
     "message": "in this tab only",
-    "description": "Label for controls that reads like a continuation of the heading above:\nToggle these styles\n[x] [ ] [*] permanently\n[x] [ ] [*] in this tab only"
+    "description": "Label for controls that reads like a continuation of the heading above:\nToggle styles\n[x] [ ] [*] permanently\n[x] [ ] [*] in this tab only"
   },
   "undo": {
     "message": "Undo",
