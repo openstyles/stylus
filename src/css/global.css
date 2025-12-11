@@ -77,6 +77,9 @@ a {
     color: var(--accent-1);
   }
   &.icon { text-decoration: none; }
+  &:is([title][tabindex="0"]):has(>.i-info) {
+    cursor: help;
+  }
 }
 
 button {
