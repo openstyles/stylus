@@ -57,6 +57,8 @@
     <p i18n="stylusUnavailableForURLdetails"></p>
   </div>
 
+  <main id="installed" i18n="data-no-styles:noStylesForSite, data-find:findStylesOnline"></main>
+
   <header>
     <details>
       <summary i18n="toggleStylesHeading"></summary>
@@ -64,7 +66,7 @@
         /*i18n*/'toggleStylesPerm',
         /*i18n*/'toggleStylesTab',
       ], (text, i) => { i = i ? 't' : ''; %>
-      <div class="flex">
+      <div>
         <input type="checkbox" data-toggle="+<%= i %>" i18n="title:enableStyleLabel" checked>
         <input type="checkbox" data-toggle="-<%= i %>" i18n="title:disableStyleLabel">
         <label i18n="+<%= text %>, title:toggleStylesHint"><input type="checkbox" data-toggle="*<%= i %>" style="-webkit-appearance: auto"></label>
@@ -75,8 +77,6 @@
       <i class="i-info"></i>
     </a>
   </header>
-
-  <main id="installed" i18n="data-no-styles:noStylesForSite, data-find:findStylesOnline"></main>
 
   <div class="actions flex" id="main-actions">
     <div id="write-wrapper">
