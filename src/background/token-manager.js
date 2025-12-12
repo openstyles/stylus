@@ -119,11 +119,31 @@ async function decryptToken(encrypted) {
 
     return new TextDecoder().decode(decrypted);
   } catch (err) {
-    // Fallback: if decryption fails, assume plaintext (legacy)
-    if (typeof encrypted === 'string' && !encrypted.includes('{')) {
+    // Fallback: if decryption fails, check if it's a legacy plaintext token
+    try {
+      // If it's not a valid base64-encoded JSON with required fields, treat as plaintext
+      const decoded = atob(encrypted);
+      const payload = JSON.parse(decoded);
+      if (
+        typeof payload === 'object' &&
+        payload !== null &&
+        'version' in payload &&
+        'iv' in payload &&
+        'data' in payload
+      ) {
+        // Looks like an encrypted token, so rethrow original error
+        throw err;
+      } else {
+        // Not an encrypted token, treat as plaintext
+        console.warn('Using plaintext token (unencrypted). Please re-authenticate.');
+        return encrypted;
+      }
+    } catch (fallbackErr) {
+      // If atob or JSON.parse fails, treat as plaintext
       console.warn('Using plaintext token (unencrypted). Please re-authenticate.');
       return encrypted;
     }
+    // If we get here, something else went wrong
     console.error('Token decryption failed:', err);
     throw new Error('Failed to decrypt token');
   }
