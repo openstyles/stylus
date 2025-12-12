@@ -74,9 +74,15 @@ body {
     padding: calc((var(--entry-h) - var(--font-size)) / 2) var(--outer-padding);
     list-style: none;
     &::before {
-      content: "⬔";
-      width: 16px; /* checkbox + its margin */
+      $chkW: 16px; /* checkbox + its margin */
+      $triangleW: 7px;
+      $triangleX: 3px; /* center horizontally to the checkbox */
+      content: "";
       display: inline-block;
+      border: solid transparent;
+      border-width: 5px 0 5px $triangleW;
+      border-left-color: inherit;
+      margin: 0 calc($chkW - $triangleW - $triangleX) 0 $triangleX;
     }
   }
   div {
