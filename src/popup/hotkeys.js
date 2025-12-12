@@ -135,7 +135,8 @@ function getTogglables(force) {
   if (!savedTabOvrs || !(
     togglables = Object.keys(savedTabOvrs).map(id => $id(kStyleIdPrefix + id)).filter(Boolean)
   )[0]) {
-    if (!(togglables = [...$$('.entry.enabled')])[0] && force)
+    const numOn = (togglables = [...$$('.entry.enabled')]).length;
+    if (!numOn && force)
       togglables = [...entries];
     savedTabOvrs = {};
     let off = 0;
@@ -144,7 +145,7 @@ function getTogglables(force) {
       savedTabOvrs[id] = el.styleMeta[kTabOvr];
       off += !el.classList.contains('not-applied');
     }
-    toggledTab = off === togglables.length ? 1 : off ? 2 : 0;
+    toggledTab = off === numOn ? 0 : off ? 2 : 1;
     API.tabs.set(tabId, kTabOvr + '*',
       togglables[0] ? [toggledTab, savedTabOvrs] : {undef: tabId});
   }
