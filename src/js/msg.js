@@ -35,8 +35,13 @@ function isMessageTrusted(sender) {
   }
   // Messages from web pages must be from content scripts only
   // Content scripts loaded by extension are marked with specific properties
-  if (sender.frameId !== undefined) {
-    // This is a content script - always allow
+  // Only trust content scripts injected by this extension
+  if (
+    sender.frameId !== undefined &&
+    sender.id === chrome.runtime.id &&
+    typeof sender.url === 'string' &&
+    (sender.url.startsWith('http://') || sender.url.startsWith('https://'))
+  ) {
     return true;
   }
   return false;
