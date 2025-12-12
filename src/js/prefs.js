@@ -146,6 +146,7 @@ const defaults = {
   'hotkey._execute_browser_action': '',
   'hotkey.openManage': '',
   'hotkey.styleDisableAll': '',
+  'hotkey.toggleTab': '',
 
   'sync.enabled': 'none',
 

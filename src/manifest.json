@@ -25,6 +25,7 @@
   "commands": {
     "openManage": {"description": "__MSG_openManage__"},
     "reload": {"description": "__MSG_reload__"},
+    "toggleTab": {"description": "__MSG_toggleCurrentTab__"},
     "styleDisableAll": {"description": "__MSG_disableAllStyles__"}
   },
   "content_scripts": [

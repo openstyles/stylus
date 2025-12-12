@@ -1833,6 +1833,9 @@
     "message": "The value cannot be saved. Try reducing the amount of text.",
     "description": "Displayed when trying to save an excessively big value via storage.sync API"
   },
+  "toggleCurrentTab": {
+    "message": "Toggle current tab"
+  },
   "toggleStyle": {
     "message": "Toggle style",
     "description": "Label for the checkbox to enable/disable a style"

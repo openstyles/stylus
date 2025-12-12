@@ -1,4 +1,4 @@
-import {kStyleIdPrefix, kTabOvr} from '@/js/consts';
+import {kStyleIdPrefix, kTabOvrToggle, kTabOvr, kTabOvrInitial} from '@/js/consts';
 import {$createLink, $isTextInput} from '@/js/dom';
 import {moveFocus} from '@/js/dom-util';
 import {tBody} from '@/js/localization';
@@ -146,7 +146,7 @@ function getTogglables(force) {
       off += !el.classList.contains('not-applied');
     }
     toggledTab = off === numOn ? 0 : off ? 2 : 1;
-    API.tabs.set(tabId, kTabOvr + '*',
+    API.tabs.set(tabId, kTabOvrInitial,
       togglables[0] ? [toggledTab, savedTabOvrs] : {undef: tabId});
   }
 }
@@ -188,7 +188,8 @@ export function toggleStateInTab(list, enable) {
 }
 
 export function initHotkeys(data) {
-  [toggledTab, savedTabOvrs] = data[kTabOvr] || [];
+  toggledTab = data[kTabOvrToggle];
+  savedTabOvrs = data[kTabOvrInitial];
   getTogglables();
   const el = $('#help');
   const tAll = t('popupHotkeysInfo');

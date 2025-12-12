@@ -4,14 +4,14 @@ import {
 } from '@/js/consts';
 import {__values} from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
-import {calcObjSize, mapObj} from '@/js/util';
+import {calcObjSize, isEmptyObj, mapObj} from '@/js/util';
 import {broadcast, broadcastExtension, sendTab} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {uuidIndex} from '../common';
-import {db, draftsDB, stateDB} from '../db';
+import {db, draftsDB} from '../db';
 import {isOptionSite, optionSites} from '../option-sites';
 import * as syncMan from '../sync-manager';
-import {tabCache} from '../tab-manager';
+import {tabCache, set as tabSet} from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
 import * as usercssMan from '../usercss-manager';
 import * as uswApi from '../usw-api';
@@ -426,9 +426,9 @@ export function toggleSiteOvr(id, val, type, isAdd) {
 export function toggleTabOvrMany(tabId, overrides) {
   const messages = [];
   const td = tabCache[tabId];
-  const tabOvr = td[kTabOvr] || {}; // not assigning it yet as it may end up empty
   const url = td[kUrl][0];
   const cache = cacheData.get(url);
+  let tabOvr = td[kTabOvr] || {}; // not assigning it yet as it may end up empty
   for (const key in overrides) {
     const id = +key;
     const val = overrides[key];
@@ -443,9 +443,10 @@ export function toggleTabOvrMany(tabId, overrides) {
       style: {id, enabled: val ?? data.style.enabled},
     });
   }
+  if (td[kTabOvr] || !isEmptyObj(tabOvr) || (tabOvr = undefined, true)) {
+    tabSet(tabId, kTabOvr, tabOvr);
+  }
   if (messages.length) {
-    td[kTabOvr] = tabOvr; // now we can assign it since we know it's modified
-    stateDB.put(td, tabId);
     sendTab(tabId, messages, null, /*multi=*/true);
     broadcastExtension(messages, /*multi=*/true);
   }
