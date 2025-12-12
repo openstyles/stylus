@@ -17,13 +17,6 @@ export const wrapError = error => ({
 
 // SECURITY: Restrict messages to trusted content scripts
 // Only allow messages from extension's own content scripts
-const TRUSTED_ORIGINS = [
-  // Allow messages from extension pages (options, popup, etc.)
-  `chrome-extension://${chrome.runtime.id}`,
-  // Allow messages from background (MV3)
-  `chrome-extension://${chrome.runtime.id}/background.html`,
-];
-
 function isMessageTrusted(sender) {
   if (!sender.url && !sender.frameId) {
     // Background script or extension page
