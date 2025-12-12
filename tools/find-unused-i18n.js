@@ -49,7 +49,8 @@ const notFound = Object.keys(all).map(k => {
   return `${chalk.bold.red(k)}: ${msg.length > 50 ? msg.slice(0, 50) + '...' : msg}` +
     (sus ? '\x00' + chalk.green(sus) : '');
 }).filter(Boolean);
-console.log(`${notFound.length} keys not found:\n` + notFound.sort().join('\n'));
+console.log(`${notFound.length} keys not found:\n` +
+  notFound.sort().join('\n').replaceAll('\x00', '\n'));
 
 function testJSON(f, text) {
   if (!text.includes('__MSG_'))
