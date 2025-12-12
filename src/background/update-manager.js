@@ -259,7 +259,7 @@ export async function checkStyle(opts) {
     const {result: css} = await tryDownload(updateUrl, {responseType: 'json'});
     // SECURITY: Verify integrity - downloaded CSS should match MD5 from server
     try {
-      const computedMd5 = await computeMd5(css);
+      const computedMd5 = computeMd5(css);
       if (computedMd5 !== md5) {
         return Promise.reject(STATES.INTEGRITY_MISMATCH);
       }
