@@ -140,9 +140,6 @@ function maybeInstallByMime({tabId, url, responseHeaders}) {
     if (VALID_MIMES.has(mime)) {
       // text/plain is acceptable only for valid .user.* extensions
       isAcceptable = mime === 'text/plain' ? hasValidExtension : true;
-    } else if (/^text\/(?!html)/i.test(mime)) {
-      // For unknown text types, require valid .user.* extension strictly
-      isAcceptable = hasValidExtension;
     }
   }
 
