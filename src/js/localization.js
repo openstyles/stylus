@@ -105,7 +105,10 @@ export function sanitizeHtml(str, safe) {
         el = v.parentNode;
     } else if ((v = m[4])) { // <a href=...>
       el = el.appendChild($tag('a'));
-      if (safe) el.href = v.split(/['"]/)[1];
+      if (safe) {
+        el.href = v.split(/['"]/)[1];
+        el.target = '_blank';
+      }
     } else if ((v = m[3])) { // <tag>
       el = el.appendChild($tag(v));
     } else if ((v = m[5])) { // <highlight>

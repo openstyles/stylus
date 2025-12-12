@@ -116,17 +116,18 @@ setupLivePrefs();
   const {wrb} = __.MV3 ? prefs.clientData : await prefs.clientData;
   if (wrb)
     return;
-  let icon;
+  const id = chrome.runtime.id;
+  const title = t('webRequestBlockingMV3Note', [
+    '<a href="https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist">' +
+      'ExtensionInstallForcelist</a>',
+    `<code>${id}</code>`,
+    `<nobr><code>--allowlisted-extension-id=${id}</code></nobr>`,
+  ]);
+  const icon = $create('a.broken[data-cmd=note]', {title, tabIndex: 0}, '⚒');
+  icon.dataset.title = title;
   for (const el of $$('.webRequestBlocking')) {
     el.classList.add('disabled');
-    el.$('p').append(icon ? icon.cloneNode(true) : icon = $create('a.broken[data-cmd=note]', {
-      tabIndex: 0,
-      title: t('webRequestBlockingMV3Note', [
-        '<a href="https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist">ExtensionInstallForcelist</a>', // eslint-disable-line max-len
-        `<code>${chrome.runtime.id}</code>`,
-        `<nobr><code>--allowlisted-extension-id=${chrome.runtime.id}</code></nobr>`,
-      ]),
-    }, '⚒'));
+    el.$('p').append(icon.isConnected ? icon.cloneNode(true) : icon);
   }
 })();
 
