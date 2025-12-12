@@ -118,13 +118,36 @@ async function maybeInstall(tabId, url, oldUrl = '') {
   }
 }
 
+// SECURITY: Validate both filename extension and MIME type before triggering installer
+const VALID_EXTENSIONS_RX = /\.user\.(css|less|styl)$/i;
+const VALID_MIMES = new Set([
+  'text/css',
+  'text/x-css',
+  'text/x-less',
+  'text/x-stylus',
+  // Allow text/plain only when the filename matches .user.(css|less|styl)
+  'text/plain',
+]);
+
 function maybeInstallByMime({tabId, url, responseHeaders}) {
   const h = findHeader(responseHeaders, kContentType);
-  /** Ignoring .user.css response that is not a plain text but a web page.
-   * Not using a whitelist of types as the possibilities are endless e.g. text/x-css-stylus */
-  const isText = h && /^text\/(?!html)/i.test(h.value);
-  tabSet(tabId, MIME, isText);
-  if (isText) {
+  const mime = h?.value?.split(';')[0].toLowerCase();
+  const path = url.split(/[#?]/, 1)[0];
+  const hasValidExtension = VALID_EXTENSIONS_RX.test(path);
+
+  let isAcceptable = false;
+  if (mime) {
+    if (VALID_MIMES.has(mime)) {
+      // text/plain is acceptable only for valid .user.* extensions
+      isAcceptable = mime === 'text/plain' ? hasValidExtension : true;
+    } else if (/^text\/(?!html)/i.test(mime)) {
+      // For unknown text types, require valid .user.* extension strictly
+      isAcceptable = hasValidExtension;
+    }
+  }
+
+  tabSet(tabId, MIME, isAcceptable);
+  if (isAcceptable) {
     openInstallerPage(tabId, url, {});
     // Silently suppress navigation.
     // Don't redirect to the install URL as it'll flash the text!
