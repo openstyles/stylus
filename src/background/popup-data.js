@@ -7,7 +7,7 @@ import {pingTab} from './broadcast';
 import {bgBusy} from './common';
 import reinjectContentScripts from './content-scripts';
 import {getByUrl} from './style-manager';
-import {cache as tabCache, set as tabSet} from './tab-manager';
+import {tabCache, set as tabSet} from './tab-manager';
 import {waitForTabUrl} from './tab-util';
 
 export default async function makePopupData() {

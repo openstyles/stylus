@@ -8,7 +8,7 @@ import {getHost, RX_META} from '@/js/util';
 import {bgBusy, onTabUrlChange, WRB} from './common';
 import download from './download';
 import {findHeader} from './style-via-webrequest';
-import {cache as tabCache, set as tabSet} from './tab-manager';
+import {tabCache, set as tabSet} from './tab-manager';
 import {openURL} from './tab-util';
 
 const installCodeCache = {};

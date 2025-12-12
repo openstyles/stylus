@@ -4,7 +4,7 @@ import {rxIgnorableError} from '@/js/msg-api';
 import {ownRoot} from '@/js/urls';
 import {sleep0} from '@/js/util';
 import {isOptionSite, optionSites} from './option-sites';
-import {cache as tabCache} from './tab-manager';
+import {tabCache} from './tab-manager';
 import {getWindowClients} from './util';
 
 let toBroadcast;

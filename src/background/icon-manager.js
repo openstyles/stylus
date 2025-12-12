@@ -6,7 +6,7 @@ import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgInit, onSchemeChange, onUnload} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
-import {cache as tabCache, set as tabSet} from './tab-manager';
+import {tabCache, set as tabSet} from './tab-manager';
 
 const browserAction = (__.MV3 ? chrome.action : chrome.browserAction) || {};
 const staleBadges = new Set();

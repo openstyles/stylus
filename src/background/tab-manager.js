@@ -8,10 +8,10 @@ import {stateDB} from './db';
 import {kCommitted} from './navigation-manager';
 
 /** @type {TabCache} */
-export const cache = {__proto__: null};
+export const tabCache = {__proto__: null};
 
 export const get = (tabId, ...keyPath) => {
-  let res = cache[tabId];
+  let res = tabCache[tabId];
   for (let i = 0; res && i < keyPath.length; i++) res = res[keyPath[i]];
   return res;
 };
@@ -26,11 +26,11 @@ export const set = function (tabId, ...args) {
   const lastKey = args[depth];
   const value = args[depth + 1];
   const del = value === undefined;
-  let obj = cache[tabId];
+  let obj = tabCache[tabId];
   let obj0 = obj;
   if (!obj) {
     if (del) return;
-    cache[tabId] = obj = obj0 = {id: tabId};
+    tabCache[tabId] = obj = obj0 = {id: tabId};
   }
   for (let i = 0, key; obj && i < depth; i++) {
     obj = obj[key = args[i]] || !del && (obj[key] = {});
@@ -42,8 +42,8 @@ export const set = function (tabId, ...args) {
 };
 
 export const someInjectable = () => {
-  for (let v in cache) {
-    v = cache[v];
+  for (let v in tabCache) {
+    v = tabCache[v];
     if (v[kStyleIds] || (v = v[kUrl]) && supported(v[0])) {
       return true;
     }
@@ -51,7 +51,7 @@ export const someInjectable = () => {
 };
 
 export const remove = tabId => {
-  delete cache[tabId];
+  delete tabCache[tabId];
   if (__.MV3 && bgMortal) stateDB.delete(tabId);
 };
 
@@ -78,13 +78,13 @@ bgInit.push(async () => {
       if (__.MV3 && saved)
         (toPut ??= {})[id] = data;
     }
-    cache[id] = data;
+    tabCache[id] = data;
   }
   if (__.MV3) {
     if (saved) {
       let toDel;
       for (const id of savedById.keys())
-        if (!cache[id])
+        if (!tabCache[id])
           (toDel ??= []).push(id);
       if (toDel) stateDB.deleteMany(toDel);
       if (toPut) putObject(toPut);
@@ -93,7 +93,7 @@ bgInit.push(async () => {
       val = val >= 0;
       if (bgMortal !== val) {
         bgMortal = val;
-        if (val) putObject(cache);
+        if (val) putObject(tabCache);
         else stateDB.delete(IDBKeyRange.bound(0, 1e99));
         for (const fn of bgMortalChanged) fn(val);
       }
@@ -104,14 +104,14 @@ bgInit.push(async () => {
 bgBusy.then(() => {
   onUrlChange.add(({tabId, frameId, url}, navType) => {
     let obj, oldUrl;
-    if ((obj = cache[tabId])) {
+    if ((obj = tabCache[tabId])) {
       oldUrl = obj[kUrl]?.[0];
       if (navType === kCommitted && obj[kStyleIds]) {
         if (frameId) delete obj[kStyleIds][frameId];
         else delete obj[kStyleIds];
       }
     } else {
-      cache[tabId] = obj = {id: tabId};
+      tabCache[tabId] = obj = {id: tabId};
     }
     if (navType === kCommitted && !frameId)
       obj[kUrl] = {0: url};

@@ -56,7 +56,7 @@ subscribe([pDisableAll], setup, true);
 bgBusy.then(() => {
   const tabIds = [];
   for (let key in ruleIdKeys) {
-    if (!tabMan.cache[key = parseInt(key)]) {
+    if (!tabMan.tabCache[key = parseInt(key)]) {
       tabIds.push(key);
     }
   }

@@ -11,7 +11,7 @@ import {uuidIndex} from '../common';
 import {db, draftsDB, stateDB} from '../db';
 import {isOptionSite, optionSites} from '../option-sites';
 import * as syncMan from '../sync-manager';
-import {cache as tabCache} from '../tab-manager';
+import {tabCache} from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
 import * as usercssMan from '../usercss-manager';
 import * as uswApi from '../usw-api';
