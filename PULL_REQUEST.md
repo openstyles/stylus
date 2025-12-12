@@ -82,7 +82,8 @@ Response: {access_token, refresh_token, expires_in}
 - Post-download size validation for all payloads
 
 **Files Modified:**
-- `src/background/download.js`
+<!-- Update this list to reflect actual files changed for download size limits. Example: -->
+- `src/js/util.js`
 
 ---
 
