@@ -1,5 +1,5 @@
 import '@/js/browser';
-import {pOpenEditInWindow} from '@/js/consts';
+import {kPopup, pOpenEditInWindow} from '@/js/consts';
 import {urlParams} from '@/js/dom';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
@@ -27,7 +27,7 @@ getOwnTab().then(tab => {
 
 async function initWindowedMode() {
   chrome.tabs.onAttached.addListener(onTabAttached);
-  isWindowed = urlParams.has('popup');
+  isWindowed = urlParams.has(kPopup);
   if (isWindowed) EmbeddedPopup();
   else isWindowed = history.length === 1 &&
     (__.MV3 || await prefs.ready, prefs.__values[pOpenEditInWindow]) &&

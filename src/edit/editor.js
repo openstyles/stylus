@@ -1,9 +1,11 @@
+import {kPopup} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {clipString, debounce, deepEqual, mapObj, sessionStore, t} from '@/js/util';
 import {sticky} from './compact-header';
 import DirtyReporter from './dirty-reporter';
+import {isWindowed} from './windowed-mode';
 
 const dirty = DirtyReporter();
 /** @type {Set<HTMLInputElement>} */
@@ -53,7 +55,7 @@ const editor = self.editor = {
     } catch {}
   },
 
-  cancel: () => location.assign('/manage.html'),
+  cancel: () => location.assign('/manage.html' + (isWindowed ? '?' + kPopup : '')),
 
   makeScrollInfo() {
     return /** @namespace EditorScrollInfoContainer */ {

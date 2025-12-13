@@ -1,5 +1,5 @@
-import {kStyleIdPrefix, UCD} from '@/js/consts';
-import {$toggleClasses} from '@/js/dom';
+import {kPopup, kStyleIdPrefix, UCD} from '@/js/consts';
+import {$toggleClasses, urlParams} from '@/js/dom';
 import {
   animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView, setHocus,
 } from '@/js/dom-util';
@@ -92,8 +92,9 @@ async function edit(event, entry) {
   const url = entry.$('[href]').href;
   const ownTab = await getOwnTab();
   if (key === 'MouseL') {
-    sessionStore['manageStylesHistory' + ownTab.id] = url;
-    location.href = url;
+    location = sessionStore['manageStylesHistory' + ownTab.id] = urlParams.has(kPopup)
+      ? url + (url.includes('?') ? '&' : '?') + kPopup + '=1'
+      : url;
   } else if (browserWindows && key === 'Shift-MouseL') {
     API.openEditor({id: entry.styleId});
   } else {

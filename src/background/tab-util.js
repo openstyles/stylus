@@ -1,5 +1,5 @@
 import '@/js/browser';
-import {kBadFavs, pOpenEditInWindow} from '@/js/consts';
+import {kBadFavs, kPopup, pOpenEditInWindow} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {browserWindows, getActiveTab} from '@/js/util-webext';
@@ -30,12 +30,13 @@ const EMPTY_TAB = [
  */
 export async function openEditor(params) {
   const u = new URL(chrome.runtime.getURL('edit.html'));
-  const usp = u.search = new URLSearchParams(params);
+  const usp = new URLSearchParams(params);
   const wnd = browserWindows && prefs.__values[pOpenEditInWindow];
   const wndPos = wnd && prefs.__values.windowPosition;
   const wndPopup = wnd && prefs.__values[pOpenEditInWindow + '.popup'] && {type: 'popup'};
   const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047
-  if (wndPopup) usp.set('popup', '1');
+  if (wndPopup) usp.set(kPopup, '1');
+  u.search = usp;
   for (let tab, retry = 0; retry < (wndPos ? 2 : 1); ++retry) {
     try {
       tab = tab || await openURL({
