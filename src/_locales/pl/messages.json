@@ -1503,6 +1503,9 @@
   "syncStorageErrorSaving": {
     "message": "Nie można zapisać wartości. Spróbuj zmniejszyć ilość tekstu."
   },
+  "toggleCurrentTab": {
+    "message": "Przełącz bieżącą kartę"
+  },
   "toggleStyle": {
     "message": "Przełącz styl"
   },

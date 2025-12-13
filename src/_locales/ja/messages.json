@@ -1049,7 +1049,7 @@
     "message": "<Enter>(または<▤>) を押したまま数字キーを押すと、対応するスタイルのメニューを開きます。"
   },
   "popupHotkeysInfoTab": {
-    "message": "<Alt>を押し続けると、現在のタブのスタイルのみを切り替えます。"
+    "message": "<Alt>を押すと、現在のタブのスタイルのみを切り替えます。"
   },
   "popupHotkeysTooltip": {
     "message": "クリックすると使用可能なホットキーを表示します"
@@ -1465,14 +1465,17 @@
   "syncStorageErrorSaving": {
     "message": "値を保存できません。テキストの量を減らしてください。"
   },
+  "toggleCurrentTab": {
+    "message": "現在のタブの有効/無効の切り替え"
+  },
   "toggleStyle": {
     "message": "スタイルの有効/無効の切り替え"
   },
   "toggleStylesHeading": {
-    "message": "スタイルを切り替える"
+    "message": "スタイルの有効/無効の切り替え"
   },
   "toggleStylesHint": {
-    "message": "最初に有効になったスタイルを切り替える。<✱>と同じ"
+    "message": "初期状態が有効なスタイルの切り替え。<✱>と同じ"
   },
   "toggleStylesPerm": {
     "message": "永続的"
