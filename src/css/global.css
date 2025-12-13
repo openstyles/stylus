@@ -18,6 +18,7 @@
   --c10: hsl(0, 0%, 10%);
   --c20: hsl(0, 0%, 20%);
   --c30: hsl(0, 0%, 30%);
+  --c35: hsl(0, 0%, 35%);
   --c40: hsl(0, 0%, 40%);
   --c45: hsl(0, 0%, 45%);
   --c50: hsl(0, 0%, 50%);
@@ -161,7 +162,8 @@ i {
   vertical-align: middle;
   transition: color .1s;
   font: var(--icon-font-size)/1 icons;
-  color: var(--c40);
+  color: var(--c35);
+  .icon:hover > &,
   &:hover {
     color: var(--fg);
   }
