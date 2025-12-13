@@ -43,7 +43,8 @@ const editor = self.editor = {
   applyScrollInfo(cm, si = editor.scrollInfo.cms?.[0]) {
     if (si && si.sel) try {
       const bmOpts = {sublimeBookmark: true, clearWhenEmpty: false}; // copied from sublime.js
-      const bms = cm.state.sublimeBookmarks = [];
+      const bms = [];
+      cm.state.sublimeBookmarks = bms;
       for (const b of si.bookmarks) bms.push(cm.markText(b.from, b.to, bmOpts));
       cm.setSelections(...si.sel, {scroll: false});
       Object.assign(cm.display.scroller, si.scroll); // for source editor

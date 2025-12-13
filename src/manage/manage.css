@@ -591,7 +591,7 @@ button i {
   background-color: hsla(180, 100%, 50%, .1);
   box-sizing: content-box;
   pointer-events: none;
-  z-index: 2147483647,
+  z-index: 2147483647;
 }
 
 .help-text {
@@ -612,7 +612,6 @@ button i {
     margin: 2px;
     &.last {
       display: block;
-      width: -moz-min-content;
       width: min-content;
       white-space: nowrap;
     }
