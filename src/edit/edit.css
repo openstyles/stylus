@@ -2,7 +2,6 @@
 $pad: 1rem;
 $pad05: calc(0.5 * $pad);
 $plus-minus-pad: .5rem;
-$popupButtonWidth: 16px;
 $targetGapY: 2px;
 
 :root {
@@ -70,12 +69,17 @@ $targetGapY: 2px;
   z-index: 10;
   display: flex;
   flex-direction: column;
-  h1 {
-    margin: 0 0 .25rem;
-  }
   a[href].icon {
     margin-left: $pad05;
   }
+}
+#heading {
+  > label {
+    margin: calc($pad/4) 0 $pad05;
+  }
+}
+h1 {
+  margin: 0;
 }
 .sectioned {
   > body {
@@ -101,9 +105,6 @@ $targetGapY: 2px;
 #basic-info {
   margin-bottom: 1rem;
 }
-#name {
-  width: 100%;
-}
 #basic-info-name {
   display: flex;
   align-items: center;
@@ -118,18 +119,9 @@ $targetGapY: 2px;
   display: none;
 }
 
-#basic-info-enabled {
-  margin-top: .25rem;
-  > :nth-last-child(n + 2) {
-    margin-right: var(--pad05);
-  }
-}
 #livePreview-settings {
   display: inline-flex;
   align-items: center;
-  .compact-layout & {
-    margin-right: 3ex;
-  }
   summary {
     padding-left: .4rem;
     display: block;
@@ -897,6 +889,15 @@ a.icon {
     margin-left: var(--pad);
     margin-right: var(--pad);
   }
+  #name {
+    width: 100%;
+  }
+  #basic-info-enabled {
+    margin-top: .25rem;
+    > :nth-last-child(n + 2) {
+      margin-right: var(--pad05);
+    }
+  }
   #publish[open],
   #details-wrapper details:not([open]) {
     flex: 0 0 auto;
@@ -965,17 +966,19 @@ a.icon {
     #header.sticky #preview-errors {
       right: calc(var(--pad05) + 24px);
     }
+    #basic-info,
     #details-wrapper {
-      margin-right: $popupButtonWidth;
+      margin-right: 24px; /* popup button width + gap */
     }
   }
   #basic-info {
-    margin: 0 $popupButtonWidth var(--pad05) 0;
+    margin-bottom: var(--pad05);
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
     #header:not(.sticky) & {
       width: 100%;
+      align-items: center;
     }
     #name,
     > *:first-child {
@@ -988,6 +991,9 @@ a.icon {
       order: 1;
       align-self: center;
     }
+  }
+  #basic-info-enabled > :nth-last-child(n + 2) {
+    margin-right: calc(var(--pad) * .75);
   }
   #actions .buttons {
     flex-wrap: nowrap;

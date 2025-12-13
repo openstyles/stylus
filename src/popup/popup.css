@@ -647,48 +647,18 @@ a:hover i {
   color: var(--fg);
 }
 
-/* Never shown, but can be enabled with a style */
-
 #write-wrapper {
   border-right: var(--border);
-}
-#write-style-for {
-  &::after {
-    content: attr(data-text);
+  .icon {
+    margin: 0 4px -2px -2px; /* ahem centering */
   }
-  .blocked &::after {
-    content: attr(data-blocked);
+  .i-plus {
+    font-size: 15px; /* looks crisp even on a single density display */
   }
 }
 #write-style {
   cursor: pointer;
   overflow: hidden;
-  > div {
-    transition: opacity .25s .15s;
-  }
-  &:not(:hover) > div {
-    opacity: .5;
-  }
-}
-#write-as {
-  flex: 0;
-}
-#newStyleAsUsercss {
-  + i {
-    pointer-events: auto;
-    margin-left: -1px;
-    color: var(--c60);
-    cursor: auto;
-  }
-  &:checked {
-    &, & + i {
-      border-color: var(--accent-1);
-      color: var(--accent-2);
-    }
-  }
-}
-[data-ui-theme="dark"] #newStyleAsUsercss:checked {
-  border-color: var(--accent-2);
 }
 .write-style-link {
   text-decoration: none;

@@ -13,7 +13,7 @@ import {CHROME_POPUP_BORDER_BUG, getActiveTab} from '@/js/util-webext';
 import * as Events from './events';
 import {handleUpdate} from './events';
 import {initHotkeys} from './hotkeys';
-import {createWriterElement, showStyles, updateStateIcon} from './render';
+import {createWriterElement, showStyles, updateStateIcon, writerIcon} from './render';
 import '@/css/onoffswitch.css';
 import './popup.css';
 
@@ -27,7 +27,10 @@ let prevHeight;
 
 (async () => {
   const data = (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
-  initPopup(data);
+  initPopup(data).then(() => {
+    writerIcon.title = t(isBlocked ? 'addStyleLabel' : 'writeStyleFor') + '\n' +
+      writerIcon.title;
+  });
   showStyles(data);
   initHotkeys(data);
   prevHeight = Math.max(innerHeight, 150);

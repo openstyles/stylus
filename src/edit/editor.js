@@ -22,6 +22,7 @@ let wasDirty = false;
  */
 const editor = self.editor = {
   dirty,
+  id: 0,
   isUsercss: false,
   livePreviewLazy: cb => debounce(cb, prefs.__values['editor.livePreview.delay'] * 1000),
   /** @type {'customName'|'name'} */
@@ -39,6 +40,7 @@ const editor = self.editor = {
   },
   set style(val) {
     style = val;
+    editor.id = val.id;
   },
   toc,
 
@@ -101,7 +103,7 @@ const editor = self.editor = {
 
   updateClass() {
     $rootCL.toggle('is-new-style', !editor.style.id);
-    template.body.$('#heading span').textContent = editor.style.id
+    template.body.$('h1').textContent = editor.style.id
       ? t('editStyleHeading')
       : t('addStyleTitle');
   },

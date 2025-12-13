@@ -170,25 +170,6 @@ h1 {
 #add-style {
   margin-right: 1em;
 }
-#add-style-as-usercss-wrapper {
-  display: flex;
-  align-items: center;
-  > i {
-    font-size: 16px;
-    margin-right: .25em;
-  }
-  :checked {
-    border-color: var(--accent-1);
-    color: var(--accent-1);
-    + i {
-      color: var(--accent-1);
-      + a i {
-        color: var(--accent-2);
-        filter: grayscale(.75);
-      }
-    }
-  }
-}
 #sync-styles {
   &[data-cloud] {
     &::before {

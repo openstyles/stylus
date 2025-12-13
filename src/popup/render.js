@@ -14,6 +14,7 @@ const TPL_STYLE = template.style;
 const xo = new IntersectionObserver(onIntersect);
 /** @type {HTMLElement} */
 export const installed = $id('installed');
+export const writerIcon = $('#write-wrapper .icon');
 
 export function showStyles({frames}) {
   const entries = new Map();
@@ -68,7 +69,8 @@ export function createWriterElement(frame, index) {
     el = (url.startsWith(ownRoot) ? makeExtCrumbs : makeWebCrumbs)(crumbs, url);
     el.onmouseenter = el.onmouseleave = el.onfocus = el.onblur = Events.toggleUrlLink;
     if (!index) {
-      Object.assign($id('write-style-for'), {onclick: el.click.bind(el), title: el.title});
+      writerIcon.onclick = () => el.click();
+      writerIcon.title = el.title;
     }
   }
   crumbs.push(el);

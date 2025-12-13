@@ -22,15 +22,22 @@ export default function CompactHeader() {
   const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
   const xoRoot = isUsercss ? scroller : undefined;
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
-  const elInfo = [...$$('h1 a')];
+  const elNewAs = $('#newStyleAsUsercss').closest('label');
+  const elInfo = [...$$('#heading a')];
+  elNewAs.on('click', () => {
+    if (!editor.id && !editor.dirty.isDirty()) {
+      location.reload();
+    }
+  });
   scroller.appendChild(elHeader);
   mqCompact(val => {
     if (val) {
       xo.observe(elHeader);
       $id('basic-info-name').append(...elInfo);
+      $id('basic-info-enabled').append(elNewAs);
     } else {
       xo.disconnect();
-      $('h1').append(...elInfo);
+      $id('heading').append(...elInfo, elNewAs);
     }
   });
 

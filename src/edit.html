@@ -19,10 +19,10 @@
     <div class="resize-grip" i18n="title:cm_resizeGripHint"></div>
   </template>
 
-  <template data-id="body"> <!-- https://crbug.com/1288447 -->
+  <template data-id="body"><!-- https://crbug.com/1288447 -->
     <div id="header" class="dvh100">
-      <h1 id="heading" class="flex">
-        <span class="ellipsis"></span>
+      <div id="heading" class="flex wrap center-items">
+        <h1 class="ellipsis"></h1>
         <a id="url" target="_blank" class="icon" i18n="title:externalHomepage">
           <i class=i-external></i>
         </a>
@@ -34,7 +34,11 @@
            href="https://github.com/openstyles/stylus/wiki/Writing-UserCSS">
           <i class=i-usercss style="font-size: 16px"></i>
         </a>
-      </h1>
+        <label id="new-as" class="hide-if-sticky">
+          <input type="checkbox" id="newStyleAsUsercss">
+          <span i18n="optionsAdvancedNewStyleAsUsercss"></span>
+        </label>
+      </div>
       <section id="basic-info">
         <div id="basic-info-name" class="hide-if-sticky">
           <input id="name" spellcheck="false">
