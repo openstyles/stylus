@@ -761,6 +761,7 @@ button i {
     z-index: 1000;
     border-right: none;
     border-bottom: 1px dashed var(--c65);
+    details + main,
     details > main {
       margin: -$pad 0 0 $pad;
     }
@@ -779,7 +780,6 @@ button i {
     display: flex;
     align-items: stretch;
     flex-flow: wrap;
-    flex: 1 1 auto;
     width: auto;
     height: fit-content;
     margin: -$pad $pad $pad 0;
