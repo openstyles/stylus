@@ -1,8 +1,8 @@
 import '@/js/dom-init';
 import {kAboutBlank, kPopup, kStyleIdPrefix} from '@/js/consts';
-import {$create, $createFragment} from '@/js/dom';
+import {$create} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
-import {template} from '@/js/localization';
+import {sanitizeHtml, template} from '@/js/localization';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
@@ -165,38 +165,29 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
     tab = await getActiveTab();
   }
 
-  const info = template.unreachableInfo;
+  let info;
   if (CHROME) {
+    info = template.unreachableInfo;
     // Chrome "Allow access to file URLs" in chrome://extensions message
     info.appendChild($create('p', t('unreachableFileHint')));
   } else {
-    info.$('label').textContent = t('unreachableAMO');
+    info = $('.blocked-info');
+    info.$('summary').textContent = t('unreachableAMO');
     const note = [
       !isStore && t('unreachableCSP', t('optionsAdvancedPatchCsp')),
       isStore && t(FIREFOX >= 59 ? 'unreachableAMOHint' : 'unreachableMozSiteHintOldFF'),
       FIREFOX >= 60 && t('unreachableMozSiteHint'),
     ].filter(Boolean).join('\n');
-    const renderToken = s => s[0] === '<'
-      ? $create('a.copy', {
-        tabIndex: 0,
-        title: t('copy'),
-      }, [
-        s.slice(1, -1),
-        $create('i.i-copy'),
-      ])
-      : s;
-    const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
-    const noteNode = $createFragment(note.split('\n').map(renderLine));
-    info.appendChild(noteNode);
+    const p = info.$('p');
+    p.textContent = '';
+    p.append(sanitizeHtml(note));
   }
   // Inaccessible locally hosted file type, e.g. JSON, PDF, etc.
   if (tabUrl.length - tabUrl.lastIndexOf('.') <= 5) {
     info.appendChild($create('p', t('InaccessibleFileHint')));
   }
-  document.body.classList.add('unreachable');
-  const elInfo = $('.blocked-info');
-  if (elInfo) elInfo.replaceWith(info);
-  else document.body.prepend(info);
+  $rootCL.add('unreachable');
+  $('.blocked-info').replaceWith(info);
 }
 
 function blockPopup(val = true) {

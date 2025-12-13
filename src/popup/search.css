@@ -42,7 +42,7 @@
     var(--c70) 220px /* middle of the first thumbnail */,
     var(--c70) calc(100% - 110px) /* middle of the last thumbnail */,
     var(--c85) calc(100% - 30px)) /* stop at the bottom nav */;
-  padding-bottom: 0 !important;
+  padding: 0 var(--outer-padding);
   border-top: 1px solid var(--c80);
 }
 
@@ -50,7 +50,7 @@
   color: #fff;
   background-color: var(--red1);
   font-weight: bold;
-  padding: 5px;
+  padding: var(--outer-padding);
   text-align: center;
   :not([hidden]) + :not([hidden]) {
     margin-top: var(--outer-padding);

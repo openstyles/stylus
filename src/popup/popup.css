@@ -123,11 +123,6 @@ body {
   transition: none; /* FF borks subpixel AA during transitions in popup */
 }
 
-body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colorpicker-popup) {
-  padding-left: $pad;
-  padding-right: $pad;
-}
-
 :root:not(.blocked) .if-blocked,
 .blocked .if-not-blocked,
 .blocked #installed:empty,
@@ -256,7 +251,6 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
 }
 
 /* entry */
-.blocked-info,
 #main-actions,
 .styles-last #popup-options,
 .styles-first #installed,
@@ -824,37 +818,29 @@ button.icon {
 }
 .blocked-info {
   background-color: var(--c98);
-  label {
-    padding: .75em $pad .5em;
-    display: block;
-    font-weight: bold;
-    margin: 0 calc(-1 * $pad) .5em;
-    background-color: var(--bg);
+  > * {
+    padding: $pad;
     border-bottom: var(--border);
   }
+  > :first-child {
+    font-weight: bold;
+    background-color: var(--bg);
+  }
+  > summary {
+    padding-left: 0;
+    cursor: zoom-in;
+    &::marker {
+      margin: 0;
+    }
+  }
+  &[open] > summary {
+    cursor: zoom-out;
+  }
   p {
-    padding: 1px 0 $pad;
     margin: 0;
   }
-  .copy {
-    cursor: copy;
-    hyphens: none;
-    word-break: break-word;
-    font-weight: bold;
-    &:hover {
-      color: var(--fg);
-      text-decoration: underline;
-      &:not(.copied) {
-        text-decoration-style: dotted;
-      }
-    }
-    i {
-      font-size: var(--icon-font-size);
-      line-height: var(--font-size);
-    }
-    &.copied {
-      color: var(--accent-1);
-    }
+  code {
+    overflow-wrap: break-word;
   }
 }
 
