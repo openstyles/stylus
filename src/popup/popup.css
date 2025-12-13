@@ -1,5 +1,6 @@
 /* postcss-simple-vars */
 $pad: var(--outer-padding);
+$entryActionW: var(--input-height);
 $powerWidth: 30px;
 $powerOverlap: 4px; /* must be >= 1px (transparent edge) */
 
@@ -81,8 +82,11 @@ body {
       display: inline-block;
       border: solid transparent;
       border-width: 5px 0 5px $triangleW;
-      border-left-color: inherit;
+      border-left-color: var(--c30);
       margin: 0 calc($chkW - $triangleW - $triangleX) 0 $triangleX;
+    }
+    &:hover::before {
+      border-left-color: inherit;
     }
   }
   div {
@@ -105,10 +109,11 @@ body {
   }
   #help {
     /* aligning to the menu button */
-    margin: 0 calc($pad + (var(--entry-h) - 16px) / 2) 0 $pad;
+    $helpIconSize: 18px;
+    margin: 0 calc($pad + ($entryActionW - $helpIconSize) / 2) 0 $pad;
     i {
       color: var(--c50);
-      font-size: 18px;
+      font-size: $helpIconSize;
     }
   }
   .touch & {
@@ -322,7 +327,7 @@ body {
   .actions {
     display: flex;
     > :not([hidden]) {
-      width: calc(var(--entry-h) - 2px);
+      width: $entryActionW;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -332,8 +337,9 @@ body {
     > :hover {
       background-color: var(--c95);
     }
-    > a.configure {
-      padding-right: 2px;
+    > .menu-button:hover {
+      width: var(--entry-h);
+      margin: 0 calc(($entryActionW - var(--entry-h)) / 2);
     }
     > :is(.enable, .disable) {
       display: none;
@@ -391,9 +397,6 @@ body {
   }
 }
 
-.menu-button {
-  padding-right: 2px;
-}
 a.configure[target="_blank"] .i-config {
   font-size: var(--icon-font-size);
   margin-top: 1px;
