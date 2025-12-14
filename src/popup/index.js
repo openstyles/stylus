@@ -13,7 +13,7 @@ import {CHROME_POPUP_BORDER_BUG, getActiveTab} from '@/js/util-webext';
 import * as Events from './events';
 import {handleUpdate} from './events';
 import {initHotkeys} from './hotkeys';
-import {createWriterElement, showStyles, updateStateIcon, writerIcon} from './render';
+import {createWriterElement, reSort, showStyles, updateStateIcon, writerIcon} from './render';
 import '@/css/onoffswitch.css';
 import './popup.css';
 
@@ -77,6 +77,7 @@ function onRuntimeMessage(msg) {
       break;
     case 'styleDeleted':
       $id(kStyleIdPrefix + msg.style.id)?.remove();
+      reSort([]);
       break;
   }
   styleFinder.on?.(msg, ready);

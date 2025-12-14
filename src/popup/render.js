@@ -16,6 +16,23 @@ const xo = new IntersectionObserver(onIntersect);
 export const installed = $id('installed');
 export const writerIcon = $('#write-wrapper .icon');
 
+let initNoStyles = () => {
+  initNoStyles = null;
+  const el = $('#no-styles summary');
+  const measure = el.firstChild;
+  const cmd = $create('b',
+    {style: `padding-left: ${measure.offsetLeft + 'px'}`},
+    t('findStylesOnline'));
+  // measuring an empty element to ensure it's one line for correct layout calc
+  measure.textContent = t('noStylesForSite');
+  el.append(cmd);
+  el.on('click', () => {
+    $id('find-styles-btn').click();
+    el.parentElement.style.pointerEvents = 'none';
+    cmd.remove();
+  }, {once: true});
+};
+
 export function showStyles({frames}) {
   const entries = new Map();
   for (let i = 0; i < frames.length; i++) {
@@ -30,7 +47,7 @@ export function showStyles({frames}) {
       }
     }
   }
-  resortEntries([...entries.values()]);
+  reSort([...entries.values()]);
 }
 
 function sortStyles(entries) {
@@ -41,12 +58,14 @@ function sortStyles(entries) {
     (a.customName || a.name).localeCompare(b.customName || b.name));
 }
 
-export function resortEntries(entries) {
+export function reSort(entries) {
   // `entries` is specified only at startup, after that we respect the prefs
   if (entries || prefs.__values['popup.autoResort']) {
     installed.append(...sortStyles(entries || [...installed.children]));
   }
-  $rootCL.toggle('no-styles', !installed.firstChild);
+  if ($rootCL.toggle('no-styles', !installed.firstChild)) {
+    initNoStyles?.();
+  }
 }
 
 /**

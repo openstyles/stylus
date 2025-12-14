@@ -57,9 +57,13 @@
     <p i18n="stylusUnavailableForURLdetails"></p>
   </details>
 
-  <main id="installed" i18n="data-no-styles:noStylesForSite, data-find:findStylesOnline"></main>
+  <details id="no-styles" class="if-no-styles if-not-blocked">
+    <summary><span>&nbsp;</span></summary>
+  </details>
 
-  <aside id="multi-toggler">
+  <main id="installed" class="if-styles"></main>
+
+  <aside id="multi-toggler" class="if-styles">
     <details>
       <summary i18n="toggleStylesHeading"></summary>
       <% _.forEach([

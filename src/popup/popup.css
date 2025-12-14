@@ -48,9 +48,6 @@ body {
   display: flex;
   align-items: center;
   user-select: none;
-  .no-styles & {
-    display: none;
-  }
   details {
     flex: 1;
     &[open] {
@@ -82,7 +79,7 @@ body {
       display: inline-block;
       border: solid transparent;
       border-width: 5px 0 5px $triangleW;
-      border-left-color: var(--c30);
+      border-left-color: inherit;
       margin: 0 calc($chkW - $triangleW - $triangleX) 0 $triangleX;
     }
     &:hover::before {
@@ -129,6 +126,8 @@ body {
 }
 
 :root:not(.blocked) .if-blocked,
+:root:not(.no-styles) .if-no-styles,
+:root.no-styles .if-styles,
 .blocked .if-not-blocked,
 .blocked #installed:empty,
 .blocked #installed > :not(.frame),
@@ -152,19 +151,12 @@ body {
   }
 }
 
-:root:not(.blocked) #installed:empty {
-  padding: $pad;
-  flex-flow: column;
-  display: flex;
-  &::before {
-    content: attr(data-no-styles);
-  }
-  &::after {
-    content: attr(data-find);
-    font-weight: bold;
-  }
+#no-styles {
   &:hover {
     color: var(--accent-1);
+  }
+  b {
+    display: block;
   }
 }
 
@@ -655,6 +647,12 @@ a:hover i {
   .i-plus {
     font-size: 15px; /* looks crisp even on a single density display */
   }
+  .non-touch & {
+    transition: opacity .25s .15s;
+    &:not(:hover) {
+      opacity: .5;
+    }
+  }
 }
 #write-style {
   cursor: pointer;
@@ -769,6 +767,7 @@ button.icon {
   }
   .blocked-info,
   #multi-toggler,
+  #no-styles,
   #installed {
     order: 2;
   }
@@ -791,20 +790,9 @@ button.icon {
 }
 .blocked-info {
   background-color: var(--c98);
-  > * {
-    padding: $pad;
-    border-bottom: var(--border);
-  }
   > :first-child {
     font-weight: bold;
     background-color: var(--bg);
-  }
-  > summary {
-    padding-left: 0;
-    cursor: zoom-in;
-    &::marker {
-      margin: 0;
-    }
   }
   &[open] > summary {
     cursor: zoom-out;
@@ -814,6 +802,14 @@ button.icon {
   }
   code {
     overflow-wrap: break-word;
+  }
+}
+body > details > summary {
+  border-bottom: var(--border);
+  padding: $pad $pad $pad 0;
+  cursor: zoom-in;
+  &::marker {
+    margin: 0;
   }
 }
 

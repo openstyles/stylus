@@ -8,7 +8,7 @@ import {tabId, tabUrl} from '.';
 import {toggleStateInTab} from './hotkeys';
 import * as hotkeys from './hotkeys';
 import {closeMenu, menu, openMenu} from './menu';
-import {createStyleElement, installed, resortEntries} from './render';
+import {createStyleElement, installed, reSort} from './render';
 
 /** @type {{[sel: string]: (this: HTMLElement, evt: MouseEvent, entry?: HTMLElement) => any}} */
 export const OnClick = {
@@ -26,7 +26,7 @@ export const OnClick = {
   }),
   async input(evt, entry = this) {
     await API.styles.toggle(entry.styleId, this.checked);
-    resortEntries();
+    reSort();
   },
   '.configure': configure,
   '.menu-button': Object.assign((event, entry) => openMenu(entry), {
@@ -46,10 +46,6 @@ export const OnClick = {
   },
 };
 
-installed.on('click', () => {
-  if (!installed.firstChild)
-    $id('find-styles-btn').click();
-});
 window.onclick =
 window.onauxclick =
 window.oncontextmenu = event => {
@@ -84,7 +80,7 @@ export async function handleUpdate({style}) {
     style = Object.assign(style.style, style);
     const el = createStyleElement(style, entry);
     if (!el.isConnected) installed.append(el);
-    resortEntries();
+    reSort();
     if (inMenu) openMenu(el);
   } else {
     entry?.remove();
