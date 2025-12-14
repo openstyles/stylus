@@ -25,7 +25,7 @@ export default function CompactHeader() {
   const elNewAs = $('#newStyleAsUsercss').closest('label');
   const elInfo = [...$$('#heading a')];
   elNewAs.on('click', () => {
-    if (!editor.id && !editor.dirty.isDirty()) {
+    if (!editor.style.id && !editor.dirty.isDirty()) {
       location.reload();
     }
   });

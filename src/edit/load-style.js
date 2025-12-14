@@ -16,8 +16,8 @@ export default __.MV3
   : prefs.clientData.then(loadStyle);
 
 function loadStyle({style = makeNewStyleObj(), isUC, si, template}) {
+  Object.assign(editor.style, style);
   Object.assign(editor, /** @namespace Editor */ {
-    style,
     template,
     isUsercss: isUC,
     scrollInfo: si || {},

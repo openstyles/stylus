@@ -10,10 +10,11 @@ import {isWindowed} from './windowed-mode';
 const dirty = DirtyReporter();
 /** @type {Set<HTMLInputElement>} */
 const regexps = new Set();
+/** @type {Partial<StyleObj>} */
+const style = {};
 const toc = [];
 toc.cls = 'current';
 
-let style;
 let wasDirty = false;
 
 /**
@@ -22,7 +23,6 @@ let wasDirty = false;
  */
 const editor = self.editor = {
   dirty,
-  id: 0,
   isUsercss: false,
   livePreviewLazy: cb => debounce(cb, prefs.__values['editor.livePreview.delay'] * 1000),
   /** @type {'customName'|'name'} */
@@ -35,13 +35,7 @@ const editor = self.editor = {
   saving: false,
   /** @type {EditorScrollInfoContainer} */
   scrollInfo: {},
-  get style() {
-    return style;
-  },
-  set style(val) {
-    style = val;
-    editor.id = val.id;
-  },
+  style,
   toc,
 
   applyScrollInfo(cm, si = editor.scrollInfo.cms?.[0]) {
