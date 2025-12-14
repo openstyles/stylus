@@ -149,13 +149,11 @@ export function onEntryClicked(event) {
 
 export function handleBulkChange() {
   for (const msg of queue) {
-    const {style} = msg;
-    const {id} = style;
+    const {id} = msg.style;
     let fullStyle;
     if (msg.method === 'styleDeleted') {
       handleDelete(id);
     } else if (msg.reason === 'import' && (fullStyle = queue.styles.get(id))) {
-      Object.assign(fullStyle, style);
       handleUpdate(fullStyle, msg);
       queue.styles.delete(id);
     } else {

@@ -265,11 +265,7 @@ export async function importMany(items) {
       const style = onSaved(styles[r], false, id);
       messages.push([style, 'import', method]);
       res[i] = {
-        style: {
-          id,
-          enabled: style.enabled,
-          [k_size]: calcObjSize(style),
-        },
+        style: getCore({id, sections: true, size: true}),
       };
     }
   }
