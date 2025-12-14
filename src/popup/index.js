@@ -123,7 +123,7 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
     window.close();
   };
 
-  let el = $$('#multi-toggler label')[1];
+  let el = $$('#toggler label')[1];
   el.title = el.title.replace('<', MAC ? '<⌥' : '<Alt-');
 
   for (el of $$('link[media=print]')) {

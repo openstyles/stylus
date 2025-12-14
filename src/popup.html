@@ -63,8 +63,8 @@
 
   <main id="installed" class="if-styles"></main>
 
-  <aside id="multi-toggler" class="if-styles">
-    <details>
+  <aside id="toggler">
+    <details class="if-styles">
       <summary i18n="toggleStylesHeading"></summary>
       <% _.forEach([
         /*i18n*/'toggleStylesPerm',
@@ -77,22 +77,19 @@
       </div>
       <% }) %>
     </details>
-    <a id="help" data-cmd="note" tabindex="0">
-      <i class="i-info"></i>
-    </a>
-  </aside>
-
-  <div class="actions flex" id="main-actions">
-    <div id="write-wrapper">
-      <a i18n="title:writeStyleFor" class="icon" tabindex="0">
-        <i class=i-plus></i>
-      </a>
-      <div id="write-style" class="no-stretch"></div>
-    </div>
     <label id="disableAll-label" i18n="data-off:disableAllStylesOff">
       <input id="disableAll" type="checkbox" class="slider">
       <img srcset="icon/16.png, icon/32.png 2x">
     </label>
+  </aside>
+
+  <div id="main-actions">
+    <div id="write-wrapper">
+      <a i18n="title:writeStyleFor" class="icon" tabindex="0">
+        <i class=i-plus></i>
+      </a>
+      <div id="write-style"></div>
+    </div>
   </div>
 
   <div id="popup-options">
@@ -109,6 +106,9 @@
                menu-uso="UserStyles"
                menu-gf="GreasyFork"></button>
     </div>
+    <button id="help" class="icon" data-cmd="note">
+      <i class="i-info"></i>
+    </button>
     <button id="options-btn" i18n="title:openOptions" class="icon">
       <svg class="hollow-gear" viewBox="0 0 20 20">
         <text y="100%">⚙</text>

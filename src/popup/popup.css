@@ -41,15 +41,18 @@ body {
 #installed {
   overflow-y: auto;
 }
-#multi-toggler {
+#toggler {
   --gap: calc($pad/4);
   background: var(--zebra);
   border-bottom: var(--border);
   display: flex;
-  align-items: center;
+  flex-flow: wrap;
   user-select: none;
   details {
     flex: 1;
+    summary {
+      cursor: zoom-in;
+    }
     &[open] {
       &, div {
         position: relative;
@@ -104,15 +107,6 @@ body {
     width: 100%;
     margin: 2px;
   }
-  #help {
-    /* aligning to the menu button */
-    $helpIconSize: 18px;
-    margin: 0 calc($pad + ($entryActionW - $helpIconSize) / 2) 0 $pad;
-    i {
-      color: var(--c50);
-      font-size: $helpIconSize;
-    }
-  }
   .touch & {
     --gap: calc($pad/2);
     input {
@@ -134,21 +128,6 @@ body {
 .blocked [data-frame-id="0"] > .breadcrumbs:not(:only-child),
 .firefox .chromium-only {
   display: none !important;
-}
-
-#main-actions {
-  /* raise the actions above the hotkey-info */
-  position: relative;
-  background: var(--c95);
-  z-index: 4;
-  padding: 0;
-  > * {
-    padding: $pad;
-    display: flex;
-  }
-  > :nth-last-child(n + 2) {
-    flex: 1;
-  }
 }
 
 #no-styles {
@@ -184,6 +163,7 @@ body {
 }
 
 .all-disabled {
+  $allDisabledH: 10px;
   .style-name {
     text-decoration: line-through;
   }
@@ -195,17 +175,18 @@ body {
       --c: crimson;
       background: var(--c);
       color: #fff;
-      font-size: 10px;
+      font-size: $allDisabledH;
       padding: 2px 0;
       left: 0;
-      bottom: -9px;
+      bottom: calc(-$allDisabledH / 2);
+      z-index: 1;
       position: absolute;
       text-align: center;
       text-transform: uppercase;
       width: 100%;
     }
     img {
-      right: calc($powerWidth - $powerOverlap);
+      right: $powerWidth;
     }
   }
   #disableAll {
@@ -214,19 +195,22 @@ body {
     color: var(--c);
     justify-content: flex-start;
   }
-  #main-actions {
-    margin-bottom: 8px;
+  #toggler {
+    position: relative;
+    padding-bottom: $allDisabledH;
   }
 }
 #disableAll-label {
   align-items: center;
+  padding: 0 calc($pad + $powerOverlap);
+  border-left: var(--border);
   &:hover {
     background: hsla(180, 50%, 40%, .1);
   }
   img {
     position: absolute;
     filter: drop-shadow(1px 1px 2px #0008);
-    right: calc($pad - $powerOverlap);
+    right: $pad;
   }
 }
 #disableAll {
@@ -401,6 +385,13 @@ a.configure[target="_blank"] .i-config {
 
 .frame .style-name {
   font-weight: normal;
+}
+
+#help {
+  i {
+    padding: 0 1px;
+    font-size: 18px;
+  }
 }
 
 #menu {
@@ -640,15 +631,19 @@ a:hover i {
 }
 
 #write-wrapper {
-  border-right: var(--border);
+  max-width: 100%;
+  background: var(--c95);
+  padding: $pad 0 $pad $pad;
+  box-sizing: border-box;
+  display: flex;
   .icon {
-    margin: 0 4px -2px -2px; /* ahem centering */
+    margin: 0 3px -2px -1px; /* ahem centering */
   }
   .i-plus {
     font-size: 15px; /* looks crisp even on a single density display */
   }
   .non-touch & {
-    transition: opacity .25s .15s;
+    transition: opacity .15s;
     &:not(:hover) {
       opacity: .5;
     }
@@ -740,6 +735,7 @@ a:hover i {
   }
   > * {
     display: flex;
+    align-items: center;
     max-width: calc(50% - 2px - var(--inner-padding));
   }
 }
@@ -766,10 +762,12 @@ button.icon {
     flex-direction: column;
   }
   .blocked-info,
-  #multi-toggler,
-  #no-styles,
-  #installed {
+  #toggler,
+  #no-styles {
     order: 2;
+  }
+  #installed {
+    order: 3;
   }
   #main-actions {
     order: 1;
@@ -778,7 +776,7 @@ button.icon {
     }
   }
   #search-results {
-    order: 3;
+    order: 4;
   }
   #pct {
     order: -1;
