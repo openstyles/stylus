@@ -280,6 +280,9 @@
   "enableStyleLabel": {
     "message": "Inschakelen"
   },
+  "exclude": {
+    "message": "Uitsluiten"
+  },
   "exportCompatible": {
     "message": "Exporteren (compatibele modus)"
   },
