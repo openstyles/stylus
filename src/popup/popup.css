@@ -195,7 +195,8 @@ body {
     color: var(--c);
     justify-content: flex-start;
   }
-  #toggler {
+  &.no-styles #main-actions,
+  &:not(.no-styles) #toggler {
     position: relative;
     padding-bottom: $allDisabledH;
   }
@@ -636,8 +637,9 @@ a:hover i {
   padding: $pad 0 $pad $pad;
   box-sizing: border-box;
   display: flex;
+  flex: 1;
   .icon {
-    margin: 0 3px -2px -1px; /* ahem centering */
+    margin: -1px 3px -1px -1px; /* ahem centering */
   }
   .i-plus {
     font-size: 15px; /* looks crisp even on a single density display */
@@ -797,6 +799,8 @@ button.icon {
   }
   p {
     margin: 0;
+    padding: $pad;
+    border-bottom: var(--border);
   }
   code {
     overflow-wrap: break-word;

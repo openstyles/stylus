@@ -63,8 +63,8 @@
 
   <main id="installed" class="if-styles"></main>
 
-  <aside id="toggler">
-    <details class="if-styles">
+  <aside id="toggler" class="if-styles">
+    <details>
       <summary i18n="toggleStylesHeading"></summary>
       <% _.forEach([
         /*i18n*/'toggleStylesPerm',
@@ -83,7 +83,7 @@
     </label>
   </aside>
 
-  <div id="main-actions">
+  <div id="main-actions" class="flex">
     <div id="write-wrapper">
       <a i18n="title:writeStyleFor" class="icon" tabindex="0">
         <i class=i-plus></i>

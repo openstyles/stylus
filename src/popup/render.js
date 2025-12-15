@@ -15,6 +15,7 @@ const xo = new IntersectionObserver(onIntersect);
 /** @type {HTMLElement} */
 export const installed = $id('installed');
 export const writerIcon = $('#write-wrapper .icon');
+const disabler = $('#disableAll-label');
 
 let initNoStyles = () => {
   initNoStyles = null;
@@ -65,6 +66,9 @@ export function reSort(entries) {
   }
   if ($rootCL.toggle('no-styles', !installed.firstChild)) {
     initNoStyles?.();
+    $('#main-actions').append(disabler);
+  } else {
+    $('#toggler').append(disabler);
   }
 }
 
