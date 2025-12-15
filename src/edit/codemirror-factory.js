@@ -1,8 +1,9 @@
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
-import {rerouteHotkeys} from '@/edit/util';
+import {getStyleAtPos} from '@/cm/util';
 import {kCodeMirror} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import editor from './editor';
+import {rerouteHotkeys} from './util';
 
 /*
   All cm instances created by this module are collected so we can broadcast prefs
@@ -265,52 +266,45 @@ function configureMouseFn(cm, repeat) {
     {};
 }
 
-function selectTokenOnDoubleclick(cm, pos) {
-  let {ch} = pos;
-  const {line, sticky} = pos;
-  const {text, styles} = cm.getLineHandle(line);
-
-  const execAt = (rx, i) => ((rx.lastIndex = i), rx.exec(text)) || false;
-  const at = (rx, i) => (rx.lastIndex = i) && null || rx.test(text);
-  const atWord = i => at(/\w/y, i);
-  const atSpace = i => at(/\s/y, i);
-
-  const atTokenEnd = styles.indexOf(ch, 1);
-  ch += atTokenEnd < 0 ? 0 : sticky === 'before' && atWord(ch - 1) ? 0 : atSpace(ch + 1) ? 0 : 1;
-  ch = Math.min(text.length, ch);
-  const type = cm.getTokenTypeAt({line, ch: ch + (sticky === 'after' ? 1 : 0)});
-  if (atTokenEnd > 0) ch--;
-
-  const isCss = type && !/^(comment|string)/.test(type);
-  const isNumber = type === 'number';
-  const isSpace = atSpace(ch);
-  let wordChars =
-    isNumber ? /[-+\w.%]/y :
-    isCss ? /[-\w@\u00A1-\uFFFF]/yu :
-    isSpace ? /\s/y :
-    atWord(ch) ? /\w\u00A1-\uFFFF/yu : /[^\w\s\u00A1-\uFFFF]/yu;
-
+function selectTokenOnDoubleclick(cm, {ch, line}) {
+  const {styles, text} = cm.getLineHandle(line);
+  const rxWord = /[-\w\u00A1-\uFFFF]*/yu;
+  let b = (rxWord.lastIndex = ch) + rxWord.exec(text)[0].length;
+  let [style, i] = ch ? getStyleAtPos(styles, ch) : [styles[1], 0];
   let a = ch;
-  while (a && at(wordChars, a)) a--;
-  a += !a && at(wordChars, a) || isCss && at(/[.!#@]/y, a) ? 0 : at(wordChars, a + 1);
-
-  let b, found;
-
-  if (isNumber && (found = execAt(/[+-]?[\d.]+(e\d+)?|$/yi, a))) {
-    b = a + found[0].length;
-    found = b >= ch;
-    if (!found) {
-      a = b;
-      ch = a;
+  if (!style ||
+      (style = style.split(/ overlay | CodeMirror-/, 1)[0]) &&
+      /comment|string|uso-variable/.test(style)) {
+    let rx = /[\w\u00A1-\uFFFF]/yu;
+    while (a && (rx.lastIndex = a - 1, rx.test(text)))
+      --a;
+    // if not at a word, let's select the non-word span
+    if (a === ch && b === ch) {
+      rx = /[^\s\w\u00A1-\uFFFF]/yu;
+      while (a && (rx.lastIndex = a - 1, rx.test(text)))
+        --a;
+      rx = /[^\s\w\u00A1-\uFFFF]*/yu;
+      rx.lastIndex = ch;
+      b += rx.exec(text)[0].length;
     }
+    // include common prefixes: @ for mentions or @var in UserCSS, # for tags and hex colors
+    if (a && /[#@]/.test(text[a - 1]))
+      --a;
+  } else {
+    // include %
+    const whole = style.includes('number');
+    if (whole)
+      b = styles[i];
+    while ((i -= 2) > 1 && (styles[i + 1] || '').startsWith(style)) {/**/}
+    a = i > 0 ? styles[i] : 0;
+    // CodeMirror joins .foo.bar in one token for presentation, let's split it
+    if (!whole)
+      a += text.slice(a, b).search(/[@#.]?[-\w\u00A1-\uFFFF]*%?$/u);
+    // include : or :: for a pseudo if not a property declaration
+    if (a && !styles[i + 1] && text[a - 1] === ':' && /callee|variable-3/.test(style)
+    && !/prop/.test(styles[i - 1]))
+      a -= text[a - 2] === ':' ? 2 : 1;
   }
-
-  if (!found) {
-    wordChars = isCss ? /[-\w\u00A1-\uFFFF]*/yu : new RegExp(wordChars.source + '*', 'uy');
-    found = execAt(wordChars, ch);
-    if (found) b = ch + found[0].length;
-  }
-
   return {
     from: {line, ch: a},
     to: {line, ch: b},
