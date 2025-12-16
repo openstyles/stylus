@@ -632,9 +632,11 @@ a:hover i {
   color: var(--fg);
 }
 
+#main-actions {
+  background: var(--c95);
+}
 #write-wrapper {
   max-width: 100%;
-  background: var(--c95);
   padding: $padToEntryH $pad;
   box-sizing: border-box;
   display: flex;
