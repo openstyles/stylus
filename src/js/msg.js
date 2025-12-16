@@ -83,7 +83,6 @@ function onRuntimeMessage({data, multi, TDM, broadcast}, sender, sendResponse) {
     sendResponse(wrapError(new Error('Message origin not trusted')));
     return false;
   }
-  
   if (!__.MV3 && !__.IS_BG && data.method === 'backgroundReady') {
     bgReadySignal?.(true);
   }
