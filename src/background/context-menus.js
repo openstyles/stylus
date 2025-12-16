@@ -1,5 +1,5 @@
 import '@/js/browser';
-import {kDisableAll, kStyleIds, kTabOvr, kTabOvrInitial, kTabOvrToggle} from '@/js/consts';
+import {kDisableAll, kStyleIds, kTabOvr, kTabOvrToggle} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {CHROME} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
@@ -126,8 +126,7 @@ async function cmdToggleTab(info, tab) {
   if (!td)
     return;
   /** 0: all off, 1: all on (not used here, only in popup), 2: initial state */
-  let state = td[kTabOvrToggle];
-  let ovrs = td[kTabOvrInitial];
+  let [state, skip, ovrs] = td[kTabOvrToggle] || [];
   let ids;
   state = td[kTabOvrToggle] = (state ?? 2) ? 0 : 2;
   if (
@@ -138,7 +137,7 @@ async function cmdToggleTab(info, tab) {
     // disable all applied styles
     if (!ovrs) {
       // first time toggling
-      ovrs = td[kTabOvrInitial] = {...td[kTabOvr]};
+      td[kTabOvrToggle] = [state, skip, ovrs = {...td[kTabOvr]}];
       for (const id of ids) ovrs[id] ??= null;
     }
     ovrs = {};

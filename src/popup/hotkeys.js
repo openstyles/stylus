@@ -1,4 +1,4 @@
-import {kStyleIdPrefix, kTabOvrToggle, kTabOvr, kTabOvrInitial} from '@/js/consts';
+import {kStyleIdPrefix, kTabOvrToggle, kTabOvr} from '@/js/consts';
 import {$createLink, $isTextInput} from '@/js/dom';
 import {moveFocus} from '@/js/dom-util';
 import {tBody} from '@/js/localization';
@@ -25,6 +25,8 @@ let savedTabOvrs;
 /** @type {Togglables} */
 let togglables;
 let toggledTab;
+let toggledTabSkip;
+let transform;
 let wikiText;
 
 window.on('keydown', onKeyDown);
@@ -103,7 +105,7 @@ function onKeyDown(evt) {
     if (!togglables.length) return;
     if (!altKey) {
       toggleState(togglables, !isEnabled());
-    } else if ((toggledTab = (toggledTab + 1) % 3) < 2) {
+    } else if ((toggledTab = transform[toggledTab]) < 2) {
       toggleStateInTab(togglables, !!toggledTab);
     } else {
       API.styles.toggleTabOvrMany(tabId, savedTabOvrs);
@@ -143,12 +145,16 @@ function getTogglables(force) {
     for (let i = 0, el, id; (el = togglables[i]); i++) {
       id = togglables[i] = el.styleId;
       savedTabOvrs[id] = el.styleMeta[kTabOvr];
-      off += !el.classList.contains('not-applied');
+      off += el.classList.contains('not-applied');
     }
     toggledTab = off === numOn ? 0 : off ? 2 : 1;
-    API.tabs.set(tabId, kTabOvrInitial,
-      togglables[0] ? [toggledTab, savedTabOvrs] : {undef: tabId});
+    toggledTabSkip = off === numOn ? 0 : off ? -1 : 1;
+    API.tabs.set(tabId, kTabOvrToggle,
+      togglables[0] ? [toggledTab, toggledTabSkip, savedTabOvrs] : {undef: tabId});
   }
+  transform = toggledTabSkip === 0 ? [1, 2, 1]
+    : toggledTabSkip === 1 ? [2, 0, 0]
+      : [1, 2, 0];
 }
 
 /**
@@ -187,9 +193,9 @@ export function toggleStateInTab(list, enable) {
     API.styles.toggleTabOvrMany(tabId, ids);
 }
 
-export function initHotkeys(data) {
-  toggledTab = data[kTabOvrToggle];
-  savedTabOvrs = data[kTabOvrInitial];
+export function initHotkeys({[kTabOvrToggle]: ovrData}) {
+  if (Array.isArray(ovrData))
+    [toggledTab, toggledTabSkip, savedTabOvrs] = ovrData;
   getTogglables();
   const el = $('#help');
   const tAll = t('popupHotkeysInfo');

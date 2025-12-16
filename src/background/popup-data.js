@@ -1,5 +1,5 @@
 import '@/js/browser';
-import {kAboutBlank, kPopup, kStyleIds, kTabOvrToggle, kTabOvrInitial, kUrl} from '@/js/consts';
+import {kAboutBlank, kPopup, kStyleIds, kTabOvrToggle, kUrl} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {chromeProtectsNTP, ownRoot, supported} from '@/js/urls';
 import {getActiveTab} from '@/js/util-webext';
@@ -91,7 +91,6 @@ export default async function makePopupData() {
     tab,
     urlSupported,
     [kTabOvrToggle]: td[kTabOvrToggle],
-    [kTabOvrInitial]: td[kTabOvrInitial],
   };
 }
 
