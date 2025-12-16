@@ -1,5 +1,6 @@
 /* postcss-simple-vars */
 $pad: var(--outer-padding);
+$padToEntryH: calc((var(--entry-h) - var(--font-size)) / 2);
 $entryActionW: var(--input-height);
 $powerWidth: 30px;
 $powerOverlap: 4px; /* must be >= 1px (transparent edge) */
@@ -72,7 +73,7 @@ body {
   summary {
     box-sizing: border-box;
     line-height: 1;
-    padding: calc((var(--entry-h) - var(--font-size)) / 2) var(--outer-padding);
+    padding: $padToEntryH var(--outer-padding);
     list-style: none;
     &::before {
       $chkW: 16px; /* checkbox + its margin */
@@ -634,7 +635,7 @@ a:hover i {
 #write-wrapper {
   max-width: 100%;
   background: var(--c95);
-  padding: $pad 0 $pad $pad;
+  padding: $padToEntryH $pad;
   box-sizing: border-box;
   display: flex;
   flex: 1;
@@ -643,12 +644,6 @@ a:hover i {
   }
   .i-plus {
     font-size: 15px; /* looks crisp even on a single density display */
-  }
-  .non-touch & {
-    transition: opacity .15s;
-    &:not(:hover) {
-      opacity: .5;
-    }
   }
 }
 #write-style {
@@ -817,6 +812,15 @@ body > details > summary {
 
 /******************************************/
 
+.non-touch {
+  .non-touch-dimmed {
+    transition: opacity .15s;
+    &:not(:hover) {
+      opacity: .5;
+    }
+  }
+}
+
 #message-box.note.hotkeys { /* overriding the default CSS for #message-box.note */
   align-items: flex-end;
   hr {
@@ -838,8 +842,6 @@ body > details > summary {
     white-space: nowrap;
   }
 }
-
-/******************************************/
 
 @media (max-height: 130px) {
   #find-split {
