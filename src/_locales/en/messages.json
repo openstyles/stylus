@@ -1,8 +1,4 @@
 {
-  "InaccessibleFileHint": {
-    "message": "Stylus can not access some file types (e.g. .pdf, .json).",
-    "description": "Note in the toolbar popup for some file types that cannot be accessed"
-  },
   "addStyleLabel": {
     "message": "Write new style",
     "description": "Label for the button to go to the add style page"
@@ -1894,6 +1890,9 @@
   "unreachableMozSiteHintOldFF": {
     "message": "Only Firefox 59 and newer can be configured to allow WebExtensions to add style elements on <CSP>-protected sites such as this one.",
     "description": "Note in the popup when opened on a restricted mozilla site in Firefox < 59"
+  },
+  "unreachableOpera": {
+    "message": "Opera users: if this is your search page please enable \"[x] Allow access to search page results\" in ⭕ menu 🞂 Extensions 🞂 Extensions 🞂 Stylus."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "No updates found.",

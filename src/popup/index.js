@@ -1,6 +1,5 @@
 import '@/js/dom-init';
 import {kAboutBlank, kPopup, kStyleIdPrefix} from '@/js/consts';
-import {$create} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {sanitizeHtml, template} from '@/js/localization';
 import {onMessage} from '@/js/msg';
@@ -172,8 +171,6 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
   let info;
   if (CHROME) {
     info = template.unreachableInfo;
-    // Chrome "Allow access to file URLs" in chrome://extensions message
-    info.appendChild($create('p', t('unreachableFileHint')));
   } else {
     info = $('.blocked-info');
     info.$('summary').textContent = t('unreachableAMO');
@@ -186,9 +183,9 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
     p.textContent = '';
     p.append(sanitizeHtml(note));
   }
-  // Inaccessible locally hosted file type, e.g. JSON, PDF, etc.
-  if (tabUrl.length - tabUrl.lastIndexOf('.') <= 5) {
-    info.appendChild($create('p', t('InaccessibleFileHint')));
+  // Chrome "Allow access to file URLs" in chrome://extensions message
+  if ((el = tabUrl.startsWith('file:') ? 'unreachableFileHint' : OPERA && 'unreachableOpera')) {
+    info.appendChild($tag('p')).append(t(el));
   }
   $rootCL.add('unreachable');
   $('.blocked-info').replaceWith(info);

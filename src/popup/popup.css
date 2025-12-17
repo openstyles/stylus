@@ -794,6 +794,7 @@ button.icon {
   &[open] > summary {
     cursor: zoom-out;
   }
+  > div:first-child,
   p {
     margin: 0;
     padding: $pad;
