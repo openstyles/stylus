@@ -126,7 +126,6 @@ body {
 .blocked .if-not-blocked,
 .blocked #installed:empty,
 .blocked #installed > :not(.frame),
-.blocked [data-frame-id="0"] > .breadcrumbs:not(:only-child),
 .firefox .chromium-only {
   display: none !important;
 }
@@ -639,6 +638,7 @@ a:hover i {
   max-width: 100%;
   padding: $padToEntryH $pad;
   box-sizing: border-box;
+  overflow: hidden;
   display: flex;
   flex: 1;
   .icon {
