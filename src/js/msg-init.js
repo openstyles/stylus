@@ -1,8 +1,9 @@
 /** Don't use this file in content script context! */
 import './browser';
 import {k_busy, k_deepCopy, k_msgExec, kInvokeAPI} from '@/js/consts';
+import {_execute} from './msg';
 import {apiHandler, apiSendProxy, isPopup} from './msg-api';
-import {createPortExec, createPortProxy} from './port';
+import {createPortExec, createPortProxy, initRemotePort} from './port';
 import {swPath, workerPath} from './urls';
 import {deepCopy} from './util';
 import {getOwnTab, ownTab} from './util-webext';
@@ -20,6 +21,9 @@ const swExec = __.MV3 &&
 const workerApiPrefix = 'worker.';
 let workerProxy;
 export let bg = __.IS_BG ? self : !__.MV3 && chrome.extension.getBackgroundPage();
+if (!__.IS_BG) {
+  initRemotePort.call(_execute, {ports: [new BroadcastChannel('sw')]}, /*silent*/true);
+}
 
 async function invokeAPI({name: path}, _thisObj, args) {
   // Non-cloneable event is passed when doing `elem.onclick = API.foo`

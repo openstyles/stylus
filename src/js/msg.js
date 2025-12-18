@@ -59,10 +59,12 @@ function onRuntimeMessage({data, multi, TDM, broadcast}, sender, sendResponse) {
     return;
   }
   sender.TDM = TDM;
-  let res = __.IS_BG && global[k_busy];
-  res = res
+  let res;
+  res = __.IS_BG && (res = global[k_busy])
     ? res.then(_execute.bind(null, data, sender, multi, broadcast))
     : _execute(data, sender, multi, broadcast);
+  if (broadcast)
+    return;
   if (res instanceof Promise) {
     res.then(wrapData, wrapError).then(sendResponse);
     return true;

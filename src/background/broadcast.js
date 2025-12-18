@@ -1,7 +1,6 @@
 import '@/js/browser';
 import {kTabOvr, pExposeIframes, pStyleViaASS} from '@/js/consts';
 import {rxIgnorableError} from '@/js/msg-api';
-import {ownRoot} from '@/js/urls';
 import {sleep0} from '@/js/util';
 import {isOptionSite, optionSites} from './option-sites';
 import {tabCache} from './tab-manager';
@@ -11,6 +10,7 @@ let toBroadcast;
 let toBroadcastCfg;
 let toBroadcastUpdStyles;
 const OLD = Symbol('old');
+const channel = new BroadcastChannel('sw');
 
 export function broadcast(data, cfg) {
   toBroadcast ??= (setTimeout(doBroadcast), []);
@@ -49,22 +49,24 @@ async function doBroadcast() {
     const tabOverrides = tabCache[t.id]?.[kTabOvr];
     const patched = tabOverrides && Object.keys(tabOverrides).length &&
       patchStyles(updStyles, tabOverrides);
-    if (!url.startsWith(ownRoot) || patched) {
-      if (assSites) cfg.ass = isOptionSite(assSites, url);
-      if (iframeSites) cfg.top = isOptionSite(iframeSites, url);
-      sendTab(t.id, data, null, true);
-      if (patched) for (const p of patched) p.enabled = p[OLD];
-      /* Broadcast messages are tiny, but sending them takes some time anyway,
-         so we're yielding for a possible navigation/messaging event. */
-      if (++cnt > 50) {
-        cnt = 0;
-        await sleep0();
-      }
+    if (assSites) cfg.ass = isOptionSite(assSites, url);
+    if (iframeSites) cfg.top = isOptionSite(iframeSites, url);
+    sendTab(t.id, data, null, true);
+    if (patched) for (const p of patched) p.enabled = p[OLD];
+    /* Broadcast messages are tiny, but sending them takes some time anyway,
+       so we're yielding for a possible navigation/messaging event. */
+    if (++cnt > 50) {
+      cnt = 0;
+      await sleep0();
     }
   }
 }
 
 export function broadcastExtension(data, multi) {
+  if (__.MV3) {
+    channel.postMessage({id: 1, args: [data, {}, multi, /*broadcast*/true]});
+    return;
+  }
   return unwrap(browser.runtime.sendMessage({data, multi, broadcast: true}));
 }
 

@@ -165,8 +165,9 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
 /**
  * @this {Function | {}} executor
  * @param {MessageEvent} evt
+ * @param {boolean} [silent]
  */
-export function initRemotePort(evt) {
+export function initRemotePort(evt, silent) {
   const {id: once} = evt.data || {};
   const exec = this;
   const port = evt.ports[0];
@@ -198,7 +199,7 @@ export function initRemotePort(evt) {
       }
     }
     __.DEBUGPORT('%c%s port response', 'color:blue', PATH, id, {res, err});
-    port.postMessage({id, res, err}, portEvent._transfer);
+    if (!silent) port.postMessage({id, res, err}, portEvent._transfer);
     if (!--numJobs && willAutoClose && !bgLock) {
       autoClose(TTL);
     }
