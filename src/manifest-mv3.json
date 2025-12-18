@@ -6,7 +6,8 @@
     "identity",
     "idle",
     "offscreen",
-    "scripting"
+    "scripting",
+    "sidePanel"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -34,6 +35,9 @@
       "world": "MAIN"
     }
   ],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
   "web_accessible_resources": [{
     "resources": ["install-usercss.html"],
     "matches": ["<all_urls>"],

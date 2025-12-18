@@ -54,6 +54,7 @@ const defaults = {
 
   // checkbox in style config dialog
   'config.autosave': true,
+  'config.sidePanel': 10,
 
   'schemeSwitcher.enabled': 'system',
   'schemeSwitcher.nightStart': '18:00',

@@ -1032,6 +1032,13 @@
   "optionCompactWidth": {
     "message": "Max window width for compact UI layout (in pixels)"
   },
+  "optionConfigSidePanel": {
+    "message": "Side panel for UserCSS configurations this long",
+    "description": "Label of the option shown after the number that specifies the minimum length of a UserCSS configuration to be shown in a side panel."
+  },
+  "optionConfigSidePanelHint": {
+    "message": "1..99: minimum number of configuration parameters,\n0: always side panel, you can also right-click or long-press the configuration icon,\n-1: always popup."
+  },
   "optionFOUC": {
     "message": "Styles applied too late?",
     "description": "Shown in the options. Followed by FOUCMV2 or FOUCMV3 message."

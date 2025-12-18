@@ -1,0 +1,18 @@
+[id=stylus-sidepanel] {
+  #message-box {
+    animation: none;
+    > div {
+      position: static;
+      max-width: none;
+      max-height: none;
+      flex: 1;
+    }
+  }
+  #message-box-title {
+    pointer-events: none;
+    user-select: text;
+  }
+  #message-box-close-icon {
+    display: none; /* the browser's x icon is just nearby */
+  }
+}

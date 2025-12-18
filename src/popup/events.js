@@ -1,7 +1,8 @@
-import {kStyleIdPrefix} from '@/js/consts';
+import {kStyleIdPrefix, UCD} from '@/js/consts';
 import {configDialog} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
+import {__values} from '@/js/prefs';
 import {MAC} from '@/js/ua';
 import {getActiveTab} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
@@ -28,7 +29,9 @@ export const OnClick = {
     await API.styles.toggle(entry.styleId, this.checked);
     reSort();
   },
-  '.configure': configure,
+  '.configure': Object.assign(configure, {
+    btn2: true,
+  }),
   '.menu-button': Object.assign((event, entry) => openMenu(entry), {
     btn2: true,
   }),
@@ -88,10 +91,30 @@ export async function handleUpdate({style}) {
   }
 }
 
-/** @this {HTMLAnchorElement} either <a target=_blank href=...> or <a> for a config icon */
-export function configure(event, entry) {
+/**
+ * @this {HTMLAnchorElement} either <a target=_blank href=...> or <a> for a config icon
+ * @param {KeyboardEvent | MouseEvent} event
+ * @param {StyleEntryElement} entry
+ */
+export async function configure(event, entry) {
   if (!this.target) {
-    hotkeys.pause(() => configDialog(entry.styleId));
+    let mode;
+    if (__.MV3 && (
+      event.type === 'contextmenu' ||
+      !(mode = __values['config.sidePanel']) ||
+      mode > 0 && entry.styleMeta[UCD].vars >= mode
+    )) {
+      await chrome.sidePanel.setOptions({
+        tabId,
+        path: `sidepanel.html?` + new URLSearchParams({
+          tabId,
+          id: entry.styleId,
+        }),
+      });
+      await chrome.sidePanel.open({tabId});
+    } else {
+      hotkeys.pause(() => configDialog(entry.styleId));
+    }
   } else {
     openURLandHide.call(this, event);
   }

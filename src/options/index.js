@@ -90,11 +90,10 @@ $id('reset').onclick = async () => {
 }
 for (const el of $$('[data-clickable]')) {
   const value = el.dataset.clickable;
-  const p = el.textContent.match(new RegExp(`^(.*\\W)(${value})(?=\\W)(.*)`));
-  if (!p) continue;
-  const input = el.closest('label').$('input');
-  const span = $create('span.clickable', {onclick: () => setInputValue(input, value)}, p[2]);
-  el.firstChild.replaceWith(p[1], span, p[3]);
+  const parts = el.textContent.split(new RegExp(`(${value})(?=\\W)`, 'g'));
+  if (parts)
+    el.firstChild.replaceWith(...parts.map((p, i) =>
+      i % 2 ? $create('span.clickable', {onclick: clickableValue}, p) : p));
 }
 for (const el of $$('[show-if]')) {
   const id = el.getAttribute('show-if').match(/[.\w]+/)[0];
@@ -130,6 +129,13 @@ setupLivePrefs();
     el.$('p').append(icon.isConnected ? icon.cloneNode(true) : icon);
   }
 })();
+
+function clickableValue() {
+  setInputValue(
+    this.closest('label').$('input'),
+    this.textContent,
+  );
+}
 
 function customizeHotkeys() {
   const CTRL = MAC ? 'metaKey' : 'ctrlKey';

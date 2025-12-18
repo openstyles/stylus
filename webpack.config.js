@@ -37,6 +37,7 @@ const PAGES = [
   'manage',
   'options',
   'popup',
+  'sidepanel',
   !MV3 && PAGE_BG,
 ].filter(Boolean);
 const FS_CACHE = !DEV && !GITHUB_ACTIONS && +process.env.FS_CACHE;
