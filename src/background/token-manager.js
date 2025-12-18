@@ -138,14 +138,11 @@ async function decryptToken(encrypted) {
         console.warn('Using plaintext token (unencrypted). Please re-authenticate.');
         return encrypted;
       }
-    } catch (fallbackErr) {
+    } catch {
       // If atob or JSON.parse fails, treat as plaintext
       console.warn('Using plaintext token (unencrypted). Please re-authenticate.');
       return encrypted;
     }
-    // If we get here, something else went wrong
-    console.error('Token decryption failed:', err);
-    throw new Error('Failed to decrypt token');
   }
 }
 
@@ -229,7 +226,6 @@ async function oauth2TokenExchange(provider, authCode) {
     }
 
     const result = await response.json();
-    
     // Validate response contains required fields
     if (!result.access_token) {
       throw new Error('Token exchange response missing access_token');
@@ -310,10 +306,10 @@ async function refreshToken(name, k, obj) {
     throw new TokenError(name, 'No refresh token');
   }
   const provider = AUTH[name];
-  const refreshToken = await decryptToken(obj[k.REFRESH]);
+  const refToken = await decryptToken(obj[k.REFRESH]);
   const body = {
     client_id: provider.clientId,
-    refresh_token: refreshToken,
+    refresh_token: refToken,
     grant_type: 'refresh_token',
     scope: provider.scopes.join(' '),
   };
