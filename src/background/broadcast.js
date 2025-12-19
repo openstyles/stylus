@@ -63,11 +63,7 @@ async function doBroadcast() {
 }
 
 export function broadcastExtension(data, multi) {
-  if (__.MV3) {
-    channel.postMessage({id: 1, args: [data, {}, multi, /*broadcast*/true]});
-    return;
-  }
-  return unwrap(browser.runtime.sendMessage({data, multi, broadcast: true}));
+  channel.postMessage({id: 1, args: [data, {}, multi, /*broadcast*/true]});
 }
 
 function patchStyles(styleUpdates, tabOverrides) {
