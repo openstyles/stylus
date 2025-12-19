@@ -264,9 +264,9 @@ export async function importMany(items) {
     r = res[i];
     if (!r.err) {
       const id = events[r];
-      const method = dataMap.has(id) ? 'styleUpdated' : 'styleAdded';
+      const isNew = !dataMap.has(id);
       const style = onSaved(styles[r], false, id);
-      messages.push([style, 'import', method]);
+      messages.push([style, 'import', isNew]);
       res[i] = {
         style: getCore({id, sections: true, size: true}),
       };
