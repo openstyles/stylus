@@ -39,11 +39,11 @@ export async function config(id, prop, value) {
 }
 
 /** @returns {Promise<StyleObj>} */
-export function editSave(style) {
+export function editSave(style, msg) {
   style = mergeWithMapped(style);
   style.updateDate = Date.now();
   draftsDB.delete(style.id).catch(() => {});
-  return save(style, 'editSave');
+  return save(style, 'editSave', msg);
 }
 
 /** @returns {StyleObj|void} */
@@ -356,9 +356,9 @@ export function removeMany(ids, reason) {
 }
 
 /** @returns {Promise<StyleObj>} */
-export async function save(style, reason) {
+export async function save(style, reason, msg) {
   const newId = await db.put(onBeforeSave(style) || style);
-  return onSaved(style, reason, newId);
+  return onSaved(style, reason, newId, msg);
 }
 
 /** @returns {Promise<void>} */
@@ -409,9 +409,7 @@ export function toggleSiteOvr(id, val, type, isAdd) {
   const style = dataMap.get(id).style;
   if (toggleSiteOvrImpl(style, val, type, isAdd) + toggleSiteOvrImpl(style, val, !type, false)) {
     styleCache.clear();
-    return save(style, {
-      method: 'styleUpdated',
-      reason: 'config',
+    return save(style, 'config', {
       style: {id, enabled: isAdd ? type : style.enabled},
     });
   }

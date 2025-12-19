@@ -128,7 +128,7 @@ export default function SectionsEditor() {
     async saveImpl() {
       try {
         if (!$id('name').reportValidity()) throw t('styleMissingName');
-        const res = await API.styles.editSave(getModel());
+        const res = await API.styles.editSave(getModel(), editor.msg);
         dirty.clear(); // cleaning only after saving has succeeded
         editor.useSavedStyle(res);
       } catch (err) {

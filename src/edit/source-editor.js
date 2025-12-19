@@ -116,7 +116,7 @@ export default function SourceEditor() {
         if (res && res.dup) {
           messageBox.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
         } else {
-          res = await API.usercss.editSave({customName, enabled, id, sourceCode});
+          res = await API.usercss.editSave({customName, enabled, id, sourceCode}, editor.msg);
           // Awaiting inside `try` so that exceptions go to our `catch`
           await replaceStyle(res.style);
           if ((res.badRe = getBadRegexps(res.style))) {

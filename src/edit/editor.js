@@ -25,6 +25,7 @@ const editor = self.editor = {
   dirty,
   isUsercss: false,
   livePreviewLazy: cb => debounce(cb, prefs.__values['editor.livePreview.delay'] * 1000),
+  msg: false,
   /** @type {'customName'|'name'} */
   nameTarget: 'name',
   ppDemo: {
@@ -32,7 +33,6 @@ const editor = self.editor = {
     less: 'https://lesscss.org/less-preview/',
   },
   regexps,
-  saving: false,
   /** @type {EditorScrollInfoContainer} */
   scrollInfo: {},
   style,
@@ -72,7 +72,7 @@ const editor = self.editor = {
 
   async save() {
     if (dirty.isDirty()) {
-      editor.saving = true;
+      editor.msg ||= {editorId: performance.now() + Math.random()};
       await editor.saveImpl();
     }
   },

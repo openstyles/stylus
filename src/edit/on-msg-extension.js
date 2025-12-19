@@ -19,13 +19,12 @@ onMessage.set(request => {
   }
 });
 
-async function handleExternalUpdate({style, reason}) {
+async function handleExternalUpdate({style, reason, editorId}) {
   if (reason === 'editPreview' ||
       reason === 'editPreviewEnd') {
     return;
   }
-  if (reason === 'editSave' && editor.saving) {
-    editor.saving = false;
+  if (reason === 'editSave' && editor.msg.editorId === editorId) {
     return;
   }
   if (reason === 'toggle') {

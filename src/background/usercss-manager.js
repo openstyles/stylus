@@ -113,11 +113,11 @@ export async function configVars(id, vars) {
   return (await styleMan.install(style, 'config'))[UCD].vars;
 }
 
-export async function editSave(style) {
+export async function editSave(style, msg) {
   style = await parse(style);
   return {
     log: style.log, // extracting the non-enumerable prop, otherwise it won't survive messaging
-    style: await styleMan.editSave(style),
+    style: await styleMan.editSave(style, msg),
   };
 }
 

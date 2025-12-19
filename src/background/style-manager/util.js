@@ -48,12 +48,13 @@ export const mergeWithMapped = style => ({
   ...style,
 });
 
-export function broadcastStyleUpdated({enabled, id}, reason, isNew) {
+export function broadcastStyleUpdated({enabled, id}, reason, isNew, msg) {
   updateSections(id);
-  return broadcast(typeof reason === 'object' ? reason : {
+  return broadcast({
     method: isNew ? 'styleAdded' : 'styleUpdated',
-    reason,
     style: {id, enabled},
+    reason,
+    ...msg,
   });
 }
 

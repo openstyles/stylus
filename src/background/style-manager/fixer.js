@@ -114,11 +114,12 @@ export function onBeforeSave(style) {
 
 /**
  * @param {StyleObj} style
- * @param {string|false|{}} [reason] - false = no broadcast, Object = custom message
+ * @param {string|false} [reason] - false = no broadcast
  * @param {number} [id]
+ * @param {{}} [msg]
  * @returns {StyleObj}
  */
-export function onSaved(style, reason, id = style.id) {
+export function onSaved(style, reason, id = style.id, msg) {
   if (style.id == null) style.id = id;
   const data = dataMap.get(id);
   if (!data) {
@@ -127,7 +128,7 @@ export function onSaved(style, reason, id = style.id) {
     data.style = style;
   }
   if (reason !== false) {
-    broadcastStyleUpdated(style, reason, !data);
+    broadcastStyleUpdated(style, reason, !data, msg);
   } else {
     updateSections(style.id);
   }
