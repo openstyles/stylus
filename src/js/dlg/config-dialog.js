@@ -33,6 +33,7 @@ export default async function configDialog(style) {
   const btnClose = $create('button[data-cmd=close]',
     t('confirmClose'));
 
+  /** @type {MessageBoxElement} */
   let elCfg;
   return messageBox.show({
     title: `${style.customName || style.name} v${ucd.version}`,
@@ -58,7 +59,7 @@ export default async function configDialog(style) {
 
   function onshow(box) {
     elCfg = box;
-    box.$('#message-box-buttons button').after(
+    box._buttons.$('button').after(
       $create('label#config-autosave-wrapper', {
         title: t('configOnChangeTooltip'),
       }, [
@@ -196,7 +197,7 @@ export default async function configDialog(style) {
       elCfg.$('.config-error')?.remove();
     } catch (errors) {
       const el = elCfg.$('.config-error') ||
-        elCfg.$('#message-box-buttons').insertAdjacentElement('afterbegin',
+        elCfg._buttons.insertAdjacentElement('afterbegin',
           $create('.config-error'));
       el.textContent =
         el.title = (Array.isArray(errors) ? errors : [errors])
@@ -403,7 +404,7 @@ export default async function configDialog(style) {
       color: this.va.value || this.va.default,
       top: Math.min(r.bottom, innerHeight - 220),
       right: innerWidth - r.left - 10,
-      guessBrightness: elCfg.$('#message-box-contents'),
+      guessBrightness: elCfg._body,
       callback: onColorChanged,
     });
   }

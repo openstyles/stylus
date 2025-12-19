@@ -1,7 +1,7 @@
 import {kPopup, kStyleIdPrefix, UCD} from '@/js/consts';
 import {$toggleClasses, urlParams} from '@/js/dom';
 import {
-  animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView, setHocus,
+  animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView,
 } from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
@@ -68,7 +68,6 @@ const ENTRY_ROUTES = {
     if (button === 0) {
       API.styles.remove(id);
     }
-    setHocus($('#message-box-buttons > button'), false);
   },
 
   '.configure-usercss'(event, {styleId}) {

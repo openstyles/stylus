@@ -222,7 +222,7 @@ function showInfo(box) {
   const wikiUrl = 'https://github.com/openstyles/stylus/wiki/Popup';
   const a = $createLink({href: wikiUrl, title: CHROME ? wikiUrl : ''}, wikiText);
   const width = '23em';
-  box.$('#message-box-buttons').append(a);
+  box._buttons.append(a);
   box.classList.add('hotkeys');
   oldBodyStyle = document.body.style.cssText;
   el.setAttribute('style', `min-width:${width}; max-height:none !important;`);

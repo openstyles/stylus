@@ -12,8 +12,9 @@ export function pauseAll(paused = true) {
 }
 
 export class MessageBox {
+  /** @typedef {HTMLElement & {_body: HTMLElement, _buttons: HTMLElement}} MessageBoxElement */
   /** @readonly
-   * @type {HTMLElement} */
+   * @type {MessageBoxElement} */
   el;
   /** @type {HTMLElement} */
   originalFocus;
@@ -50,22 +51,22 @@ export class MessageBox {
     blockScroll,
   }) {
     this.#blockScroll = blockScroll;
-    this.el =
-      $create('div', {id: 'message-box', className}, [
-        $create('div', [
-          $create('#message-box-title.ellipsis', {on: {mousedown: this}}, title),
-          $create('#message-box-close-icon',
-            {on: {click: this.#resolveAsClosed = this.#resolveWith.bind(this, {button: -1})}},
-            $create('i.i-close')),
-          $create('#message-box-contents', tHTML(contents)),
-          $create('#message-box-buttons', buttons.filter(Boolean).map((btn, buttonIndex) => {
-            if (btn.localName !== 'button') btn = $create('button', btn);
-            btn.buttonIndex = buttonIndex;
-            btn.on('click', this.#resolveWith.bind(this, {button: buttonIndex}));
-            return btn;
-          })),
-        ]),
-      ]);
+    this.el = $create('#message-box', {className});
+    this.el.appendChild($tag('div')).append(
+      $create('#message-box-title.ellipsis', {on: {mousedown: this}}, title),
+      $create('#message-box-close-icon',
+        {on: {click: this.#resolveAsClosed = this.#resolveWith.bind(this, {button: -1})}},
+        $create('i.i-close')),
+      this.el._body =
+      $create('#message-box-contents', tHTML(contents)),
+      this.el._buttons =
+      $create('#message-box-buttons', buttons.filter(Boolean).map((btn, buttonIndex) => {
+        if (btn.localName !== 'button') btn = $create('button', btn);
+        btn.buttonIndex = buttonIndex;
+        btn.on('click', this.#resolveWith.bind(this, {button: buttonIndex}));
+        return btn;
+      })),
+    );
   }
 
   /**
@@ -76,7 +77,7 @@ export class MessageBox {
    * }} MessageBoxResult
    */
   /**
-   * @param {(elem: HTMLElement) => void} [onshow]
+   * @param {(elem: MessageBoxElement) => void} [onshow]
    * @returns {Promise<MessageBoxResult>}
    * */
   open(onshow) {
@@ -243,7 +244,7 @@ export async function confirm(contents, className, title) {
 }
 
 /**
- * @param {MessageBoxParams & {onshow: (elem: HTMLElement) => void}} params
+ * @param {MessageBoxParams & {onshow: (elem: MessageBoxElement) => void}} params
  * @returns {Promise<MessageBoxResult>} */
 export function show(params) {
   return new MessageBox(params).open(params.onshow);

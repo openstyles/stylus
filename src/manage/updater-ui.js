@@ -240,12 +240,12 @@ export default async function UpdateHistory(show, el, selector) {
     ],
     onshow: logText && (function (box) {
       uiLog = this;
-      scroller = box.$('#message-box-contents');
+      scroller = box._body;
       scroller.tabIndex = 0;
       setTimeout(() => scroller.focus());
       scrollToBottom();
 
-      box.$('#message-box-buttons button').insertAdjacentElement('afterend',
+      box._buttons.$('button').after(
         // TODO: add a <template> or a common function to create such controls
         $create('label', [
           toggler = $create('input', {type: 'checkbox', checked: true, onchange: toggleSkipped}),
