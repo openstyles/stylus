@@ -62,7 +62,7 @@ Object.assign(API, /** @namespace API */ {
       // TODO: remove this when minimum_chrome_version >= version that implements structured clone
       if (args[args.length - 1]?.undef === tabId)
         args[args.length - 1] = undefined;
-      tabMan.set(tabId);
+      tabMan.set(tabId ?? this.sender.tab?.id, ...args);
     },
   },
   updater: updateMan,
