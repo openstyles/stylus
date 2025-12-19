@@ -16,6 +16,8 @@ const WEBNAV_FILTER_STYLABLE = {
   ],
 };
 export const kCommitted = 'committed';
+/** @type {{[url: string]: number[]}} */
+export const ownPagesCommitted = {};
 let prevData = {};
 
 webNavigation.onCommitted.addListener(onNavigation.bind(null, kCommitted),
@@ -47,7 +49,10 @@ async function onNavigation(navType, data) {
   }
   const {tabId} = data;
   const td = tabCache[tabId];
-  if (td && navType !== kCommitted) {
+  if (navType === kCommitted) {
+    if (data.url.startsWith(ownRoot))
+      (ownPagesCommitted[data.url] ??= []).push(tabId);
+  } else if (td) {
     const {frameId: f, url} = data;
     const {documentId: d, frameType} = data;
     sendTab(tabId, {

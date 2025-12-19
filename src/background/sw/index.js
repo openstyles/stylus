@@ -38,9 +38,12 @@ global.onfetch = evt => {
   }
   if (url.includes('?clientData')) {
     const sp = new URL(url).searchParams;
-    const dark = !!+sp.get('dark');
     const pageUrl = sp.get('url');
-    const job = setClientData({dark, url: pageUrl});
+    const job = setClientData({
+      dark: !!+sp.get('dark'),
+      frameId: +sp.get('frameId'),
+      url: pageUrl,
+    });
     clientDataJobs.set(pageUrl, job);
     job.finally(() => clientDataJobs.delete(pageUrl));
     evt.respondWith(job);

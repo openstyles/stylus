@@ -16,7 +16,11 @@ let toUpload;
 export const clientData = !__.IS_BG && (
   __.MV3
     ? global[__.CLIENT_DATA]
-    : API.setClientData({url: location.href, dark: isCssDarkScheme()}).then(data => {
+    : API.setClientData({
+      dark: isCssDarkScheme(),
+      frameId: window === top ? 0 : 1,
+      url: location.href,
+    }).then(data => {
       data = makePropertyPopProxy(data);
       setBadFavs(data);
       setAll(data.prefs);

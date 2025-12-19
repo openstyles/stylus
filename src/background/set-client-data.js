@@ -5,6 +5,7 @@ import {FIREFOX} from '@/js/ua';
 import {isDark, setSystemDark} from './color-scheme';
 import {bgBusy, dataHub, isVivaldi, WRB, WRBTest} from './common';
 import {stateDB} from './db';
+import {ownPagesCommitted} from './navigation-manager';
 import makePopupData from './popup-data';
 import {nondefaults} from './prefs-api';
 import * as styleMan from './style-manager';
@@ -67,13 +68,17 @@ Object.assign(API, {
 export default async function setClientData({
   dark: pageDark,
   url: pageUrl,
+  frameId,
 } = {}) {
   setSystemDark(pageDark);
   if (bgBusy) await bgBusy;
   const url = new URL(pageUrl);
   const page = url.pathname.slice(1/*"/"*/, -5/*".html"*/);
+  const pagesForUrl = ownPagesCommitted[pageUrl];
+  const tabId = pagesForUrl?.shift();
+  const sender = {frameId, tab: {id: tabId, url: pageUrl}};
   const jobs = /** @namespace StylusClientData */ Object.assign({
-    apply: styleMan.getSectionsByUrl(pageUrl, {init: true}),
+    apply: styleMan.getSectionsByUrl.call({sender}, pageUrl, {init: true}),
     dark: isDark,
     favicon: FIREFOX || isVivaldi,
     prefs: nondefaults,
@@ -82,6 +87,8 @@ export default async function setClientData({
       && prefs.getDbArray(kBadFavs),
   }, PROVIDERS[page]?.(url));
   const results = await Promise.all(Object.values(jobs));
+  if (pagesForUrl && !pagesForUrl.length)
+    delete ownPagesCommitted[url];
   Object.keys(jobs).forEach((id, i) => (jobs[id] = results[i]));
   return __.MV3
     ? new Response(`Object.assign(${__.CLIENT_DATA},${JSON.stringify(jobs)})`, RESPONSE_INIT)
