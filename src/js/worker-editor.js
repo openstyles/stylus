@@ -9,9 +9,25 @@ Object.assign(COMMANDS, {
 
   csslint(code, config) {
     importScriptsOnce('parserlib.js', 'csslint.js'); /* global CSSLint */
-    return CSSLint
-      .verify(code, config).messages
-      .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
+    config.import = 1;
+    const results = CSSLint.verify(code, config).messages;
+    let len = 0;
+    let line, col;
+    for (const r of results) {
+      if ((line = r.line)) {
+        line--;
+        col = r.col;
+        results[len++] = {
+          message: r.message,
+          from: {line, ch: col - 1},
+          to: {line, ch: col},
+          rule: r.rule.id,
+          severity: r.type,
+        };
+      }
+    }
+    results.length = len;
+    return results;
   },
 
   getCssPropsValues() {
@@ -89,9 +105,11 @@ Object.assign(COMMANDS, {
     importScriptsOnce('stylelint.js'); /* global stylelint */
     // Stylus-lang allows a trailing ";" but sugarss doesn't, so we monkeypatch it
     stylelint.SugarSSParser.prototype.checkSemicolon = ovrCheckSemicolon;
-    for (const r in opts.config.rules) {
-      if (!stylelint.rules[r]) delete opts.config.rules[r];
-    }
+    const cfgRules = opts.config.rules;
+    for (const r in cfgRules)
+      if (!stylelint.rules[r]) delete cfgRules[r];
+    (cfgRules['at-rule-disallowed-list'] ??= [])
+      .push('import');
     for (let pass = 2; --pass >= 0;) {
       /* We try sugarss (for indented stylus-lang), then css mode, switching them on failure,
        * so that the succeeding syntax will be used next time first. */
@@ -177,12 +195,14 @@ function collectStylelintResults(messages, {mode}) {
       continue;
     }
     const {line: L, column: C} = m;
+    const isImport = msg === 'at-rule "@import"';
     res.push({
       from: {line: L - 1, ch: C - 1},
       to: {line: (m.endLine || L) - 1, ch: (m.endColumn || C) - 1},
-      message: msg[0].toUpperCase() + msg.slice(1),
-      severity: m.severity,
-      rule,
+      message: isImport ? '@import prevents parallel downloads and may be blocked by CSP.'
+        : msg[0].toUpperCase() + msg.slice(1),
+      severity: isImport ? 'warning' : m.severity,
+      rule: isImport ? '' : rule,
     });
   }
   return res;

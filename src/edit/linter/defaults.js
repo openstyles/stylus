@@ -3,7 +3,6 @@ const ENABLED_AS_WARNING = [true, WARNING];
 export const DEFAULTS = {
   stylelint: {
     // WARNING! onConfigSave() expects these rules to be arrays and enabled.
-    // TODO: extract deduplicateRules and use it in onInstalled event + in tests
     rules: {
       'at-rule-no-unknown': [true, {
         'ignoreAtRules': ['extend', 'extends', 'css', 'block'],

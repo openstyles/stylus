@@ -11,19 +11,7 @@ const ENGINES = {
   csslint: {
     validMode: mode => mode === 'css',
     getConfig: config => Object.assign({}, DEFAULTS.csslint, config),
-    async lint(text, config) {
-      config.doc = !editor.isUsercss;
-      const results = await worker.csslint(text, config);
-      return results
-        .map(({line, col: ch, message, rule, type: severity}) => line && {
-          message,
-          from: {line: line - 1, ch: ch - 1},
-          to: {line: line - 1, ch},
-          rule: rule.id,
-          severity,
-        })
-        .filter(Boolean);
-    },
+    lint: (code, config) => worker.csslint(code, {...config, doc: !editor.isUsercss}),
   },
   stylelint: {
     validMode: () => true,
