@@ -623,6 +623,7 @@ a:hover i {
 #write-style {
   cursor: pointer;
   overflow: hidden;
+  flex: 1; /* otherwise FF keeps it narrow and wraps the children to a new row */
 }
 .write-style-link {
   text-decoration: none;
