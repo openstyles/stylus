@@ -276,7 +276,6 @@ body {
     display: flex;
     flex: 1;
     overflow: hidden;
-    padding-right: 5px;
     align-items: center;
   }
   &:nth-child(-n+10) {
@@ -568,58 +567,31 @@ a.configure[target="_blank"] .i-config {
   }
 }
 
+.csp-problem-indicator {
+  background-color: #c0d;
+}
 .regexp-problem-indicator {
   background-color: #d00;
+}
+[class$="-problem-indicator"] {
   width: 14px;
   height: 14px;
   line-height: 15px;
   border-radius: 8px;
-  margin-right: 6px;
-  margin-left: 6px;
+  margin-right: 4px;
+  margin-left: 4px;
   text-align: center;
-  color: white;
+  &, &:hover {
+    color: white !important;
+  }
   font-weight: bold;
   box-sizing: border-box;
   cursor: pointer;
   font-size: 90%;
-  .entry:not(.regexp-partial) & {
-    display: none;
-  }
 }
 
 :is(.regexp-partial, .regexp-invalid) .actions {
   order: 2;
-}
-
-#regexp-explanation {
-  position: fixed;
-  background-color: var(--bg);
-  top: 50%;
-  transform: translateY(-50%);
-  left: 0;
-  right: 0;
-  padding: .5rem;
-  font-size: 90%;
-  border-top: 2px solid var(--fg);
-  border-bottom: 2px solid var(--fg);
-  box-shadow: 0 0 100px var(--fg);
-  display: flex;
-  flex-direction: column;
-  z-index: 999999;
-  > div {
-    display: none;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    &:not(:last-child) {
-      margin-bottom: .5rem;
-    }
-  }
-}
-
-.regexp-partial #regexp-partial,
-.regexp-invalid #regexp-invalid {
-  display: block;
 }
 
 i {

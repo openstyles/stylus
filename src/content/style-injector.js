@@ -1,3 +1,5 @@
+import {pPatchCsp} from '@/js/consts';
+import {API} from '@/js/msg-api';
 import * as msgApi from '@/js/msg-api';
 
 // allows Terser to drop unused code in targeted builds
@@ -7,6 +9,7 @@ const PREFIX = CLASS + '-';
 const MEDIA = 'screen, ' + PREFIX;
 const PATCH_ID = 'transition-patch';
 const kAss = 'adoptedStyleSheets';
+const kViolation = 'securitypolicyviolation';
 export const own = /** @type {Injection.Response} */{
   cfg: {off: false, top: ''},
 };
@@ -46,10 +49,12 @@ let reorderStart = 0;
 // will store the original method refs because the page can override them
 let creationDoc, createElement, createElementNS;
 let orderPrio, orderMain;
+let checkCSP;
 export let onInjectorUpdate, selfDestruct;
 
 export function shutdown() {
   if (!list.length) return;
+  if (!__.ENTRY && checkCSP) removeEventListener(kViolation, checkCSP, true);
   toggleObservers(false);
   removeAllElements();
   list.length = 0;
@@ -85,6 +90,19 @@ function addElement(el, before) {
 
 function addAllElements() {
   if (!list.length) return;
+  if (!__.ENTRY && !checkCSP) {
+    /** @param {SecurityPolicyViolationEvent} evt */
+    checkCSP = evt => {
+      if (evt.isTrusted && evt.sourceFile === 'moz-extension') {
+        for (const style of list) {
+          if (style.code.includes(evt.blockedURI)) {
+            API.tabs.set(null, pPatchCsp, style.id, evt.blockedURI, true);
+          }
+        }
+      }
+    };
+    addEventListener(kViolation, checkCSP, true);
+  }
   toggleObservers(false);
   if (ass) replaceAss(true);
   else updateRoot().append(...list.map(s => s.el));

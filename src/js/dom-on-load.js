@@ -224,9 +224,9 @@ function showTooltipNote(event) {
   }
 }
 
-function splitLongTooltips() {
-  for (const el of $$('[title], [data-title]')) {
-    if (tooltips.has(el))
+export function splitLongTooltips(elems) {
+  for (const el of elems || $$('[title], [data-title]')) {
+    if (!elems && tooltips.has(el))
       continue;
     const old = el.title || (el.title = el.dataset.title || '');
     if (!old)

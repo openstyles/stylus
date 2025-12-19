@@ -19,7 +19,7 @@ export const template = /*@__PURE__*/new Proxy(templateCache, {
 });
 const RX_BAD_TAGS = /<script[^<>]*[^<]*<\/script[^>]*>/gi;
 /** Attributes are ignored. The URL of <a> must be set explicitly in JS. */
-const RX_PARTS = /<(?:(br|hr)|(\/)?(a(\s+href=[^>]*)?|b|code|nobr|p|table|tr|td)|([^\s<>][^<>]*))>|(?:[^<]+|<\s+)+|$/g;
+const RX_PARTS = /<(?:(br|hr)|(\/)?(a(\s+href=[^>]*)?|b|code|nobr|p|pre|table|tr|td)|([^\s<>][^<>]*))>|(?:[^<]+|<\s+)+|$/g;
 const RX_WORD_BREAK = /([\w{-\uFFFF]{10}|[\w{-\uFFFF]{5,10}[!'")*,./]|((?!\s)\W){10})(?!\s|$)/gu;
 const SELECTOR = '[i18n]';
 const RELATIVE_UNITS = [

@@ -14,8 +14,6 @@
           <label class="style-name">
             <input type=checkbox>&nbsp;
           </label>
-          <i class=i-empty data-cmd="note" i18n="title:emptyCode" hidden></i>
-          <div class="regexp-problem-indicator" data-cmd="note" i18n="title:styleRegexpProblemTooltip">!</div>
         </div>
         <div class="actions">
           <a class="configure" tabindex="0">
@@ -32,12 +30,17 @@
     </div>
   </template>
 
-  <template data-id="regexpProblemExplanation">
-    <div id="regexp-explanation">
-      <div id="regexp-partial" i18n="styleRegexpPartialExplanation"></div>
-      <div id="regexp-invalid" i18n="styleRegexpInvalidExplanation"></div>
-      <button i18n="confirmOK"></button>
-    </div>
+  <template data-id="errEmpty">
+    <i class=i-empty data-cmd="note" tabindex="0" i18n="title:emptyCode"></i>
+  </template>
+
+  <template data-id="errCsp">
+    <a class="icon csp-problem-indicator" data-cmd="note" tabindex="0">!</a>
+  </template>
+
+  <template data-id="errRegexp">
+    <a class="icon regexp-problem-indicator" data-cmd="note" tabindex="0"
+         i18n="title:styleRegexpProblemTooltip">!</a>
   </template>
 
   <template data-id="unreachableInfo">

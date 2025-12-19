@@ -1,6 +1,6 @@
 import {
   IMPORT_THROTTLE, k_size, kExclusions, kInclusions, kOverridden, kTabOvr, kUrl, pDisableAll,
-  pExposeIframes, pKeepAlive, pStyleViaASS, pStyleViaXhr, UCD,
+  pExposeIframes, pKeepAlive, pPatchCsp, pStyleViaASS, pStyleViaXhr, UCD,
 } from '@/js/consts';
 import {__values} from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
@@ -93,7 +93,9 @@ export function getByUrl(url, id, tabId, needsOvrs) {
   // or search the DB with the same URL?
   const results = [];
   const query = {url};
-  const tabOverrides = tabId != null && tabCache[tabId]?.[kTabOvr];
+  const td = tabCache[tabId];
+  const tabOverrides = td?.[kTabOvr];
+  const tabCSP = td?.[pPatchCsp];
   for (const {style} of id ? [dataMap.get(id)].filter(Boolean) : dataMap.values()) {
     let ovr;
     let matching;
@@ -104,6 +106,7 @@ export function getByUrl(url, id, tabId, needsOvrs) {
       excludedScheme: !colorScheme.themeAllowsStyle(style),
       included: matching = !!(ovr = style[kInclusions]) && ovr.some(urlMatchOverride, query),
       [kTabOvr]: tabOverrides?.[style.id] ?? null,
+      [pPatchCsp]: tabCSP?.[style.id] || null,
       incOvr: !!(!matching && style[kOverridden] && ovr?.length),
       matchedOvrs: needsOvrs ? matchOverrides(style, url) : '',
     };

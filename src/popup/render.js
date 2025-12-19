@@ -1,13 +1,15 @@
 import '@/js/dom-init';
-import {kStyleIdPrefix, kTabOvr, UCD} from '@/js/consts';
+import {kStyleIdPrefix, kTabOvr, pPatchCsp, UCD} from '@/js/consts';
 import {$create, $toggleClasses} from '@/js/dom';
-import {template} from '@/js/localization';
+import {splitLongTooltips} from '@/js/dom-on-load';
+import {sanitizeHtml, template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
+import {CHROME} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
 import {capitalize, clipString, stringAsRegExpStr, t} from '@/js/util';
 import {MF} from '@/js/util-webext';
 import {isBlocked, tabUrlSupported} from '.';
-import {openStyleFinder} from './events';
+import {openOptions, openStyleFinder} from './events';
 import * as Events from './events';
 
 const EXT_NAME = `<${MF.name}>`;
@@ -17,6 +19,8 @@ const xo = new IntersectionObserver(onIntersect);
 export const installed = $id('installed');
 export const writerIcon = $('#write-wrapper .icon');
 const disabler = $('#disableAll-label');
+let errCsp, errRegexp;
+let titleCSP;
 
 let initNoStyles = () => {
   initNoStyles = null;
@@ -156,19 +160,22 @@ export function createStyleElement(style, entry) {
       styleMeta: style,
     });
   }
-  const {enabled, frameUrl, url, [UCD]: ucd} = style;
+  const {enabled, frameUrl, url, empty, sloppy, [pPatchCsp]: csp, [UCD]: ucd} = style;
   const name = entry.$('.style-name');
   const cfg = entry.$('.configure');
   const hasVars = ucd ? ucd.vars : url && /\?[^#=]/.test(style.updateUrl);
   const tabOvr = entry.dataset.tab = style[kTabOvr];
+  const elEmpty = oldEntry?.$('.i-empty');
+  const elSloppy = oldEntry?.$('.regexp-problem-indicator');
+  const elCsp = oldEntry?.$('.csp-problem-indicator');
   $toggleClasses(entry, {
-    'empty': style.empty,
-    'disabled': !enabled,
-    'enabled': enabled,
+    empty,
+    enabled,
+    disabled: !enabled,
     'force-applied': style.included || !!tabOvr,
-    'not-applied': style.excluded || style.sloppy || style.excludedScheme || style.incOvr
+    'not-applied': style.excluded || sloppy || style.excludedScheme || style.incOvr
       || tabOvr === false,
-    'regexp-partial': style.sloppy,
+    'regexp-partial': sloppy,
     'frame': frameUrl,
   });
   if (enabled || oldEntry)
@@ -190,9 +197,49 @@ export function createStyleElement(style, entry) {
     const frameEl = entry.$(sel) || name.insertBefore($create(sel), name.lastChild);
     frameEl.title = frameUrl;
   }
+  if (!empty) {
+    elEmpty?.remove();
+  } else if (!elEmpty) {
+    entry.$('.main-controls').append(template.errEmpty.cloneNode(true));
+  }
+  if (!csp) {
+    elCsp?.remove();
+  } else {
+    renderErrCsp(entry, elCsp, csp);
+  }
+  if (!sloppy) {
+    elSloppy?.remove();
+  } else if (!elSloppy) {
+    errRegexp ??= template.errRegexp;
+    entry.$('.main-controls').appendChild(errRegexp.cloneNode(true))
+      .onShowNote = onShowNotePartial;
+  }
   if (oldEntry) xo.unobserve(name); // forcing recalc of the title
   xo.observe(name);
   return entry;
+}
+
+function renderErrCsp(entry, elCsp, csp) {
+  errCsp ??= template.errCsp;
+  titleCSP ??= `${t('openOptions')} 🞂 ${t('optionsAdvancedPatchCsp')}:\n<pre>`;
+  elCsp ??= entry.$('.main-controls').appendChild(errCsp.cloneNode(true));
+  elCsp.title = titleCSP + Object.keys(csp).map(k => clipString(k, 50)).join('\n') + '</pre>';
+  elCsp.dataset.title = titleCSP + Object.keys(csp).join('\n') + '</pre>';
+  elCsp.onShowNote = onShowNoteCsp;
+  splitLongTooltips([elCsp]);
+}
+
+/** @param {MessageBoxElement} _ */
+function onShowNoteCsp({_buttons: el}) {
+  el.append($create('button', {onclick: openOptions}, t('openOptions')));
+}
+
+function onShowNotePartial({_body: el}) {
+  el.append('\n\n', sanitizeHtml(t('styleRegexpPartialExplanation')));
+  if ((el = el.$('a'))) {
+    el.href = 'https://developer.mozilla.org/docs/Web/CSS/@document';
+    if (CHROME) el.title = el.href;
+  }
 }
 
 /** @param {IntersectionObserverEntry[]} results */
