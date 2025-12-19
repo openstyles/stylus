@@ -17,7 +17,7 @@ module.exports = [
   //#region Global exclusions
   {
     ignores: [
-      'dist/',
+      'dist*/',
       'src/vendor/',
       'src/vendor-overwrites/',
     ],

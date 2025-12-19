@@ -16,14 +16,14 @@ const {RawEnvPlugin} = require('./tools/wp-raw-patch-plugin');
 const patchCodemirror = require('./tools/wp-patch-codemirror');
 const {
   escapeForRe, getManifestOvrName, transESM2var, transSourceMap,
-  BUILD, CHANNEL, CM_PACKAGE_PATH, DEV, MANIFEST, MV3, ROOT, ZIP, nukeHtmlSpaces,
+  BUILD, CHANNEL, CM_PACKAGE_PATH, DEV, MANIFEST, MV3, ROOT, TARGET, ZIP, nukeHtmlSpaces,
 } = require('./tools/util');
 
 global.localStorage = {}; // workaround for node 25 and HtmlWebpackPlugin's `...global`
 
 const {DEBUG, GITHUB_ACTIONS} = process.env;
 const SRC = ROOT + 'src/';
-const DST = ROOT + 'dist/';
+const DST = `${ROOT}dist${GITHUB_ACTIONS ? '' : `-${TARGET}`}/`;
 const CSS = 'css/';
 const JS = 'js/';
 const SHIM = ROOT + 'tools/shim/';
