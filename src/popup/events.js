@@ -1,15 +1,22 @@
 import {kStyleIdPrefix, UCD} from '@/js/consts';
-import {configDialog} from '@/js/dom-util';
+import {configDialog, getEventKeyName} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import {__values} from '@/js/prefs';
-import {MAC} from '@/js/ua';
+import {CHROME, MAC} from '@/js/ua';
 import {getActiveTab} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
 import {closeMenu, menu, openMenu} from './menu';
 import {createStyleElement, installed, reSort} from './render';
 
-/** @type {{[sel: string]: (this: HTMLElement, evt: MouseEvent, entry?: HTMLElement) => any}} */
+/**
+ * @callback OnClickHandler
+ * @this {HTMLElement}
+ * @param {MouseEvent} evt
+ * @param {StyleEntryElement} [entry]
+ * @param {number} [button]
+ */
+/** @type {{[sel: string]: OnClickHandler}} */
 export const OnClick = {
   '.style-name': Object.assign((evt, entry) => {
     if (evt.button
@@ -20,47 +27,42 @@ export const OnClick = {
       else openEditor(evt, entry);
     }
   }, {
-    btn1: true,
-    btn2: true,
+    btn: 1 + 2,
   }),
   async input(evt, entry = this) {
     await API.styles.toggle(entry.styleId, this.checked);
     reSort();
   },
   '.configure': Object.assign(configure, {
-    btn2: true,
+    btn: 1 + 2,
   }),
   '.menu-button': Object.assign((event, entry) => openMenu(entry), {
-    btn2: true,
+    btn: 2,
   }),
   '.style-edit-link': openEditor,
 };
 export const styleFinder = {};
 
-window.onclick =
-window.onauxclick =
-window.oncontextmenu = event => {
-  let {button} = event;
-  if (button === 1 && event.type !== 'auxclick'
-  || button === 2 && event.type !== 'contextmenu')
-    return;
-  const {target} = event;
-  const entry = target.closest('.entry');
-  if (!entry)
-    return;
-  let el = target;
-  let fn = OnClick['.' + el.className] || OnClick[el.localName];
-  button = button && `btn${button}`;
-  for (const selector in OnClick) {
-    if (fn || (fn = (el = target.closest(selector)) && OnClick[selector])) {
-      if (!button || fn[button]) {
-        if (button) event.preventDefault();
-        fn.call(el, event, entry);
-      }
-      return;
-    }
+/** Explicit handling of auxclick or contextmenu for right-click as Firefox loses user gesture */
+let elClick;
+window.onmousedown = window.onkeydown = evt => {
+  elClick = evt.target;
+};
+window.onmouseup = evt => {
+  if (elClick === evt.target)
+    clickRouter(evt);
+};
+window.onkeyup = evt => {
+  switch (elClick === evt.target && getEventKeyName(evt)) {
+    case 'ContextMenu':
+    case 'Shift-F10':
+      clickRouter(evt, 2);
   }
 };
+if (__.BUILD !== 'firefox' && (__.MV3 || CHROME)) {
+  // suppressing context menu in Chrome
+  window.oncontextmenu = evt => elClick !== evt.target;
+}
 
 Object.assign($('#find-styles-btn'), {
   onclick: openStyleFinder,
@@ -93,29 +95,40 @@ export async function handleUpdate({style}) {
 }
 
 /**
- * @this {HTMLAnchorElement} either <a target=_blank href=...> or <a> for a config icon
- * @param {KeyboardEvent | MouseEvent} event
- * @param {StyleEntryElement} entry
+ * @param {MouseEvent|KeyboardEvent} event
+ * @param {number} [btn]
  */
-export async function configure(event, entry) {
+function clickRouter(event, btn = event.button) {
+  const entry = elClick.closest('.entry');
+  if (!entry)
+    return;
+  let el = elClick;
+  let fn = OnClick['.' + el.className] || OnClick[el.localName];
+  for (const selector in OnClick) {
+    if (fn || (fn = (el = elClick.closest(selector)) && OnClick[selector])) {
+      if (!btn || fn.btn & /* using binary AND */btn) {
+        event.preventDefault();
+        fn.call(el, event, entry, btn);
+      }
+      return;
+    }
+  }
+}
+
+export async function configure(event, entry, button) {
   if (!this.target) {
-    let mode;
-    if (__.MV3 && (
-      event.type === 'contextmenu' ||
+    let mode, sbCH, sbFF;
+    if ((__.BUILD === 'chrome' ? sbCH = chrome.sidePanel : sbFF = browser.sidebarAction) && (
+      button ||
       !(mode = __values['config.sidePanel']) ||
       mode > 0 && entry.styleMeta[UCD].vars >= mode
     )) {
-      await chrome.sidePanel.setOptions({
-        tabId,
-        path: `sidepanel.html?` + new URLSearchParams({
-          tabId,
-          id: entry.styleId,
-        }),
-      });
-      await chrome.sidePanel.open({tabId});
-    } else {
-      hotkeys.pause(() => configDialog(entry.styleId));
+      const p = `sidepanel.html?id=${entry.styleId}`;
+      if (sbCH) sbCH.setOptions({tabId, path: p});
+      else sbFF.setPanel({tabId, panel: p});
+      return sbCH?.open({tabId}) || sbFF.open();
     }
+    hotkeys.pause(() => configDialog(entry.styleId));
   } else {
     openURLandHide.call(this, event);
   }

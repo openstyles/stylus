@@ -106,7 +106,6 @@ h2 {
 label {
   display: flex;
   min-height: var(--input-height);
-  width: fit-content;
   &:not(.sites) {
     align-items: center;
   }

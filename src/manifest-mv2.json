@@ -10,6 +10,15 @@
   "commands": {
     "_execute_browser_action": {}
   },
+  "sidebar_action": {
+    "default_panel": "sidepanel.html",
+    "default_icon": {
+      "16": "icon/16.png",
+      "32": "icon/32.png",
+      "19": "icon/19.png",
+      "38": "icon/38.png"
+    }
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "{7a7a4a92-a2a0-41d1-9fd7-1e92480d612d}",

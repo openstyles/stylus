@@ -110,6 +110,8 @@ for (const el of $$('[show-if]')) {
     }
   }
 }
+if (!chrome.sidePanel && !browser.sidebarAction)
+  $id('config.sidePanel').parentElement.hidden = true;
 setupLivePrefs();
 (async () => {
   const {wrb} = __.MV3 ? prefs.clientData : await prefs.clientData;
