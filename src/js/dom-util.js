@@ -223,8 +223,10 @@ export function setupLivePrefs(ids) {
   // getElementsByTagName is cached so it's much faster than calling querySelector for each id
   const all = (ids instanceof Element ? ids : document).getElementsByTagName('*');
   ids = ids?.forEach ? [...ids] : prefs.knownKeys.filter(id => id in all);
-  prefs.subscribe(ids, updateElement, true);
-  init = false;
+  init = prefs.subscribe(ids, updateElement, true);
+  return init?.then(() => {
+    init = false;
+  });
   function onChange() {
     if (this.checkValidity() && (this.type !== 'radio' || this.checked)) {
       prefs.set(this.id || this.name, getValue(this), undefined, updateElement);
