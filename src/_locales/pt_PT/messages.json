@@ -1,7 +1,4 @@
 {
-  "InaccessibleFileHint": {
-    "message": "O Stylus não consegue aceder a alguns tipos de ficheiros (por exemplo, .pdf, .json)."
-  },
   "addStyleLabel": {
     "message": "Escrever novo estilo"
   },

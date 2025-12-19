@@ -1,7 +1,4 @@
 {
-  "InaccessibleFileHint": {
-    "message": "Stylus ei saa osadele failitüüpidele ligi pääseda (nt. .pdf & .json failid)."
-  },
   "addStyleLabel": {
     "message": "Kirjuta uus stiil"
   },

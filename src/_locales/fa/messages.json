@@ -1,7 +1,4 @@
 {
-  "InaccessibleFileHint": {
-    "message": "استایلوس نمی‌تواند به برخی از انواع فایل  (مانند pdf و json) دسترسی پیدا کند."
-  },
   "addStyleLabel": {
     "message": "نوشتن سبک جدید"
   },

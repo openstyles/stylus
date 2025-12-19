@@ -1,7 +1,4 @@
 {
-  "InaccessibleFileHint": {
-    "message": "Stylus nie ma dostępu do niektórych typów plików (na przykład plików .pdf i .json)."
-  },
   "addStyleLabel": {
     "message": "Napisz nowy styl"
   },
@@ -825,6 +822,12 @@
   "optionCompactWidth": {
     "message": "Maksymalna szerokość okna dla kompaktowego układu interfejsu użytkownika (w pikselach)"
   },
+  "optionConfigSidePanel": {
+    "message": "Panel boczny do konfiguracji UserCSS w tym formacie"
+  },
+  "optionConfigSidePanelHint": {
+    "message": "1..99: minimalna liczba parametrów konfiguracyjnych,0: zawsze panel boczny, możesz również kliknąć prawym przyciskiem myszy lub nacisnąć i przytrzymać ikonę konfiguracji,-1: zawsze wyskakujące okienko."
+  },
   "optionFOUC": {
     "message": "Style zastosowane zbyt późno?"
   },
@@ -1552,6 +1555,9 @@
   },
   "unreachableMozSiteHintOldFF": {
     "message": "Tylko Firefox 59 i nowsze mogą być skonfigurowane tak, aby zezwalały WebExtensions na dodawanie elementów stylu w witrynach chronionych przez <CSP>, takich jak ta."
+  },
+  "unreachableOpera": {
+    "message": "Użytkownicy przeglądarki Opera: jeśli to jest Twoja strona wyszukiwania, włącz opcję „[x] Zezwalaj na dostęp do wyników wyszukiwania” w menu ⭕ 🞂 Rozszerzenia 🞂 Rozszerzenia 🞂 Stylus."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Nie znaleziono aktualizacji."

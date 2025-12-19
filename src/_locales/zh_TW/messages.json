@@ -1,7 +1,4 @@
 {
-  "InaccessibleFileHint": {
-    "message": "Stylus 無法存取某些檔案類型（如 .pdf 與 .json 檔案）。"
-  },
   "addStyleLabel": {
     "message": "編寫新樣式"
   },
@@ -828,6 +825,12 @@
   "optionCompactWidth": {
     "message": "精簡使用者介面版面配置的最大視窗寬度（畫素）"
   },
+  "optionConfigSidePanel": {
+    "message": "用於 UserCSS 組態的側邊面板長度"
+  },
+  "optionConfigSidePanelHint": {
+    "message": "1..99：組態參數的最小數字，\n0：一律使用側邊面板，您亦可右鍵點選或長按組態圖示，\n-1：一律使用彈出式視窗。"
+  },
   "optionFOUC": {
     "message": "樣式套用得太晚了嗎？"
   },
@@ -1503,6 +1506,9 @@
   "syncStorageErrorSaving": {
     "message": "無法儲存值。嘗試減少文字量。"
   },
+  "toggleCurrentTab": {
+    "message": "切換目前分頁"
+  },
   "toggleStyle": {
     "message": "切換樣式"
   },
@@ -1549,6 +1555,9 @@
   },
   "unreachableMozSiteHintOldFF": {
     "message": "僅 Firefox 59 或更新版本上可以設定為允許 WebExtension 在受 <CSP> 保護的網站（例如此網站）上新增樣式。"
+  },
+  "unreachableOpera": {
+    "message": "Opera 使用者：若此為您的搜尋頁面，請在 ⭕ 選單 🞂 擴充功能 🞂 擴充功能 🞂 Stylus 中啟用「[x] 允許存取搜尋頁面結果」。"
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "樣式都是最新的。"

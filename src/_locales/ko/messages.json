@@ -1,7 +1,4 @@
 {
-  "InaccessibleFileHint": {
-    "message": "Stylus는 일부 파일 형식(예: .pdf, .json 파일 등)에 접근할 수 없습니다."
-  },
   "addStyleLabel": {
     "message": "새 스타일 작성"
   },

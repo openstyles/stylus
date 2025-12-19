@@ -1,7 +1,4 @@
 {
-  "InaccessibleFileHint": {
-    "message": "Stylusにはアクセスできないファイル形式があります（例えば.pdfや.jsonファイル等）。"
-  },
   "addStyleLabel": {
     "message": "スタイルを新規作成"
   },
@@ -793,6 +790,12 @@
   "optionCompactWidth": {
     "message": "コンパクトUIの最大ウィンドウ幅 (ピクセル単位)"
   },
+  "optionConfigSidePanel": {
+    "message": "UserCSS設定のサイドパネルの幅"
+  },
+  "optionConfigSidePanelHint": {
+    "message": "1..99: 設定パラメータの最小値、\n0: 常にサイドパネルを表示。設定アイコンを右クリックか長押しでも表示可、\n-1: 常にポップアップ表示。"
+  },
   "optionFOUC": {
     "message": "スタイルの適用が遅すぎる?"
   },
@@ -1514,6 +1517,9 @@
   },
   "unreachableMozSiteHintOldFF": {
     "message": "このような<CSP>で保護されたサイトへのスタイル要素の追加を、Web拡張機能に許可するためには、Firefox 59 以降が必要です。"
+  },
+  "unreachableOpera": {
+    "message": "Operaユーザへ: もしこれが検索ページなら、⭕ メニュー 🞂 拡張機能 🞂 拡張機能 🞂 Stylus を開き、「検索ページ結果へのアクセスを許可する」にチェックを入れてください。"
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "更新は見つかりませんでした。"

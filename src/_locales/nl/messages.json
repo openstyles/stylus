@@ -1,7 +1,4 @@
 {
-  "InaccessibleFileHint": {
-    "message": "Stylus heeft geen toegang tot sommige bestandstypen (bv. .pdf- en .json-bestanden)."
-  },
   "addStyleLabel": {
     "message": "Nieuwe stijl schrijven"
   },
@@ -450,6 +447,9 @@
   "importStyles": {
     "message": "Stijlen importeren"
   },
+  "include": {
+    "message": "Insluiten"
+  },
   "installButton": {
     "message": "Stijl installeren"
   },
@@ -800,6 +800,12 @@
   "optionCompactWidth": {
     "message": "Max. vensterbreedte voor compacte UI-indeling (in pixels)"
   },
+  "optionConfigSidePanel": {
+    "message": "Zijpaneel voor UserCSS-configuraties van deze lengte"
+  },
+  "optionConfigSidePanelHint": {
+    "message": "1..99: minimale aantal configuratieparameters,0: altijd zijpaneel, u kunt ook met rechts klikken op of het configuratiepictogram ingedrukt houden,-1: altijd pop-up."
+  },
   "optionFOUC": {
     "message": "Stijlen te laat toegepast?"
   },
@@ -1049,6 +1055,12 @@
   "popupHotkeysInfo": {
     "message": "<1>-<9>, <0>, ook op het numerieke toetsenbord - schakelt naar de Ne stijl (0 is 10)\n<A>-<Z> schakelt naar de eerste stijl die met de letter begint\n<Shift> opent de editor i.p.v. deze in/uit te schakelen\n<+> schakelt opgesomde stijlen in\n<–> schakelt opgesomde stijlen uit\n<*> en <`> (accent grave) - schakelt tussen initieel ingeschakelde stijlen; niet van toepassing op stijlen die zijn ingeschakeld met het pop-upvenster geopend, zodat u na het uitproberen de initiële selectie kunt herstellen: schakel alles uit en schakel dan om, m.a.w. <–> <*>\nMeer info is te vinden in de wiki"
   },
+  "popupHotkeysInfoMenu": {
+    "message": "Houd <Enter> (of <▤>) ingedrukt en druk op een cijfer om het menu van de bijbehorende stijl te openen."
+  },
+  "popupHotkeysInfoTab": {
+    "message": "Houd <Alt> ingedrukt om stijlen alleen voor het huidige tabblad in/uit te schakelen."
+  },
   "popupHotkeysTooltip": {
     "message": "Klik om beschikbare sneltoetsen te tonen"
   },
@@ -1185,7 +1197,7 @@
     "message": "CSS-code"
   },
   "searchStylesHelp": {
-    "message": "</> of de toets <Ctrl-F> legt de focus op het zoekveld.\nDe standaardmodus is zoeken naar platte tekst op alle door spaties gescheiden termen in willekeurige volgorde.\nExacte woorden: zet de zoekopdracht tussen dubbele (rechte) aanhalingstekens, bv. <\".header ~ div\">.\nReguliere expressies: inclusief schuine strepen en vlaggen, bv. </body.*?\\ba\\b/i>.\n'Op URL' in de scopekiezer: vindt stijlen die op een volledig opgegeven URL van toepassing zijn, zoals https://www.example.org/.\n'Metagegevens' in de scopekiezer: zoekt in namen, 'van toepassing op'-aanduidingen, installatie-URL, update-URL, en het volledige metagegevensblok voor UserCSS-stijlen."
+    "message": "De toets </> of <Ctrl-F> legt de focus op het zoekveld.\nDe standaardmodus is zoeken naar platte tekst op alle door spaties gescheiden termen in willekeurige volgorde.\nExacte woorden: zet de zoekopdracht tussen dubbele (rechte) aanhalingstekens, bv. <\".header ~ div\">.\nReguliere expressies: inclusief schuine strepen en vlaggen, bv. </body.*?\\ba\\b/i>.\n‘Op URL’ in de scopekiezer: vindt stijlen die op een volledig opgegeven URL van toepassing zijn, zoals https://www.example.org/.\n‘Metagegevens’ in de scopekiezer: zoekt in namen, ‘van toepassing op’-aanduidingen, installatie-URL, update-URL, en het volledige metagegevensblok voor UserCSS-stijlen."
   },
   "searchStylesMatchUrl": {
     "message": "Op URL"
@@ -1281,6 +1293,12 @@
         "content": "$1"
       }
     }
+  },
+  "styleForceAppliedTab": {
+    "message": "Geforceerd toegepast voor het huidige tabblad in stijlmenu"
+  },
+  "styleForceTab": {
+    "message": "Alleen huidige tabblad"
   },
   "styleFromMozillaFormatError": {
     "message": "Importeren vanuit Mozilla-opmaak mislukt"
@@ -1413,6 +1431,15 @@
   "styleSitesIncludeOvr": {
     "message": "hebben voorrang op de stijl"
   },
+  "styleSitesMatchingRules": {
+    "message": "Uw persoonlijke websiteregels die met de huidige URL overeenkomen.\n‘+’-voorvoegsel betekent insluitingen.\n‘+’-voorvoegsel betekent uitsluitingen."
+  },
+  "styleSitesPopupEdit": {
+    "message": "Bewerk de volledige lijst met persoonlijke websites in ‘Stijlinstellingen’ in de editor"
+  },
+  "styleSitesPopupHeading": {
+    "message": "De stijl insluiten (en <br>) of uitsluiten bij het bezoeken van:"
+  },
   "styleToMozillaFormatHelp": {
     "message": "De Mozilla-opmaak van de code kan bij userstyles.org worden ingediend en met het klassieke Stylish voor Firefox worden gebruikt."
   },
@@ -1448,8 +1475,23 @@
   "syncStorageErrorSaving": {
     "message": "De waarde kan niet worden opgeslagen. Probeer de hoeveelheid tekst te verminderen."
   },
+  "toggleCurrentTab": {
+    "message": "Huidige tabblad in-/uitschakelen"
+  },
   "toggleStyle": {
     "message": "Stijl in-/uitschakelen"
+  },
+  "toggleStylesHeading": {
+    "message": "Stijlen in-/uitschakelen"
+  },
+  "toggleStylesHint": {
+    "message": "De aanvankelijk ingeschakelde stijlen in-/uitschakelen, hetzelfde als <✱>"
+  },
+  "toggleStylesPerm": {
+    "message": "permanent"
+  },
+  "toggleStylesTab": {
+    "message": "alleen in dit tabblad"
   },
   "undo": {
     "message": "Ongedaan maken"
@@ -1482,6 +1524,9 @@
   },
   "unreachableMozSiteHintOldFF": {
     "message": "Alleen Firefox 59 en hoger kunnen worden geconfigureerd om WebExtensions stijlelementen te laten toevoegen op door <CSP> beveiligde websites zoals deze."
+  },
+  "unreachableOpera": {
+    "message": "Opera-gebruikers: als dit uw zoekpagina is, schakel dan ‘[x]Toegang tot zoekpaginaresultaten toestaan’ in in het menu ⭕ 🞂 Extensies 🞂 Extensies 🞂 Stylus."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Geen updates gevonden."

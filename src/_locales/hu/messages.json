@@ -1,7 +1,4 @@
 {
-  "InaccessibleFileHint": {
-    "message": "A Stylus nem tud bizonyos fájltípusokhoz hozzáférni (pl. .pdf- & .json-fájlokhoz)"
-  },
   "addStyleLabel": {
     "message": "Új stílus írása"
   },

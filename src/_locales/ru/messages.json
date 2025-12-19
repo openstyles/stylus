@@ -1,7 +1,4 @@
 {
-  "InaccessibleFileHint": {
-    "message": "Stylus не может получить доступ к некоторым типам файлов (например, .pdf и .json)."
-  },
   "addStyleLabel": {
     "message": "Создать стиль"
   },
