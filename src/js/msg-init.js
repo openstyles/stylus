@@ -32,22 +32,18 @@ async function invokeAPI({name: path}, _thisObj, args) {
     workerProxy ??= createPortProxy(workerPath);
     return workerProxy[path.slice(workerApiPrefix.length)](...args);
   }
-  let tab = false;
   // Using a fake id for our Options frame as we want to fetch styles early
   const frameId = window === top ? 0 : 1;
-  if (isPopup
-  || !(path in needsTab)
-  || !frameId && (tab = !needsTab[path] && ownTab || await getOwnTab())
-  ) {
-    const msg = {method: kInvokeAPI, path, args};
-    const sender = {url: location.href, tab, frameId};
-    if (__.MV3) {
-      return swExec(msg, sender);
-    } else {
-      const bgDeepCopy = bg[k_deepCopy];
-      const res = bg[k_msgExec](bgDeepCopy(msg), bgDeepCopy(sender));
-      return deepCopy(await res);
-    }
+  const tab = isPopup || !(path in needsTab) ? false
+    : !needsTab[path] && ownTab || await getOwnTab();
+  const msg = {method: kInvokeAPI, path, args};
+  const sender = {url: location.href, tab, frameId};
+  if (__.MV3) {
+    return swExec(msg, sender);
+  } else {
+    const bgDeepCopy = bg[k_deepCopy];
+    const res = bg[k_msgExec](bgDeepCopy(msg), bgDeepCopy(sender));
+    return deepCopy(await res);
   }
 }
 
