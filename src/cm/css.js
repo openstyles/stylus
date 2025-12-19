@@ -13,15 +13,15 @@ const rxHexColor = /#[\da-f]{3}(?:[\da-f](?:[\da-f]{2}(?:[\da-f]{2})?)?)?/yi;
 const rxNumberDigit = /\d*(?:\.\d*)?(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxNumberDot = /\d+(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxNumberSign = /(?:\d+(?:\.\d*)?|\.?\d+)(?:e[-+]\d+)?(?:\w+|%)?/y;
-const rxSpace = /[\s\u00a0]+/yu;
-const rxSpaceRParenEOL = /[\s\u00a0]*(?=\)|$)/yu;
+const rxSpace = /[\s\u00a0]+/y;
+const rxSpaceRParenEOL = /[\s\u00a0]*(?=\)|$)/y;
 /** [1] = whether the comment is closed */
 const rxCommentTail = /(?:[^*]+|\*(?!\/))*(\*\/|$)/y;
 const rxStringDoubleQ = /\s*(?:[^\\"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*/y;
 const rxStringSingleQ = /\s*(?:[^\\']+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*/y;
-const rxUniAny = /[-\w\\\u00A1-\uFFFF]*/yu;
-const rxUniVar = /-[-\w\\\u00A1-\uFFFF]*/yu;
-const rxUniClass = /-?[_a-zA-Z\\\u00A1-\uFFFF][-\w\\\u00A1-\uFFFF]*/yu;
+const rxUniAny = /[-\w\\\u00A1-\uFFFF]*/y;
+const rxUniVar = /-[-\w\\\u00A1-\uFFFF]*/y;
+const rxUniClass = /-?[_a-zA-Z\\\u00A1-\uFFFF][-\w\\\u00A1-\uFFFF]*/y;
 const rxUnquotedUrl = /\s*(?:[^()\s\\'"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*\s*/y;
 const rxUnquotedBadUrl = /(?:[^)\\]|\\[^)])+/y;
 /**

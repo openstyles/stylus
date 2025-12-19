@@ -268,22 +268,23 @@ function configureMouseFn(cm, repeat) {
 
 function selectTokenOnDoubleclick(cm, {ch, line}) {
   const {styles, text} = cm.getLineHandle(line);
-  const rxWord = /[-\w\u00A1-\uFFFF]*/yu;
+  const rxWord = /[-\w\u00A1-\uFFFF]*/y;
   let b = (rxWord.lastIndex = ch) + rxWord.exec(text)[0].length;
   let [style, i] = ch ? getStyleAtPos(styles, ch) : [styles[1], 0];
   let a = ch;
   if (!style ||
       (style = style.split(/ overlay | CodeMirror-/, 1)[0]) &&
       /comment|string|uso-variable/.test(style)) {
-    let rx = /[\w\u00A1-\uFFFF]/yu;
+    let rx = /[\w\u00A1-\uFFFF]/y;
     while (a && (rx.lastIndex = a - 1, rx.test(text)))
       --a;
     // if not at a word, let's select the non-word span
-    if (a === ch && b === ch) {
-      rx = /[^\s\w\u00A1-\uFFFF]/yu;
+    for (let retry = 0; a === ch && b === ch && retry < 2; ++retry) {
+      // pass #2: if at a space, select the entire space span
+      rx = retry ? /\s/y : /[^\s\w\u00A1-\uFFFF]/y;
       while (a && (rx.lastIndex = a - 1, rx.test(text)))
         --a;
-      rx = /[^\s\w\u00A1-\uFFFF]*/yu;
+      rx = retry ? /\s*/y : /[^\s\w\u00A1-\uFFFF]*/y;
       rx.lastIndex = ch;
       b += rx.exec(text)[0].length;
     }
@@ -299,7 +300,7 @@ function selectTokenOnDoubleclick(cm, {ch, line}) {
     a = i > 0 ? styles[i] : 0;
     // CodeMirror joins .foo.bar in one token for presentation, let's split it
     if (!whole)
-      a += text.slice(a, b).search(/[@#.]?[-\w\u00A1-\uFFFF]*%?$/u);
+      a += text.slice(a, b).search(/[@#.]?[-\w\u00A1-\uFFFF]*%?$/);
     // include : or :: for a pseudo if not a property declaration
     if (a && !styles[i + 1] && text[a - 1] === ':' && /callee|variable-3/.test(style)
     && !/prop/.test(styles[i - 1]))
