@@ -66,7 +66,8 @@ export function toggleUrlInstaller(val = prefs.__values[pUrlInstaller]) {
       },
     }]);
   } else {
-    chrome.webRequest.onHeadersReceived.removeListener(maybeInstallByMime);
+    // Workaround for Firefox failing with an "invalid listener" error
+    try { chrome.webRequest.onHeadersReceived.removeListener(maybeInstallByMime); } catch {}
     chrome.webRequest.onHeadersReceived.addListener(maybeInstallByMime, {
       urls: urls.reduce(reduceUsercssGlobs, []),
       types: [kMainFrame],
