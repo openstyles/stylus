@@ -5,8 +5,8 @@ import {tBody} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {CHROME, MAC} from '@/js/ua';
 import {t} from '@/js/util';
-import {openEditor} from '@/popup/events';
-import {styleFinder, tabId} from '.';
+import {openEditor, openStyleFinder, styleFinder} from '@/popup/events';
+import {tabId} from '.';
 import {btnDel, closeMenu, menu, openMenu} from './menu';
 
 tBody();
@@ -94,7 +94,7 @@ function onKeyDown(evt) {
   if (ctrlKey) {
     if (mkey === '^f') {
       evt.preventDefault();
-      $id('find-styles-btn').click();
+      openStyleFinder();
     }
     return;
   }

@@ -9,15 +9,13 @@ import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MAC, MOBILE, OPERA} from '@/js/ua';
 import {clamp, sleep0, t} from '@/js/util';
 import {CHROME_POPUP_BORDER_BUG, getActiveTab} from '@/js/util-webext';
-import * as Events from './events';
-import {handleUpdate} from './events';
+import {handleUpdate, styleFinder} from './events';
 import {initHotkeys} from './hotkeys';
 import {createWriterElement, reSort, showStyles, updateStateIcon, writerIcon} from './render';
 import '@/css/onoffswitch.css';
 import './popup.css';
 
 const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
-export const styleFinder = {};
 export let tabId;
 export let tabUrl;
 export let tabUrlSupported;
@@ -100,27 +98,6 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
       : clamp(val, 200, 800) + 'px';
   }, true);
   setupLivePrefs();
-
-  const elFind = $id('find-styles-btn');
-  elFind.on('click', async () => {
-    elFind.disabled = true;
-    if (!styleFinder.on) await import('./search');
-    styleFinder.inline();
-  });
-  elFind.on('split-btn', async e => {
-    if (!styleFinder.on) await import('./search');
-    styleFinder.inSite(e);
-  });
-
-  Object.assign($id('popup-manage-button'), {
-    onclick: Events.openManager,
-    oncontextmenu: Events.openManager,
-  }).on('split-btn', Events.openManager);
-
-  $id('options-btn').onclick = () => {
-    API.openManager({options: true});
-    window.close();
-  };
 
   let el = $$('#toggler label')[1];
   el.title = el.title.replace('<', MAC ? '<⌥' : '<Alt-');

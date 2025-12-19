@@ -7,6 +7,7 @@ import {ownRoot} from '@/js/urls';
 import {capitalize, clipString, stringAsRegExpStr, t} from '@/js/util';
 import {MF} from '@/js/util-webext';
 import {isBlocked, tabUrlSupported} from '.';
+import {openStyleFinder} from './events';
 import * as Events from './events';
 
 const EXT_NAME = `<${MF.name}>`;
@@ -28,7 +29,7 @@ let initNoStyles = () => {
   measure.textContent = t('noStylesForSite');
   el.append(cmd);
   el.on('click', () => {
-    $id('find-styles-btn').click();
+    openStyleFinder();
     el.parentElement.style.pointerEvents = 'none';
     cmd.remove();
   }, {once: true});

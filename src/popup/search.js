@@ -9,8 +9,8 @@ import * as URLS from '@/js/urls';
 import {
   clipString, debounce, sleep, stringAsRegExp, stringAsRegExpStr, t, tryRegExp, tryURL,
 } from '@/js/util';
-import {styleFinder, tabUrl, tabUrlSupported} from '.';
-import * as Events from './events';
+import {tabUrl, tabUrlSupported} from '.';
+import {configure, openURLandHide, styleFinder} from './events';
 import './search.css';
 import html from './search.html';
 
@@ -131,7 +131,7 @@ styleFinder.inSite = event => {
         ? tryURL(tabUrl).hostname.replace(/^(www\.)?/, '/by-site/')
         : ''
       }?language=css${add('&q=', q)}`;
-  Events.openURLandHide.call({href}, event);
+  openURLandHide.call({href}, event);
 };
 $id('search-query').oninput = function () {
   query = [];
@@ -369,7 +369,7 @@ function createSearchResultNode(result) {
   entry.id = RESULT_ID_PREFIX + rid;
   // title
   Object.assign(entry.$('.search-result-title'), {
-    onclick: Events.openURLandHide,
+    onclick: openURLandHide,
     href: `${fmt ? URLS.usoa : URLS.usw}style/${id}`,
   });
   if (!fmt) entry.$('.search-result-title').prepend(USW_ICON.cloneNode(true));
@@ -399,7 +399,7 @@ function createSearchResultNode(result) {
     title: author,
     href: !fmt ? `${URLS.usw}user/${encodeURIComponent(author)}` :
       `${URLS.usoa}browse/styles?search=%40${authorId}`,
-    onclick: Events.openURLandHide,
+    onclick: openURLandHide,
   });
   // rating
   entry.$('[data-type="rating"]').dataset.class =
@@ -472,7 +472,7 @@ function renderActionButtons(entry) {
   entry.$('.search-result-uninstall').onclick = uninstall;
   entry.$('.search-result-install').onclick = install;
   Object.assign(entry.$('.search-result-customize'), {
-    onclick: configure,
+    onclick: customize,
     disabled: notMatching,
   });
   $toggleDataset(entry, 'installed', isInstalled);
@@ -492,9 +492,8 @@ function renderFullInfo(entry, style) {
   $toggleDataset(entry, 'customizable', vars);
 }
 
-function configure() {
-  const styleEntry = $id(kStyleIdPrefix + $resultEntry(this).result._styleId);
-  Events.configure.call(this, {}, styleEntry);
+function customize() {
+  configure.call(this, {}, $id(kStyleIdPrefix + $resultEntry(this).result._styleId));
 }
 
 async function install() {

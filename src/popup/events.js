@@ -1,12 +1,10 @@
 import {kStyleIdPrefix, UCD} from '@/js/consts';
 import {configDialog} from '@/js/dom-util';
-import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {__values} from '@/js/prefs';
 import {MAC} from '@/js/ua';
 import {getActiveTab} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
-import {toggleStateInTab} from './hotkeys';
 import * as hotkeys from './hotkeys';
 import {closeMenu, menu, openMenu} from './menu';
 import {createStyleElement, installed, reSort} from './render';
@@ -18,7 +16,7 @@ export const OnClick = {
     || !evt.button && (evt.altKey || evt.ctrlKey || MAC && evt.metaKey)
       && (evt.preventDefault()/*prevent toggling of checkbox*/, 1)
     ) {
-      if (evt.altKey) toggleStateInTab([entry], null);
+      if (evt.altKey) hotkeys.toggleStateInTab([entry], null);
       else openEditor(evt, entry);
     }
   }, {
@@ -36,18 +34,8 @@ export const OnClick = {
     btn2: true,
   }),
   '.style-edit-link': openEditor,
-  '.regexp-problem-indicator'(event, entry) {
-    const info = template.regexpProblemExplanation.cloneNode(true);
-    const a = info.$('#regexp-partial a');
-    if (a) a.href = 'https://developer.mozilla.org/docs/Web/CSS/@document';
-    $id(info.id)?.remove();
-    entry.appendChild(info);
-  },
-  '#regexp-explanation a': openURLandHide,
-  '#regexp-explanation button'() {
-    $id('regexp-explanation').remove();
-  },
 };
+export const styleFinder = {};
 
 window.onclick =
 window.onauxclick =
@@ -73,6 +61,19 @@ window.oncontextmenu = event => {
     }
   }
 };
+
+Object.assign($('#find-styles-btn'), {
+  onclick: openStyleFinder,
+}).on('split-btn', async e => {
+  if (!styleFinder.on) await import('./search');
+  styleFinder.inSite(e);
+});
+Object.assign($('#popup-manage-button'), {
+  onclick: openManager,
+  oncontextmenu: openManager,
+}).on('split-btn', openManager);
+
+$('#options-btn').onclick = openOptions;
 
 export async function handleUpdate({style}) {
   const id = style.id;
@@ -130,6 +131,17 @@ export async function openManager(event) {
   const isSearch = tabUrl && (event.shiftKey || event.button === 2 || event.detail === 'site');
   await API.openManager(isSearch ? {search: tabUrl, searchMode: 'url'} : {});
   window.close();
+}
+
+export function openOptions() {
+  API.openManager({options: true});
+  close();
+}
+
+export async function openStyleFinder() {
+  this.disabled = true;
+  if (!styleFinder.on) await import('./search');
+  styleFinder.inline();
 }
 
 export async function openURLandHide(event) {
