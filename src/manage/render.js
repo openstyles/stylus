@@ -247,8 +247,6 @@ export function fitSizeColumn(entries = installed.children, entry) {
 }
 
 export async function showStyles(styles, matchUrlIds) {
-  if (!styles?.length)
-    return;
   const num = styles.length;
   const dummies = styles.map(styleToDummyEntry);
   const sorted = sorter.sort(dummies);
