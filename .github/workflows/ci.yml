@@ -22,7 +22,6 @@ jobs:
           version: 10
       - uses: actions/setup-node@v6
         with:
-          cache: 'pnpm'
           node-version-file: 'package.json'
 
       - run: pnpm install --ignore-scripts # ignore postinstall hook
