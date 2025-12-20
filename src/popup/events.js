@@ -1,5 +1,5 @@
 import {kStyleIdPrefix, UCD} from '@/js/consts';
-import {configDialog, getEventKeyName} from '@/js/dom-util';
+import {configDialog} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import {__values} from '@/js/prefs';
 import {CHROME, MAC} from '@/js/ua';
@@ -43,25 +43,31 @@ export const OnClick = {
 };
 export const styleFinder = {};
 
-/** Explicit handling of auxclick or contextmenu for right-click as Firefox loses user gesture */
-let elClick;
-window.onmousedown = window.onkeydown = evt => {
-  elClick = evt.target;
-};
-window.onmouseup = evt => {
-  if (elClick === evt.target)
-    clickRouter(evt);
-};
-window.onkeyup = evt => {
-  switch (elClick === evt.target && getEventKeyName(evt)) {
-    case 'ContextMenu':
-    case 'Shift-F10':
-      clickRouter(evt, 2);
-  }
-};
 if (__.BUILD !== 'firefox' && (__.MV3 || CHROME)) {
-  // suppressing context menu in Chrome
-  window.oncontextmenu = evt => elClick !== evt.target;
+  /* Chrome retains user activation in oncontextmenu, which handles both keyboard & right-click,
+   * and is also the event where preventDefault() can actually suppress the built-in menu. */
+  window.oncontextmenu = evt => clickRouter(evt, 2);
+  window.onclick = clickRouter;
+  window.onauxclick = evt => {
+    if (evt.button !== 2)
+      clickRouter(evt);
+  };
+} else {
+  /* Firefox retains user activation only in mouseXXX and keyXXX events. */
+  let elClick;
+  window.onmousedown = window.onkeydown = evt => {
+    elClick = evt.target;
+  };
+  window.onmouseup = evt => {
+    if (evt.target === elClick)
+      elClick = !clickRouter(evt, undefined, elClick);
+  };
+  window.onkeyup = evt => {
+    if (evt.target === elClick && !evt.metaKey && !evt.altKey && !evt.ctrlKey
+    && (evt.key === (evt.shiftKey ? 'F10' : 'ContextMenu')))
+      elClick = !clickRouter(evt, 2, elClick);
+  };
+  window.oncontextmenu = () => elClick; // `false` suppresses the menu
 }
 
 Object.assign($('#find-styles-btn'), {
@@ -97,8 +103,10 @@ export async function handleUpdate({style}) {
 /**
  * @param {MouseEvent|KeyboardEvent} event
  * @param {number} [btn]
+ * @param {HTMLElement} [elClick]
+ * @return {void|true}
  */
-function clickRouter(event, btn = event.button) {
+function clickRouter(event, btn = event.button, elClick = event.target) {
   const entry = elClick.closest('.entry');
   if (!entry)
     return;
@@ -110,7 +118,7 @@ function clickRouter(event, btn = event.button) {
         event.preventDefault();
         fn.call(el, event, entry, btn);
       }
-      return;
+      return true;
     }
   }
 }
