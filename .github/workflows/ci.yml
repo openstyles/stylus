@@ -25,7 +25,7 @@ jobs:
           cache: 'pnpm'
           node-version-file: 'package.json'
 
-      - run: pnpm install
+      - run: pnpm install --ignore-scripts # ignore postinstall hook
       - run: pnpm test
 
       - run: echo "_REV=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
