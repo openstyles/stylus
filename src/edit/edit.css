@@ -189,9 +189,6 @@ a.icon {
     &[open] {
       overflow-y: auto;
       margin-top: calc(1.5 * $pad);
-      .normal-layout &.settings {
-        min-height: 6em;
-      }
       > summary {
         position: absolute;
         margin-top: calc(-1.5 * $pad);
@@ -915,6 +912,9 @@ a.icon {
     &:last-child {
       padding-bottom: $pad;
     }
+  }
+  .settings[open] {
+    min-height: 6em;
   }
 }
 
