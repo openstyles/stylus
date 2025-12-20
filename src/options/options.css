@@ -182,7 +182,8 @@ textarea {
   width: 100%;
   max-height: 25vh;
   font: inherit;
-  &:not(:hover, :focus) {
+  &:not(:hover),
+  &:not(:focus) {
     border-color: var(--c80);
     resize: none;
   }

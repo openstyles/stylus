@@ -2,21 +2,14 @@
 
 const fs = require('fs');
 const chalk = require('chalk');
+const csslint = require('csslint-mod').default;
 const glob = require('fast-glob');
 const postcss = require('postcss');
 const {SRC} = require('./util');
 
 (async () => {
-  let res;
-  for (const [fn, msg] of [
-    [testGlobalCss],
-    [testParserlibOnFiles, 'Testing parserlib on all css files...'],
-  ]) {
-    if (msg) process.stdout.write(msg);
-    res = fn(res);
-    if (res instanceof Promise) res = await res;
-    if (msg) console.log(' OK');
-  }
+  testGlobalCss();
+  await testParserlibOnFiles();
   console.log(chalk.green('CSS tests OK'));
   process.exit(0);
 })();
@@ -36,25 +29,11 @@ function testGlobalCss() {
 }
 
 async function testParserlibOnFiles() {
-  const {default: parserlib} = await import('csslint-mod/dist/parserlib.js');
-  const parser = new parserlib.css.Parser({
-    ieFilters: true,
-    starHack: true,
-    underscoreHack: true,
-  });
-  let logStr = '';
-  parser.fire = (e, tok = e) => {
-    if (!parser._events
-    && (e.type === 'warning' || e.type === 'error') && !/TEST PASSED/.test(e.message)) {
-      const p = e.property;
-      logStr += `  * ${tok.line}:${tok.col} [${e.type}] ${p ? p.text + ': ' : ''}${e.message}\n`;
-    }
-  };
-  const opts = parser.options;
-  let pc, pcPlugins, m;
-  return Promise.all(glob.sync(SRC + '**/*.css').map(async file => {
-    process.stdout.write('.');
+  let pc, pcPlugins, m, err;
+  const evidenceSize = 2;
+  for (const file of glob.sync(SRC + '**/*.css')) {
     let text = fs.readFileSync(file, 'utf8');
+    let lines;
     if ((m = text.match(/\/\*\s*(postcss-.+?)\s*\*\//))) {
       if (m[1] !== pcPlugins) {
         pcPlugins = m[1];
@@ -63,11 +42,28 @@ async function testParserlibOnFiles() {
       text = await pc.process(text, {map: false, from: null});
       text = text.css;
     }
-    opts.topDocOnly = true; parser.parse(text);
-    opts.topDocOnly = false; parser.parse(text);
-    opts.globalsOnly = true; parser.parse(text);
-    opts.globalsOnly = false;
-    if (logStr) fail('parserlib', `\n${chalk.red(file)}\n${logStr}`);
-    return [file, text];
-  }));
+    for (m of csslint.verify(text, {
+      'duplicate-properties': 1,
+      'errors': 2,
+      'known-properties': 1,
+      'known-pseudos': 1,
+      'selector-newline': 1,
+      'simple-not': 2,
+      'warnings': 1,
+    }).messages) {
+      lines ??= text.split('\n');
+      const from = m.line - evidenceSize - 1;
+      const evidence = lines.slice(from, m.line + evidenceSize).map((s, i) => {
+        i += from + 1;
+        s = `${i}: ${s}\n`;
+        return '\t' + (i === m.line ? chalk.underline(s) : s);
+      });
+      const msg1 = `${chalk.bold(file.slice(SRC.length))} [${m.rule.id}] ${m.message}\n`;
+      const isErr = m.type === 'error';
+      console.log(isErr ? chalk.red(msg1) : msg1);
+      console.log(chalk.dim(evidence.join('')));
+      err ||= isErr;
+    }
+  }
+  if (err) process.exit(1);
 }

@@ -8,7 +8,7 @@
   "dependencies": {
     "@eight04/draggable-list": "^0.3.0",
     "codemirror": "5.65.20",
-    "csslint-mod": "github:openstyles/csslint-mod#semver:^v1.0.4",
+    "csslint-mod": "github:openstyles/csslint-mod#semver:v1.0.5",
     "db-to-cloud": "^0.8.1",
     "less": "^4.4.2",
     "lz-string-unsafe": "1.4.4-fork-1",
