@@ -22,7 +22,7 @@ export default function CompactHeader() {
   const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
   const xoRoot = isUsercss ? scroller : undefined;
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
-  const elNewAs = $('#newStyleAsUsercss').closest('label');
+  const elNewAs = $('#new-as');
   const elInfo = [...$$('#heading a')];
   elNewAs.on('click', () => {
     if (!editor.style.id && !editor.dirty.isDirty()) {
@@ -34,10 +34,9 @@ export default function CompactHeader() {
     if (val) {
       xo.observe(elHeader);
       $id('basic-info-name').append(...elInfo);
-      $id('basic-info-enabled').append(elNewAs);
     } else {
       xo.disconnect();
-      $id('heading').append(...elInfo, elNewAs);
+      $id('heading').append(...elInfo);
     }
   });
 

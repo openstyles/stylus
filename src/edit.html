@@ -34,10 +34,6 @@
            href="https://github.com/openstyles/stylus/wiki/Writing-UserCSS">
           <i class=i-usercss style="font-size: 16px"></i>
         </a>
-        <label id="new-as" class="hide-if-sticky">
-          <input type="checkbox" id="newStyleAsUsercss">
-          <span i18n="optionsAdvancedNewStyleAsUsercss"></span>
-        </label>
       </div>
       <section id="basic-info">
         <div id="basic-info-name" class="hide-if-sticky">
@@ -47,6 +43,10 @@
           </a>
         </div>
         <div id="basic-info-enabled">
+          <label id="new-as" class="hide-if-sticky flex">
+            <input type="checkbox" id="newStyleAsUsercss">
+            <span i18n="optionsAdvancedNewStyleAsUsercss"></span>
+          </label>
           <label id="enabled-label" class="hide-if-sticky"
                  i18n="+styleEnabledLabel, title:toggleStyle"
                  data-hotkey-tooltip="toggleStyle">

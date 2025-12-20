@@ -992,6 +992,14 @@ a.icon {
       align-self: center;
     }
   }
+  #basic-info-enabled {
+    display: flex;
+    flex-flow: wrap;
+    align-items: center;
+  }
+  #new-as {
+    order: 1;
+  }
   #basic-info-enabled > :nth-last-child(n + 2) {
     margin-right: calc(var(--pad) * .75);
   }
