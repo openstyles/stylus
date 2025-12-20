@@ -329,7 +329,6 @@
   }
   & label {
     vertical-align: middle;
-    -moz-user-select: none;
     user-select: none;
   }
   [data-type="page"] {

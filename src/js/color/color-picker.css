@@ -91,7 +91,6 @@
   border: 1px solid var(--main-border-color);
   background-color: var(--main-background-color);
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.12);
-  -moz-user-select: none;
   user-select: none;
   &[data-moving] {
     opacity: .5;
@@ -294,7 +293,6 @@
   font-size: 11px;
   font-weight: bold;
   box-sizing: border-box;
-  -moz-user-select: text;
   user-select: text;
   border: 1px solid var(--input-border-color);
   background-color: var(--input-background-color);

@@ -1,6 +1,5 @@
 /* spinner: https://github.com/loadingio/css-spinner */
 .lds-spinner {
-  -moz-user-select: none;
   user-select: none;
   pointer-events: none;
   position: absolute;

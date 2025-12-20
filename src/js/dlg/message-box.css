@@ -86,7 +86,6 @@
   box-sizing: border-box;
   cursor: move;
   user-select: none;
-  -moz-user-select: none;
   &::before {
     content: "";
     width: 0;

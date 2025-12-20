@@ -300,7 +300,6 @@ input[type="radio"] {
 }
 
 summary {
-  -moz-user-select: none;
   user-select: none;
   &:hover {
     color: var(--accent-1);
@@ -460,7 +459,6 @@ body {
   }
   :is(&.resizing-h, &.resizing-v) > * {
     pointer-events: none;
-    -moz-user-select: none;
     user-select: none;
   }
 }

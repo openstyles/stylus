@@ -29,7 +29,6 @@ input:disabled + span {
   }
   &:not(.meta-init) > *:not(.lds-spinner),
   &.meta-init > .lds-spinner {
-    -moz-user-select: none;
     user-select: none;
     pointer-events: none;
     opacity: 0;
@@ -369,7 +368,7 @@ body:not(.installed) .install-show,
 }
 
 /* Retina-specific stuff here */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+@media (min-resolution: 192dpi) {
   .install:after {
     background-image: url(../icon/32.png);
     background-size: 16px 16px;
