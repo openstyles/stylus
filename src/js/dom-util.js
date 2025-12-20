@@ -219,17 +219,13 @@ export function setupLiveDetails() {
  * and establishes a two-way connection between the document elements and the actual prefs
  */
 export function setupLivePrefs(ids) {
-  let init = true;
   // getElementsByTagName is cached so it's much faster than calling querySelector for each id
   const all = (ids instanceof Element ? ids : document).getElementsByTagName('*');
   ids = ids?.forEach ? [...ids] : prefs.knownKeys.filter(id => id in all);
-  init = prefs.subscribe(ids, updateElement, true);
-  return init?.then(() => {
-    init = false;
-  });
+  prefs.subscribe(ids, updateElement, true);
   function onChange() {
     if (this.checkValidity() && (this.type !== 'radio' || this.checked)) {
-      prefs.set(this.id || this.name, getValue(this), undefined, updateElement);
+      prefs.set(this.id || this.name, getValue(this), undefined, onChange);
     }
   }
   function getValue(el) {
@@ -243,7 +239,9 @@ export function setupLivePrefs(ids) {
       el.localName === 'select' && typeof value === 'boolean' && oldValue === `${value}` ||
       oldValue === value;
   }
-  function updateElement(id, value) {
+  function updateElement(id, value, init, initiator) {
+    if (initiator === onChange)
+      return;
     const byId = all[id];
     const els = byId && byId.id ? [byId] : document.getElementsByName(id);
     if (!els[0]) {
