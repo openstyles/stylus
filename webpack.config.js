@@ -15,8 +15,8 @@ const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const {RawEnvPlugin} = require('./tools/wp-raw-patch-plugin');
 const patchCodemirror = require('./tools/wp-patch-codemirror');
 const {
-  escapeForRe, getManifestOvrName, transESM2var, transSourceMap,
-  BUILD, CHANNEL, CM_PACKAGE_PATH, DEV, MANIFEST, MV3, ROOT, TARGET, ZIP, nukeHtmlSpaces,
+  escapeForRe, nukeHtmlSpaces, transESM2var, transSourceMap,
+  BUILD, CHANNEL, CM_PACKAGE_PATH, DEV, FLAVOR, MANIFEST, MV3, ROOT, TARGET, ZIP,
 } = require('./tools/util');
 
 global.localStorage = {}; // workaround for node 25 and HtmlWebpackPlugin's `...global`
@@ -354,27 +354,21 @@ function makeContentScript(name) {
 }
 
 function makeManifest(files) {
-  let [base, ovr] = (files[0].sourceFilename.endsWith(MANIFEST) ? files : files.reverse())
+  let [base, ...mods] = (files[0].sourceFilename.endsWith(MANIFEST) ? files : files.reverse())
     .map(file => file.data.toString());
   base = JSON.parse(MV3 ? base.replace('"browser_action"', '"action"') : base);
-  ovr = JSON.parse(ovr);
-  for (const [key, val] of Object.entries(ovr)) {
-    const old = base[key];
-    if (Array.isArray(old)) old.push(...val);
-    else if (old && typeof old === 'object') Object.assign(old, val);
-    else base[key] = val;
+  for (let ovr of mods) {
+    ovr = JSON.parse(ovr);
+    for (const [key, val] of Object.entries(ovr)) {
+      const old = base[key];
+      if (Array.isArray(old)) old.push(...val);
+      else if (old && typeof old === 'object') Object.assign(old, val);
+      else base[key] = val;
+    }
   }
   let ver = base.version;
   if (BUILD === 'firefox') {
     delete base.key;
-    base.options_ui = {
-      /*
-       * Linking to dashboard, not to options, because this is aimed at users who removed the icon
-       * from the toolbar (they rarely use Stylus) so they visit about:addons instead.
-       */
-      page: 'manage.html',
-      open_in_tab: true,
-    };
   }
   if (CHANNEL) {
     base.name += ` (${CHANNEL})`;
@@ -469,7 +463,7 @@ module.exports = [
         patterns: [
           {context: SRC, from: 'icon/**', to: DST},
           {context: SRC + 'content', from: 'install*.js', to: DST + JS},
-          {context: SRC, from: getManifestOvrName(MV3, true), to: MANIFEST,
+          {context: SRC, from: MANIFEST.replace('.', `?(-${FLAVOR}*).`), to: MANIFEST,
             transformAll: makeManifest},
           {context: SRC, from: '_locales/**', to: DST},
           {context: THEME_PATH, from: '*.css', to: DST + CM_PATH},

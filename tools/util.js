@@ -4,14 +4,16 @@ const fs = require('fs');
 const path = require('path');
 const babel = require('@babel/core');
 
-const MANIFEST = 'manifest.json';
 const ROOT = path.dirname(__dirname.replaceAll('\\', '/')) + '/';
 const SRC = ROOT + 'src/';
 
 const [TARGET, ZIP] = process.env.NODE_ENV?.split(':') || [''];
-const [BUILD, FLAVOR, CHANNEL] = TARGET.split('-');
+const [BUILD, FLAVOR = 'mv2', CHANNEL] = TARGET.split('-');
 const MV3 = FLAVOR === 'mv3';
 const DEV = process.env.npm_lifecycle_event?.startsWith('watch');
+
+const MANIFEST = 'manifest.json';
+const MANIFEST_OVR = `manifest-${FLAVOR}.json`;
 
 /** Nuking comments and whitespace between tags on separate lines as we don't rely on it.
  * The only exception we use is a same-line space e.g. <b>foo</b> <b>bar</b>  */
@@ -31,21 +33,14 @@ function escapeToRe(str, flags) {
 }
 
 function getBrowserlist() {
-  const mj = require(SRC + getManifestOvrName());
-  const FF = parseFloat(mj.browser_specific_settings?.gecko.strict_min_version);
-  const CH = parseFloat(mj.minimum_chrome_version);
-  return [
-    FF && 'Firefox >= ' + FF,
-    CH && 'Chrome >= ' + CH,
-  ].filter(Boolean);
-}
-
-function getManifestOvrName(
-  mv3 = /-mv3/.test(process.env.NODE_ENV),
-  asGlob
-) {
-  const s = '-mv' + (mv3 ? 3 : 2);
-  return MANIFEST.replace('.', asGlob ? `?(${s}).` : s + '.');
+  return Object.entries({
+    Chrome: BUILD !== 'firefox' &&
+      require(SRC + MANIFEST_OVR).minimum_chrome_version,
+    Firefox: BUILD !== 'chrome' &&
+      require(SRC + MANIFEST_OVR.replace('.', '-firefox.'))
+        .browser_specific_settings.gecko.strict_min_version,
+  }).map(([name, ver]) => ver && `${name} >= ${parseFloat(ver)}`)
+    .filter(Boolean);
 }
 
 function transBabel(buf, from) {
@@ -97,7 +92,6 @@ module.exports = {
   escapeForRe,
   escapeToRe,
   getBrowserlist,
-  getManifestOvrName,
   nukeHtmlSpaces,
   transBabel,
   transESM2var,
