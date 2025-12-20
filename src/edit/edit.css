@@ -1,11 +1,13 @@
 /* postcss-simple-vars */
-$pad: 1rem;
+$pad: var(--pad);
+$pad025: calc(0.25 * $pad);
 $pad05: calc(0.5 * $pad);
+$pad075: calc(0.75 * $pad);
 $plus-minus-pad: .5rem;
 $targetGapY: 2px;
 
 :root {
-  --pad: $pad; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
+  --pad: 1rem; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
   --pad05: $pad05;
 }
 
@@ -65,7 +67,7 @@ $targetGapY: 2px;
   overflow: hidden;
   position: fixed;
   top: 0;
-  padding-top: var(--pad);
+  padding-top: $pad;
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -75,7 +77,7 @@ $targetGapY: 2px;
 }
 #heading {
   > label {
-    margin: calc($pad/4) 0 $pad05;
+    margin: $pad025 0 $pad05;
   }
 }
 h1 {
@@ -103,17 +105,18 @@ h1 {
 
 /* basic info */
 #basic-info {
-  margin-bottom: 1rem;
+  margin-top: $pad025;
+  margin-bottom: $pad;
 }
 #basic-info-name {
   display: flex;
   align-items: center;
 }
 #reset-name {
-  margin: 0 .25em 0 .5em;
+  margin: 0 $pad025 0 $pad05;
 }
 #url {
-  margin-left: 0.25rem;
+  margin-left: $pad025;
 }
 #url:not([href^="http"]) {
   display: none;
@@ -134,14 +137,14 @@ h1 {
     z-index: 100;
     right: 2em;
     box-shadow: 2px 2px .5em var(--c65);
-    margin-top: .5em;
-    padding: 1em;
+    margin-top: $pad05;
+    padding: $pad;
     background: var(--bg);
     display: flex;
     align-items: center;
     > input {
       field-sizing: content;
-      padding-left: .5em;
+      padding-left: $pad05;
       margin-right: 1ch;
       max-width: 8ch;
     }
@@ -151,7 +154,7 @@ h1 {
   color: var(--red1);
   cursor: pointer;
   display: inline-flex;
-  margin: var(--pad05) var(--pad05) -1em 0;
+  margin: $pad05 $pad05 -1em 0;
   max-width: 100%;
   .compact-layout & {
     margin-top: 0;
@@ -181,23 +184,23 @@ a.icon {
   flex-direction: column;
   flex-grow: 1;
   overflow: hidden;
-  margin-top: var(--pad05);
+  margin-top: $pad05;
   details {
     &[open] {
       overflow-y: auto;
-      margin-top: calc(1.5 * var(--pad));
+      margin-top: calc(1.5 * $pad);
       .normal-layout &.settings {
         min-height: 6em;
       }
       > summary {
         position: absolute;
-        margin-top: calc(-1.5 * var(--pad));
+        margin-top: calc(-1.5 * $pad);
       }
     }
   }
   summary {
     align-items: center;
-    margin-left: .25em;
+    margin-left: $pad025;
     white-space: nowrap;
     overflow: hidden;
   }
@@ -206,7 +209,7 @@ a.icon {
     border-bottom: 1px dotted transparent;
     margin: 0 0 0 -13px;
     padding-left: 13px; /* clicking directly on details-marker doesn't set pref so we cover it with h2 */
-    max-width: calc(var(--header-width) - 2*var(--pad));
+    max-width: calc(var(--header-width) - 2*$pad);
     vertical-align: middle;
     font-size: 16px;
     &,
@@ -220,8 +223,8 @@ a.icon {
     margin-top: -.1em;
   }
   details > :not(summary) {
-    margin: 0 var(--pad05) 0 var(--pad);
-    padding: calc(var(--pad)/4) 0;
+    margin: 0 $pad05 0 $pad;
+    padding: $pad025 0;
   }
 }
 #actions .buttons {
@@ -229,8 +232,8 @@ a.icon {
   flex-wrap: wrap;
   align-items: center;
   > * {
-    margin-bottom: var(--pad05);
-    margin-right: .25rem;
+    margin-bottom: $pad05;
+    margin-right: $pad025;
   }
 }
 .dirty #save-button {
@@ -242,10 +245,10 @@ a.icon {
 }
 #publish {
   > div > * {
-    margin-top: .75em;
+    margin-top: $pad075;
   }
   a:visited {
-    margin-top: .75em;
+    margin-top: $pad075;
   }
   &[data-connected] {
     > summary::marker,
@@ -271,10 +274,10 @@ a.icon {
     font-size: 150%;
     font-weight: bold;
     position: absolute;
-    margin-left: .25em;
+    margin-left: $pad025;
   }
   .success {
-    margin-top: -.25em;
+    margin-top: calc(-1 * $pad025);
     &::after {
       content: '\2713'; /* checkmark */
     }
@@ -284,7 +287,7 @@ a.icon {
   }
   .error {
     display: block;
-    margin-top: .5em;
+    margin-top: $pad05;
     color: red;
     + div {
       font-size: smaller;
@@ -315,8 +318,8 @@ a.icon {
 /* footer */
 .usercss #footer {
   display: block;
-  margin-top: 1em;
-  margin-bottom: .5em;
+  margin-top: $pad;
+  margin-bottom: $pad05;
 }
 #lint:not([open]) + #footer {
   margin-top: 4em;
@@ -328,8 +331,8 @@ a.icon {
   pointer-events: auto !important; /* FF bug */
 }
 .section {
-  --padL: calc(var(--pad) * 1.5);
-  padding: var(--pad) 0; /* must be a part of section for fitToAvailableSpace */
+  --padL: calc($pad * 1.5);
+  padding: $pad 0; /* must be a part of section for fitToAvailableSpace */
   > .CodeMirror {
     content-visibility: auto;
     contain-intrinsic-block-size: auto var(--cm-height);
@@ -341,7 +344,7 @@ a.icon {
   }
   .sectioned:not(.compact-layout) & {
     > * {
-      margin-right: var(--pad);
+      margin-right: $pad;
     }
     > :not(.applies-to) {
       margin-left: var(--padL);
@@ -382,7 +385,7 @@ a.icon {
   border-width: 1px 0;
   > label::before {
     content: attr(data-index) ":";
-    margin-right: 0.25rem;
+    margin-right: $pad025;
     font-size: var(--font-size);
   }
 }
@@ -396,7 +399,7 @@ a.icon {
     font-size: 120%;
     i {
       color: red;
-      margin-left: .25em;
+      margin-left: $pad025;
     }
   }
 }
@@ -442,7 +445,7 @@ a.icon {
   /* deleted section */
   &.removed {
     &:first-child {
-      padding-top: var(--pad);
+      padding-top: $pad;
     }
     :is(.code-label, .applies-to, .edit-actions, .CodeMirror) {
       display: none;
@@ -661,7 +664,7 @@ a.icon {
     position: absolute;
     right: 0;
     top: 0;
-    padding: var(--pad-y2) .5em;
+    padding: var(--pad-y2) $pad05;
     font-size: 14px;
   }
   :is(input[type="search"], .CodeMirror) {
@@ -684,7 +687,7 @@ a.icon {
     td:first-child {
       white-space: nowrap;
       font-family: monospace;
-      padding-right: 0.5rem;
+      padding-right: $pad05;
     }
   }
   .buttons {
@@ -693,14 +696,14 @@ a.icon {
     align-items: center;
     margin: var(--pad-y2) 0 calc(var(--pad-y2) - var(--pad-y)) 0;
     > :nth-child(n + 2) {
-      margin: 0 0 0 .75rem;
+      margin: 0 0 0 $pad075;
     }
   }
   .non-windows & .buttons {
     direction: rtl;
     justify-content: flex-start;
     > :nth-child(n + 2) {
-      margin: 0 .5em 0 0;
+      margin: 0 $pad05 0 0;
     }
   }
   button[name^="import"] {
@@ -715,10 +718,10 @@ a.icon {
   .rules {
     padding: 0 15px;
     li {
-      padding-top: .5em;
+      padding-top: $pad05;
     }
     p {
-      margin: .25em 0;
+      margin: $pad025 0;
     }
   }
 }
@@ -749,8 +752,8 @@ a.icon {
   }
   .report:not(.empty) ~ :not(.empty) {
     border-top: 1px dotted rgba(128, 128, 128, .5);
-    margin-top: .25em;
-    padding-top: .25em;
+    margin-top: $pad025;
+    padding-top: $pad025;
   }
   tr:hover {
     background-color: hsla(180, 50%, 36%, .2);
@@ -762,7 +765,7 @@ a.icon {
       width: 100%;
     }
     &[role="line"] {
-      padding-left: 0.25rem;
+      padding-left: $pad025;
     }
     &[role="severity"] {
       font-size: 0;
@@ -773,7 +776,7 @@ a.icon {
     }
     &[role="col"] {
       text-align: left;
-      padding-right: 0.25rem;
+      padding-right: $pad025;
     }
     &[role="message"] {
       text-align: left;
@@ -873,8 +876,8 @@ a.icon {
 /************ line widget *************/
 .CodeMirror-linewidget {
   .applies-to {
-    margin: 0 0 .25em;
-    padding: $targetGapY calc(.25rem + var(--cm-bar-width, 0)) 0 .75rem;
+    margin: 0 0 $pad025;
+    padding: $targetGapY calc($pad025 + var(--cm-bar-width, 0)) 0 $pad075;
     font-family: var(--family);
   }
   .applies-to-everything {
@@ -886,17 +889,20 @@ a.icon {
 /* TODO: maybe move more rules here so we don't need to reset them in @media(max-width: 850px) */
 @media (min-width: 851px) {
   #header > :not(#details-wrapper):not(#header-resizer) {
-    margin-left: var(--pad);
-    margin-right: var(--pad);
+    margin-left: $pad;
+    margin-right: $pad;
   }
   #name {
     width: 100%;
   }
   #basic-info-enabled {
-    margin-top: .25rem;
+    margin-top: $pad025;
     > :nth-last-child(n + 2) {
-      margin-right: var(--pad05);
+      margin-right: $pad05;
     }
+  }
+  #new-as {
+    margin: $pad05 0 $pad025;
   }
   #publish[open],
   #details-wrapper details:not([open]) {
@@ -904,10 +910,10 @@ a.icon {
   }
   #details-wrapper details {
     &[open]:not(:last-child) {
-      margin-bottom: var(--pad05);
+      margin-bottom: $pad05;
     }
     &:last-child {
-      padding-bottom: var(--pad);
+      padding-bottom: $pad;
     }
   }
 }
@@ -929,7 +935,7 @@ a.icon {
     overflow: visible;
     border-right: none;
     border-bottom: 1px dashed var(--c65);
-    padding: var(--pad05) var(--pad05) 0;
+    padding: $pad05 $pad05 0;
     &:not(.sticky) {
       flex-direction: row;
       flex-wrap: wrap;
@@ -942,9 +948,9 @@ a.icon {
       }
       #preview-errors {
         position: absolute;
-        top: var(--pad05);
-        right: var(--pad05);
-        margin: .25em 0 0 !important;
+        top: $pad05;
+        right: $pad05;
+        margin: $pad025 0 0 !important;
       }
     }
     details > :not(summary) {
@@ -964,7 +970,7 @@ a.icon {
   }
   .popup-window {
     #header.sticky #preview-errors {
-      right: calc(var(--pad05) + 24px);
+      right: calc($pad05 + 24px);
     }
     #basic-info,
     #details-wrapper {
@@ -972,7 +978,7 @@ a.icon {
     }
   }
   #basic-info {
-    margin-bottom: var(--pad05);
+    margin-bottom: $pad05;
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
@@ -985,7 +991,7 @@ a.icon {
       flex-grow: 1;
     }
     > *:not(:last-child) {
-      margin-right: var(--pad05);
+      margin-right: $pad05;
     }
     > a {
       order: 1;
@@ -1001,7 +1007,7 @@ a.icon {
     order: 1;
   }
   #basic-info-enabled > :nth-last-child(n + 2) {
-    margin-right: calc(var(--pad) * .75);
+    margin-right: $pad075;
   }
   #actions .buttons {
     flex-wrap: nowrap;
@@ -1011,7 +1017,7 @@ a.icon {
     vertical-align: top;
     max-width: 100%;
     flex-direction: row;
-    margin: .25em .25em var(--pad05);
+    margin: $pad025 $pad025 $pad05;
     > details[open] {
       margin-top: 0;
       z-index: 50;
@@ -1025,10 +1031,10 @@ a.icon {
           position: absolute;
           overflow: hidden auto;
           max-height: var(--max-height, 25vh);
-          max-width: calc(100vw - 2 * var(--pad));
+          max-width: calc(100vw - 2 * $pad);
           background: var(--bg);
           box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
-          padding: var(--pad);
+          padding: $pad;
         }
       }
     }
@@ -1065,7 +1071,7 @@ a.icon {
     padding: 0;
   }
   .section {
-    padding: var(--pad05);
+    padding: $pad05;
   }
   .single-editor {
     overflow: hidden;
