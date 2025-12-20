@@ -253,7 +253,7 @@ export function setupLivePrefs(ids) {
       const diff = !isSame(el, oldValue, value);
       const type = el.type;
       if (type === 'select-one'
-      && !cssFieldSizing && (init || diff) && el.classList.contains('fit-width')) {
+      && !__.MV3 && !cssFieldSizing && (init || diff) && el.classList.contains('fit-width')) {
         fitSelectBox(el, value, init); /* global fitSelectBox */
       } else if (diff) {
         if (type === 'radio') {

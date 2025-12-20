@@ -1,7 +1,7 @@
 import '@/js/browser';
 import {kAboutBlank} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
-import {chromeProtectsNTP, ownRoot} from '@/js/urls';
+import {ownRoot} from '@/js/urls';
 import {deepEqual} from '@/js/util';
 import {ignoreChromeError, MF, webNavigation} from '@/js/util-webext';
 import {pingTab, sendTab} from './broadcast';
@@ -34,19 +34,6 @@ async function onNavigation(navType, data) {
   }
   prevData = data;
   if (bgBusy) await bgBusy;
-  if (!__.MV3 &&
-      CHROME && __.BUILD !== 'firefox' &&
-      chromeProtectsNTP &&
-      data.url.startsWith('https://www.google.') &&
-      data.url.includes('/_/chrome/newtab?')) {
-    // Modern Chrome switched to WebUI NTP so this is obsolete, but there may be exceptions
-    // TODO: investigate, and maybe use a separate listener for CHROME <= ver
-    const tab = await browser.tabs.get(data.tabId);
-    const url = tab.pendingUrl || tab.url;
-    if (url === 'chrome://newtab/') {
-      data.url = url;
-    }
-  }
   const {tabId} = data;
   const td = tabCache[tabId];
   if (navType === kCommitted) {
@@ -68,13 +55,14 @@ async function onNavigation(navType, data) {
 }
 
 if (!__.MV3) {
+  const exec = chrome.tabs.executeScript;
   /*
    * Expose style version on greasyfork/sleazyfork 1) info page and 2) code page
    * Not using manifest.json to avoid injecting in unrelated sub-pages.
    */
   const urlMatches = '/scripts/\\d+[^/]*(/code)?([?#].*)?$';
   webNavigation.onCommitted.addListener(({tabId}) => {
-    chrome.tabs.executeScript(tabId, {
+    exec(tabId, {
       file: `/${__.JS}install-hook-greasyfork.js`,
       runAt: 'document_start',
     });
@@ -90,7 +78,7 @@ if (!__.MV3) {
    * Not using manifest.json as adding a content script may disable the extension on update.
    */
   webNavigation.onCommitted.addListener(({tabId}) => {
-    chrome.tabs.executeScript(tabId, {
+    exec(tabId, {
       file: `/${__.JS}install-hook-userstylesworld.js`,
       runAt: 'document_start',
     });
@@ -106,7 +94,7 @@ if (!__.MV3) {
     webNavigation.onDOMContentLoaded.addListener(async ({tabId, frameId}) => {
       if (frameId && !await pingTab(tabId, frameId)) {
         for (const file of MF.content_scripts[0].js) {
-          chrome.tabs.executeScript(tabId, {
+          exec(tabId, {
             frameId,
             file,
             matchAboutBlank: true,

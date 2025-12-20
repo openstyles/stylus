@@ -261,7 +261,7 @@ h1 {
   font-weight: bold;
   cursor: pointer;
   list-style-type: none; /* for FF, allegedly */
-  &::-webkit-details-marker {
+  &::marker {
     display: none;
   }
 }

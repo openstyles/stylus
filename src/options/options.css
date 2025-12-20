@@ -81,7 +81,6 @@ label.chromium-only > :first-child::after {
   padding: var(--pad05) var(--pad);
   position: relative;
   break-inside: avoid;
-  flex-shrink: 0; /* TODO: remove when minimum_chrome_version >= 72 */
   &:nth-child(n + 2) {
     border-top: $blockBorder;
   }
@@ -127,10 +126,8 @@ label {
       color: var(--c70);
       --color-on: var(--c90);
     }
-    :not(:has(input:checked)) + & { /* doesn't work in old browsers */
-      display: none;
-    }
-    :not(input:checked) + p textarea {
+    &.disabled,
+    input:not(:checked) + p textarea {
       display: none;
     }
   }

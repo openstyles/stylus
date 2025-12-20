@@ -8,8 +8,7 @@ import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {FIREFOX, MAC, OPERA} from '@/js/ua';
 import {favicon, usoa, usw} from '@/js/urls';
-import {clamp, getHost, t} from '@/js/util';
-import {CHROME_POPUP_BORDER_BUG, ignoreChromeError} from '@/js/util-webext';
+import {clamp, getHost, NOP, t} from '@/js/util';
 import './options-sync';
 import '@/css/onoffswitch.css';
 import './options.css';
@@ -27,9 +26,6 @@ $('#FOUC .items').textContent = t(__.MV3 ? 'optionFOUCMV3' : 'optionFOUCMV2', [
 $id(pKeepAlive).previousElementSibling.firstChild.textContent +=
   (/^(zh|ja|ko)/.test($root.lang) ? '' : ' ') +
   t('optionKeepAlive2').trim();
-if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
-  $id('popupWidth').closest('.items').append(template.popupBorders);
-}
 $('#favs-note').title = t('optionTargetIconsNote', getHost(favicon('')));
 $('#installer-note').dataset.title = t('optionsUrlInstallerNote', [
   usw + 'explore',
@@ -167,7 +163,7 @@ function customizeHotkeys() {
     const shortcut = el.value = key === 'Delete' || key === 'Backspace' ? '' : key;
     let err;
     if (!shortcut) {
-      browser.commands.reset(name).catch(ignoreChromeError);
+      browser.commands.reset(name).catch(NOP);
     } else {
       // must use try-catch as Firefox also uses `throw`
       try {

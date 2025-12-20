@@ -1,7 +1,7 @@
 import '@/js/browser';
 import {kAboutBlank, kPopup, kStyleIds, kTabOvrToggle, kUrl} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
-import {chromeProtectsNTP, ownRoot, supported} from '@/js/urls';
+import {ownRoot, supported} from '@/js/urls';
 import {getActiveTab} from '@/js/util-webext';
 import {pingTab} from './broadcast';
 import {bgBusy} from './common';
@@ -11,14 +11,14 @@ import {tabCache, set as tabSet} from './tab-manager';
 import {waitForTabUrl} from './tab-util';
 
 export default async function makePopupData() {
+  let tmp;
   let tab = await getActiveTab();
   if (FIREFOX && tab.status === 'loading' && tab.url === kAboutBlank) {
     tab = await waitForTabUrl(tab.id);
   }
   // In modern Chrome `url` is for the current tab's contents, so it may be undefined
   // when a newly created tab is still connecting to `pendingUrl`.
-  let url = tab.url || tab.pendingUrl || '';
-  let tmp;
+  const url = tab.url || tab.pendingUrl || '';
   const td = tabCache[tab.id] || false;
   const isOwn = url.startsWith(ownRoot);
   const [
@@ -71,9 +71,6 @@ export default async function makePopupData() {
       urls.add(u);
       frames.push(f);
     }
-  }
-  if (url === 'chrome://newtab/' && !chromeProtectsNTP) {
-    url = frames[0].url || '';
   }
   // webNavigation doesn't set url in some cases e.g. in our own pages
   frames[0].url = url;

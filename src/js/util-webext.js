@@ -1,6 +1,5 @@
 import './browser';
 import {k_deepCopy} from './consts';
-import {CHROME} from './ua';
 import {ownRoot} from './urls';
 import {deepCopy} from './util';
 
@@ -14,8 +13,6 @@ export const MF_ICON = /*@__PURE__*/ MF.icons[
 export const MF_ICON_PATH = /*@__PURE__*/ MF_ICON.slice(0, MF_ICON.lastIndexOf('/') + 1);
 export const MF_ICON_EXT = /*@__PURE__*/ MF_ICON.slice(MF_ICON.lastIndexOf('.'));
 
-// see PR #781
-export const CHROME_POPUP_BORDER_BUG = !__.MV3 && (CHROME >= 62 && CHROME <= 74);
 export const browserWindows = browser.windows;
 /** A scoped listener won't trigger for our [big] stuff in `local`, Chrome 73+, FF */
 export const onStorageChanged = chrome.storage.sync.onChanged || chrome.storage.onChanged;

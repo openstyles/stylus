@@ -68,10 +68,8 @@ async function EmbeddedOptions(show, el, selector, toggler) {
   document.title = t(show ? 'optionsHeading' : 'styleManager');
   // TODO: use messageBox() or a dockable sidepanel or the chrome.sidePanel API
   if (show) {
-    el = $root.appendChild($create('iframe' + selector));
+    el = $root.appendChild($create('iframe' + selector, {src: '/options.html#' + toggler.id}));
     el.focus();
-    // Chrome bug workaround. TODO: use `src` on the element when minimum_chrome_version>79
-    el.contentWindow.location = '/options.html#' + toggler.id;
     await new Promise(resolve => (window.closeOptions = resolve));
   } else {
     el.contentDocument.activeElement?.blur(); // auto-save text input on closing

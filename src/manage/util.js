@@ -91,7 +91,7 @@ export function styleToDummyEntry(style) {
   };
 }
 
-self.fitSelectBox = cssFieldSizing ? NOP : ((
+self.fitSelectBox = __.MV3 || cssFieldSizing ? NOP : ((
   showOpts = function (evt) {
     if (evt.button || this[1]) return;
     const opts = this._opts;
@@ -137,7 +137,7 @@ self.fitSelectBox = cssFieldSizing ? NOP : ((
   el.value = value;
 })();
 
-if (!('loading' in HTMLImageElement.prototype)) {
+if (__.BUILD !== 'chrome' && !('loading' in HTMLImageElement.prototype)) {
   const proto = HTMLImageElement.prototype;
   const pSrc = Object.getOwnPropertyDescriptor(proto, 'src');
   const xo = new IntersectionObserver(entries => {

@@ -106,6 +106,7 @@ function showUnhandledError(err) {
     padding: ${fontSize / 2}px;
     font: ${fontSize}px/1 sans-serif;
     box-sizing: content-box;
+    width: 100%;
     height: ${height}px;
     max-height: 50vh;
     border: none;

@@ -8,7 +8,7 @@ import * as prefs from '@/js/prefs';
 import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MAC, MOBILE, OPERA} from '@/js/ua';
 import {clamp, sleep0, t} from '@/js/util';
-import {CHROME_POPUP_BORDER_BUG, getActiveTab} from '@/js/util-webext';
+import {getActiveTab} from '@/js/util-webext';
 import {handleUpdate, styleFinder} from './events';
 import {initHotkeys} from './hotkeys';
 import {createWriterElement, reSort, showStyles, updateStateIcon, writerIcon} from './render';
@@ -48,20 +48,6 @@ prefs.subscribe('disableAll', (key, val) => {
   $id('disableAll-label').title = t('masterSwitch') + ':\n' +
     t(val ? 'disableAllStylesOff' : 'genericEnabledLabel');
 }, true);
-if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
-  prefs.subscribe('popup.borders', (_key, state) => {
-    const style = $root.style;
-    if (state) {
-      style.cssText += 'left right'.replace(/\S+/g, 'border-$&: 2px solid white !important;');
-    } else if (style.borderLeft) {
-      style.borderLeft = style.borderRight = '';
-    }
-  }, true);
-}
-if (!__.MV3 && CHROME >= 66 && CHROME <= 69) {
-  // Chrome 66-69 adds a gap, https://crbug.com/821143
-  $root.style.overflow = 'overlay';
-}
 
 function onRuntimeMessage(msg) {
   if (!tabUrl) return;
