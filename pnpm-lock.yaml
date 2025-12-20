@@ -69,9 +69,6 @@ importers:
       acorn-walk:
         specifier: ^8.3.4
         version: 8.3.4
-      autoprefixer:
-        specifier: ^10.4.22
-        version: 10.4.22(postcss@8.5.6)
       babel-loader:
         specifier: ^10.0.0
         version: 10.0.0(@babel/core@7.28.5)(webpack@5.103.0)

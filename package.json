@@ -28,7 +28,6 @@
     "@types/webpack": "^5.28.5",
     "acorn": "^8.15.0",
     "acorn-walk": "^8.3.4",
-    "autoprefixer": "^10.4.22",
     "babel-loader": "^10.0.0",
     "chalk": "^4.1.2",
     "chrome-types": "^0.1.394",
