@@ -1,4 +1,4 @@
-name: ci
+name: ci/publish
 on:
   push:
     paths:
@@ -11,12 +11,23 @@ on:
   pull_request:
     branches: [master]
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to publish e.g. v2.4.1 (beta), v2.5.0 (stable if ends with ".0")
+        required: true
+        type: string
 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build: [chrome-mv3, firefox, mv2]
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{github.event.inputs.tag}}
       - uses: pnpm/action-setup@v4
         with:
           version: 10
@@ -26,32 +37,27 @@ jobs:
 
       - run: pnpm install --ignore-scripts # ignore postinstall hook
       - run: pnpm test
-
+        if: ${{matrix.build == 'chrome-mv3'}}
       - run: echo "_REV=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      # MV3 chrome
+      - run: pnpm build-${{matrix.build}}
 
-      - run: rm -rf dist && pnpm build-chrome-mv3
-      - uses: actions/upload-artifact@v4
+      - name: upload "${{matrix.build}}" to github
+        uses: actions/upload-artifact@v4
         with:
-          name: 'stylus-chrome-mv3-${{ env._VER }}-${{ env._REV }}'
+          name: 'stylus-${{matrix.build}}-${{env._VER}}-${{env._REV}}'
           path: 'dist/*'
           if-no-files-found: error
 
-      # MV2 firefox
-
-      - run: rm -rf dist && pnpm build-firefox
-      - uses: actions/upload-artifact@v4
-        with:
-          name: 'stylus-firefox-mv2-${{ env._VER }}-${{ env._REV }}'
-          path: 'dist/*'
-          if-no-files-found: error
-
-      # MV2
-
-      - run: rm -rf dist && pnpm build-mv2
-      - uses: actions/upload-artifact@v4
-        with:
-          name: 'stylus-mv2-${{ env._VER }}-${{ env._REV }}'
-          path: 'dist/*'
-          if-no-files-found: error
+      - name: publish "chrome-mv3" to CWS
+        if: ${{matrix.build == 'chrome-mv3' && github.event_name == 'workflow_dispatch'}}
+        continue-on-error: true
+        working-directory:
+          dist
+        env:
+          CLIENT_ID: ${{secrets.CLIENT_ID}}
+          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+          REFRESH_TOKEN: ${{secrets.REFRESH_TOKEN}}
+        run: |
+          node ../tools/define-extension-id.js
+          npx chrome-webstore-upload-cli@3
