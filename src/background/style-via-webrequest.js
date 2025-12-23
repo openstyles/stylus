@@ -80,7 +80,7 @@ if (CHROME && !__.MV3 && __.BUILD !== 'firefox') {
 if (CHROME && __.BUILD !== 'firefox') {
   chrome.webRequest.onBeforeRequest.addListener(req => {
     // tabId < 0 means the popup is shown normally and not as a page in a tab
-    dataHub[kPopup] = req.tabId < 0 && makePopupData();
+    dataHub.set(kPopup, req.tabId < 0 && makePopupData());
   }, {
     urls: [actionPopupUrl],
     types: [kMainFrame],

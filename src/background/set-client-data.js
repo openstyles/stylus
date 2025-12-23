@@ -26,7 +26,7 @@ const PROVIDERS = {
     return /** @namespace StylusClientData */ {
       style,
       isUC,
-      si: style && (__.MV3 ? stateDB.get(siKey) : dataHub[siKey]),
+      si: style && (__.MV3 ? stateDB.get(siKey) : dataHub.get(siKey)),
       template: !style && isUC && (usercssTemplate.value || usercssTemplate.load()),
     };
   },
@@ -61,7 +61,7 @@ const PROVIDERS = {
 Object.assign(API, {
   saveScroll(id, info) {
     if (__.MV3) stateDB.put(info, kEditorScrollInfo + id);
-    else dataHub[kEditorScrollInfo + id] = info;
+    else dataHub.set(kEditorScrollInfo + id, info);
   },
 });
 

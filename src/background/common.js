@@ -9,20 +9,13 @@ export const bgInit = [];
 export const clientDataJobs = __.MV3 && new Map();
 
 /** Temporary storage for data needed elsewhere e.g. in a content script */
-export const dataHub = {
-  del: key => delete data[key],
-  get: key => data[key],
-  has: key => key in data,
-  pop: key => {
-    const val = data[key];
-    delete data[key];
+export const dataHub = Object.assign(new Map(), {
+  pop(key) {
+    const val = this.get(key);
+    this.delete(key);
     return val;
   },
-  set: (key, val) => {
-    data[key] = val;
-  },
-};
-const data = {__proto__: null};
+});
 
 /** @type {Set<(isDark: boolean) => ?>} */
 export const onSchemeChange = new Set();

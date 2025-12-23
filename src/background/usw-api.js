@@ -10,7 +10,7 @@ import {worker} from './util';
 const KEYS_OUT = ['description', 'homepage', 'license', 'name'];
 const KEYS_IN = [...KEYS_OUT, 'id', 'namespace', 'username'];
 const pushId = (id, val = true) => dataHub.set('usw' + id, val);
-const popId = id => dataHub.del('usw' + id);
+const popId = id => dataHub.delete('usw' + id);
 
 class TokenHooks {
   constructor(id) {
