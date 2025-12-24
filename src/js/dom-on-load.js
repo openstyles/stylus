@@ -213,6 +213,7 @@ function showTooltipNote(event) {
   const note = event.target.closest('[data-cmd=note]');
   if (note) {
     event.preventDefault();
+    event.stopPropagation();
     const internal = note.dataset.title;
     const text = internal || tooltips.get(note) || note.title;
     messageBox.show({

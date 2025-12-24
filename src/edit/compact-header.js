@@ -2,6 +2,7 @@ import {$create} from '@/js/dom';
 import {mqCompact} from '@/js/dom-init';
 import {important} from '@/js/dom-util';
 import {template} from '@/js/localization';
+import {t} from '@/js/util';
 import editor from './editor';
 
 const h = template.body.$('#header');
@@ -24,11 +25,17 @@ export default function CompactHeader() {
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
   const elNewAs = $('#new-as');
   const elInfo = [...$$('#heading a')];
+  const hint = t('newStyleAsUserCSSHint');
+  const elDocs = $('#usercss-docs');
+  const docs = elDocs.title = t('externalUsercssDocument');
+  const docsUrl = elDocs.href = 'https://github.com/openstyles/stylus/wiki/Writing-UserCSS';
   elNewAs.on('click', () => {
     if (!editor.style.id && !editor.dirty.isDirty()) {
       location.reload();
     }
   });
+  elNewAs.$('a').title = `${docs}:\n${docsUrl}\n${hint}`;
+  elNewAs.$('a').dataset.title = `<a href="${docsUrl}">${docs}</a>\n\n${hint}`;
   scroller.appendChild(elHeader);
   mqCompact(val => {
     if (val) {
