@@ -272,9 +272,9 @@ function selectTokenOnDoubleclick(cm, {ch, line}) {
   let b = (rxWord.lastIndex = ch) + rxWord.exec(text)[0].length;
   let [style, i] = ch ? getStyleAtPos(styles, ch) : [styles[1], 0];
   let a = ch;
-  if (!style ||
-      (style = style.split(/ overlay | CodeMirror-/, 1)[0]) &&
-      /comment|string|uso-variable/.test(style)) {
+  while (style && !(style = style.replace(/(^| )(overlay( \S+)?|CodeMirror-\S*)/g, '')) && i > 2)
+    style = styles[(i -= 2) + 1];
+  if (!style || style && /comment|string|uso-variable/.test(style)) {
     let rx = /[\w\u00A1-\uFFFF]/y;
     while (a && (rx.lastIndex = a - 1, rx.test(text)))
       --a;
@@ -293,7 +293,7 @@ function selectTokenOnDoubleclick(cm, {ch, line}) {
       --a;
   } else {
     // include %
-    const whole = style.includes('number');
+    const whole = style === 'number' || style === 'keyword';
     if (whole)
       b = styles[i];
     while ((i -= 2) > 1 && (styles[i + 1] || '').startsWith(style)) {/**/}

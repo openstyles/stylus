@@ -397,7 +397,7 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
 
   function mark(colorValue, pickable) {
     const {line} = state;
-    state.cm.markText({line, ch: start}, {line, ch: start + len}, {
+    state.cm.markText({line, ch: start}, {line, ch: start + 1}, {
       className: SWATCH_CLS,
       css: SWATCH_PROP + ':' + colorValue,
       attributes: !pickable && DUMB_ATTRS,
