@@ -1,14 +1,16 @@
 /* postcss-simple-vars */
+$pad025: var(--pad025);
+$pad05: var(--pad05);
+$pad075: var(--pad075);
 $pad: var(--pad);
-$pad025: calc(0.25 * $pad);
-$pad05: calc(0.5 * $pad);
-$pad075: calc(0.75 * $pad);
 $plus-minus-pad: .5rem;
 $targetGapY: 2px;
 
 :root {
+  --pad025: .25rem;
+  --pad05: .5rem;
+  --pad075: .75rem;
   --pad: 1rem; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
-  --pad05: $pad05;
 }
 
 #global-progress {
@@ -104,10 +106,6 @@ h1 {
 }
 
 /* basic info */
-#basic-info {
-  margin-top: $pad025;
-  margin-bottom: $pad;
-}
 #basic-info-name {
   display: flex;
   align-items: center;
@@ -188,11 +186,6 @@ a.icon {
   details {
     &[open] {
       overflow-y: auto;
-      margin-top: calc(1.5 * $pad);
-      > summary {
-        position: absolute;
-        margin-top: calc(-1.5 * $pad);
-      }
     }
   }
   summary {
@@ -892,6 +885,10 @@ a.icon {
   #name {
     width: 100%;
   }
+  #basic-info {
+    margin-top: $pad025;
+    margin-bottom: $pad;
+  }
   #basic-info-enabled {
     margin-top: $pad025;
     > :nth-last-child(n + 2) {
@@ -1019,14 +1016,11 @@ a.icon {
     flex-direction: row;
     margin: $pad025 $pad025 $pad05;
     > details[open] {
-      margin-top: 0;
       z-index: 50;
       &:is(:hover, :focus-within) {
         z-index: 51;
       }
       > summary {
-        position: static;
-        margin-top: 0;
         + * {
           position: absolute;
           overflow: hidden auto;

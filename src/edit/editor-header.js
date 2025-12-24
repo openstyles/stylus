@@ -57,13 +57,16 @@ function initNameArea() {
 
 async function peekDetails(evt) {
   evt.preventDefault();
-  const elDetails = this.parentNode;
-  if (!(elDetails.open = !elDetails.open)) return;
-  while (elDetails.matches(':hover, :active')) {
-    await sleep(500);
-    await new Promise(cb => elDetails.on('mouseleave', cb, {once: true}));
+  const el = this.parentElement;
+  if (!(el.open = !el.open) || 'peek' in el.dataset)
+    return;
+  el.dataset.peek = ''; // also provides a way to style such temporarily open element
+  while (el.open && el.matches(':hover, :active')) {
+    await new Promise(cb => el.on('mouseleave', cb, {once: true}));
+    await sleep(1000);
   }
-  elDetails.open = false;
+  el.open = false;
+  delete el.dataset.peek;
 }
 
 function showHotkeyInTooltip(_, mapName = prefs.__values['editor.keyMap']) {
