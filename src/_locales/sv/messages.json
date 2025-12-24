@@ -648,6 +648,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Skriv ny stil som UserCSS"
+  },
   "noStylesForSite": {
     "message": "Inga stilar installerade för denna webbplats."
   },
@@ -679,9 +682,6 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Exponerar toppdomänen i varje iframe.\nAktiverar skriva Iframe-specifik CSS så här:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Skriv ny stil som UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "Bakgrundsfärg när inaktiverad"
@@ -959,9 +959,6 @@
   },
   "styleMissingName": {
     "message": "Ange ett namn"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Mozilla-format"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Stil tillämpades inte på grund av felaktig användning av \"regexp()\""

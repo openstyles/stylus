@@ -732,9 +732,6 @@
   "styleMissingName": {
     "message": "Inserisci un nome"
   },
-  "styleMozillaFormatHeading": {
-    "message": "Formato Mozilla"
-  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Lo stile non è stato applicato a causa dell'uso errato di 'regexp()'"
   },

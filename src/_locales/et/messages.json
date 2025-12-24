@@ -581,6 +581,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Kirjuta uus stiil UserCSS-ina"
+  },
   "noStylesForSite": {
     "message": "Sellele saidile pole stiile paigaldatud."
   },
@@ -609,9 +612,6 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Paljastab tipp-domeeni igas iframe'is.\nVõimaldab iframe'i-põhise CSS-koodi kirjutamise näiteks selliselt:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Kirjuta uus stiil UserCSS-ina"
   },
   "optionsBadgeDisabled": {
     "message": "Taustavärv keelatud olekus"
@@ -868,9 +868,6 @@
   },
   "styleMissingName": {
     "message": "Sisesta nimi"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Mozilla-vorming"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Stiili ei rakendatud selle \"regexp()\" vale kasutuse tõttu"

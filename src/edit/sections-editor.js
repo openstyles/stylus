@@ -31,7 +31,6 @@ export default function SectionsEditor() {
   updateMeta();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
   $id('to-mozilla').on('click', showMozillaFormat);
-  $id('to-mozilla-help').on('click', showToMozillaHelp);
   $id('from-mozilla').on('click', () => showMozillaFormatImport());
   document.on('wheel', scrollEntirePageOnCtrlShift, {passive: false});
   extraKeys['Shift-Ctrl-Wheel'] = 'scrollWindow';
@@ -209,11 +208,6 @@ export default function SectionsEditor() {
     } else {
       progressElement.remove();
     }
-  }
-
-  function showToMozillaHelp(event) {
-    event.preventDefault();
-    helpPopup.show(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'));
   }
 
   /**

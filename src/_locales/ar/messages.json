@@ -813,6 +813,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "كتابة نمط جديد كـ UserCSS"
+  },
   "noStylesForSite": {
     "message": "لا توجد أنماط مثبتة لهذا الموقع."
   },
@@ -905,9 +908,6 @@
   },
   "optionsAdvancedExposeStyleNameNote": {
     "message": "يكشف عن اسم النمط في الصفحة لتسهيل تصحيح أخطاء الأنماط في أدوات المطور. يرجى إعادة تحميل علامة/علامات التبويب لتطبيق الإعداد الجديد."
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "كتابة نمط جديد كـ UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "تصحيح <CSP> للسماح بأصول النمط"
@@ -1379,9 +1379,6 @@
   },
   "styleMissingName": {
     "message": "أدخل اسمًا"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "تنسيق Mozilla"
   },
   "styleName": {
     "message": "اسم النمط"

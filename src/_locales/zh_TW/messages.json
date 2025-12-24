@@ -807,6 +807,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "以 UserCSS 編寫新樣式"
+  },
   "noStylesForSite": {
     "message": "目前網站沒有安裝任何樣式。"
   },
@@ -905,9 +908,6 @@
   },
   "optionsAdvancedExposeStyleNameNote": {
     "message": "在頁面中發佈樣式名稱以方便在 devtools 中對樣式進行除錯。請重新載入分頁以套用新設定。"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "以 UserCSS 編寫新樣式"
   },
   "optionsAdvancedPatchCsp": {
     "message": "修補 <CSP> 以允許樣式資源"
@@ -1376,9 +1376,6 @@
   },
   "styleMissingName": {
     "message": "輸入名稱"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Mozilla格式"
   },
   "styleName": {
     "message": "樣式名稱"

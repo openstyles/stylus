@@ -548,6 +548,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Escrever novo estilo como UserCSS"
+  },
   "noStylesForSite": {
     "message": "Nenhum estilo instalado para este site."
   },
@@ -573,9 +576,6 @@
   },
   "optionsAdvancedExposeIframes": {
     "message": "Expor <iframe>s via <html[stylus-iframe]>"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Escrever novo estilo como UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "Cor de fundo quando desativado"
@@ -835,9 +835,6 @@
   },
   "styleMissingName": {
     "message": "Introduzir um nome"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Formato Mozilla"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "O estilo não foi aplicado devido ao uso incorreto de 'regexp ()'"

@@ -690,6 +690,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "새로운 스타일을 UserCSS로 작성"
+  },
   "noStylesForSite": {
     "message": "현재 사이트에 설치한 스타일이 없습니다."
   },
@@ -721,9 +724,6 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "최상위 사이트 도메인을 각 iframe에 노출합니다.\n다음과 같이 iframe용 CSS를 작성할 수 있습니다:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "새로운 스타일을 UserCSS로 작성"
   },
   "optionsAdvancedPatchCsp": {
     "message": "스타일 자원을 허용하도록 <CSP>패치하기"
@@ -1071,9 +1071,6 @@
   },
   "styleMissingName": {
     "message": "이름을 입력하세요"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Mozilla 형식"
   },
   "styleName": {
     "message": "스타일 이름"

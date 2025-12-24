@@ -1009,6 +1009,9 @@
     },
     "description": "Error displayed when unknown variable type is parsed"
   },
+  "newStyleAsUserCSS": {
+    "message": "Write new style as UserCSS"
+  },
   "noStylesForSite": {
     "message": "No styles installed for this site.",
     "description": "Text displayed when no styles are installed for the current site"
@@ -1122,9 +1125,6 @@
   },
   "optionsAdvancedExposeStyleNameNote": {
     "message": "Exposes the style name in the page to facilitate debugging of styles in devtools. Please reload the tab(s) to apply the new setting."
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Write new style as UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "Patch <CSP> to allow style assets"
@@ -1681,10 +1681,6 @@
     "message": "Enter a name",
     "description": "Error displayed when user saves without providing a name"
   },
-  "styleMozillaFormatHeading": {
-    "message": "Mozilla Format",
-    "description": "Heading for the section with buttons to import/export Mozilla format of the style"
-  },
   "styleName": {
     "message": "Style name"
   },
@@ -1769,17 +1765,6 @@
     "message": "Style settings",
     "description": "Label/title for style settings dialog"
   },
-  "styleSitesMatchingRules": {
-    "message": "Your personal site rules that match the current URL.\n\"+\" prefix means inclusions.\n\"-\" prefix means exclusions.",
-    "description": "1) This hint is followed by a list like 'URLs on the domain', 'URLs', etc.\n2) <br> is replaced with a checkbox and translation of styleSitesIncludeOvr i.e. Force-include (and [x] override style) or exclude ...."
-  },
-  "styleSitesPopupHeading": {
-    "message": "Include (and <br>) or exclude the style when visiting:",
-    "description": "1) This hint is followed by a list like 'URLs on the domain', 'URLs', etc.\n2) <br> is replaced with a checkbox and translation of styleSitesIncludeOvr i.e. Force-include (and [x] override style) or exclude ...."
-  },
-  "styleSitesPopupEdit": {
-    "message": "Edit the full list of personal sites in \"Style settings\" in the editor"
-  },
   "styleSitesExclude": {
     "message": "Personal excluded sites"
   },
@@ -1792,6 +1777,17 @@
   "styleSitesIncludeOvr": {
     "message": "override style",
     "description": "Checkbox in the editor that reads like a continuation of the previous label: `Personal included sites` [x] `override original`, i.e. enabling it will cause personal included sites to override the style"
+  },
+  "styleSitesMatchingRules": {
+    "message": "Your personal site rules that match the current URL.\n\"+\" prefix means inclusions.\n\"-\" prefix means exclusions.",
+    "description": "1) This hint is followed by a list like 'URLs on the domain', 'URLs', etc.\n2) <br> is replaced with a checkbox and translation of styleSitesIncludeOvr i.e. Force-include (and [x] override style) or exclude ...."
+  },
+  "styleSitesPopupEdit": {
+    "message": "Edit the full list of personal sites in \"Style settings\" in the editor"
+  },
+  "styleSitesPopupHeading": {
+    "message": "Include (and <br>) or exclude the style when visiting:",
+    "description": "1) This hint is followed by a list like 'URLs on the domain', 'URLs', etc.\n2) <br> is replaced with a checkbox and translation of styleSitesIncludeOvr i.e. Force-include (and [x] override style) or exclude ...."
   },
   "styleToMozillaFormatHelp": {
     "message": "The Mozilla format of the code can be submitted to userstyles.org and used with the classic Stylish for Firefox",

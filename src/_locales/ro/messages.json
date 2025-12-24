@@ -422,6 +422,9 @@
   "meta_invalidCheckboxDefault": {
     "message": "@var checkbox invalidă: valuarea trebuie să fie 0 sau 1"
   },
+  "newStyleAsUserCSS": {
+    "message": "Scrieți temă nouă în formatul UserCSS"
+  },
   "noStylesForSite": {
     "message": "Nicio temă instalată pentru acest site."
   },
@@ -447,9 +450,6 @@
   },
   "optionsAdvancedExposeIframes": {
     "message": "Expuneți <iframe>s via <html[stylus-iframe]>"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Scrieți temă nouă în formatul UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "Culoare de fundal pentru modul inactiv"
@@ -658,9 +658,6 @@
   },
   "styleMissingName": {
     "message": "Introduceți un nume"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Format Mozilla"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Tema nu a fost aplicată din cauza incorectei aplicări a 'regexp()'"

@@ -762,6 +762,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Записати новий стиль як UserCSS"
+  },
   "noStylesForSite": {
     "message": "Не встановлено стилів для цього сайту."
   },
@@ -805,9 +808,6 @@
   },
   "optionsAdvancedExposeStyleName": {
     "message": "Виставляти назву стиля"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Записати новий стиль як UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "Виправлення <CSP> для дозволу наборів стилів"
@@ -1185,9 +1185,6 @@
   },
   "styleMissingName": {
     "message": "Введіть назву"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Формат Mozilla"
   },
   "styleName": {
     "message": "Назва стилю"

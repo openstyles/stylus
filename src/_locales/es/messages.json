@@ -759,6 +759,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Escribir nuevo estilo como UserCSS"
+  },
   "noStylesForSite": {
     "message": "No hay estilos instalados para este sitio."
   },
@@ -839,9 +842,6 @@
   },
   "optionsAdvancedExposeStyleNameNote": {
     "message": "Expone el nombre del estilo en la página para facilitar la depuración de los estilos en devtools. Recargue las pestañas para aplicar la nueva configuración."
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Escribir nuevo estilo como UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "Cambiar <CSP> para permitir recursos de estilos"
@@ -1273,9 +1273,6 @@
   },
   "styleMissingName": {
     "message": "Ingresa un nombre"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Formato Mozilla"
   },
   "styleName": {
     "message": "Nombre del estilo"

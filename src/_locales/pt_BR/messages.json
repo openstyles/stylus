@@ -615,6 +615,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Escrever novo estilo como UserCSS"
+  },
   "noStylesForSite": {
     "message": "Nenhum estilo instalado para este site."
   },
@@ -643,9 +646,6 @@
   },
   "optionsAdvancedExposeIframes": {
     "message": "Expor <iframe>s via <html[stylus-iframe]>"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Escrever novo estilo como UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "Cor de fundo quando desativado"
@@ -935,9 +935,6 @@
   },
   "styleMissingName": {
     "message": "Insira um nome"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Formato Mozilla"
   },
   "styleName": {
     "message": "Nome do estilo"

@@ -772,6 +772,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "スタイルをUserCSSとして新規作成"
+  },
   "noStylesForSite": {
     "message": "該当するスタイルはありません。"
   },
@@ -870,9 +873,6 @@
   },
   "optionsAdvancedExposeStyleNameNote": {
     "message": "開発ツールでスタイルのデバッグを容易にするため、ページ内にスタイル名を公開します。タブをリロードして新しい設定を適用してください。"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "スタイルをUserCSSとして新規作成"
   },
   "optionsAdvancedPatchCsp": {
     "message": "スタイルのアセットを許可するために<CSP>にパッチを当てる"

@@ -12,13 +12,15 @@ const ARG = process.argv[2];
 const COMMIT_CMD = ARG === 'commit' && `git commit -m "update locales" ${DIR}`;
 
 const makeFileName = lng => `${DIR}${lng}/messages.json`;
-const readLngJson = lng => JSON.parse(
-  fs.readFileSync(makeFileName(lng), 'utf8')
-    .replace(/\busercss\b/gi, 'UserCSS')
-);
+const readLng = lng => fs.readFileSync(makeFileName(lng), 'utf8');
 const sortAlpha = ([a], [b]) => a < b ? -1 : a > b;
 
-const srcJson = readLngJson('en');
+const srcText = readLng('en');
+const srcJson = JSON.parse(srcText);
+const sortedSrcText = JSON.stringify(
+  Object.fromEntries(Object.entries(srcJson).sort(sortAlpha)), null, 2) + '\n';
+if (srcText !== sortedSrcText)
+  fs.writeFileSync(makeFileName('en'), sortedSrcText, 'utf8');
 for (const val of Object.values(srcJson)) {
   if (val.placeholders) {
     val.placeholdersStr = JSON.stringify(
@@ -51,7 +53,8 @@ function fixLngFile(lng) {
   let numUntranslated = 0;
   let numVarsFixed = 0;
   const unknown = [];
-  const json = readLngJson(lng);
+  const text = readLng(lng);
+  const json = JSON.parse(text);
   const res = {};
   for (const [key, val] of Object.entries(json).sort(sortAlpha)) {
     const src = srcJson[key] || {};
@@ -70,7 +73,7 @@ function fixLngFile(lng) {
     }
   }
   const resStr = JSON.stringify(res, null, 2);
-  if (numVarsFixed || numUntranslated || unknown.length) {
+  if (numVarsFixed || numUntranslated || unknown.length || resStr.trim() !== text.trim()) {
     let err;
     if (resStr === '{}') {
       fs.rmSync(`${DIR}${lng}`, {recursive: true, force: true});

@@ -664,6 +664,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Skriv ny stil som UserCSS"
+  },
   "noStylesForSite": {
     "message": "Ingen stile installeret for denne side."
   },
@@ -726,9 +729,6 @@
   },
   "optionsAdvancedContextDelete": {
     "message": "Tilføj 'Slet' i editorens kontekstmenu"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Skriv ny stil som UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "Baggrundsfarve, når deaktiveret"
@@ -1030,9 +1030,6 @@
   },
   "styleMissingName": {
     "message": "Indtast et navn"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Mozilla-format"
   },
   "styleName": {
     "message": "Stilnavn"

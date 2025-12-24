@@ -782,6 +782,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Nieuwe stijl schrijven als UserCSS"
+  },
   "noStylesForSite": {
     "message": "Geen geïnstalleerde stijlen voor deze website."
   },
@@ -880,9 +883,6 @@
   },
   "optionsAdvancedExposeStyleNameNote": {
     "message": "Toont de stijlnaam in de pagina om het opsporen van stijlfouten in devtools mogelijk te maken. Vernieuw de tabbladen om de nieuwe instelling toe te passen."
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Nieuwe stijl schrijven als UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "<CSP> corrigeren om stijlmiddelen toe te staan"
@@ -1345,9 +1345,6 @@
   },
   "styleMissingName": {
     "message": "Voer een naam in"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Mozilla-opmaak"
   },
   "styleName": {
     "message": "Stijlnaam"

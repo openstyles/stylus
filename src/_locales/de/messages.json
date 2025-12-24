@@ -748,6 +748,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Schreibe neuen Style als UserCSS"
+  },
   "noStylesForSite": {
     "message": "Für diese Webseite sind keine Styles installiert."
   },
@@ -831,9 +834,6 @@
   },
   "optionsAdvancedExposeStyleNameNote": {
     "message": "Zeigt den Stylenamen auf der Seite an, um das Debuggen von Styles in den Devtools zu erleichtern. Bitte lade die Tabs neu, um die neue Einstellung zu übernehmen."
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Schreibe neuen Style als UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "<CSP> abändern, um externe Ressourcen zu erlauben"

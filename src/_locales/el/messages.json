@@ -798,6 +798,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Νέο στυλ UserCSS"
+  },
   "noStylesForSite": {
     "message": "Δεν υπάρχουν εγκατεστημένα στυλ από αυτή την ιστοσελίδα."
   },
@@ -881,9 +884,6 @@
   },
   "optionsAdvancedExposeStyleNameNote": {
     "message": "Επιτρέπει την πρόσβαση στο όνομα του στυλ κάθε σελίδας στην οποία αυτό εφαρμόζεται, με σκοπό τον ευκολότερο εντοπισμό σφαλμάτων μέσω των εργαλείων για προγραμματιστές (devtools). Για την εφαρμογή αυτής της ρύθμισης είναι απαραίτητη η επαναφόρτωση όλων των επηρεαζόμενων καρτελών."
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Νέο στυλ UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "Τροποποίηση <CSP> προκειμένου να επιτρέπεται η φόρτωση τυχόν τρίτων αρχείων που αξιοποιεί ένα στυλ"
@@ -1315,9 +1315,6 @@
   },
   "styleMissingName": {
     "message": "Εισάγετε ένα όνομα"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Μορφή Mozilla"
   },
   "styleName": {
     "message": "Όνομα στυλ"

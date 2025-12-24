@@ -697,6 +697,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Escribir nuevo estilo como UserCSS"
+  },
   "noStylesForSite": {
     "message": "No hay estilos instalados para este sitio."
   },
@@ -728,9 +731,6 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Muestra el dominio del sitio principal en cada iframe.\nPermite escribir código CSS específico para iframes, como en el ejemplo siguiente:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Escribir nuevo estilo como UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "Cambiar <CSP> para permitir recursos de estilos"
@@ -1081,9 +1081,6 @@
   },
   "styleMissingName": {
     "message": "Ingresa un nombre"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Formato Mozilla"
   },
   "styleName": {
     "message": "Nombre del estilo"

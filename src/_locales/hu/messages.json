@@ -728,6 +728,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Új stílus írása UserCSS-ként"
+  },
   "noStylesForSite": {
     "message": "Nincs telepítve stílus ehhez az oldalhoz."
   },
@@ -756,9 +759,6 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Az oldal felső tartományának jelölése minden iframe-ben.\nLehetővé teszi az iframe-specifikus CSS írását, mint pl.:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Új stílus írása UserCSS-ként"
   },
   "optionsBadgeDisabled": {
     "message": "Háttérszín, amikor le van tiltva"
@@ -1049,9 +1049,6 @@
   },
   "styleMissingName": {
     "message": "Írj be egy nevet!"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Mozilla-formátum"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "A stílus nem lett alkalmazva a „regexp()” helytelen használata miatt"

@@ -801,6 +801,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Создавать стили в формате UserCSS"
+  },
   "noStylesForSite": {
     "message": "Для этого сайта не установлено ни одного стиля."
   },
@@ -890,9 +893,6 @@
   },
   "optionsAdvancedExposeStyleNameNote": {
     "message": "Проставляет имя стиля внутри страницы чтобы облегчить отладку стилей в инструментах разработчика (devtools). Чтобы применить новую настройку пожалуйста обновите вкладку со страницей."
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Создавать стили в формате UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "Исправление <CSP> для обеспечения возможности использования стилевых материалов"
@@ -1324,9 +1324,6 @@
   },
   "styleMissingName": {
     "message": "Введите название"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Формат Mozilla"
   },
   "styleName": {
     "message": "Название стиля"

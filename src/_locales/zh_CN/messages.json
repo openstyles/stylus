@@ -798,6 +798,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "以 UserCSS 编写新样式"
+  },
   "noStylesForSite": {
     "message": "此网站没有样式。"
   },
@@ -881,9 +884,6 @@
   },
   "optionsAdvancedExposeStyleNameNote": {
     "message": "在页面中暴露样式名称以方便在 DevTools 中调试样式。请重新加载标签页以应用新设置。"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "以 UserCSS 编写新样式"
   },
   "optionsAdvancedPatchCsp": {
     "message": "启用 <CSP> 补丁以使样式资源生效"
@@ -1309,9 +1309,6 @@
   },
   "styleMissingName": {
     "message": "输入名称"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Mozilla 格式"
   },
   "styleName": {
     "message": "样式名称"

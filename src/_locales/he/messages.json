@@ -502,6 +502,9 @@
   "meta_missingEOT": {
     "message": "נדרש מידע EOT"
   },
+  "newStyleAsUserCSS": {
+    "message": "כתוב עיצוב חדש בתור UserCSS"
+  },
   "noStylesForSite": {
     "message": "לא הותקנו עיצובים עבור אתר זה."
   },
@@ -522,9 +525,6 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "חושף את תחום האתר העליון בכל iframe.\nמאפשר כתיבת CSS ספציפית ל־iframe כך:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "כתוב עיצוב חדש בתור UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "צבע רקע בעת השבתה"
@@ -803,9 +803,6 @@
   },
   "styleMissingName": {
     "message": "הזן שם"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Mozilla-format"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "הסגנון לא הוחל בגלל השימוש בו שגוי ב־'regexp()'"

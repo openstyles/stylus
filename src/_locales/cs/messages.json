@@ -509,6 +509,9 @@
       }
     }
   },
+  "newStyleAsUserCSS": {
+    "message": "Napsat nový styl jako UserCSS"
+  },
   "noStylesForSite": {
     "message": "Pro tento web není nainstalován žádný styl."
   },
@@ -534,9 +537,6 @@
   },
   "optionsAdvancedExposeIframes": {
     "message": "Obnažit <iframe> prvky pomocí <html[stylus-iframe]>"
-  },
-  "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Napsat nový styl jako UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "Barva pozadí při zakázání"
@@ -763,9 +763,6 @@
   },
   "styleMissingName": {
     "message": "Zadejte název"
-  },
-  "styleMozillaFormatHeading": {
-    "message": "Mozilla formát"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Styl nebyl použit kvůli nesprávnému použití „regexp()“"

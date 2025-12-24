@@ -393,9 +393,6 @@
   "styleMissingName": {
     "message": "Въведете име"
   },
-  "styleMozillaFormatHeading": {
-    "message": "Формат на Мозила"
-  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Стилът не е приложен поради неправилно използване на регулярни изрази"
   },
