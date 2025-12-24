@@ -807,6 +807,9 @@
   "newStyleAsUserCSS": {
     "message": "Napisz nowy styl jako UserCSS"
   },
+  "newStyleAsUserCSSHint": {
+    "message": "Przełączenie tej opcji powoduje również zmianę bieżącego stylu w edytorze, jeżeli jest on nowy, tzn. dopiero co utworzony i nie był jeszcze edytowany lub zapisany."
+  },
   "noStylesForSite": {
     "message": "Nie ma zainstalownych stylów dla tej witryny."
   },
@@ -1249,7 +1252,12 @@
     "message": "Przywróć usuniętą sekcję"
   },
   "sectionUserCSS": {
-    "message": "Klasyczny edytor podzielony na sekcje nie obsługuje składni UserCSS. Aby z niej skorzystać, zaznacz najpierw pole wyboru UserCSS w menedżerze lub wyskakującym okienku, a następnie utwórz nowy styl, wówczas skopiuj bieżący kod, klikając przycisk Eksportuj w tym edytorze."
+    "message": "Edytor sekcji nie obsługuje składni UserCSS.\nMożesz użyć go w nowym stylu:\n1. Kliknij przycisk Eksportuj w tym edytorze, skopiuj tekst.\n2. Utwórz nowy styl w menedżerze stylów lub w wyskakującym okienku.\n3. Włącz „[x] $optUserCSS”.\n4. Wklej skopiowany tekst, nadpisując domyślny szablon.\n5. Zapisz nowy styl, wyłącz lub usuń stary styl.",
+    "placeholders": {
+      "optUserCSS": {
+        "content": "$1"
+      }
+    }
   },
   "sections": {
     "message": "Sekcje"

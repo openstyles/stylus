@@ -1162,9 +1162,6 @@
   "sectionRestore": {
     "message": "Restaurar sección eliminada"
   },
-  "sectionUserCSS": {
-    "message": "El editor seccionado clásico no soporta la sintaxis UserCSS. Para usarla, activa primero la casilla UserCSS en el gestor o en la ventana emergente y luego crea un nuevo estilo, después copia tu código actual pulsando el botón Exportar de este editor."
-  },
   "sections": {
     "message": "Secciones"
   },

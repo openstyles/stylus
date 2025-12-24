@@ -1248,9 +1248,6 @@
   "sectionRestore": {
     "message": "復原已移除的部份"
   },
-  "sectionUserCSS": {
-    "message": "經典的分段編輯器不支援 UserCSS 語法。要使用它，請先在管理程式或彈出式視窗中啟用「UserCSS」核取方塊，然後建立新樣式，再來透過點擊此編輯器中的「匯出」按鈕複製目前程式碼。"
-  },
   "sections": {
     "message": "樣式段"
   },

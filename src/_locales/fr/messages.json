@@ -1155,9 +1155,6 @@
   "sectionRestore": {
     "message": "Restaurer la section supprimée"
   },
-  "sectionUserCSS": {
-    "message": "L'éditeur classique à sections ne prend pas en charge la syntaxe UserCSS. Pour vous en servir, cochez d'abord « UserCSS » dans le gestionnaire ou la popup, créez un nouveau style, puis copiez votre code via le bouton « Exporter » dans cet éditeur."
-  },
   "settings": {
     "message": "Paramètres"
   },

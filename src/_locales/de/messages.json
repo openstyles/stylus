@@ -1142,9 +1142,6 @@
   "sectionRestore": {
     "message": "Gelöschten Bereich wiederherstellen"
   },
-  "sectionUserCSS": {
-    "message": "Der klassische, unterteilte Editor unterstützt keine UserCSS Syntax. Aktiviere das UserCSS Kästchen in der Styleverwaltung oder im Popup und erstelle dann einen neuen Style, um UserCSS verwenden zu können. Kopiere dann deinen vorherigen Code über die Export-Schaltfläche und füge ihn im neuen Style ein."
-  },
   "sections": {
     "message": "Bereiche"
   },

@@ -1527,8 +1527,13 @@
     "description": "Label for the button to restore a removed section"
   },
   "sectionUserCSS": {
-    "message": "The sectioned editor doesn't support UserCSS syntax.\nYou can use it in a new style:\n1. click the Export button in this editor, copy the text,\n2. create a new style in the style manager or the popup,\n3. enable \"[x] $optUserCSS\",\n4. paste the copied text overwriting the default template,\n5. save the new style, disable or remove the old style.",
-    "description": "1) Preserve line breaks for readability. 2) $optUserCSS is replaced with the label of the option e.g. \"[x] Write new style as UserCSS\""
+    "message": "The sectioned editor doesn't support UserCSS syntax.\nYou can use it in a new style:\n1. click the Export button in this editor, copy the text,\n2. create a new style in the style manager or the popup,\n3. enable \"[x] $optUserCSS$\",\n4. paste the copied text overwriting the default template,\n5. save the new style, disable or remove the old style.",
+    "description": "1) Preserve line breaks for readability. 2) $optUserCSS$ is replaced with the label of the option e.g. \"[x] Write new style as UserCSS\"",
+    "placeholders": {
+      "optUserCSS": {
+        "content": "$1"
+      }
+    }
   },
   "sections": {
     "message": "Sections",

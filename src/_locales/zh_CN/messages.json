@@ -1198,9 +1198,6 @@
   "sectionRestore": {
     "message": "撤销删除"
   },
-  "sectionUserCSS": {
-    "message": "经典分段编辑器不支持 UserCSS 语法。要用它请先在管理器或弹出窗口中启用“UserCSS”复选框，然后创建新样式，最后单击此编辑器中的“导出”按钮复制当前代码。"
-  },
   "sections": {
     "message": "章节"
   },

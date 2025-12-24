@@ -785,6 +785,9 @@
   "newStyleAsUserCSS": {
     "message": "Nieuwe stijl schrijven als UserCSS"
   },
+  "newStyleAsUserCSSHint": {
+    "message": "Omschakelen van de optie wisselt ook de huidige stijl in de editor als deze nieuw is, d.w.z. net aangemaakt en nog niet bewerkt of opgeslagen."
+  },
   "noStylesForSite": {
     "message": "Geen geïnstalleerde stijlen voor deze website."
   },
@@ -1218,7 +1221,12 @@
     "message": "Verwijderde sectie herstellen"
   },
   "sectionUserCSS": {
-    "message": "De klassieke in secties verdeelde editor ondersteunt geen UserCSS-syntaxis. Als u dit wilt gebruiken, vink dan eerst in de beheerder of pop-up het selectievakje UserCSS aan en maak daarna een nieuwe stijl aan. Kopieer dan uw huidige code door op de knop Exporteren in deze editor te klikken."
+    "message": "De in secties verdeelde editor ondersteunt geen UserCSS-syntaxis.\nU kunt deze in een nieuwe stijl gebruiken:\n1. klik op de knop Exporteren in deze editor, kopieer de tekst,\n2. maak een nieuwe stijl aan in de stijlbeheerder of de pop-up,\n3. schakel ‘[x] $optUserCSS’ in,\n4. plak de gekopieerde tekst, waarbij de standaardsjabloon wordt overschreven,\n5. sla de nieuwe stijl op, schakel de oude stijl uit of verwijder deze.",
+    "placeholders": {
+      "optUserCSS": {
+        "content": "$1"
+      }
+    }
   },
   "sections": {
     "message": "Secties"
