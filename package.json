@@ -84,6 +84,9 @@
     "prepare": "husky",
     "postinstall": "node tools/build-cm-css-data.js"
   },
+  "pnpm": {
+    "neverBuiltDependencies": ["csslint-mod"]
+  },
   "engines": {
     "node": ">=22.12.0"
   }
