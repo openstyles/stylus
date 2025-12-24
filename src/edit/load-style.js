@@ -40,8 +40,12 @@ function makeNewStyleObj() {
   const prefix = tryURL(urlParams.get('url-prefix'));
   const name = urlParams.get('name') || prefix.hostname;
   const p = prefix.pathname || '/';
-  const section = {code: ''};
-  for (let [k, v] of urlParams) if ((k = FROM_CSS[k])) section[k] = [v];
+  let section;
+  for (let [k, v] of urlParams)
+    if ((k = FROM_CSS[k]))
+      (section ??= {})[k] = [v];
+  section ??= {domains: ['example.com']}; // help the new users discover the targeting mechanism
+  section.code = '';
   return {
     id,
     enabled: true,
