@@ -119,7 +119,7 @@ async function cmdToggleTab(info, tab) {
   /** 0: all off, 1: all on (not used here, only in popup), 2: initial state */
   let [state, skip, ovrs] = td[kTabOvrToggle] || [];
   let ids;
-  state = td[kTabOvrToggle] = (state ?? 2) ? 0 : 2;
+  state = (state ?? 2) ? 0 : 2;
   if (
     !state &&
     (ids = td[kStyleIds]) &&
@@ -139,5 +139,6 @@ async function cmdToggleTab(info, tab) {
   } else if (state === 2) {
     // restore
   }
+  td[kTabOvrToggle][0] = state;
   styleMan.toggleTabOvrMany(tab.id, ovrs);
 }
