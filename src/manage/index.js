@@ -5,6 +5,7 @@ import {onMessage} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import * as syncUtil from '@/js/sync-util';
 import {CHROME} from '@/js/ua';
+import {favicon} from '@/js/urls';
 import {t} from '@/js/util';
 import InjectionOrder from './injection-order';
 import {showStyles} from './render';
@@ -52,11 +53,17 @@ function initSyncButton(sync) {
   const el = $id('sync-styles');
   const elMsg = $('#backup p');
   const render = val => {
-    const drive = syncUtil.DRIVE_NAMES[val.drive || prefs.__values['sync.enabled']];
+    const driveId = val.drive || prefs.__values['sync.enabled'];
+    const drive = syncUtil.DRIVE_NAMES[driveId];
+    const hasFav = drive && driveId !== 'webdav';
+    const img = el.$('img');
     const msg = drive ? syncUtil.getStatusText(val) : '';
     el.title = t('optionsCustomizeSync');
     $toggleDataset(el, 'cloud', drive);
     elMsg.textContent = msg === syncUtil.pending || msg === syncUtil.connected ? '' : msg;
+    img.hidden = !hasFav;
+    img.src = hasFav ? favicon(driveId + '.com') : '';
+    el.$('i').hidden = hasFav;
   };
   onMessage.set(e => {
     if (e.method === 'syncStatusUpdate') render(e.status);

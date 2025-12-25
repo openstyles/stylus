@@ -185,6 +185,9 @@ h1 {
   i {
     line-height: calc(14px * 1.2);
   }
+  img {
+    width: 16px;
+  }
 }
 
 #installed {
