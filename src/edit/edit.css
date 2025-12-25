@@ -213,7 +213,7 @@ a.icon {
     margin-top: -.1em;
   }
   details > :not(summary) {
-    margin: 0 $pad05 0 $pad;
+    margin: 0 $pad;
     padding: $pad025 0;
   }
 }
