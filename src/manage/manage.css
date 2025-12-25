@@ -133,19 +133,15 @@ h1 {
       }
     }
   }
-  #backup {
-    $gap: $iconGapY;
-    margin: calc($pad/4) -$gap 0 0;
-    > * {
-      margin: 0 $gap $gap 0;
-    }
-    p {
-      word-break: break-word;
-      font-size: smaller;
-      user-select: text;
-      color: var(--accent-1);
-      margin-left: 4px;
-    }
+}
+#backup {
+  gap: $iconGapY;
+  p {
+    word-break: break-word;
+    font-size: smaller;
+    user-select: text;
+    color: var(--accent-1);
+    margin-left: 4px;
   }
 }
 #backup-hint {
@@ -167,9 +163,6 @@ h1 {
   white-space: normal;
   text-align: left;
 }
-#add-style {
-  margin-right: 1em;
-}
 #sync-styles {
   &[data-cloud] {
     &::before {
@@ -181,9 +174,6 @@ h1 {
     i {
       color: var(--accent-1);
     }
-  }
-  i {
-    line-height: calc(14px * 1.2);
   }
   img {
     width: 16px;

@@ -59,6 +59,7 @@ function initSyncButton(sync) {
     const img = el.$('img');
     const msg = drive ? syncUtil.getStatusText(val) : '';
     el.title = t('optionsCustomizeSync');
+    el.classList.toggle('icon', !hasFav);
     $toggleDataset(el, 'cloud', drive);
     elMsg.textContent = msg === syncUtil.pending || msg === syncUtil.connected ? '' : msg;
     img.hidden = !hasFav;
