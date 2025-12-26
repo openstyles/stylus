@@ -963,9 +963,6 @@
   "popupManageSiteStyles": {
     "message": "Управління стилями сайту"
   },
-  "popupManageTooltip": {
-    "message": "Shift+клацання, або клацання правою кнопкою миші відкриває управління стилями для поточного сайту"
-  },
   "popupMenuButtonTooltip": {
     "message": "Меню дії"
   },

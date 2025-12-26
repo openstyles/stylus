@@ -995,9 +995,6 @@
   "popupManageSiteStyles": {
     "message": "Styles dieser Seite verwalten"
   },
-  "popupManageTooltip": {
-    "message": "Shift+Klick oder Rechtsklick öffnet die Style-Verwaltung mit Filter für Styles der aktuellen Seite"
-  },
   "popupMenuButtonTooltip": {
     "message": "Aktionsmenü"
   },

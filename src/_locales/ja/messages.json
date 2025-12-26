@@ -1060,9 +1060,6 @@
   "popupManageSiteStyles": {
     "message": "サイトのスタイルを管理"
   },
-  "popupManageTooltip": {
-    "message": "シフトを押しながらクリック または 右クリック で、現在のサイトに適用可能なスタイルの管理画面を開きます"
-  },
   "popupMenuButtonTooltip": {
     "message": "アクションメニュー"
   },

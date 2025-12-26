@@ -3,6 +3,7 @@ import {configDialog} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import {__values} from '@/js/prefs';
 import {CHROME, MAC} from '@/js/ua';
+import {t} from '@/js/util';
 import {getActiveTab, browserSidebar} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
@@ -79,6 +80,7 @@ Object.assign($('#find-styles-btn'), {
 Object.assign($('#popup-manage-button'), {
   onclick: openManager,
   oncontextmenu: openManager,
+  title: '<Shift>: ' + t('popupManageSiteStyles'),
 }).on('split-btn', openManager);
 
 $('#options-btn').onclick = openOptions;

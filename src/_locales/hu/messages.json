@@ -890,9 +890,6 @@
   "popupHotkeysTooltip": {
     "message": "Elérhető gyorsbillentyűk megtekintése"
   },
-  "popupManageTooltip": {
-    "message": "Shift+kattintás vagy jobb kattintás: a stíluskezelő megnyitása a jelenlegi oldalra érvényes stílusokkal"
-  },
   "popupMenuButtonTooltip": {
     "message": "Műveletmenü"
   },

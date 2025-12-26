@@ -653,9 +653,6 @@
   "popupHotkeysTooltip": {
     "message": "לחץ על־מנת לצפות במקשים החמים הזמינים"
   },
-  "popupManageTooltip": {
-    "message": "לחיצה על Shift או מקש ימני בעכבר פותח את מנהל העיצובים"
-  },
   "popupMenuButtonTooltip": {
     "message": "תפריט פעולות"
   },

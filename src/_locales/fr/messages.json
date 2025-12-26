@@ -1005,9 +1005,6 @@
   "popupManageSiteStyles": {
     "message": "Gérer les styles de ce site"
   },
-  "popupManageTooltip": {
-    "message": "Maj-clic ou clic droit ouvre le gestionnaire avec les styles applicables au site courant."
-  },
   "popupMenuButtonTooltip": {
     "message": "Actions"
   },

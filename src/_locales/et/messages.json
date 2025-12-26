@@ -709,9 +709,6 @@
   "popupHotkeysTooltip": {
     "message": "Kiirklahvide nägemiseks klõpsa"
   },
-  "popupManageTooltip": {
-    "message": "Shift+klõps või paremklõps avab halduri praeguse saidi kohta käivate stiilidega"
-  },
   "popupMenuButtonTooltip": {
     "message": "Tegevuste menüü"
   },

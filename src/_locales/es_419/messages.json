@@ -874,9 +874,6 @@
   "popupHotkeysTooltip": {
     "message": "Haz clic para ver los atajos de teclado disponibles"
   },
-  "popupManageTooltip": {
-    "message": "Mayús+clic o clic secundario abre el administrador con estilos aplicables para el sitio actual."
-  },
   "popupMenuButtonTooltip": {
     "message": "Acciones"
   },

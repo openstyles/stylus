@@ -676,9 +676,6 @@
   "popupHotkeysTooltip": {
     "message": "Clique para ver as teclas de atalho disponíveis"
   },
-  "popupManageTooltip": {
-    "message": "Shift-clique ou clique com o botão direito abre o gestor com estilos aplicáveis ao site atual"
-  },
   "popupOpenEditInWindow": {
     "message": "Abra o editor em uma nova janela"
   },

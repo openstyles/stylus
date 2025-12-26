@@ -788,9 +788,6 @@
   "popupHotkeysTooltip": {
     "message": "Klicka för att se tillgängliga snabbtangenter"
   },
-  "popupManageTooltip": {
-    "message": "Skift-klick eller högerklick öppnar hanteraren med stilar som gäller för aktuell webbplats"
-  },
   "popupMenuButtonTooltip": {
     "message": "Åtgärdsmeny"
   },

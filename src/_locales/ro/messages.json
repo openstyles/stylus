@@ -514,9 +514,6 @@
   "popupHotkeysTooltip": {
     "message": "Click pentru a vedea hotkeys avabile"
   },
-  "popupManageTooltip": {
-    "message": "Shift-click sau right-click pentru a deschide managerurl cu teme aplicabile site-ului curent"
-  },
   "popupOpenEditInWindow": {
     "message": "Deschide editorul în alt window"
   },

@@ -1095,9 +1095,6 @@
   "popupManageSiteStyles": {
     "message": "管理網站樣式"
   },
-  "popupManageTooltip": {
-    "message": "Shift + 點選或右鍵 + 點選以在管理員中開啟目前頁面可用的樣式"
-  },
   "popupMenuButtonTooltip": {
     "message": "動作選單"
   },

@@ -832,9 +832,6 @@
   "popupManageSiteStyles": {
     "message": "Administrer sidestile"
   },
-  "popupManageTooltip": {
-    "message": "Shift-klik eller højreklik åbner administratoren med stile til den aktuelle side"
-  },
   "popupMenuButtonTooltip": {
     "message": "Handlingsmenu"
   },

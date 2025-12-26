@@ -1060,9 +1060,6 @@
   "popupManageSiteStyles": {
     "message": "Управлять стилями сайта"
   },
-  "popupManageTooltip": {
-    "message": "Shift-ЛКМ или ПКМ откроет менеджер с стилями только для этого сайта."
-  },
   "popupMenuButtonTooltip": {
     "message": "Меню действий"
   },

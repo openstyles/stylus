@@ -1333,10 +1333,6 @@
     "message": "Manage site styles",
     "description": "Item in the dropdown menu for the 'Manage' button in the popup that opens manager with styles applicable for current site."
   },
-  "popupManageTooltip": {
-    "message": "Shift-click or right-click opens manager with styles applicable for current site",
-    "description": "Tooltip for the 'Manage' button in the popup."
-  },
   "popupMenuButtonTooltip": {
     "message": "Action menu",
     "description": "Tooltip for menu button in popup."

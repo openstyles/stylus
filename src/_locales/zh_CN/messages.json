@@ -1045,9 +1045,6 @@
   "popupManageSiteStyles": {
     "message": "管理网站样式"
   },
-  "popupManageTooltip": {
-    "message": "右键单击或 Shift + 左键单击可打开管理器并显示适用于当前网站的样式"
-  },
   "popupMenuButtonTooltip": {
     "message": "操作菜单"
   },

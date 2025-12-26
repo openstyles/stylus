@@ -1098,9 +1098,6 @@
   "popupManageSiteStyles": {
     "message": "Zarządzaj stylami witryny"
   },
-  "popupManageTooltip": {
-    "message": "Shift + kliknięcie lub kliknięcie prawym przyciskiem otwiera menedżera ze stylami obowiązującymi dla bieżącej witryny"
-  },
   "popupMenuButtonTooltip": {
     "message": "Menu akcji"
   },

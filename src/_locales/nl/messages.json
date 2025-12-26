@@ -1070,9 +1070,6 @@
   "popupManageSiteStyles": {
     "message": "Websitestijlen beheren"
   },
-  "popupManageTooltip": {
-    "message": "Shift-klik of rechtsklik opent de beheerder met stijlen die op de huidige website van toepassing zijn"
-  },
   "popupMenuButtonTooltip": {
     "message": "Actiemenu"
   },

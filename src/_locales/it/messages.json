@@ -605,9 +605,6 @@
   "popupHotkeysTooltip": {
     "message": "Click per visualizzare le scorciatoie disponibili"
   },
-  "popupManageTooltip": {
-    "message": "Shift-click o click destro apre il gestore con gli stili applicabili per il sito corrente"
-  },
   "popupOpenEditInWindow": {
     "message": "Apri editor in una nuova finestra"
   },

@@ -1107,9 +1107,6 @@
   "popupManageSiteStyles": {
     "message": "إدارة أنماط الموقع"
   },
-  "popupManageTooltip": {
-    "message": "النقر مع الضغط على Shift أو النقر بزر الماوس الأيمن يفتح المدير بالأنماط المنطبقة على الموقع الحالي"
-  },
   "popupMenuButtonTooltip": {
     "message": "قائمة الإجراءات"
   },

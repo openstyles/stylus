@@ -610,9 +610,6 @@
   "popupHotkeysTooltip": {
     "message": "Kliknutím zobrazíte dostupné klávesové zkratky"
   },
-  "popupManageTooltip": {
-    "message": "Shift + kliknutím nebo pravým kliknutím otevřít správce se styly použitými na této stránce"
-  },
   "popupOpenEditInWindow": {
     "message": "Otevírat editor v novém okně"
   },

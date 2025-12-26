@@ -867,9 +867,6 @@
   "popupHotkeysTooltip": {
     "message": "사용 가능한 단축키를 확인하려면 클릭하세요"
   },
-  "popupManageTooltip": {
-    "message": "Shift+클릭이나 우클릭으로 스타일 관리자를 열면 현재 사이트에 적용 가능한 스타일들이 표시됩니다."
-  },
   "popupMenuButtonTooltip": {
     "message": "상호작용 메뉴"
   },
