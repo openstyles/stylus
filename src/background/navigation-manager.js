@@ -2,8 +2,8 @@ import '@/js/browser';
 import {kAboutBlank} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
-import {deepEqual} from '@/js/util';
-import {ignoreChromeError, MF, webNavigation} from '@/js/util-webext';
+import {deepEqual, NOP} from '@/js/util';
+import {MF, webNavigation} from '@/js/util-webext';
 import {pingTab, sendTab} from './broadcast';
 import {bgBusy, onUrlChange} from './common';
 import {tabCache} from './tab-manager';
@@ -55,7 +55,7 @@ async function onNavigation(navType, data) {
 }
 
 if (!__.MV3) {
-  const exec = chrome.tabs.executeScript;
+  const exec = browser.tabs.executeScript;
   /*
    * Expose style version on greasyfork/sleazyfork 1) info page and 2) code page
    * Not using manifest.json to avoid injecting in unrelated sub-pages.
@@ -98,7 +98,7 @@ if (!__.MV3) {
             frameId,
             file,
             matchAboutBlank: true,
-          }, ignoreChromeError);
+          }).catch(NOP);
         }
       }
     }, {

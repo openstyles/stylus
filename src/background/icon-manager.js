@@ -1,14 +1,13 @@
 import {kDisableAll, kStyleIds} from '@/js/consts';
 import {__values as __prefs, subscribe} from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
-import {debounce, t} from '@/js/util';
-import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
+import {debounce, NOP, t} from '@/js/util';
+import {browserAction, MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgInit, onSchemeChange, onUnload} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
 import {tabCache, set as tabSet} from './tab-manager';
 
-const browserAction = (__.MV3 ? chrome.action : chrome.browserAction) || {};
 const staleBadges = new Set();
 /** @type {{ [url: string]: ImageData | Promise<ImageData> }} */
 const imageDataCache = {};
@@ -27,7 +26,8 @@ const kShowBadge = 'show-badge';
 // https://github.com/openstyles/stylus/issues/335
 let hasCanvas = FIREFOX_ANDROID ? false : null;
 
-bgInit.push(initIcons);
+if (browserAction)
+  bgInit.push(initIcons);
 onSchemeChange.add(() => {
   if (__prefs[kIconset] === -1) {
     debounce(refreshGlobalIcon);
@@ -36,6 +36,8 @@ onSchemeChange.add(() => {
 });
 
 export async function refreshIconsWhenReady() {
+  if (!browserAction)
+    return;
   if (bgBusy) {
     bgInit[bgInit.indexOf(initIcons)] = 0;
     await bgBusy;
@@ -99,9 +101,9 @@ export function overrideBadge({text = '', color = '', title = ''} = {}) {
       refreshIconBadgeText(tabId);
     }
   }
-  safeCall('setTitle', {
+  browserAction.setTitle({
     title: title && t(title, '', false) || title || '',
-  });
+  }).catch(NOP);
 }
 
 function refreshIconBadgeText(tabId) {
@@ -205,18 +207,6 @@ function refreshStaleBadges() {
   staleBadges.clear();
 }
 
-function safeCall(method, data) {
-  if (browserAction[method]) {
-    try {
-      // Chrome supports the callback since 67.0.3381.0, see https://crbug.com/451320
-      browserAction[method](data, ignoreChromeError);
-    } catch {
-      // FIXME: skip pre-rendered tabs?
-      browserAction[method](data);
-    }
-  }
-}
-
 /** @param {chrome.browserAction.TabIconDetails} data */
 async function setIcon(data) {
   if (hasCanvas == null) {
@@ -234,15 +224,15 @@ async function setIcon(data) {
     }
     delete data.path;
   }
-  safeCall('setIcon', data);
+  browserAction.setIcon(data).catch(NOP);
 }
 
 /** @param {chrome.browserAction.BadgeTextDetails} data */
 function setBadgeText(data) {
-  safeCall('setBadgeText', data);
+  browserAction.setBadgeText(data).catch(NOP);
 }
 
 /** @param {chrome.browserAction.BadgeBackgroundColorDetails} data */
 function setBadgeBackgroundColor(data) {
-  safeCall('setBadgeBackgroundColor', data);
+  browserAction.setBadgeBackgroundColor(data).catch(NOP);
 }

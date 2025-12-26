@@ -1,8 +1,8 @@
 import '@/js/browser';
 import {kUrl} from '@/js/consts';
 import * as URLS from '@/js/urls';
-import {sleep0, stringAsRegExpStr} from '@/js/util';
-import {ignoreChromeError, MF, webNavigation} from '@/js/util-webext';
+import {NOP, sleep0, stringAsRegExpStr} from '@/js/util';
+import {MF, webNavigation} from '@/js/util-webext';
 import {sendTab} from './broadcast';
 import * as tabMan from './tab-manager';
 
@@ -74,7 +74,7 @@ export default async function reinjectContentScripts(targetTab) {
             tabId,
           },
           files: cs.js,
-        }).catch(ignoreChromeError));
+        }).catch(NOP));
       } else {
         const options = {
           runAt: cs.run_at,
@@ -83,7 +83,7 @@ export default async function reinjectContentScripts(targetTab) {
         };
         for (const file of cs.js) {
           options.file = file;
-          jobs.push(browser.tabs.executeScript(tabId, options).catch(ignoreChromeError));
+          jobs.push(browser.tabs.executeScript(tabId, options).catch(NOP));
         }
       }
     }

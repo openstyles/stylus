@@ -22,7 +22,6 @@ export const kHocused = 'focusedViaClick';
 export const kHocusedAttr = 'data-focused-via-click';
 export const kInclusions = 'inclusions';
 export const kInjectionOrder = 'injectionOrder';
-export const kInstall = 'install';
 export const kInvokeAPI = 'invokeAPI';
 export const kMainFrame = 'main_frame';
 export const kOverridden = 'overridden';

@@ -5,7 +5,6 @@ import {calcStyleDigest, styleSectionsEqual} from '@/js/sections-util';
 import {chromeLocal} from '@/js/storage-util';
 import {extractUsoaId, isCdnUrl, isLocalhost, rxGF, usoApi} from '@/js/urls';
 import {debounce, deepMerge, getHost, NOP, sleep} from '@/js/util';
-import {ignoreChromeError} from '@/js/util-webext';
 import {bgBusy} from './common';
 import {db} from './db';
 import download from './download';
@@ -284,7 +283,7 @@ function schedule() {
       when: Date.now() + Math.max(MIN_INTERVAL_MS, interval - elapsed),
     });
   } else {
-    chrome.alarms.clear(ALARM_NAME, ignoreChromeError);
+    browser.alarms.clear(ALARM_NAME).catch(NOP);
   }
 }
 

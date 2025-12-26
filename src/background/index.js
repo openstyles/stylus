@@ -1,6 +1,6 @@
 import './intro';
 import '@/js/browser';
-import {k_msgExec, kBadFavs, kInstall, kInvokeAPI, kResolve} from '@/js/consts';
+import {k_msgExec, kBadFavs, kInvokeAPI, kResolve} from '@/js/consts';
 import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '@/js/dnr';
 import {_execute, onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
@@ -89,7 +89,7 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     reinjectContentScripts();
     initContextMenus();
   }
-  if (reason === kInstall) {
+  if (reason === 'install') {
     if (MOBILE) prefs.set('manage.newUI', false);
     if (WINDOWS) prefs.set('editor.keyMap', 'sublime');
   }
