@@ -4,6 +4,9 @@
  * <tag i18n="html:id">, <tag i18n="+html:id"> - ditto for innerHTML (sanitized)
  * <tag i18n="title: id"> - creates an attribute `title`, spaces are ignored
  * <tag i18n="id, +id2, title:id3, placeholder:id4, data-foo:id5">
+ *
+ * Use another translation as a getMessage() parameter: id?placeholderId
+ *
  * html and title sanitize <foo> as <code>foo</code> if foo is not an allowed tag,
  * which we use to denote untranslatable terms and to highlight the terms automatically.
  */
@@ -56,8 +59,10 @@ function tElements(elems) {
       const add = item.charCodeAt(0) === 43/* + */;
       const fn = add ? 'append' : 'prepend';
       const i = item.indexOf(':');
+      const j = i > 0 && (item.indexOf('?', i + 1) + 1 || NaN) - 1 || undefined;
+      const params = j && [t(item.slice(j + 1))];
       const key = i > 0 && item.slice(add, i);
-      const val = t(item.slice(i + 1 || add));
+      const val = t(item.slice(i + 1 || add, j), params);
       if (key === 'html' || !key && val.includes('<'))
         el[fn](sanitizeHtml(val));
       else if (key)

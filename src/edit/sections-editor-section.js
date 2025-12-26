@@ -4,7 +4,7 @@ import {setupLivePrefs} from '@/js/dom-util';
 import {templateCache, htmlToTemplate, template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {FROM_CSS, TO_CSS} from '@/js/sections-util';
-import {debounce, t} from '@/js/util';
+import {debounce} from '@/js/util';
 import {CodeMirror} from '@/cm';
 import {C_CONTAINER, C_ITEM, C_LIST, C_TYPE, C_VALUE, iconize} from './applies-to';
 import {initBeautifyButton} from './beautify';
@@ -15,7 +15,6 @@ import {htmlEditorSettings} from './settings';
 import {helpPopup, htmlAppliesTo, trimCommentLabel} from './util';
 
 const RX_META1 = /^!?\s*==userstyle==\s*$/i;
-let tplUsercssSection;
 
 export default class EditorSection {
   /**
@@ -182,12 +181,11 @@ export default class EditorSection {
       cmt = trimCommentLabel(text);
       elUC = this.elUC;
       if (cmt && RX_META1.test(text)) {
-        if (elUC) elUC = null;
-        else {
-          tplUsercssSection ??= Object.assign(templateCache.usercssSection, {
-            title: t('sectionUserCSS', t('newStyleAsUserCSS')),
-          });
-          this.elLabelText.after(elUC = this.elUC = tplUsercssSection.cloneNode(true));
+        if (elUC) {
+          elUC = null;
+        } else {
+          elUC = this.elUC = templateCache.usercssSection.cloneNode(true);
+          this.elLabelText.after(elUC);
         }
       } else if (elUC) {
         elUC.remove();
