@@ -9,6 +9,7 @@ import * as prefs from '@/js/prefs';
 import {FIREFOX, MAC, OPERA} from '@/js/ua';
 import {favicon, usoa, usw} from '@/js/urls';
 import {clamp, getHost, NOP, t} from '@/js/util';
+import {browserSidebar} from '@/js/util-webext';
 import './options-sync';
 import '@/css/onoffswitch.css';
 import './options.css';
@@ -106,8 +107,8 @@ for (const el of $$('[show-if]')) {
     }
   }
 }
-if (!chrome.sidePanel && !browser.sidebarAction)
-  $id('config.sidePanel').parentElement.hidden = true;
+if (browserSidebar)
+  $rootCL.add('has-side-panel');
 setupLivePrefs();
 (async () => {
   const {wrb} = __.MV3 ? prefs.clientData : await prefs.clientData;

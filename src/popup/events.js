@@ -3,7 +3,7 @@ import {configDialog} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import {__values} from '@/js/prefs';
 import {CHROME, MAC} from '@/js/ua';
-import {getActiveTab} from '@/js/util-webext';
+import {getActiveTab, browserSidebar} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
 import {closeMenu, menu, openMenu} from './menu';
@@ -125,16 +125,20 @@ function clickRouter(event, btn = event.button, elClick = event.target) {
 
 export async function configure(event, entry, button) {
   if (!this.target) {
-    let mode, sbCH, sbFF;
-    if ((__.BUILD === 'chrome' ? sbCH = chrome.sidePanel : sbFF = browser.sidebarAction) && (
+    let mode;
+    if (browserSidebar && (
       button ||
       !(mode = __values['config.sidePanel']) ||
       mode > 0 && entry.styleMeta[UCD].vars >= mode
     )) {
       const p = `sidepanel.html?id=${entry.styleId}`;
-      if (sbCH) sbCH.setOptions({tabId, path: p});
-      else sbFF.setPanel({tabId, panel: p});
-      return sbCH?.open({tabId}) || sbFF.open();
+      if (__.BUILD === 'chrome') {
+        browserSidebar.setOptions({tabId, path: p});
+        return browserSidebar.open({tabId});
+      } else {
+        browserSidebar.setPanel({tabId, panel: p});
+        return browserSidebar.open();
+      }
     }
     hotkeys.pause(() => configDialog(entry.styleId));
   } else {

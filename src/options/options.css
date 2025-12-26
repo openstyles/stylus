@@ -65,6 +65,7 @@ header {
 }
 
 html:not(.mv3) .mv3-only,
+html:not(.has-side-panel) .side-panel,
 .firefox .chromium-only,
 .chromium-only.chrome-no-popup-border {
   display: none;
