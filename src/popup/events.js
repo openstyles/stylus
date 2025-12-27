@@ -26,21 +26,16 @@ const selManager = '#popup-manage-button';
 const selOptions = '#options-btn';
 /** @type {{[sel: string]: OnClickHandler}} */
 export const EntryClick = {
-  '.style-name': Object.assign((evt, entry) => {
-    if (evt.button
-    || !evt.button && (evt.altKey || evt.ctrlKey || MAC && evt.metaKey)
-      && (evt.preventDefault()/*prevent toggling of checkbox*/, 1)
-    ) {
+  '.style-name': Object.assign((evt, entry, button) => {
+    if (button || evt.altKey || evt.ctrlKey || MAC && evt.metaKey) {
       if (evt.altKey) hotkeys.toggleStateInTab([entry], null);
       else openEditor(evt, entry);
+    } else if (!button && !evt.shiftKey) {
+      API.styles.toggle(entry.styleId, !entry.$('input').checked);
     }
   }, {
     btn: 1 + 2,
   }),
-  async input(evt, entry = this) {
-    await API.styles.toggle(entry.styleId, this.checked);
-    reSort();
-  },
   [selConfig]: Object.assign(configure, {
     btn: 1 + 2,
   }),
@@ -49,6 +44,7 @@ export const EntryClick = {
   }),
   [selEdit]: openEditor,
 };
+
 /** All these handlers accept a right-click, `btn = 2` property is added below */
 const GlobalClick = {
   '.write-style-link': openEditor,

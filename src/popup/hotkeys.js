@@ -129,7 +129,8 @@ function onKeyDown(evt) {
   if (entry) {
     if (menuKey && ++menuKey) openMenu(entry);
     else if (altKey) toggleStateInTab([entry], null);
-    else entry.$(shiftKey ? '.style-edit-link' : 'input').click();
+    else if (shiftKey) openEditor(null, entry);
+    else API.styles.toggle(entry.styleId, !entry.$('input').checked);
   }
 }
 
