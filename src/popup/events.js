@@ -1,10 +1,10 @@
-import {kSidebar, kStyleIdPrefix, UCD} from '@/js/consts';
+import {kFind, kSidebar, kStyleIdPrefix, UCD} from '@/js/consts';
 import {isSidebar} from '@/js/dom';
 import {configDialog} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {__values, subscribe} from '@/js/prefs';
-import {CHROME, MAC} from '@/js/ua';
+import {CHROME, FIREFOX, MAC} from '@/js/ua';
 import {t} from '@/js/util';
 import {getActiveTab, browserSidebar} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
@@ -199,12 +199,15 @@ export async function openOptions(event, entry, button) {
 }
 
 export async function openStyleFinder(event, entry, button) {
-  this.disabled = true;
-  if (!styleFinder.on) await import('./search');
-  styleFinder[kSidebar] = event === kSidebar ? event :
+  event = event === kSidebar ? event :
     !isSidebar && browserSidebar
       ? button === 2 ? 0 : __values[pSideFinder]
       : undefined;
+  if (__.BUILD !== 'chrome' && FIREFOX && event >= 0)
+    return sidebarOpen(`popup.html?${kFind}=${tabId}`);
+  this.disabled = true;
+  if (!styleFinder.on) await import('./search');
+  styleFinder[kSidebar] = event;
   styleFinder.inline();
 }
 
