@@ -1,5 +1,5 @@
 import '@/js/dom-init';
-import {kAboutBlank, kFind, kPopup, kSidebar, kStyleIdPrefix} from '@/js/consts';
+import {kAboutBlank, kPopup, kStyleIdPrefix} from '@/js/consts';
 import {isSidebar, urlParams} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {sanitizeHtml, template} from '@/js/localization';
@@ -10,7 +10,7 @@ import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MAC, MOBILE, OPERA} from '@/js/ua';
 import {clamp, sleep0, t} from '@/js/util';
 import {getActiveTab, ignoreChromeError} from '@/js/util-webext';
-import {handleUpdate, openStyleFinder, styleFinder} from './events';
+import {handleUpdate, openStyleFinder, pSideFinder, styleFinder} from './events';
 import {initHotkeys} from './hotkeys';
 import {createWriterElement, reSort, showStyles, updateStateIcon, writerIcon} from './render';
 import '@/css/onoffswitch.css';
@@ -36,7 +36,7 @@ let prevHeight;
     return;
   prevHeight = Math.max(innerHeight, 150);
   if (!MOBILE) window.on('resize', onWindowResize);
-  if (urlParams.has(kFind)) openStyleFinder(kSidebar);
+  if (urlParams.has(pSideFinder)) openStyleFinder();
   (function connectPort() {
     ignoreChromeError();
     port = chrome.runtime.connect({name: kPopup + ':' + tabId});

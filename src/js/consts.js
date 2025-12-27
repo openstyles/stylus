@@ -18,7 +18,6 @@ export const kDark = 'dark';
 export const kDisableAll = 'disableAll';
 export const kEditorSettings = 'editorSettings';
 export const kExclusions = 'exclusions';
-export const kFind = 'find';
 export const kHocused = 'focusedViaClick';
 export const kHocusedAttr = 'data-focused-via-click';
 export const kInclusions = 'inclusions';

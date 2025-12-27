@@ -1,5 +1,5 @@
-import {kFind, kSidebar, kStyleIdPrefix, UCD} from '@/js/consts';
-import {$create, $toggleDataset, urlParams} from '@/js/dom';
+import {kStyleIdPrefix, UCD} from '@/js/consts';
+import {$create, $toggleDataset, isSidebar} from '@/js/dom';
 import {setupLivePrefs, showSpinner} from '@/js/dom-util';
 import {breakWord, formatDate, htmlToTemplateCache, templateCache} from '@/js/localization';
 import {onConnect} from '@/js/msg';
@@ -7,10 +7,10 @@ import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import * as URLS from '@/js/urls';
 import {
-  clipString, debounce, deepCopy, sleep, stringAsRegExp, stringAsRegExpStr, t, tryRegExp, tryURL,
+  clipString, debounce, sleep, stringAsRegExp, stringAsRegExpStr, t, tryRegExp, tryURL,
 } from '@/js/util';
-import {tabId, tabUrl, tabUrlSupported} from '.';
-import {configure, openURLandHide, sidebarOpen, styleFinder} from './events';
+import {tabUrl, tabUrlSupported} from '.';
+import {configure, openURLandHide, styleFinder} from './events';
 import './search.css';
 import html from './search.html';
 
@@ -27,6 +27,7 @@ const USW_ICON = $create('img', {
   title: URLS.usw,
 });
 const STYLUS_CATEGORY = 'chrome-extension';
+const PAGE_LENGTH = isSidebar ? 250 : 100;
 // update USO style install counter if the style isn't uninstalled immediately
 const PINGBACK_DELAY = 5e3;
 const USO_AUTO_PIC_SUFFIX = '-after.png';
@@ -75,7 +76,6 @@ let searchGlobals = !tabUrlSupported || $searchGlobals.checked;
 let query = [];
 let order = prefs.__values['popup.findSort'];
 let scrollToFirstResult = true;
-let PAGE_LENGTH = 100;
 let displayedPage = 1;
 let totalPages = 1;
 let ready;
@@ -226,29 +226,11 @@ function errorIfNoneFound() {
 
 async function start({keepYears} = {}) {
   try {
-    const sidebar = styleFinder[kSidebar];
-    if (sidebar === kSidebar) {
-      const id = kFind + urlParams.get(kFind);
-      for (const v of chrome.extension.getViews({type: 'popup'})) {
-        if (Array.isArray(v[id])) {
-          [results, index, imgType] = deepCopy(v[id]);
-          $('#pct').remove();
-          v.close();
-          if (results)
-            PAGE_LENGTH = 250;
-          break;
-        }
-      }
-    }
-    results ??= [];
+    results = [];
     for (let retry = 0; !results.length && retry <= 2; retry++) {
       results = await search({retry});
     }
     if (results.length) {
-      if (sidebar >= 0 && results.length >= sidebar) {
-        window[kFind + tabId] = [results, index, imgType];
-        return sidebarOpen(`popup.html?${kFind}=${tabId}`, true);
-      }
       const info = await API.styles.getRemoteInfo();
       for (const r of results) {
         [r._styleId, r._styleVars] = info[r.i] || [];
@@ -587,14 +569,10 @@ async function fetchIndex() {
     elNote.style.opacity = 0;
     start();
   });
-  if (styleFinder[kSidebar] >= 0) {
-    await indexing;
-  } else {
-    // Polyfilling a leaky Promise.race, https://crbug.com/42203149
-    await new Promise((resolve, reject) => {
-      for (const job of jobs) job.then(resolve, reject);
-    });
-  }
+  // Polyfilling a leaky Promise.race, https://crbug.com/42203149
+  await new Promise((resolve, reject) => {
+    for (const job of jobs) job.then(resolve, reject);
+  });
   return index;
 }
 

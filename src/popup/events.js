@@ -1,10 +1,10 @@
-import {kFind, kSidebar, kStyleIdPrefix, UCD} from '@/js/consts';
+import {kSidebar, kStyleIdPrefix, UCD} from '@/js/consts';
 import {isSidebar} from '@/js/dom';
 import {configDialog} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {__values, subscribe} from '@/js/prefs';
-import {CHROME, FIREFOX, MAC} from '@/js/ua';
+import {CHROME, MAC} from '@/js/ua';
 import {t} from '@/js/util';
 import {getActiveTab, browserSidebar} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
@@ -58,7 +58,7 @@ const GlobalClick = {
 export const styleFinder = {};
 export const tSideHint = '\n' + t('popupSidePanelOpenHint');
 export const pSideConfig = 'popup.sidePanel.config';
-const pSideFinder = 'popup.sidePanel.finder';
+export const pSideFinder = 'popup.sidePanel.finder';
 const pSideEditor = 'popup.sidePanel.editor';
 const pSideManager = 'popup.sidePanel.manager';
 const pSideOptions = 'popup.sidePanel.options';
@@ -199,15 +199,10 @@ export async function openOptions(event, entry, button) {
 }
 
 export async function openStyleFinder(event, entry, button) {
-  event = event === kSidebar ? event :
-    !isSidebar && browserSidebar
-      ? button === 2 ? 0 : __values[pSideFinder]
-      : undefined;
-  if (__.BUILD !== 'chrome' && FIREFOX && event >= 0)
-    return sidebarOpen(`popup.html?${kFind}=${tabId}`);
+  if (browserSidebar && (button === 2 || __values[pSideFinder]))
+    return sidebarOpen(`popup.html?${pSideFinder}`);
   this.disabled = true;
   if (!styleFinder.on) await import('./search');
-  styleFinder[kSidebar] = event;
   styleFinder.inline();
 }
 
@@ -221,7 +216,7 @@ export async function openURLandHide(event) {
     close();
 }
 
-export async function sidebarOpen(path, keepOpen) {
+export async function sidebarOpen(path) {
   path += (path.includes('?') ? '&' : '?') + kSidebar;
   if (isSidebar) {
     location.assign(path);
@@ -234,8 +229,7 @@ export async function sidebarOpen(path, keepOpen) {
     browserSidebar.setPanel({tabId, panel: path});
     await browserSidebar.open();
   }
-  if (!keepOpen && !isSidebar)
-    close();
+  close();
 }
 
 function updateTitle(el, alwaysSidebar) {

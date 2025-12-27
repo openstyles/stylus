@@ -170,9 +170,9 @@ const defaults = {
   'popup.sidePanel': false,
   'popup.sidePanel.config': 20,
   'popup.sidePanel.editor': false,
-  'popup.sidePanel.finder': 4,
+  'popup.sidePanel.finder': false,
   'popup.sidePanel.manager': false,
-  'popup.sidePanel.options': false,
+  'popup.sidePanel.options': true,
   'popupWidth': 246,              // popup width in pixels
   'popupWidthMax': 280,           // popup width in pixels
 
