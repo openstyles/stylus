@@ -49,7 +49,7 @@ export function updateTDM(value) {
 export async function apiSendProxy({name: path}, thisObj, args) {
   const localErr = new Error();
   const msg = {data: {method: kInvokeAPI, path, args}, TDM};
-  for (let res, err, retry = 0; retry < (__.MV3 ? 1 : 2); !__.MV3 && retry++) {
+  for (let res, err, retry = 0; retry < (__.MV3 ? 1 : 2); retry++) {
     try {
       if (__.MV3 || FF) {
         res = await (__.MV3 ? chrome : browser).runtime.sendMessage(msg);

@@ -120,7 +120,7 @@ for (const el of $$('[show-if]')) {
   }
 }
 if (browserSidebar)
-  $rootCL.add('has-side-panel');
+  $rootCL.add('has-sidebar');
 setupLivePrefs();
 (async () => {
   const {wrb} = __.MV3 ? prefs.clientData : await prefs.clientData;

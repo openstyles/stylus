@@ -1,7 +1,7 @@
 /* postcss-simple-vars */
 $outerPad: 50px;
 $colW: 500px;
-$docStackW: 360px;
+$docStackW: 449px;
 $docMin1W: 550px;
 $docMin2W: 1050px;
 $footerH: calc(2rem + var(--pad05));
@@ -68,7 +68,7 @@ header {
 }
 
 html:not(.mv3) .mv3-only,
-html:not(.has-side-panel) .side-panel,
+html:not(.has-sidebar) .has-sidebar-only,
 .sidebar header,
 .firefox .chromium-only,
 .chromium-only.chrome-no-popup-border {
