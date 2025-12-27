@@ -25,10 +25,12 @@ export let bgReadySignal;
 let bgReadying = !__.MV3 && new Promise(fn => (bgReadySignal = fn));
 /** @type {number} top document mode
  * -1 = top prerendered, 0 = iframe, 1 = top, 2 = top reified */
-export let TDM = isFrame ? 0 : !__.IS_BG && document.prerendering ? -1 : 1;
+export let TDM = __.ENTRY === 'offscreen' ? 1
+  : isFrame ? 0
+    : !__.IS_BG && document.prerendering ? -1 : 1;
 
-if (!__.ENTRY || __.IS_BG) {
-  isTab = true;
+if (__.ENTRY !== true) {
+  isTab = !__.ENTRY;
 } else if (__.MV3) {
   isTab = global[__.CLIENT_DATA].tabId >= 0;
 } else if (new URLSearchParams(location.search).has(kSidebar)) {
@@ -47,17 +49,18 @@ export function updateTDM(value) {
 export async function apiSendProxy({name: path}, thisObj, args) {
   const localErr = new Error();
   const msg = {data: {method: kInvokeAPI, path, args}, TDM};
-  for (let res, err, retry = 0; retry < 2; retry++) {
+  for (let res, err, retry = 0; retry < (__.MV3 ? 1 : 2); !__.MV3 && retry++) {
     try {
       if (__.MV3 || FF) {
-        res = await (FF ? browser : chrome).runtime.sendMessage(msg);
+        res = await (__.MV3 ? chrome : browser).runtime.sendMessage(msg);
       } else {
         res = await new Promise((resolve, reject) =>
           chrome.runtime.sendMessage(msg, res2 =>
             ((err = chrome.runtime.lastError)) ? reject(err) : resolve(res2)));
       }
       if (res) {
-        bgReadying = bgReadySignal = null;
+        if (!__.MV3)
+          bgReadying = bgReadySignal = null;
         if ((err = res.error)) {
           err.stack += '\n' + localErr.stack;
           throw err;
@@ -71,9 +74,10 @@ export async function apiSendProxy({name: path}, thisObj, args) {
         throw e;
       }
     }
-    if (retry) {
+    if (!__.MV3 && retry) {
       throw new Error('Stylus could not connect to the background script.');
     }
-    await bgReadying;
+    if (!__.MV3)
+      await bgReadying;
   }
 }
