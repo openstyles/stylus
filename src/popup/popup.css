@@ -36,6 +36,10 @@ body {
   width: auto;
   min-width: 246px;
   max-width: 280px;
+  html.maximized & {
+    max-width: none!important;
+    max-height: var(--100dvh);
+  }
   display: flex;
   flex-direction: column;
 }
@@ -205,13 +209,16 @@ body {
   align-items: center;
   padding: 0 calc($pad + $powerOverlap);
   border-left: var(--border);
+  html:not(.all-disabled) & {
+    position: relative;
+  }
   &:hover {
     background: hsla(180, 50%, 40%, .1);
   }
   img {
     position: absolute;
     filter: drop-shadow(1px 1px 2px #0008);
-    right: $pad;
+    right: $powerOverlap;
   }
 }
 #disableAll {

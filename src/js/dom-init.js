@@ -1,6 +1,7 @@
-import {pFavicons, pFaviconsGray} from '@/js/consts';
+import {kSidebar, pFavicons, pFaviconsGray} from '@/js/consts';
+import {isTab} from '@/js/msg-api';
 import {ownRoot} from '@/js/urls';
-import {$toggleClasses, header} from './dom';
+import {$toggleClasses, header, isSidebar} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
@@ -18,12 +19,13 @@ prefs.subscribe([pFavicons, pFaviconsGray], (key, val) => {
   $rootCL.toggle(key === pFavicons ? 'has-favicons' : 'favicons-grayed', val);
 }, true);
 
-$root.classList.add(
+$rootCL.add(
   __.MV3 ? 'mv3' : 'mv2',
   MOBILE ? 'mobile' : 'desktop',
   WINDOWS ? 'windows' : 'non-windows',
   FIREFOX ? 'firefox' : 'chromium',
   ...OPERA ? ['opera'] : VIVALDI ? ['vivaldi'] : [],
+  ...isSidebar ? [kSidebar] : isTab ? ['tab'] : [],
   navigator.maxTouchPoints ? 'touch' : 'non-touch',
 );
 // set language for a) CSS :lang pseudo and b) hyphenation

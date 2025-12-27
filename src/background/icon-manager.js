@@ -1,8 +1,10 @@
-import {kDisableAll, kStyleIds} from '@/js/consts';
+import {kDisableAll, kSidebar, kStyleIds} from '@/js/consts';
 import {__values as __prefs, subscribe} from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
 import {debounce, NOP, t} from '@/js/util';
-import {browserAction, MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
+import {
+  browserAction, browserSidebar, MF_ICON_EXT, MF_ICON_PATH, toggleListener,
+} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgInit, onSchemeChange, onUnload} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
@@ -26,8 +28,18 @@ const kShowBadge = 'show-badge';
 // https://github.com/openstyles/stylus/issues/335
 let hasCanvas = FIREFOX_ANDROID ? false : null;
 
-if (browserAction)
+if (browserAction) {
   bgInit.push(initIcons);
+  if (browserSidebar) {
+    if (__.MV3) // receiving a wake-up event, gonna unregister in subscribe() if not enabled
+      toggleListener(browserAction.onClicked, true, openSidebar);
+    subscribe('popup.sidePanel', (key, val) => {
+      browserAction.setPopup({popup: val ? '' : 'popup.html'});
+      toggleListener(browserAction.onClicked, val, openSidebar);
+    }, true);
+  }
+}
+
 onSchemeChange.add(() => {
   if (__prefs[kIconset] === -1) {
     debounce(refreshGlobalIcon);
@@ -172,6 +184,17 @@ async function loadImage(url) {
   const result = ctx.getImageData(0, 0, w, h);
   imageDataCache[url] = result;
   return result;
+}
+
+function openSidebar(tab) {
+  tab = {tabId: tab.id};
+  if (__.MV3) {
+    browserSidebar.setOptions({path: 'popup.html?' + kSidebar, ...tab});
+    browserSidebar.open(tab);
+  } else {
+    browserSidebar.setPanel({panel: 'popup.html?' + kSidebar, ...tab});
+    browserSidebar.open();
+  }
 }
 
 function refreshGlobalIcon() {

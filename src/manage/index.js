@@ -1,5 +1,6 @@
 import '@/js/dom-init';
-import {$create, $toggleDataset} from '@/js/dom';
+import {kSidebar} from '@/js/consts';
+import {$create, $toggleDataset, isSidebar} from '@/js/dom';
 import {animateElement, setupLiveDetails, setupLivePrefs} from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
 import * as prefs from '@/js/prefs';
@@ -21,11 +22,17 @@ import '@/css/target-site.css';
 
 (async () => {
   const data = __.MV3 ? prefs.clientData : await prefs.clientData;
+  const selectorOpts = '#manage-options-button, #sync-styles';
   setupLiveDetails();
   setupLivePrefs();
   UI.render(true);
   sorter.init();
-  router.makeToggle('#manage-options-button, #sync-styles', 'stylus-options', EmbeddedOptions);
+  if (isSidebar) {
+    for (const el of $$(selectorOpts))
+      el.on('click', () => location.assign(`/options.html?${kSidebar}#${el.id}`));
+  } else {
+    router.makeToggle(selectorOpts, 'stylus-options', EmbeddedOptions);
+  }
   router.makeToggle('#injection-order-button', 'injection-order', InjectionOrder);
   router.makeToggle('#update-history-button', 'update-history', UpdateHistory);
   router.update();

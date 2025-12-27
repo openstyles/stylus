@@ -1,5 +1,5 @@
 import {UCD} from '@/js/consts';
-import {$create, $createLink} from '@/js/dom';
+import {$create, $createLink, isSidebar} from '@/js/dom';
 import {important, messageBox, setupLivePrefs} from '@/js/dom-util';
 import {breakWord} from '@/js/localization';
 import {API} from '@/js/msg-api';
@@ -9,7 +9,7 @@ import {MOBILE} from '@/js/ua';
 import './config-dialog.css';
 import '@/css/onoffswitch.css';
 
-export default async function configDialog(style) {
+export default async function configDialog(style, y) {
   const AUTOSAVE_DELAY = 400;
   let saving = false;
   let bodyStyle;
@@ -89,7 +89,7 @@ export default async function configDialog(style) {
       renderValues();
       vars.forEach(renderValueState);
       box.style.setProperty('--num', vars.length);
-      if (isPopup && !MOBILE) {
+      if (isPopup) {
         adjustSizeForPopup(box);
       }
       updateButtons();
@@ -429,6 +429,12 @@ export default async function configDialog(style) {
     let {offsetWidth: width, offsetHeight: height} = contents;
     contents.style = '';
 
+    if (MOBILE || isSidebar) {
+      if (y + height < innerHeight)
+        box.style.cssText = `padding-top:${y}px; justify-content: center;`;
+      return;
+    }
+
     const dpr = devicePixelRatio;
     const elPicker = document.body.appendChild(
       $create('.colorpicker-popup', {style: 'display: none!important'}));
@@ -444,5 +450,6 @@ export default async function configDialog(style) {
     bs.cssText = bodyStyle.replace(/((min|max)-width|min-height)\s*:[^;]+|;\s*$/g, '') + `;
       min-width:${width}px !important;
       min-height:${height}px !important;`;
+    box.classList.add('center-dialog');
   }
 }

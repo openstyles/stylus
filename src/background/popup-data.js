@@ -1,37 +1,65 @@
 import '@/js/browser';
 import {kAboutBlank, kPopup, kStyleIds, kTabOvrToggle, kUrl} from '@/js/consts';
+import {onConnect, onDisconnect} from '@/js/msg';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {ownRoot, supported} from '@/js/urls';
-import {getActiveTab} from '@/js/util-webext';
+import {getActiveTab, toggleListener} from '@/js/util-webext';
 import {pingTab} from './broadcast';
 import {bgBusy} from './common';
 import reinjectContentScripts from './content-scripts';
 import {getByUrl} from './style-manager';
-import {tabCache, set as tabSet} from './tab-manager';
+import {set as tabSet, tabCache} from './tab-manager';
 import {waitForTabUrl} from './tab-util';
 
-export default async function makePopupData() {
+/** @type {Map<number,Set<chrome.runtime.Port>>} tabs can have popup & popup-in-sidebar */
+const popups = new Map();
+const onTabUpdated = async (tabId, {url}) => {
+  if (url && popups.has(tabId)) {
+    const data = await makePopupData(tabId);
+    for (const port of popups.get(tabId) || [])
+      port.postMessage(data);
+  }
+};
+/** Using chrome.tabs.onUpdated to see unsupported URLs */
+const toggleObserver = enable => toggleListener(chrome.tabs.onUpdated, enable, onTabUpdated);
+onConnect[kPopup] = port => {
+  if (!popups.size)
+    toggleObserver(true);
+  const tabId = +port.name.split(':')[1];
+  const ports = popups.get(tabId);
+  if (ports) ports.add(port);
+  else popups.set(tabId, new Set([port]));
+};
+onDisconnect[kPopup] = port => {
+  const tabId = +port.name.split(':')[1];
+  const ports = popups.get(tabId);
+  if (ports?.delete(port) && !ports.size && popups.delete(tabId) && !popups.size)
+    toggleObserver(false);
+};
+
+export default async function makePopupData(tabId) {
   let tmp;
-  let tab = await getActiveTab();
+  let tab = await (tabId != null ? browser.tabs.get(tabId) : getActiveTab());
+  tabId ??= tab.id;
   if (FIREFOX && tab.status === 'loading' && tab.url === kAboutBlank) {
-    tab = await waitForTabUrl(tab.id);
+    tab = await waitForTabUrl(tabId);
   }
   // In modern Chrome `url` is for the current tab's contents, so it may be undefined
   // when a newly created tab is still connecting to `pendingUrl`.
   const url = tab.url || tab.pendingUrl || '';
-  const td = tabCache[tab.id] || false;
+  const td = tabCache[tabId] || false;
   const isOwn = url.startsWith(ownRoot);
   const [
     ping0 = __.MV3 && !td[kPopup] && (
-      tabSet(tab.id, kPopup, true),
+      tabSet(tabId, kPopup, true),
       await reinjectContentScripts(tab)
     ),
     frames,
   ] = await Promise.all([
     isOwn
-      || supported(url) && pingTab(tab.id),
+      || supported(url) && pingTab(tabId),
     isOwn && CHROME && __.BUILD !== 'firefox' && getAllFrames(url, tab)
-      || browser.webNavigation.getAllFrames({tabId: tab.id}),
+      || browser.webNavigation.getAllFrames({tabId}),
   ]);
   // sorting frames and connecting children to parents
   const unknown = new Map(frames.map(f => [f.frameId, f]));
@@ -44,7 +72,7 @@ export default async function makePopupData() {
         unknown.set(id, {
           frameId: id,
           parentFrameId: 0,
-          styles: getByUrl(frameUrl, undefined, tab.id),
+          styles: getByUrl(frameUrl, undefined, tabId),
           url: frameUrl,
         });
       }
@@ -79,9 +107,10 @@ export default async function makePopupData() {
     if (bgBusy) await bgBusy;
     for (const f of frames) {
       if (f.url && !f.isDupe)
-        f.styles ??= getByUrl(f.url, undefined, tab.id);
+        f.styles ??= getByUrl(f.url, undefined, tabId);
     }
   }
+  /** @namespace PopupData */
   return {
     frames,
     ping0,

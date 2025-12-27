@@ -150,36 +150,31 @@
       </div>
 
       <div class="block">
-        <h2 i18n="optionsCustomizePopup"></h2>
+        <h2 i18n="general"></h2>
         <div class="items swap">
-          <label class="desktop-only">
-            <p i18n="optionsPopupWidth,+genericMinimum"> — </p>
-            <input type="number" id="popupWidth" min="200" max="800">
-          </label>
-          <label class="desktop-only">
-            <p i18n="optionsPopupWidth,+genericMaximum"> — </p>
-            <input type="number" id="popupWidthMax" min="200" max="800">
-          </label>
           <label>
-            <p i18n="popupStylesFirst"></p>
-            <input type="checkbox" id="popup.stylesFirst" class="slider">
-          </label>
-          <label>
-            <p i18n="popupAutoResort"></p>
-            <input type="checkbox" id="popup.autoResort" class="slider">
-          </label>
-          <label>
-            <p i18n="popupOpenEditInWindow">
-              <a i18n="title:popupOpenEditInWindowTooltip"
-                 data-cmd="note" class="icon" tabindex="0">
-                <i class="i-info"></i>
-              </a>
+            <p i18n="optionTargetIcons">
+              <a id="favs-note" data-cmd="note" class=icon tabindex="0"><i class=i-info></i></a>
             </p>
-            <input type="checkbox" id="openEditInWindow" class="slider">
+            <input type="checkbox" id="manage.newUI.favicons" class="slider">
           </label>
-          <label show-if="openEditInWindow">
-            <p i18n="openAsPopupWindow"></p>
-            <input type="checkbox" id="openEditInWindow.popup" class="slider">
+          <label show-if="manage.newUI.favicons">
+            <p i18n="manageFaviconsGray"></p>
+            <input type="checkbox" id="manage.newUI.faviconsGray" class="slider">
+          </label>
+          <label>
+            <p i18n="optionCompactWidth"></p>
+            <input type="number" id="compactWidth" min="100" max="9999">
+          </label>
+          <label class="chromium-only">
+            <p i18n="optionsAdvancedContextDelete"></p>
+            <input type="checkbox" id="editor.contextDelete" class="slider">
+          </label>
+          <label>
+            <p i18n="optionsUrlInstaller">
+              <a id="installer-note" data-cmd="note" class=icon tabindex="0"><i class=i-info></i></a>
+            </p>
+            <input type="checkbox" id="urlInstaller" class="slider">
           </label>
         </div>
       </div>
@@ -203,39 +198,79 @@
       </div>
 
       <div class="block">
-        <h2 i18n="general"></h2>
+        <h2 i18n="optionsCustomizePopup"></h2>
         <div class="items swap">
+          <label class="side-panel">
+            <p i18n="optionSidePanelPopup"></p>
+            <input type="checkbox" id="popup.sidePanel" class="slider">
+          </label>
+          <label class="desktop-only" show-if="!popup.sidePanel">
+            <p i18n="optionsPopupWidth,+genericMinimum"> — </p>
+            <input type="number" id="popupWidth" min="200" max="800">
+          </label>
+          <label class="desktop-only" show-if="!popup.sidePanel">
+            <p i18n="optionsPopupWidth,+genericMaximum"> — </p>
+            <input type="number" id="popupWidthMax" min="200" max="800">
+          </label>
           <label>
-            <p i18n="optionTargetIcons">
-              <a id="favs-note" data-cmd="note" class=icon tabindex="0"><i class=i-info></i></a>
+            <p i18n="popupStylesFirst"></p>
+            <input type="checkbox" id="popup.stylesFirst" class="slider">
+          </label>
+          <label>
+            <p i18n="popupAutoResort"></p>
+            <input type="checkbox" id="popup.autoResort" class="slider">
+          </label>
+          <label show-if="!popup.sidePanel.editor">
+            <p i18n="popupOpenEditInWindow">
+              <a i18n="title:popupOpenEditInWindowTooltip"
+                 data-cmd="note" class="icon" tabindex="0">
+                <i class="i-info"></i>
+              </a>
             </p>
-            <input type="checkbox" id="manage.newUI.favicons" class="slider">
+            <input type="checkbox" id="openEditInWindow" class="slider">
           </label>
-          <label show-if="manage.newUI.favicons">
-            <p i18n="manageFaviconsGray"></p>
-            <input type="checkbox" id="manage.newUI.faviconsGray" class="slider">
+          <label show-if="openEditInWindow">
+            <p i18n="openAsPopupWindow"></p>
+            <input type="checkbox" id="openEditInWindow.popup" class="slider">
           </label>
-          <label class="desktop-only">
-            <p i18n="optionConfigSidePanel" data-clickable="-1|0">
-              <a i18n="title:optionConfigSidePanelHint" data-cmd="note" class=icon tabindex="0">
+        </div>
+      </div>
+
+      <div class="block side-panel">
+        <h2 i18n="optionSidePanelActions">
+          <a class="icon" data-cmd="note" tabindex="0"
+             i18n="title:optionSidePanelActionsHint?optionSidePanelPopup">
+            <i class="i-info"></i>
+          </a>
+        </h2>
+        <div class="items swap">
+          <label show-if="!openEditInWindow">
+            <p i18n="styleEditor"></p>
+            <input type="checkbox" id="popup.sidePanel.editor" class="slider">
+          </label>
+          <label>
+            <p i18n="styleManager"></p>
+            <input type="checkbox" id="popup.sidePanel.manager" class="slider">
+          </label>
+          <label>
+            <p i18n="openOptions"></p>
+            <input type="checkbox" id="popup.sidePanel.options" class="slider">
+          </label>
+          <label show-if="!popup.sidePanel">
+            <p i18n="search">
+              <a class=icon data-cmd="note" i18n="title:optionSidePanelNumberHint" tabindex="0">
                 <i class=i-info></i>
               </a>
             </p>
-            <input type="number" id="config.sidePanel" min="-1" max="99">
+            <input type="number" id="popup.sidePanel.finder" min="-1" max="99">
           </label>
-          <label>
-            <p i18n="optionCompactWidth"></p>
-            <input type="number" id="compactWidth" min="100" max="9999">
-          </label>
-          <label class="chromium-only">
-            <p i18n="optionsAdvancedContextDelete"></p>
-            <input type="checkbox" id="editor.contextDelete" class="slider">
-          </label>
-          <label>
-            <p i18n="optionsUrlInstaller">
-              <a id="installer-note" data-cmd="note" class=icon tabindex="0"><i class=i-info></i></a>
+          <label show-if="!popup.sidePanel">
+            <p i18n="optionConfigSidePanel">
+              <a class=icon data-cmd="note" i18n="title:optionSidePanelNumberHint" tabindex="0">
+                <i class=i-info></i>
+              </a>
             </p>
-            <input type="checkbox" id="urlInstaller" class="slider">
+            <input type="number" id="popup.sidePanel.config" min="-1" max="99">
           </label>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import {kInvokeAPI} from '@/js/consts';
+import {kInvokeAPI, kSidebar} from '@/js/consts';
 
 export const FF = __.BUILD !== 'chrome' && (
   __.ENTRY
@@ -19,7 +19,7 @@ export const API = __.IS_BG
   ? global[__.API]
   : global[__.API] = new Proxy({name: ''}, apiHandler);
 export const isFrame = !__.IS_BG && window !== top;
-export let isPopup;
+export let isTab;
 
 export let bgReadySignal;
 let bgReadying = !__.MV3 && new Promise(fn => (bgReadySignal = fn));
@@ -27,10 +27,17 @@ let bgReadying = !__.MV3 && new Promise(fn => (bgReadySignal = fn));
  * -1 = top prerendered, 0 = iframe, 1 = top, 2 = top reified */
 export let TDM = isFrame ? 0 : !__.IS_BG && document.prerendering ? -1 : 1;
 
-if (__.ENTRY === true && !__.IS_BG && (
-  isPopup = location.pathname === '/popup.html'
+if (!__.ENTRY || __.IS_BG) {
+  isTab = true;
+} else if (__.MV3) {
+  isTab = global[__.CLIENT_DATA].tabId >= 0;
+} else if (new URLSearchParams(location.search).has(kSidebar)) {
+  isTab = false;
+} else if (!(
+  isTab = location.pathname !== '/popup.html'
+  // check if the popup was opened in a tab for whatever reason
 )) chrome.tabs.getCurrent(tab => {
-  isPopup = !tab;
+  isTab = !!tab;
 });
 
 export function updateTDM(value) {

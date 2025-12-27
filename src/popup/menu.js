@@ -5,7 +5,7 @@ import {API} from '@/js/msg-api';
 import {FIREFOX} from '@/js/ua';
 import {NOP, t} from '@/js/util';
 import {tabId, tabUrl} from '.';
-import {OnClick, openEditor} from './events';
+import {EntryClick, openEditor} from './events';
 
 export const menu = template.menu;
 /** @type {PopupMenuOvr[]} */
@@ -36,7 +36,7 @@ function initMenu() {
     API.styles.config(menu.styleId, kOverridden, chkOvr.checked);
     return false;
   };
-  (chkStyle = menu.$('input')).onclick = OnClick.input;
+  (chkStyle = menu.$('input')).onclick = EntryClick.input;
   (btnEdit = menu.$('[data-cmd="edit"]')).onclick = openEditor;
   btnEdit.title = '<F2>: ' + t('styleSitesPopupEdit');
   menu.$('[data-cmd="cancel"]').onclick = closeMenu;

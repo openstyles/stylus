@@ -58,7 +58,6 @@ const defaults = {
 
   // checkbox in style config dialog
   'config.autosave': true,
-  'config.sidePanel': 10,
 
   'schemeSwitcher.enabled': 'system',
   'schemeSwitcher.nightStart': '18:00',
@@ -168,7 +167,12 @@ const defaults = {
   'headerWidth.manage': 280,
 
   'popup.search.globals': false,
-
+  'popup.sidePanel': false,
+  'popup.sidePanel.config': 20,
+  'popup.sidePanel.editor': false,
+  'popup.sidePanel.finder': 4,
+  'popup.sidePanel.manager': false,
+  'popup.sidePanel.options': false,
   'popupWidth': 246,              // popup width in pixels
   'popupWidthMax': 280,           // popup width in pixels
 

@@ -1,7 +1,7 @@
 // WARNING: make sure util-webext.js runs first and sets _deepCopy
 import {k_deepCopy, kApplyPort} from '@/js/consts';
 import {onMessage} from '@/js/msg';
-import {API, isFrame, isPopup, TDM, updateTDM} from '@/js/msg-api';
+import {API, isFrame, isTab, TDM, updateTDM} from '@/js/msg-api';
 import * as styleInjector from './style-injector';
 import {FF, isXml, own, ownId, runtime} from './style-injector';
 
@@ -150,7 +150,7 @@ function applyOnMessage(req, sender, multi) {
       break;
 
     case 'styleUpdated':
-      if (req.broadcast && !isPopup || !own.sections && own.cfg.off)
+      if (req.broadcast && isTab || !own.sections && own.cfg.off)
         break;
       if (style.enabled) {
         getStyles({id: style.id}).then(res =>
@@ -229,7 +229,7 @@ function updateExposeIframes() {
 
 function updateCount() {
   let ids, str;
-  if (TDM < 0 || isPopup) return;
+  if (TDM < 0 || !isTab) return;
   if (isFrame && lazyBadge && performance.now() > 1000) lazyBadge = false;
   if (isUnstylable) API.styleViaAPI({method: 'updateCount'});
   else if (!throttled

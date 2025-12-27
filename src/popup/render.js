@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import {kStyleIdPrefix, kTabOvr, pPatchCsp, UCD} from '@/js/consts';
-import {$create, $toggleClasses} from '@/js/dom';
+import {$create, $toggleClasses, isSidebar} from '@/js/dom';
 import {splitLongTooltips} from '@/js/dom-on-load';
 import {sanitizeHtml, template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
@@ -9,8 +9,7 @@ import {ownRoot} from '@/js/urls';
 import {capitalize, clipString, stringAsRegExpStr, t} from '@/js/util';
 import {MF} from '@/js/util-webext';
 import {isBlocked, tabUrlSupported} from '.';
-import {openOptions, openStyleFinder} from './events';
-import * as Events from './events';
+import {openOptions, openStyleFinder, pSideConfig, tSideHint} from './events';
 
 const EXT_NAME = `<${MF.name}>`;
 const TPL_STYLE = template.style;
@@ -40,6 +39,7 @@ let initNoStyles = () => {
 };
 
 export function showStyles({frames}) {
+  installed.textContent = '';
   const entries = new Map();
   for (let i = 0; i < frames.length; i++) {
     if (isBlocked && !i) continue; // skip a blocked main frame
@@ -95,7 +95,7 @@ export function createWriterElement(frame, index) {
     el.textContent = url;
   } else {
     el = (url.startsWith(ownRoot) ? makeExtCrumbs : makeWebCrumbs)(crumbs, url);
-    el.onmouseenter = el.onmouseleave = el.onfocus = el.onblur = Events.toggleUrlLink;
+    el.onmouseenter = el.onmouseleave = el.onfocus = el.onblur = toggleUrlLink;
     if (!index) {
       writerIcon.onclick = () => el.click();
       writerIcon.title = el.title;
@@ -138,7 +138,6 @@ function makeCrumb(key, val, name, body, isDomain) {
   if (name) sp.name = name;
   return $create('a.write-style-link' + (isDomain ? '[subdomain]' : ''), {
     href: 'edit.html?' + new URLSearchParams(sp),
-    onclick: Events.openEditor,
     title: `${key}("${val}")`,
   }, body);
 }
@@ -192,6 +191,8 @@ export function createStyleElement(style, entry) {
     cfg.title = t('configureStyleOnHomepage') + '\n' + url;
     cfg.$('i').className = 'i-external';
   }
+  if (!isSidebar && prefs.__values[pSideConfig])
+    cfg.title += tSideHint;
   if (frameUrl) {
     const sel = 'span.frame-url';
     const frameEl = entry.$(sel) || name.insertBefore($create(sel), name.lastChild);
@@ -259,6 +260,10 @@ export function onIntersect(results) {
       style.incOvr && t('styleNotAppliedOverridden', t('styleSitesInclude')),
     ].filter(Boolean).join('\n') || '';
   }
+}
+
+function toggleUrlLink({type}) {
+  this.parentElement.classList.toggle('url()', type === 'mouseenter' || type === 'focus');
 }
 
 export function updateStateIcon(newDark, newDisabled) {

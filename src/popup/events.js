@@ -1,7 +1,9 @@
-import {kStyleIdPrefix, UCD} from '@/js/consts';
+import {kSidebar, kStyleIdPrefix, UCD} from '@/js/consts';
+import {isSidebar} from '@/js/dom';
 import {configDialog} from '@/js/dom-util';
+import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
-import {__values} from '@/js/prefs';
+import {__values, subscribe} from '@/js/prefs';
 import {CHROME, MAC} from '@/js/ua';
 import {t} from '@/js/util';
 import {getActiveTab, browserSidebar} from '@/js/util-webext';
@@ -17,8 +19,13 @@ import {createStyleElement, installed, reSort} from './render';
  * @param {StyleEntryElement} [entry]
  * @param {number} [button]
  */
+const selConfig = '.configure';
+const selEdit = '.style-edit-link';
+const selFinder = '#find-styles-btn';
+const selManager = '#popup-manage-button';
+const selOptions = '#options-btn';
 /** @type {{[sel: string]: OnClickHandler}} */
-export const OnClick = {
+export const EntryClick = {
   '.style-name': Object.assign((evt, entry) => {
     if (evt.button
     || !evt.button && (evt.altKey || evt.ctrlKey || MAC && evt.metaKey)
@@ -34,15 +41,50 @@ export const OnClick = {
     await API.styles.toggle(entry.styleId, this.checked);
     reSort();
   },
-  '.configure': Object.assign(configure, {
+  [selConfig]: Object.assign(configure, {
     btn: 1 + 2,
   }),
   '.menu-button': Object.assign((event, entry) => openMenu(entry), {
     btn: 2,
   }),
-  '.style-edit-link': openEditor,
+  [selEdit]: openEditor,
+};
+/** All these handlers accept a right-click, `btn = 2` property is added below */
+const GlobalClick = {
+  '.write-style-link': openEditor,
+  [selManager + '~ .split-btn-menu a'](evt, ...args) {
+    openManager(null, ...args);
+  },
+  [selFinder]: openStyleFinder,
+  [selManager]: openManager,
+  [selOptions]: openOptions,
 };
 export const styleFinder = {};
+export const tSideHint = '\n' + t('popupSidePanelOpenHint');
+export const pSideConfig = 'popup.sidePanel.config';
+const pSideFinder = 'popup.sidePanel.finder';
+const pSideEditor = 'popup.sidePanel.editor';
+const pSideManager = 'popup.sidePanel.manager';
+const pSideOptions = 'popup.sidePanel.options';
+const sideTitleMap = {
+  [pSideEditor]: selEdit + ', #write-wrapper a',
+  [pSideManager]: selManager,
+  [pSideOptions]: selOptions,
+  ...!isSidebar && {
+    [pSideConfig]: selConfig,
+    [pSideFinder]: selFinder,
+  },
+};
+
+for (const sel in GlobalClick)
+  GlobalClick[sel].btn = 2;
+$(selFinder).on('split-btn', async e => {
+  if (!styleFinder.on) await import('./search');
+  styleFinder.inSite(e);
+});
+$(selManager).title += t('popupManageSiteStyles');
+$(selManager).on('split-btn', openManager);
+subscribe(Object.keys(sideTitleMap), updateTitles, true);
 
 if (__.BUILD !== 'firefox' && (__.MV3 || CHROME)) {
   /* Chrome retains user activation in oncontextmenu, which handles both keyboard & right-click,
@@ -71,20 +113,6 @@ if (__.BUILD !== 'firefox' && (__.MV3 || CHROME)) {
   window.oncontextmenu = () => elClick; // `false` suppresses the menu
 }
 
-Object.assign($('#find-styles-btn'), {
-  onclick: openStyleFinder,
-}).on('split-btn', async e => {
-  if (!styleFinder.on) await import('./search');
-  styleFinder.inSite(e);
-});
-Object.assign($('#popup-manage-button'), {
-  onclick: openManager,
-  oncontextmenu: openManager,
-  title: '<Shift>: ' + t('popupManageSiteStyles'),
-}).on('split-btn', openManager);
-
-$('#options-btn').onclick = openOptions;
-
 export async function handleUpdate({style}) {
   const id = style.id;
   const entry = $id(kStyleIdPrefix + id);
@@ -110,12 +138,13 @@ export async function handleUpdate({style}) {
  */
 function clickRouter(event, btn = event.button, elClick = event.target) {
   const entry = elClick.closest('.entry');
-  if (!entry)
-    return;
+  const scope = entry ? EntryClick : GlobalClick;
   let el = elClick;
-  let fn = OnClick['.' + el.className] || OnClick[el.localName];
-  for (const selector in OnClick) {
-    if (fn || (fn = (el = elClick.closest(selector)) && OnClick[selector])) {
+  let fn = entry
+    ? scope['.' + el.className] || scope[el.localName]
+    : scope['#' + el.id] || scope['.' + el.className] || scope[el.localName];
+  for (const selector in scope) {
+    if (fn || (fn = (el = elClick.closest(selector)) && scope[selector])) {
       if (!btn || fn.btn & /* using binary AND */btn) {
         event.preventDefault();
         fn.call(el, event, entry, btn);
@@ -128,46 +157,58 @@ function clickRouter(event, btn = event.button, elClick = event.target) {
 export async function configure(event, entry, button) {
   if (!this.target) {
     let mode;
-    if (browserSidebar && (
+    if (!isSidebar && browserSidebar && (
       button ||
-      !(mode = __values['config.sidePanel']) ||
+      !(mode = __values[pSideConfig]) ||
       mode > 0 && entry.styleMeta[UCD].vars >= mode
     )) {
-      const p = `sidepanel.html?id=${entry.styleId}`;
-      if (__.BUILD === 'chrome') {
-        browserSidebar.setOptions({tabId, path: p});
-        return browserSidebar.open({tabId});
-      } else {
-        browserSidebar.setPanel({tabId, panel: p});
-        return browserSidebar.open();
-      }
+      return sidebarOpen(`sidepanel.html?id=${entry.styleId}`);
     }
-    hotkeys.pause(() => configDialog(entry.styleId));
+    hotkeys.pause(() => configDialog(entry.styleId, entry.getBoundingClientRect().bottom));
   } else {
     openURLandHide.call(this, event);
   }
 }
 
-export async function openEditor(event, entry) {
-  await API.openEditor(entry ? {id: entry.styleId} : this.search);
-  window.close();
+export async function openEditor(event, entry, button) {
+  const params = entry ? '?id=' + entry.styleId : this.search;
+  if (browserSidebar && (button === 2 || __values[pSideEditor])) {
+    return sidebarOpen('edit.html' + params);
+  }
+  await API.openEditor(params);
+  if (!isSidebar)
+    close();
 }
 
-export async function openManager(event) {
-  event.preventDefault();
-  const isSearch = tabUrl && (event.shiftKey || event.button === 2 || event.detail === 'site');
-  await API.openManager(isSearch ? {search: tabUrl, searchMode: 'url'} : {});
-  window.close();
+export async function openManager(event, entry, button) {
+  event?.preventDefault();
+  const params = tabUrl && (!event || event.shiftKey)
+    ? {search: tabUrl, searchMode: 'url'}
+    : {};
+  if (browserSidebar && (button === 2 || __values[pSideManager])) {
+    return sidebarOpen('manage.html?' + new URLSearchParams(params));
+  }
+  await API.openManager(params);
+  if (!isSidebar)
+    close();
 }
 
-export function openOptions() {
-  API.openManager({options: true});
-  close();
+export async function openOptions(event, entry, button) {
+  if (browserSidebar && (button === 2 || __values[pSideOptions])) {
+    return sidebarOpen('options.html');
+  }
+  await API.openManager({options: true});
+  if (!isSidebar)
+    close();
 }
 
-export async function openStyleFinder() {
+export async function openStyleFinder(event, entry, button) {
   this.disabled = true;
   if (!styleFinder.on) await import('./search');
+  styleFinder[kSidebar] = event === kSidebar ? event :
+    !isSidebar && browserSidebar
+      ? button === 2 ? 0 : __values[pSideFinder]
+      : undefined;
   styleFinder.inline();
 }
 
@@ -177,9 +218,41 @@ export async function openURLandHide(event) {
     url: this.href || this.dataset.href,
     index: (await getActiveTab()).index + 1,
   });
-  window.close();
+  if (!isSidebar)
+    close();
 }
 
-export function toggleUrlLink({type}) {
-  this.parentElement.classList.toggle('url()', type === 'mouseenter' || type === 'focus');
+export async function sidebarOpen(path, keepOpen) {
+  path += (path.includes('?') ? '&' : '?') + kSidebar;
+  if (isSidebar) {
+    location.assign(path);
+    return;
+  }
+  if (__.BUILD === 'chrome') {
+    browserSidebar.setOptions({tabId, path});
+    await browserSidebar.open({tabId});
+  } else {
+    browserSidebar.setPanel({tabId, panel: path});
+    await browserSidebar.open();
+  }
+  if (!keepOpen && !isSidebar)
+    close();
+}
+
+function updateTitle(el, alwaysSidebar) {
+  const title = el.title;
+  const i = title.indexOf(tSideHint);
+  if (!alwaysSidebar && i < 0)
+    el.title = title + tSideHint;
+  else if (alwaysSidebar && i > 0)
+    el.title = title.slice(0, i);
+}
+
+function updateTitles(id, alwaysSidebar) {
+  if (typeof alwaysSidebar === 'number')
+    alwaysSidebar = alwaysSidebar === 0;
+  if (id === pSideEditor)
+    updateTitle(template.style.$(selEdit), alwaysSidebar);
+  for (const el of $$(sideTitleMap[id]))
+    updateTitle(el, alwaysSidebar);
 }

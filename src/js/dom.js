@@ -1,3 +1,5 @@
+import {kSidebar} from '@/js/consts';
+
 Object.assign(EventTarget.prototype, {
   on: addEventListener,
   off: removeEventListener,
@@ -18,6 +20,7 @@ const getObjectType = /*@__PURE__*/Object.call.bind({}.toString);
  * }} */
 export const header = {};
 export const urlParams = new URLSearchParams(location.search);
+export const isSidebar = /*@__PURE__*/urlParams.has(kSidebar);
 
 export const $isTextInput = ({localName, type} = document.activeElement || {}) =>
   localName === 'textarea' ||

@@ -82,6 +82,7 @@ export default async function setClientData({
     dark: isDark,
     favicon: FIREFOX || isVivaldi,
     prefs: nondefaults,
+    tabId: tabId ?? -1,
     [kBadFavs]: (page === 'edit' || page === 'install-usercss' || page === 'manage')
       && prefs.__values['manage.newUI.favicons']
       && prefs.getDbArray(kBadFavs),

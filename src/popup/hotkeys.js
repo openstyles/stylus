@@ -202,11 +202,12 @@ export function initHotkeys({[kTabOvrToggle]: ovrData}) {
   const tMain = tAll.replace(/\n.+$/, '');
   const tWiki = tAll.match(/(.+)?$/)[0];
   const tMenu = t('popupHotkeysInfoMenu');
+  const tSide = t('popupHotkeysInfoSide', t('optionSidePanelActions'));
   let tTab = t('popupHotkeysInfoTab');
   if (MAC) tTab = tTab.replace('<Alt>', '<⌥>');
   el.onShowNote = showInfo;
   el.onHideNote = hideInfo;
-  el.title = [tMain, tTab, tMenu].join('\n');
+  el.title = [tMain, tTab, tMenu, tSide].join('\n');
   el.dataset.title = el.title.replace(/\n/g, '<hr>');
   wikiText = tWiki || t('linkStylusWiki');
 }

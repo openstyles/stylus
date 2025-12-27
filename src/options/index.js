@@ -15,6 +15,9 @@ import '@/css/onoffswitch.css';
 import './options.css';
 import shortcutsFF from './shortcuts-ff.html';
 
+/** @type {{[id: string]: {el:HTMLElement, not:string, op:string, opVal:string}[]}} */
+const showIf = {__proto__: null};
+
 tBody();
 $$('input[min], input[max]').forEach(enforceInputRange);
 if (location.hash === '#sync-styles') {
@@ -44,7 +47,11 @@ top.on('beforeunload', () => {
 $('header i').onclick = tellTopToCloseOptions;
 // actions
 $id('manage').onclick = () => {
-  API.openManager();
+  if (top === window) {
+    closeOrGoBack();
+  } else {
+    API.openManager();
+  }
 };
 $id('manage.newUI.favicons').onclick = () => {
   API.prefsDB.delete(kBadFavs);
@@ -93,8 +100,13 @@ for (const el of $$('[data-clickable]')) {
       i % 2 ? $create('span.clickable', {onclick: clickableValue}, p) : p));
 }
 for (const el of $$('[show-if]')) {
-  const id = el.getAttribute('show-if').match(/[.\w]+/)[0];
+  const [, not, id, op, opVal] = el.getAttribute('show-if')
+    .match(/^\s*(!\s*)?([.\w]+)\s*(?:(!?=)\s*(\S*))?/);
+  const alter = not && el.$('input[type="checkbox"]');
+  (showIf[id] ??= []).push({el, not, op, opVal});
   prefs.subscribe(id, toggleShowIf, true);
+  if (alter)
+    alter.on('click', toggleAlternative);
   if (el.matches('.sites')) {
     el.appendChild(template.sites.cloneNode(true));
     for (const elDep of el.$$('[id*="$"]')) {
@@ -206,19 +218,35 @@ function onTextKey(e) {
   }
 }
 
+/** @this {HTMLInputElement} */
+function toggleAlternative() {
+  if (this.checked)
+    for (const {el, not} of showIf[this.id])
+      if (not)
+        el.$('input:checked')?.click();
+}
+
 function toggleShowIf(key, val) {
-  for (const el of $$(`[show-if*="${key}"]`)) {
-    const [, not, id, op, opVal] = el.getAttribute('show-if')
-      .match(/^\s*(!\s*)?([.\w]+)\s*(?:(!?=)\s*(\S*))?/);
-    if (id === key) {
-      el.classList.toggle('disabled', !(
-        not ? !val : !op ? val :
-          op === '=' ? val == opVal : val != opVal // eslint-disable-line eqeqeq
-      ));
-    }
+  for (const {el, not, op, opVal} of showIf[key]) {
+    el.classList.toggle('disabled', !(
+      not ? !val : !op ? val :
+        op === '=' ? val == opVal : val != opVal // eslint-disable-line eqeqeq
+    ));
   }
 }
 
 function tellTopToCloseOptions() {
-  top.closeOptions();
+  if (top === window) {
+    closeOrGoBack();
+  } else {
+    top.closeOptions();
+  }
+}
+
+function closeOrGoBack() {
+  if (history.length > 1) {
+    history.back();
+  } else {
+    close();
+  }
 }

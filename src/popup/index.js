@@ -1,5 +1,6 @@
 import '@/js/dom-init';
-import {kAboutBlank, kPopup, kStyleIdPrefix} from '@/js/consts';
+import {kAboutBlank, kFind, kPopup, kSidebar, kStyleIdPrefix} from '@/js/consts';
+import {isSidebar, urlParams} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {sanitizeHtml, template} from '@/js/localization';
 import {onMessage} from '@/js/msg';
@@ -8,34 +9,43 @@ import * as prefs from '@/js/prefs';
 import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MAC, MOBILE, OPERA} from '@/js/ua';
 import {clamp, sleep0, t} from '@/js/util';
-import {getActiveTab} from '@/js/util-webext';
-import {handleUpdate, styleFinder} from './events';
+import {getActiveTab, ignoreChromeError} from '@/js/util-webext';
+import {handleUpdate, openStyleFinder, styleFinder} from './events';
 import {initHotkeys} from './hotkeys';
 import {createWriterElement, reSort, showStyles, updateStateIcon, writerIcon} from './render';
 import '@/css/onoffswitch.css';
 import './popup.css';
 
 const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
+const UNREACHABLE = 'unreachable';
 export let tabId;
 export let tabUrl;
 export let tabUrlSupported;
 export let isBlocked;
 let prevHeight;
 
-(async () => {
-  const data = (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
+(async function init(data, port) {
+  data ??= (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
   initPopup(data).then(() => {
     writerIcon.title = t(isBlocked ? 'addStyleLabel' : 'writeStyleFor') + '\n' +
       writerIcon.title;
   });
   showStyles(data);
   initHotkeys(data);
+  if (port) // re-entry from connectPort()
+    return;
   prevHeight = Math.max(innerHeight, 150);
   if (!MOBILE) window.on('resize', onWindowResize);
+  if (urlParams.has(kFind)) openStyleFinder(kSidebar);
+  (function connectPort() {
+    ignoreChromeError();
+    port = chrome.runtime.connect({name: kPopup + ':' + tabId});
+    port.onMessage.addListener(init);
+    port.onDisconnect.addListener(connectPort);
+  })();
 })();
 
 onMessage.set(onRuntimeMessage);
-
 updateStateIcon(isDark);
 onDarkChanged.add(val => updateStateIcon(val, null));
 
@@ -77,21 +87,32 @@ function onWindowResize() {
   prevHeight = h;
 }
 
+/** @param {PopupData} data */
 async function initPopup({frames, ping0, tab, urlSupported}) {
-  const kPopupWidth = 'popupWidth';
-  prefs.subscribe([kPopupWidth, 'popupWidthMax'], (key, val) => {
-    document.body.style[`${key === kPopupWidth ? 'min' : 'max'}-width`] = MOBILE ? 'none'
-      : clamp(val, 200, 800) + 'px';
-  }, true);
-  setupLivePrefs();
+  let el;
+  if (tabUrl) {
+    blockPopup(false);
+    $rootCL.remove(UNREACHABLE, 'search-results-shown');
+    $('#write-style').textContent = '';
+  } else {
+    if (MOBILE || isSidebar) {
+      $rootCL.add('maximized');
+    } else {
+      const kPopupWidth = 'popupWidth';
+      prefs.subscribe([kPopupWidth, 'popupWidthMax'], (key, val) => {
+        document.body.style[`${key === kPopupWidth ? 'min' : 'max'}-width`] =
+          clamp(val, 200, 800) + 'px';
+      }, true);
+    }
+    setupLivePrefs();
 
-  let el = $$('#toggler label')[1];
-  el.title = el.title.replace('<', MAC ? '<⌥' : '<Alt-');
+    el = $$('#toggler label')[1];
+    el.title = el.title.replace('<', MAC ? '<⌥' : '<Alt-');
 
-  for (el of $$('link[media=print]')) {
-    el.removeAttribute('media');
+    for (el of $$('link[media=print]')) {
+      el.removeAttribute('media');
+    }
   }
-
   tabId = tab.id;
   tabUrl = frames[0].url;
   tabUrlSupported = urlSupported;
@@ -150,7 +171,7 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
   if ((el = tabUrl.startsWith('file:') ? 'unreachableFileHint' : OPERA && 'unreachableOpera')) {
     info.appendChild($tag('p')).append(t(el));
   }
-  $rootCL.add('unreachable');
+  $rootCL.add(UNREACHABLE);
   $('.blocked-info').replaceWith(info);
 }
 

@@ -2,7 +2,7 @@
 import './browser';
 import {k_busy, k_deepCopy, k_msgExec, kInvokeAPI} from '@/js/consts';
 import {_execute} from './msg';
-import {apiHandler, apiSendProxy, isPopup} from './msg-api';
+import {apiHandler, apiSendProxy, isTab} from './msg-api';
 import {createPortExec, createPortProxy, initRemotePort} from './port';
 import {swPath, workerPath} from './urls';
 import {deepCopy} from './util';
@@ -34,8 +34,7 @@ async function invokeAPI({name: path}, _thisObj, args) {
   }
   // Using a fake id for our Options frame as we want to fetch styles early
   const frameId = window === top ? 0 : 1;
-  const tab = isPopup || !(path in needsTab) ? false
-    : !needsTab[path] && ownTab || await getOwnTab();
+  const tab = (isTab && path in needsTab) && (!needsTab[path] && ownTab || await getOwnTab());
   const msg = {method: kInvokeAPI, path, args};
   const sender = {url: location.href, tab, frameId};
   if (__.MV3) {

@@ -1,6 +1,7 @@
 /* postcss-simple-vars */
 $outerPad: 50px;
 $colW: 500px;
+$docStackW: 360px;
 $docMin1W: 550px;
 $docMin2W: 1050px;
 $footerH: calc(2rem + var(--pad05));
@@ -25,12 +26,14 @@ body {
   display: flex;
   flex-direction: column;
   max-height: var(--100dvh);
-  @media (min-height: $docMin1W) {
-    max-height: calc(var(--100dvh) - $outerPad * 2);
-  }
   box-sizing: border-box;
-  border: 1px solid var(--c60);
-  box-shadow: 0px 5px 15px 3px hsla(0, 0%, 0%, .35);
+  .tab & {
+    @media (min-height: $docMin1W) {
+      max-height: calc(var(--100dvh) - $outerPad * 2);
+    }
+    border: 1px solid var(--c60);
+    box-shadow: 0 5px 15px 3px hsla(0, 0%, 0%, .35);
+  }
 }
 
 main {
@@ -66,6 +69,7 @@ header {
 
 html:not(.mv3) .mv3-only,
 html:not(.has-side-panel) .side-panel,
+.sidebar header,
 .firefox .chromium-only,
 .chromium-only.chrome-no-popup-border {
   display: none;
@@ -133,6 +137,26 @@ label {
     }
   }
 }
+
+@media (max-width: $docStackW) {
+  .block {
+    flex-flow: column;
+    align-items: stretch;
+    padding: 0;
+    > * {
+      padding: var(--pad05) var(--pad);
+      box-sizing: border-box;
+    }
+  }
+  h2 {
+    flex-basis: auto;
+    background: var(--c95);
+  }
+  .no-stretch {
+    width: auto;
+  }
+}
+
 .swap input:not([type=number]):not([type=radio]) {
   margin-right: calc(var(--value-cell-w) - var(--width));
 }
@@ -232,8 +256,10 @@ footer {
   position: relative;
 }
 [data-cmd="note"] {
-  padding-left: .25rem;
-  cursor: pointer;
+  cursor: help;
+  &::before {
+    content: ' '; /* wraps the icon to the next line on overflow */
+  }
   &.broken {
     font-size: 1.5rem;
     line-height: 1rem;

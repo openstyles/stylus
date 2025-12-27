@@ -933,12 +933,8 @@ a.icon {
     border-right: none;
     border-bottom: 1px dashed var(--c65);
     padding: $pad05 $pad05 0;
-    &:not(.sticky) {
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
+    flex-flow: row wrap;
     &.sticky {
-      flex-direction: row;
       box-shadow: 0 0 3rem -.75rem;
       #basic-info {
         margin: 0;
@@ -957,7 +953,7 @@ a.icon {
       font-size: 14px;
     }
     .settings h2 {
-      max-width: 10vw;
+      max-width: max(10vw, 8ex);
     }
   }
   #header.sticky .hide-if-sticky,
@@ -979,6 +975,7 @@ a.icon {
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
+    gap: $pad05;
     #header:not(.sticky) & {
       width: 100%;
       align-items: center;
@@ -986,9 +983,6 @@ a.icon {
     #name,
     > *:first-child {
       flex-grow: 1;
-    }
-    > *:not(:last-child) {
-      margin-right: $pad05;
     }
     > a {
       order: 1;
@@ -999,12 +993,10 @@ a.icon {
     display: flex;
     flex-flow: wrap;
     align-items: center;
+    gap: $pad025 $pad075;
   }
   #new-as {
     order: 1;
-  }
-  #basic-info-enabled > :nth-last-child(n + 2) {
-    margin-right: $pad075;
   }
   #actions .buttons {
     flex-wrap: nowrap;

@@ -1039,11 +1039,8 @@
     "message": "Max window width for compact UI layout (in pixels)"
   },
   "optionConfigSidePanel": {
-    "message": "Side panel for UserCSS configurations this long",
+    "message": "UserCSS configuration",
     "description": "Label of the option shown after the number that specifies the minimum length of a UserCSS configuration to be shown in a side panel."
-  },
-  "optionConfigSidePanelHint": {
-    "message": "1..99: minimum number of configuration parameters,\n0: always side panel, you can also right-click or long-press the configuration icon,\n-1: always popup."
   },
   "optionFOUC": {
     "message": "Styles applied too late?",
@@ -1083,6 +1080,24 @@
   },
   "optionKeepAliveNote": {
     "message": "Increase it if you encounter flashing of unstyled content (FOUC) when opening a page after not interacting with the browser for a while.\n\n-1 = ManifestV2 default behavior (no limit).\n0 = ManifestV3 default behavior (half a minute).\n\nThe cache takes 30MB or more of RAM, but rebuilding it may take too much time and cause FOUC depending on the website, network speed, amount of styles, RAM size, and CPU performance."
+  },
+  "optionSidePanelActions": {
+    "message": "Side panel for popup actions"
+  },
+  "optionSidePanelActionsHint": {
+    "message": "Actions to be opened in a side panel when using the popup in standard mode (\"$optPopup$\" option is not enabled).\n\nYou can also right-click or long-press on the corresponding button in the popup.",
+    "description": "$optPopup$ is the translated title of \"Open popup in a side panel\"",
+    "placeholders": {
+      "optPopup": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionSidePanelNumberHint": {
+    "message": "1..99: minimum number of items,\n0: always side panel,\n-1: always popup."
+  },
+  "optionSidePanelPopup": {
+    "message": "Open popup in a side panel"
   },
   "optionTargetIcons": {
     "message": "Icons for target sites",
@@ -1321,6 +1336,15 @@
     "message": "Hold <Enter> (or <▤>) and press a digit to open the corresponding style's menu.",
     "description": "Preserve < and > symbols so that <hotkey> is styled as a key"
   },
+  "popupHotkeysInfoSide": {
+    "message": "Right-click or long-press on an action button to force-open in a side panel. You can change the default behavior in the options 🞂 $side$.",
+    "description": "$side$ is replaced with translation for optionSidePanelActions: \"Side panel for popup actions\"",
+    "placeholders": {
+      "side": {
+        "content": "$1"
+      }
+    }
+  },
   "popupHotkeysInfoTab": {
     "message": "Hold <Alt> to toggle styles only for the current tab.",
     "description": "Preserve < and > symbols so that <hotkey> is styled as a key"
@@ -1344,6 +1368,10 @@
   "popupOpenEditInWindowTooltip": {
     "message": "Also enabled by detaching editor tab from a browser window,\nand disabled by attaching a single editor tab into another window.",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+  },
+  "popupSidePanelOpenHint": {
+    "message": "Right-click: in side panel",
+    "description": "Tooltip for some buttons in the popup that normally open in a tab/popup."
   },
   "popupStylesFirst": {
     "message": "Styles before commands",

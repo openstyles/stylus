@@ -10,6 +10,11 @@
     flex-shrink: 0;
   }
 }
+html:not(.search-results-shown) {
+  #search-results-error, #search-results {
+    display: none;
+  }
+}
 
 #pct {
   --h: var(--outer-padding);
