@@ -20,7 +20,6 @@ $blockBorder: 1px dotted var(--c80);
 body {
   background: none;
   position: relative;
-  margin: auto;
   width: fit-content;
   padding-bottom: $footerH;
   display: flex;
@@ -31,6 +30,7 @@ body {
     @media (min-height: $docMin1W) {
       max-height: calc(var(--100dvh) - $outerPad * 2);
     }
+    margin: auto;
     border: 1px solid var(--c60);
     box-shadow: 0 5px 15px 3px hsla(0, 0%, 0%, .35);
   }
