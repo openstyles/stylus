@@ -1,18 +1,17 @@
 import '@/js/dom-init';
-import {kAboutBlank, kPopup, kStyleIdPrefix} from '@/js/consts';
+import {kAboutBlank, kPopup} from '@/js/consts';
 import {isSidebar, urlParams} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {sanitizeHtml, template} from '@/js/localization';
-import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MAC, MOBILE, OPERA} from '@/js/ua';
 import {clamp, sleep0, t} from '@/js/util';
 import {getActiveTab, ignoreChromeError} from '@/js/util-webext';
-import {handleUpdate, openStyleFinder, pSideFinder, styleFinder} from './events';
+import {openStyleFinder, pSideFinder} from './events';
 import {initHotkeys} from './hotkeys';
-import {createWriterElement, reSort, showStyles, updateStateIcon, writerIcon} from './render';
+import {createWriterElement, showStyles, updateStateIcon, writerIcon} from './render';
 import '@/css/onoffswitch.css';
 import './popup.css';
 
@@ -45,7 +44,6 @@ let prevHeight;
   })();
 })();
 
-onMessage.set(onRuntimeMessage);
 updateStateIcon(isDark);
 onDarkChanged.add(val => updateStateIcon(val, null));
 
@@ -58,23 +56,6 @@ prefs.subscribe('disableAll', (key, val) => {
   $id('disableAll-label').title = t('masterSwitch') + ':\n' +
     t(val ? 'disableAllStylesOff' : 'genericEnabledLabel');
 }, true);
-
-function onRuntimeMessage(msg) {
-  if (!tabUrl) return;
-  let ready;
-  switch (msg.method) {
-    case 'styleAdded':
-    case 'styleUpdated':
-      if (msg.reason === 'editPreview' || msg.reason === 'editPreviewEnd') return;
-      ready = handleUpdate(msg);
-      break;
-    case 'styleDeleted':
-      $id(kStyleIdPrefix + msg.style.id)?.remove();
-      reSort([]);
-      break;
-  }
-  styleFinder.on?.(msg, ready);
-}
 
 function onWindowResize() {
   const h = innerHeight;

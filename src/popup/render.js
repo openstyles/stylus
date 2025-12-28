@@ -3,13 +3,15 @@ import {kStyleIdPrefix, kTabOvr, pPatchCsp, UCD} from '@/js/consts';
 import {$create, $toggleClasses, isSidebar} from '@/js/dom';
 import {splitLongTooltips} from '@/js/dom-on-load';
 import {sanitizeHtml, template} from '@/js/localization';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {CHROME} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
 import {capitalize, clipString, stringAsRegExpStr, t} from '@/js/util';
 import {MF} from '@/js/util-webext';
-import {isBlocked, tabUrlSupported} from '.';
+import {isBlocked, tabId, tabUrl, tabUrlSupported} from '.';
 import {openOptions, openStyleFinder, pSideConfig, tSideHint} from './events';
+import {closeMenu, menu, openMenu} from './menu';
 
 const EXT_NAME = `<${MF.name}>`;
 const TPL_STYLE = template.style;
@@ -272,4 +274,19 @@ export function updateStateIcon(newDark, newDisabled) {
   if (newDark != null) srcset = srcset.replace(/\/\D*/g, newDark ? '/' : '/light/');
   if (newDisabled != null) srcset = srcset.replace(/x?\./g, newDisabled ? 'x.' : '.');
   el.srcset = srcset;
+}
+
+export async function updateStyleEntry(id, del) {
+  const entry = $id(kStyleIdPrefix + id);
+  const inMenu = id === menu.styleId && menu.isConnected;
+  const [res] = del ? [] : await API.styles.getByUrl(tabUrl, id, tabId, inMenu);
+  if (res) {
+    const el = createStyleElement(Object.assign(res.style, res), entry);
+    if (!el.isConnected) installed.append(el);
+    reSort();
+    if (inMenu) openMenu(el);
+  } else {
+    entry?.remove();
+    if (inMenu) closeMenu();
+  }
 }

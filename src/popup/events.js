@@ -1,7 +1,8 @@
-import {kSidebar, kStyleIdPrefix, UCD} from '@/js/consts';
+import {kSidebar, UCD} from '@/js/consts';
 import {isSidebar} from '@/js/dom';
 import {configDialog} from '@/js/dom-util';
 import {template} from '@/js/localization';
+import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {__values, subscribe} from '@/js/prefs';
 import {CHROME, MAC} from '@/js/ua';
@@ -9,8 +10,8 @@ import {t} from '@/js/util';
 import {getActiveTab, browserSidebar} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
-import {closeMenu, menu, openMenu} from './menu';
-import {createStyleElement, installed, reSort} from './render';
+import {openMenu} from './menu';
+import {updateStyleEntry} from './render';
 
 /**
  * @callback OnClickHandler
@@ -81,6 +82,15 @@ $(selFinder).on('split-btn', async e => {
 $(selManager).title += t('popupManageSiteStyles');
 $(selManager).on('split-btn', openManager);
 subscribe(Object.keys(sideTitleMap), updateTitles, true);
+onMessage.set(({method, reason, style}) => {
+  if (!tabUrl)
+    return;
+  const del = method === 'styleDeleted';
+  const busy = (del || method === 'styleAdded' || method === 'styleUpdated')
+    && !/^editPreview/.test(reason)
+    && updateStyleEntry(style.id, del);
+  if (busy) styleFinder.on?.(method, style.id, busy);
+});
 
 if (__.BUILD !== 'firefox' && (__.MV3 || CHROME)) {
   /* Chrome retains user activation in oncontextmenu, which handles both keyboard & right-click,
@@ -107,23 +117,6 @@ if (__.BUILD !== 'firefox' && (__.MV3 || CHROME)) {
       elClick = !clickRouter(evt, 2, elClick);
   };
   window.oncontextmenu = () => elClick; // `false` suppresses the menu
-}
-
-export async function handleUpdate({style}) {
-  const id = style.id;
-  const entry = $id(kStyleIdPrefix + id);
-  const inMenu = id === menu.styleId && menu.isConnected;
-  [style] = await API.styles.getByUrl(tabUrl, id, tabId, inMenu);
-  if (style) {
-    style = Object.assign(style.style, style);
-    const el = createStyleElement(style, entry);
-    if (!el.isConnected) installed.append(el);
-    reSort();
-    if (inMenu) openMenu(el);
-  } else {
-    entry?.remove();
-    if (inMenu) closeMenu();
-  }
 }
 
 /**

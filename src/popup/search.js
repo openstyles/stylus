@@ -101,11 +101,11 @@ const eventMap = {
   styleDeleted: onStyleDeleted,
 };
 
-styleFinder.on = async (msg, busy) => {
-  const fn = eventMap[msg.method];
+styleFinder.on = async (method, styleId, busy) => {
+  const fn = eventMap[method];
   if (!fn) return;
   if (busy) await busy;
-  return fn(msg);
+  await fn(styleId);
 };
 styleFinder.inline = () => {
   calcCategory();
@@ -177,7 +177,7 @@ for (const place of ['top', 'bottom']) {
   }
 }
 
-function onStyleDeleted({style: {id}}) {
+function onStyleDeleted(id) {
   const r = results.find(_ => _._styleId === id);
   if (r) {
     if (r.f) API.uso.pingback(rid2id(r.i), false);
@@ -186,11 +186,11 @@ function onStyleDeleted({style: {id}}) {
   }
 }
 
-async function onStyleInstalled({style}) {
-  const ri = await API.styles.getRemoteInfo(style.id);
+async function onStyleInstalled(id) {
+  const ri = await API.styles.getRemoteInfo(id);
   const r = ri && results.find(_ => ri[0] === _.i);
   if (r) {
-    r._styleId = style.id;
+    r._styleId = id;
     r._styleVars = ri[1];
     renderActionButtons(ri[0]);
   }
