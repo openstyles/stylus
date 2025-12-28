@@ -177,17 +177,42 @@ hookFunc(HarmonyExportInitFragment, 'getContent', (fn, me, args) => {
 
 hookFunc(ConcatenatedModule, 'codeGeneration', (fn, me, args) => {
   const res = Reflect.apply(fn, me, args);
+  const CMT_EXPORTS = '\n// EXPORTS\n';
+  const exports = {};
+  const modsByPath = {};
+  for (const mod of me.modules) {
+    if (mod[SYM]) {
+      Object.assign(exports, mod[SYM]);
+      modsByPath[mod.resourceResolveData.relativePath] = mod;
+    }
+  }
   for (const src of res.sources.values())
     for (let i = 0, child, exp, arr = src._source._children; i < arr.length; i++) {
       child = arr[i];
-      if (!exp && child === '\n// EXPORTS\n') {
-        exp = {};
-        for (const mod of me.modules)
-          Object.assign(exp, mod[SYM]);
-        exp = flattenExports(arr[i + 1], exp);
-        arr.splice(i + 1, 1);
+      if (typeof child === 'string' && child.startsWith(CMT_EXPORTS)) {
+        if (child === CMT_EXPORTS) {
+          exp = flattenExports(arr[i + 1], exports);
+          arr.splice(i + 1, 1);
+        } else {
+          exp = flattenExports(child.slice(CMT_EXPORTS.length), exports);
+          exp[0] = CMT_EXPORTS + exp[0];
+        }
         arr.push(exp[1]);
         arr[i] = exp[0];
+        continue;
+      }
+      if (typeof child === 'string' && child.startsWith('\n// NAMESPACE OBJECT: ')) {
+        const mod = modsByPath[child.match(/: (.+)/)[1]];
+        const modExp = mod[SYM];
+        for (const dep of mod.dependencies)
+          if (dep.getStarReexports?.(me.compilation.moduleGraph)?.exports.size)
+            Object.assign(modExp, me.compilation.moduleGraph.getModule(dep)[SYM]);
+        exp = [];
+        arr[i] = child.replace(/\n\s+(\w+): \(\) => \((\w+)\),?(?=\n)/g,
+          (str, expId, id) => modExp[expId] !== FUNC ? str
+            : exp.push(expId === id ? id : expId + ':' + id) && '')
+          .replace(/\nvar \w+ = \{/, '$&' + exp.join(', '))
+          .replace(/\n\w+\.\w+\(\w+, {\s*}\);/, '');
         continue;
       }
       for (const r of child._replacements || []) {
@@ -209,12 +234,13 @@ function hookFunc(obj, name, hook) {
 function flattenExports(str, ids) {
   let flat1 = '';
   let flat2 = '';
-  str = str.replaceAll('/* harmony export */ ', '').replace(
+  str = str.replace(/\/\* (binding|harmony export) \*\/ /g, '').replace(
     /\s*"?([$\w]+)"?: \(\) => \((?:\/\*\s*(?:(c)onst|(f)unc|\w+)\s*\*\/\s*)?([$\w]+)\),?\s*/g,
     (match, id, isConst, isFunc, dest) => {
+      const idd = id === 'default' ? dest : id;
       if (
-        (isFunc ??= ids?.[id] === FUNC) ||
-        (isConst ??= (ids?.[id] === CONST || dest === '__WEBPACK_DEFAULT_EXPORT__'))
+        (isFunc ??= ids?.[idd] === FUNC) ||
+        (isConst ??= (ids?.[idd] === CONST || dest === '__WEBPACK_DEFAULT_EXPORT__'))
       ) {
         match = `\n${RG.exports}.${id} = ${dest};`;
         if (isFunc) flat1 += match; else flat2 += match;
