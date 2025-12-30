@@ -15,7 +15,7 @@ import {tabCache, set as tabSet} from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
 import * as usercssMan from '../usercss-manager';
 import * as uswApi from '../usw-api';
-import cacheData, * as styleCache from './cache';
+import * as urlCache from './cache';
 import {buildCache} from './cache-builder';
 import './init';
 import {onBeforeSave, onSaved} from './fixer';
@@ -34,7 +34,7 @@ export async function config(id, prop, value) {
   const d = dataMap.get(id);
   style[prop] = (d.preview || {})[prop] = value;
   if (prop === kInclusions || prop === kOverridden || prop === kExclusions)
-    styleCache.clear();
+    urlCache.updateSections(id);
   await save(style, 'config');
 }
 
@@ -220,14 +220,14 @@ export function getSectionsByUrl(url, {id, init, dark} = {}) {
     url = v || url;
   }
   const tabOverrides = td[kTabOvr];
-  const cache = (v = cacheData.get(url)) || {
+  const cache = (v = urlCache.data.get(url)) || {
     url,
     maybe: null,
     sections: {},
   };
   if (!v || (v = cache.maybe) || tabOverrides)
     buildCache(cache, url, v, tab.id, tabOverrides);
-  styleCache.add(cache);
+  urlCache.add(cache);
   const secs = cache.sections;
   const secsArr = id
     ? (v = secs[id]) && tabOverrides?.[id] !== false
@@ -272,7 +272,7 @@ export async function importMany(items) {
       };
     }
   }
-  styleCache.clear();
+  urlCache.clear();
   setTimeout(() => messages.forEach(args => broadcastStyleUpdated(...args)), IMPORT_THROTTLE);
   return Promise.all(res);
 }
@@ -313,7 +313,7 @@ export function remove(id, reason, many) {
   const sync = reason !== 'sync';
   const uuid = style._id;
   if (sync) syncMan.remove(uuid, Date.now());
-  styleCache.updateSections(id, true);
+  urlCache.updateSections(id, true);
   dataMap.delete(id);
   uuidIndex.delete(uuid);
   if (!many) {
@@ -408,7 +408,7 @@ export async function toggleMany(ids, enabled) {
 export function toggleSiteOvr(id, val, type, isAdd) {
   const style = dataMap.get(id).style;
   if (toggleSiteOvrImpl(style, val, type, isAdd) + toggleSiteOvrImpl(style, val, !type, false)) {
-    styleCache.clear();
+    urlCache.updateSections(id);
     return save(style, 'config', {
       style: {id, enabled: isAdd ? type : style.enabled},
     });
@@ -424,7 +424,7 @@ export function toggleTabOvrMany(tabId, overrides) {
   const messages = [];
   const td = tabCache[tabId];
   const url = td[kUrl][0];
-  const cache = cacheData.get(url);
+  const cache = urlCache.data.get(url);
   let tabOvr = td[kTabOvr] || {}; // not assigning it yet as it may end up empty
   for (const key in overrides) {
     const id = +key;

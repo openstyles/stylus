@@ -1,10 +1,9 @@
-import {DB, kInjectionOrder, kResolve, kTabOvr} from '@/js/consts';
+import {DB, kInjectionOrder, kResolve} from '@/js/consts';
 import {onConnect, onDisconnect} from '@/js/msg';
 import {STORAGE_KEY} from '@/js/prefs';
 import * as colorScheme from '../color-scheme';
 import {bgBusy, bgInit, onSchemeChange} from '../common';
 import {db, draftsDB, execMirror, prefsDB} from '../db';
-import * as styleCache from './cache';
 import './init';
 import {fixKnownProblems} from './fixer';
 import {broadcastStyleUpdated, dataMap, setOrderImpl, storeInMap} from './util';
@@ -30,13 +29,6 @@ onSchemeChange.add(() => {
     if (colorScheme.SCHEMES.includes(style.preferScheme)) {
       broadcastStyleUpdated(style, 'colorScheme');
     }
-  }
-});
-
-styleCache.setOnDeleted(val => {
-  for (const sec of Object.values(val.sections)) {
-    if (sec[kTabOvr] == null)
-      dataMap.get(sec.id)?.urls.delete(val.url);
   }
 });
 
