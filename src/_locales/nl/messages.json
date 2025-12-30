@@ -807,10 +807,7 @@
     "message": "Max. vensterbreedte voor compacte UI-indeling (in pixels)"
   },
   "optionConfigSidePanel": {
-    "message": "Zijpaneel voor UserCSS-configuraties van deze lengte"
-  },
-  "optionConfigSidePanelHint": {
-    "message": "1..99: minimale aantal configuratieparameters,0: altijd zijpaneel, u kunt ook met rechts klikken op of het configuratiepictogram ingedrukt houden,-1: altijd pop-up."
+    "message": "UserCSS-configuratie"
   },
   "optionFOUC": {
     "message": "Stijlen te laat toegepast?"
@@ -845,6 +842,23 @@
   },
   "optionKeepAliveNote": {
     "message": "Verhoog deze waarde als u knipperende inhoud zonder stijlen (‘FOUC’) ondervindt bij het openen van een pagina nadat u de browser even niet hebt gebruikt.\n\n-1 = Standaardgedrag voor ManifestV2 (geen limiet).\n0 = Standaardgedrag voor ManifestV3 (een halve minuut).\n\nDe cache gebruikt 30MB of meer RAM, maar opnieuw opbouwen ervan kan te veel tijd kosten en FOUC veroorzaken, afhankelijk van de website, netwerksnelheid, hoeveelheid stijlen, RAM-grootte en CPU-prestaties."
+  },
+  "optionSidePanelActions": {
+    "message": "Zijpaneel voor pop-upacties"
+  },
+  "optionSidePanelActionsHint": {
+    "message": "Te openen acties in een zijpaneel bij gebruik van de pop-up in standaardmodus (de optie ‘$optPopup$’ is niet ingeschakeld).\n\nU kunt ook met rechts klikken op of de bijbehorende knop in de pop-up ingedrukt houden.",
+    "placeholders": {
+      "optPopup": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionSidePanelNumberHint": {
+    "message": "1..99: minimale aantal items,\n0: altijd zijpaneel,\n-1: altijd pop-up."
+  },
+  "optionSidePanelPopup": {
+    "message": "Pop-up openen in een zijpaneel"
   },
   "optionTargetIcons": {
     "message": "Pictogrammen voor doelwebsites"
@@ -1061,6 +1075,14 @@
   "popupHotkeysInfoMenu": {
     "message": "Houd <Enter> (of <▤>) ingedrukt en druk op een cijfer om het menu van de bijbehorende stijl te openen."
   },
+  "popupHotkeysInfoSide": {
+    "message": "Klik met rechts op of houd een actieknop ingedrukt om geforceerd te openen in een zijpaneel. U kunt het standaardgedrag wijzigen in de opties 🞂 $side$.",
+    "placeholders": {
+      "side": {
+        "content": "$1"
+      }
+    }
+  },
   "popupHotkeysInfoTab": {
     "message": "Houd <Alt> ingedrukt om stijlen alleen voor het huidige tabblad in/uit te schakelen."
   },
@@ -1078,6 +1100,9 @@
   },
   "popupOpenEditInWindowTooltip": {
     "message": "Wordt tevens ingeschakeld door het losmaken van het editor-tabblad,\nen uitgeschakeld door het vastmaken van een los editor-tabblad aan een ander venster."
+  },
+  "popupSidePanelOpenHint": {
+    "message": "Rechtsklikken: in zijpaneel"
   },
   "popupStylesFirst": {
     "message": "Stijlen vóór opdrachten"
@@ -1218,7 +1243,7 @@
     "message": "Verwijderde sectie herstellen"
   },
   "sectionUserCSS": {
-    "message": "De in secties verdeelde editor ondersteunt geen UserCSS-syntaxis.\nU kunt deze in een nieuwe stijl gebruiken:\n1. klik op de knop Exporteren in deze editor, kopieer de tekst,\n2. maak een nieuwe stijl aan in de stijlbeheerder of de pop-up,\n3. schakel ‘[x] $optUserCSS’ in,\n4. plak de gekopieerde tekst, waarbij de standaardsjabloon wordt overschreven,\n5. sla de nieuwe stijl op, schakel de oude stijl uit of verwijder deze.",
+    "message": "De in secties verdeelde editor ondersteunt geen UserCSS-syntaxis.\nU kunt deze in een nieuwe stijl gebruiken:\n1. klik op de knop Exporteren in deze editor, kopieer de tekst,\n2. maak een nieuwe stijl aan in de stijlbeheerder of de pop-up,\n3. schakel ‘[x] $optUserCSS$’ in,\n4. plak de gekopieerde tekst, overschrijf de standaardsjabloon,\n5. sla de nieuwe stijl op, schakel de oude stijl uit of verwijder deze.",
     "placeholders": {
       "optUserCSS": {
         "content": "$1"

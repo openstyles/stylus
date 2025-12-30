@@ -810,6 +810,9 @@
   "newStyleAsUserCSS": {
     "message": "以 UserCSS 編寫新樣式"
   },
+  "newStyleAsUserCSSHint": {
+    "message": "切換此選項時，若當前樣式為新建立（即尚未編輯或儲存），編輯器中的樣式也會隨之切換。"
+  },
   "noStylesForSite": {
     "message": "目前網站沒有安裝任何樣式。"
   },
@@ -829,10 +832,7 @@
     "message": "精簡使用者介面版面配置的最大視窗寬度（畫素）"
   },
   "optionConfigSidePanel": {
-    "message": "用於 UserCSS 組態的側邊面板長度"
-  },
-  "optionConfigSidePanelHint": {
-    "message": "1..99：組態參數的最小數字，\n0：一律使用側邊面板，您亦可右鍵點選或長按組態圖示，\n-1：一律使用彈出式視窗。"
+    "message": "UserCSS 組態"
   },
   "optionFOUC": {
     "message": "樣式套用得太晚了嗎？"
@@ -867,6 +867,23 @@
   },
   "optionKeepAliveNote": {
     "message": "如果您在一段時間未與瀏覽器互動後，開啟頁面時遇到未套用樣式內容閃爍 (FOUC)，請增加該值。\n\n-1 = ManifestV2 預設行為（無限制）。\n0 = ManifestV3 預設行為（半分鐘）。\n\n快取需要 30MB 或更多的 RAM，但重建快取可能會花費太多時間並導致 FOUC，這取決於網站、網路速度、樣式數量、RAM 大小與 CPU 效能。"
+  },
+  "optionSidePanelActions": {
+    "message": "彈出式動作側邊面板"
+  },
+  "optionSidePanelActionsHint": {
+    "message": "在標準模式下使用彈出視窗時，將於側邊面板開啟的操作項目（「$optPopup$」選項未啟用）。\n\n您亦可於彈出視窗中對應的按鈕進行右鍵點擊或長按操作。",
+    "placeholders": {
+      "optPopup": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionSidePanelNumberHint": {
+    "message": "1..99：最低項目數量，\n0：一律使用側邊面板，\n-1：一律使用彈出式視窗。"
+  },
+  "optionSidePanelPopup": {
+    "message": "在側邊面板中開啟彈出式視窗"
   },
   "optionTargetIcons": {
     "message": "目標網站圖示"
@@ -1086,6 +1103,14 @@
   "popupHotkeysInfoMenu": {
     "message": "按住 <Enter>（或 <▤>）並按下數字鍵，即可開啟對應樣式的選單。"
   },
+  "popupHotkeysInfoSide": {
+    "message": "在動作按鈕上點擊右鍵或長按，即可強制在側邊面板中開啟。您可在選項 🞂 $side$ 中變更預設行為。",
+    "placeholders": {
+      "side": {
+        "content": "$1"
+      }
+    }
+  },
   "popupHotkeysInfoTab": {
     "message": "按住 <Alt> 鍵僅切換目前分頁的樣式。"
   },
@@ -1103,6 +1128,9 @@
   },
   "popupOpenEditInWindowTooltip": {
     "message": "也透過從瀏覽器視窗分離編輯器分頁來啟用，\n並透過將單獨的編輯器分頁附加到其他視窗中來停用。"
+  },
+  "popupSidePanelOpenHint": {
+    "message": "右鍵點選：在側邊面板"
   },
   "popupStylesFirst": {
     "message": "在工具欄按鈕命令行前列出樣式"
@@ -1244,6 +1272,14 @@
   },
   "sectionRestore": {
     "message": "復原已移除的部份"
+  },
+  "sectionUserCSS": {
+    "message": "分段編輯器不支援 UserCSS 語法。\n您可以在新樣式中使用：\n1. 點擊此編輯器的「匯出」按鈕，複製文字，\n2. 在樣式管理程式或彈出視窗中建立新樣式，\n3. 啟用「[x] $optUserCSS$」，\n4. 將複製的文字貼上，覆蓋預設範本，\n5. 儲存新樣式，停用或移除舊樣式。",
+    "placeholders": {
+      "optUserCSS": {
+        "content": "$1"
+      }
+    }
   },
   "sections": {
     "message": "樣式段"

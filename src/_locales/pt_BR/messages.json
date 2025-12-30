@@ -301,6 +301,9 @@
   "findStyles": {
     "message": "Encontrar estilos"
   },
+  "findStylesOnline": {
+    "message": "Clique para encontrar estilos online."
+  },
   "genericAdd": {
     "message": "Adicionar"
   },
@@ -500,6 +503,9 @@
   },
   "linterRulesLink": {
     "message": "Ver uma lista completa de regras"
+  },
+  "liveReloadAfterInstall": {
+    "message": "Recarregar após a instalação"
   },
   "liveReloadError": {
     "message": "Não foi possível assistir o arquivo"

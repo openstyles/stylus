@@ -829,10 +829,7 @@
     "message": "Maksymalna szerokość okna dla kompaktowego układu interfejsu użytkownika (w pikselach)"
   },
   "optionConfigSidePanel": {
-    "message": "Panel boczny do konfiguracji UserCSS w tym formacie"
-  },
-  "optionConfigSidePanelHint": {
-    "message": "1..99: minimalna liczba parametrów konfiguracyjnych,0: zawsze panel boczny, możesz również kliknąć prawym przyciskiem myszy lub nacisnąć i przytrzymać ikonę konfiguracji,-1: zawsze wyskakujące okienko."
+    "message": "Konfiguracja UserCSS"
   },
   "optionFOUC": {
     "message": "Style zastosowane zbyt późno?"
@@ -867,6 +864,23 @@
   },
   "optionKeepAliveNote": {
     "message": "Zwiększ ją, jeśli napotkasz miganie niestylizowanej zawartości (FOUC) podczas otwierania strony po pewnym czasie niekorzystania z przeglądarki.\n\n-1 = domyślne zachowanie ManifestV2 (bez ograniczeń).\n0 = domyślne zachowanie ManifestV3 (pół minuty).\n\nPamięć podręczna zajmuje 30 MB lub więcej pamięci RAM, ale jej odbudowa może zająć zbyt dużo czasu i spowodować FOUC w zależności od witryny, szybkości sieci, liczby stylów, rozmiaru pamięci RAM i wydajności procesora."
+  },
+  "optionSidePanelActions": {
+    "message": "Panel boczny dla wyskakującego okienka czynności"
+  },
+  "optionSidePanelActionsHint": {
+    "message": "Czynności otwierane w panelu bocznym podczas korzystania z wyskakującego okienka w trybie standardowym (opcja „$optPopup$” nie jest włączona). Możesz również kliknąć prawym przyciskiem myszy lub nacisnąć i przytrzymać odpowiedni przycisk w wyskakującym okienku.",
+    "placeholders": {
+      "optPopup": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionSidePanelNumberHint": {
+    "message": "1..99: minimalna liczba elementów, 0: zawsze panel boczny, -1: zawsze wyskakujące okienko."
+  },
+  "optionSidePanelPopup": {
+    "message": "Otwórz wyskakujące okienko w panelu bocznym"
   },
   "optionTargetIcons": {
     "message": "Ikony witryn docelowych"
@@ -1089,6 +1103,14 @@
   "popupHotkeysInfoMenu": {
     "message": "Przytrzymaj <Enter> (lub <▤>) i naciśnij cyfrę, aby otworzyć menu odpowiedniego stylu."
   },
+  "popupHotkeysInfoSide": {
+    "message": "Kliknij prawym przyciskiem myszy lub naciśnij i przytrzymaj przycisk czynności, aby wymusić otwarcie w panelu bocznym. Domyślne zachowanie możesz zmienić w opcjach 🞂 $side$.",
+    "placeholders": {
+      "side": {
+        "content": "$1"
+      }
+    }
+  },
   "popupHotkeysInfoTab": {
     "message": "Przytrzymaj <Alt>, aby przełączać style tylko dla bieżącej karty."
   },
@@ -1099,13 +1121,16 @@
     "message": "Zarządzaj stylami witryny"
   },
   "popupMenuButtonTooltip": {
-    "message": "Menu akcji"
+    "message": "Menu czynności"
   },
   "popupOpenEditInWindow": {
     "message": "Otwórz edytor w nowym oknie"
   },
   "popupOpenEditInWindowTooltip": {
     "message": "Także włączone przez odłączenie karty edytora od okna przeglądarki,\nwyłączone przez dołączenie pojedynczej karty edytora do innego okna."
+  },
+  "popupSidePanelOpenHint": {
+    "message": "Kliknij prawym przyciskiem myszy: w panelu bocznym"
   },
   "popupStylesFirst": {
     "message": "Style przed poleceniami"
@@ -1249,7 +1274,7 @@
     "message": "Przywróć usuniętą sekcję"
   },
   "sectionUserCSS": {
-    "message": "Edytor sekcji nie obsługuje składni UserCSS.\nMożesz użyć go w nowym stylu:\n1. Kliknij przycisk Eksportuj w tym edytorze, skopiuj tekst.\n2. Utwórz nowy styl w menedżerze stylów lub w wyskakującym okienku.\n3. Włącz „[x] $optUserCSS”.\n4. Wklej skopiowany tekst, nadpisując domyślny szablon.\n5. Zapisz nowy styl, wyłącz lub usuń stary styl.",
+    "message": "Edytor sekcji nie obsługuje składni UserCSS. Możesz użyć go w nowym stylu: 1. Kliknij przycisk Eksportuj w tym edytorze, skopiuj tekst. 2. Utwórz nowy styl w menedżerze stylów lub w wyskakującym okienku. 3. Włącz „[x] $optUserCSS$”. 4. Wklej skopiowany tekst, nadpisując domyślny szablon. 5. Zapisz nowy styl, wyłącz lub usuń stary styl.",
     "placeholders": {
       "optUserCSS": {
         "content": "$1"

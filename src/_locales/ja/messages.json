@@ -775,6 +775,9 @@
   "newStyleAsUserCSS": {
     "message": "スタイルをUserCSSとして新規作成"
   },
+  "newStyleAsUserCSSHint": {
+    "message": "オプションを切り替えると、スタイルが新しい場合（すなわち新規作成されて編集も保存もされていない場合）、エディタ内の現在のスタイルも切り替わります。"
+  },
   "noStylesForSite": {
     "message": "該当するスタイルはありません。"
   },
@@ -794,10 +797,7 @@
     "message": "コンパクトUIの最大ウィンドウ幅 (ピクセル単位)"
   },
   "optionConfigSidePanel": {
-    "message": "UserCSS設定のサイドパネルの幅"
-  },
-  "optionConfigSidePanelHint": {
-    "message": "1..99: 設定パラメータの最小値、\n0: 常にサイドパネルを表示。設定アイコンを右クリックか長押しでも表示可、\n-1: 常にポップアップ表示。"
+    "message": "UserCSS設定"
   },
   "optionFOUC": {
     "message": "スタイルの適用が遅すぎる?"
@@ -832,6 +832,23 @@
   },
   "optionKeepAliveNote": {
     "message": "しばらくブラウザで操作していなかったページを開いたときに、スタイルを適用していないコンテンツが点滅 (FOUC) する場合は、この値を増やしてください。\n\n-1 = マニフェスト V2 のデフォルト設定 (リミットなし)\n0 = マニフェスト V3 のデフォルト設定 (30秒)\n\nキャッシュは30MB以上のRAMを占有しますが、Webサイト、ネットワーク速度、スタイルの数、RAM容量、CPU性能によっては、キャッシュの再構築に時間がかかり、FOUC が発生する可能性があります。"
+  },
+  "optionSidePanelActions": {
+    "message": "ポップアップアクションのサイドパネル"
+  },
+  "optionSidePanelActionsHint": {
+    "message": "標準モード（「$optPopup$」オプションが有効になっていない状態）でポップアップを使用時に、サイドパネルで開くアクション。\n\n右クリック、もしくは、ポップアップ内の対応するボタンを長押しでも可能。",
+    "placeholders": {
+      "optPopup": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionSidePanelNumberHint": {
+    "message": "1...99: 項目の最小値、\n0: 常にサイドパネル、\n-1: 常にポップアップ。"
+  },
+  "optionSidePanelPopup": {
+    "message": "サイドパネルでポップアップを開く"
   },
   "optionTargetIcons": {
     "message": "対象サイトのアイコン"
@@ -1051,6 +1068,14 @@
   "popupHotkeysInfoMenu": {
     "message": "<Enter>(または<▤>) を押したまま数字キーを押すと、対応するスタイルのメニューを開きます。"
   },
+  "popupHotkeysInfoSide": {
+    "message": "右クリック、もしくは、アクションボタンの長押しで、サイドパネルでポップアップを開くことを強制できます。デフォルト動作は、次のオプションで変更できます 🞂 $side$。 ",
+    "placeholders": {
+      "side": {
+        "content": "$1"
+      }
+    }
+  },
   "popupHotkeysInfoTab": {
     "message": "<Alt>を押すと、現在のタブのスタイルのみを切り替えます。"
   },
@@ -1068,6 +1093,9 @@
   },
   "popupOpenEditInWindowTooltip": {
     "message": "エディタのタブをブラウザのウィンドウから切り離すことでも有効になります。\nそして、分離したエディタのタブを他のブラウザのウィンドウに結合すれば無効になります。"
+  },
+  "popupSidePanelOpenHint": {
+    "message": "右クリック: サイドパネルで"
   },
   "popupStylesFirst": {
     "message": "スタイル一覧をコマンドボタンより上に表示"
@@ -1209,6 +1237,14 @@
   },
   "sectionRestore": {
     "message": "削除したセクションを復旧"
+  },
+  "sectionUserCSS": {
+    "message": "このセクションエディタはUserCSSの構文をサポートしません。\n新しいスタイルを作成するとUserCSSの構文を使用できます:\n1. エディタのエクスポートボタンをクリックし、テキストをコピーします。\n2. スタイルマネージャかポップアップで新しいスタイルを作成します。\n3. 「[x] $optUserCSS$」を有効にします。 \n4. コピーしたテキストを貼り付けて、デフォルトのテンプレートを上書きします。\n5. 新しいスタイルを保存し、元のスタイルを無効にするか削除します。",
+    "placeholders": {
+      "optUserCSS": {
+        "content": "$1"
+      }
+    }
   },
   "sections": {
     "message": "セクション"
