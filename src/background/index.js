@@ -103,12 +103,8 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
         .then(() => usercssMan.toggleUrlInstaller()),
       DNR.getSessionRules().then(rules => updateSessionRules(undefined, getRuleIds(rules))),
     );
-    refreshIconsWhenReady();
   }
-  (async () => {
-    if (bgBusy) await bgBusy;
-    mirrorStorage(dataMap);
-  })();
+  onStartup();
 });
 
 if (__.MV3) {
@@ -132,6 +128,9 @@ async function onStartup() {
     const {date} = await draftsDB.get(id) || {};
     if (date < minDate) draftsDB.delete(id);
   }
+  if (bgBusy)
+    await bgBusy;
+  mirrorStorage(dataMap);
 }
 
 onMessage.set((m, sender) => {

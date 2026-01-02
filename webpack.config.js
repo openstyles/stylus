@@ -92,6 +92,7 @@ const VARS = {
   PAGE_BG: PAGE_BG.split('/').pop(),
   ZIP: !!ZIP,
 };
+const MIRROR_PREFIX = 'http://_/';
 const DEBUG_MODE = {
   GENERAL: 1,
   PORT: 2,
@@ -492,6 +493,8 @@ module.exports = [
       new RawEnvPlugin({
         ENTRY: 'sw',
         IS_BG: true,
+        MIRROR_PREFIX,
+        MIRROR_PREFIX_LEN: MIRROR_PREFIX.length,
       }, {
         KEEP_ALIVE: 'global.keepAlive',
       }),
