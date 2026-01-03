@@ -172,6 +172,12 @@
   "copy": {
     "message": "Kopeeri lõikelauale"
   },
+  "customNameHint": {
+    "message": "Sisesta siia kohandatud nimi stiili ümbernimetamiseks kasutajaliideses, ilma selle uuendusi mõjutamata"
+  },
+  "customNameResetHint": {
+    "message": "Lõpeta kohandatud nime kasutamine, lülitu stiili enda nimele"
+  },
   "dateInstalled": {
     "message": "Paigaldamise kuupäev"
   },
@@ -196,8 +202,19 @@
   "disableAllStyles": {
     "message": "Lülita kõik stiilid välja"
   },
+  "disableAllStylesOff": {
+    "message": "Stiilid on välja lülitatud"
+  },
   "disableStyleLabel": {
     "message": "Keela"
+  },
+  "draftTitle": {
+    "message": "Mustandi taastamine, loodud $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
   },
   "dragDropMessage": {
     "message": "Lohista importimiseks oma varundusfail kuskile siia lehele."
@@ -217,8 +234,14 @@
   "editStyleLabel": {
     "message": "Muuda"
   },
+  "editorSettings": {
+    "message": "Redaktori sätted"
+  },
   "enableStyleLabel": {
     "message": "Luba"
+  },
+  "exportCompatible": {
+    "message": "Ekspordi (ühilduvusrežiim)"
   },
   "exportLabel": {
     "message": "Ekspordi"
@@ -255,14 +278,23 @@
   "filteredStylesAllHidden": {
     "message": "Hetkel rakendatud filtritele ei vasta ükski stiil"
   },
+  "find": {
+    "message": "Leia"
+  },
   "findStyles": {
     "message": "Leia stiile"
+  },
+  "general": {
+    "message": "Üldised"
   },
   "genericAdd": {
     "message": "Lisa"
   },
   "genericClone": {
     "message": "Klooni"
+  },
+  "genericDescription": {
+    "message": "Kirjeldus"
   },
   "genericDisabledLabel": {
     "message": "Keelatud"
@@ -863,11 +895,26 @@
       }
     }
   },
+  "styleManager": {
+    "message": "Stiilide haldur"
+  },
   "styleMissingName": {
     "message": "Sisesta nimi"
   },
+  "styleName": {
+    "message": "Stiili nimi"
+  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Stiili ei rakendatud selle \"regexp()\" vale kasutuse tõttu"
+  },
+  "styleNotAppliedSchemeDark": {
+    "message": "Seda stiili rakendatakse ainult Tumedas Režiimis"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Seda stiili rakendatakse ainult Heledas Režiimis"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "Tume/Hele režiim"
   },
   "styleRegexpInvalidExplanation": {
     "message": "Teatud \"regexp()\" reegleid ei suudetud üldse kompileerida."
@@ -898,6 +945,9 @@
   },
   "styleSaveLabel": {
     "message": "Salvesta"
+  },
+  "styleSettings": {
+    "message": "Stiili sätted"
   },
   "styleToMozillaFormatHelp": {
     "message": "Koodi Mozilla-vormingut saab üles laadida saidile userstyles.org ja kasutada klassikalise Firefoxi Stylish'iga"
@@ -937,6 +987,9 @@
   },
   "unreachableFileHint": {
     "message": "Stylus saab ligi pääseda file:// URLidele ainult siis, kui märgistad vastava kasti Stylus laiendusel chrome://extensions lehel"
+  },
+  "unreachableMozSiteHint": {
+    "message": "Firefox 60-s ja uuemas on vaja eemaldada see domeen eelistusest <extensions.webextensions.restrictedDomains> lehel <about:config>."
   },
   "unreachableMozSiteHintOldFF": {
     "message": "Ainult Firefox 59 ja uuem on võimalik seadistada lubama WebExtensionsil lisada stiilielemente <CSP>-kaitstud saitidele nagu see."
