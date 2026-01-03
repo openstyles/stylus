@@ -173,7 +173,9 @@
                                    .updatable:not(.can-update):not(.update-problem):not(.update-done)">
         </label>
       </div>
+    </div>
 
+    <div class="settings-column" id="wide-inputs">
       <div id="search-wrapper">
           <input id="search" type="search" i18n="placeholder:search" spellcheck="false"
                  data-filter=":not(.not-matching)"
@@ -236,7 +238,7 @@
           </template>
         </div>
 
-        <div id="backup" class="flex wrap">
+        <div id="backup" class="flex wrap center-items">
           <button id="sync-styles" class="icon flex center-items" i18n="title:optionsCustomizeSync">
             <img hidden>
             <i class=i-cloud></i>
@@ -251,6 +253,24 @@
       </main>
     </div>
 
+    <div class="settings-column" id="links">
+      <details data-pref="manage.links.expanded">
+        <summary></summary>
+        <main><% _.forEach([
+          ['userstyles.world/explore', /*i18n*/'linkGetShareStyles'],
+          ['uso.kkx.one/browse/styles', /*i18n*/'linkGetStyles'],
+          ['github.com/openstyles/stylus/wiki', /*i18n*/'linkGetHelp'],
+          ['github.com/openstyles/stylus', , 'GitHub'],
+          ['explore.transifex.com/github-7/Stylus/', /*i18n*/'linkTranslate'],
+        ], ([url, tl, text]) => { if (tl) { %>
+          <a href="https://<%= url %>" target="_blank" class="target" i18n="<%= tl %>"></a>
+        <% } else { %>
+          <a href="https://<%= url %>" target="_blank" class="target"><%= text %></a>
+        <% }}); %>
+        </main>
+      </details>
+    </div>
+
     <div class="settings-column" id="backup-hint">
       <details data-pref="manage.backup.expanded">
         <summary></summary>
@@ -258,19 +278,6 @@
       </details>
     </div>
 
-    <div class="settings-column" id="links">
-      <details data-pref="manage.links.expanded">
-        <summary></summary>
-        <main>
-          <a href="https://userstyles.world/explore" target="_blank" i18n="linkGetShareStyles"></a>
-          <a href="https://uso.kkx.one/browse/styles" target="_blank" i18n="linkGetStyles"
-             style="--filter: grayscale(1) brightness(2)"></a>
-          <a href="https://github.com/openstyles/stylus/wiki" target="_blank" i18n="linkGetHelp"></a>
-          <a href="https://github.com/openstyles/stylus" target="_blank">GitHub</a>
-          <a href="https://explore.transifex.com/github-7/Stylus/" target="_blank" i18n="linkTranslate"></a>
-        </main>
-      </details>
-    </div>
   </div>
 
   <div id="header-resizer" i18n="title:headerResizerHint"></div>

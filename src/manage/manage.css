@@ -1,5 +1,6 @@
 /* postcss-simple-vars */
 $pad: 16px;
+$pad05: calc(0.5 * $pad);
 $summaryX: calc($pad - 3px);
 $iconGapX: 12px;
 $iconGapY: 4px;
@@ -60,31 +61,25 @@ a, .disabled a:hover {
 }
 h1 {
   margin-top: 0;
-  margin-bottom: calc($pad/2);
+  margin-bottom: $pad05;
   .filtered & {
     visibility: hidden;
   }
 }
 #disableAll-label {
-  margin-bottom: calc($pad/2);
+  margin-bottom: $pad05;
 }
 #manage-settings {
   display: flex;
   flex-flow: column;
   flex: 1;
-}
-.settings-column {
-  width: 100%;
-  margin-bottom: $pad;
+  gap: $pad;
 }
 [id=actions] /* reducing specificity */ {
   flex: 1;
-  @media (450px < width < 700px) {
-    order: 2;
-    min-width: 240px;
-  }
   main {
-    margin: 0 calc(-$pad/2) calc(-$pad/2) 0;
+    min-width: calc(5 * 30px + $pad05);
+    margin: 0 calc(-1 * $pad05) calc(-1 * $pad05) 0;
     .compact-layout & {
       margin-right: $pad;
     }
@@ -137,6 +132,9 @@ h1 {
 #backup {
   gap: $iconGapY;
   p {
+    &:empty {
+      display: none;
+    }
     word-break: break-word;
     font-size: smaller;
     user-select: text;
@@ -145,18 +143,11 @@ h1 {
   }
 }
 #backup-hint {
-  .compact-layout & {
-    order: 99;
-    main {
-      min-width: 25vw;
-    }
-    hr {
-      display: inline-block;
-      width: .25em;
-    }
-  }
   hr {
     border: none;
+  }
+  .normal-layout & details:not([open]) {
+    margin-top: calc(-1 * $pad05);
   }
 }
 #check-all-updates-force {
@@ -316,8 +307,10 @@ h1 {
       height: 0;
     }
     .compact-layout & {
-      padding: calc(.5*$pad) calc(.75*$pad);
-      margin-top: -$pad;
+      padding: $pad05 0;
+      width: $pad;
+      margin: -3px 0 0 0;
+      position: absolute;
     }
     h2 {
       display: inline;
@@ -375,26 +368,18 @@ h1 {
 }
 
 #links {
-  .normal-layout & {
-    margin: 0 $pad 0 0;
-  }
   details:not([open]) h2::after {
     content: "...";
   }
   main {
     display: flex;
-    flex-flow: column;
-    align-items: flex-start;
-    line-height: 1.6;
+    flex-flow: wrap;
+    gap: $pad05;
   }
-  img {
-    width: 16px;
-    vertical-align: text-bottom;
-    padding-right: .25em;
-    transition: filter .5s;
-  }
-  a:not(:hover) img {
-    filter: var(--filter, grayscale(1));
+  a {
+    width: auto;
+    min-width: 0;
+    padding-right: 0;
   }
 }
 /* no styles */
@@ -403,11 +388,14 @@ h1 {
     flex: 0;
   }
   #links {
-    padding: 1.25rem 0 0 2rem;
+    padding: calc(1.5*$pad) 0 0 calc(1.5*$pad);
     line-height: 2;
     font-size: larger;
     summary {
-      visibility: hidden;
+      display: none;
+    }
+    main {
+      flex-flow: column;
     }
   }
 }
@@ -517,21 +505,22 @@ button i {
   }
 }
 
-#search-wrapper, #sort-wrapper {
+#wide-inputs {
+  gap: $pad05;
   display: flex;
-  align-items: center;
-  flex: 1;
-}
-#search-wrapper > :first-child,
-#sort-wrapper > :first-child {
-  flex-grow: 1;
-  max-width: calc(100% - var(--action-size));
+  flex-flow: column;
+  > * {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    > :first-child {
+      flex-grow: 1;
+      max-width: calc(100% - var(--action-size));
+    }
+  }
 }
 #search + * {
   margin-left: -1px;
-}
-#search-wrapper {
-  margin: calc($pad/2) 0;
 }
 #manage\.searchMode {
   background: var(--bg);
@@ -704,7 +693,7 @@ button i {
   }
 }
 
-@media screen and (max-width: 850px), compact {
+.compact-layout {
   body {
     display: block;
     height: auto;
@@ -737,36 +726,30 @@ button i {
     border-bottom: 1px dashed var(--c65);
     details + main,
     details > main {
-      margin: -$pad 0 0 $pad;
+      margin: 0 0 0 $pad;
     }
   }
   #stats {
     position: static;
   }
-  #filters {
-    flex-flow: column;
-  }
   #manage-settings {
     flex-flow: wrap;
-    padding: $pad 0 0 $pad;
-  }
-  .settings-column {
-    display: flex;
-    align-items: stretch;
-    flex-flow: wrap;
-    width: auto;
-    height: fit-content;
-    margin: -$pad $pad $pad 0;
-    padding-top: $pad;
+    align-items: flex-start;
+    padding: $pad;
   }
   #installed {
     margin-top: 0;
     padding-left: 0;
   }
-  #links {
-    flex: 0 0 2em;
-    &:has([open]) {
-      flex: 0 0 fit-content;
+  #backup-hint {
+    main {
+      min-width: 10em;
+      max-height: 10em;
+      overflow-y: auto;
+    }
+    hr {
+      display: inline-block;
+      width: .25em;
     }
   }
 }

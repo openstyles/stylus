@@ -30,7 +30,7 @@ const partDecorations = {
 const rxIsDateVer = /^20\d{4,6}(?:\.\d\d?){2}$/;
 const rxNonCJK = /[^\u3000-\uFE00]+/g;
 
-let elLinks, elLinksParent;
+let elLinks, elLinksPrev;
 let numStyles = 0;
 export let favsBusy;
 export let partEntry;
@@ -292,12 +292,12 @@ export function updateTotal(delta) {
     return;
   }
   installed.dataset.total = numStyles;
-  elLinksParent ??= (elLinks = $id('links')).parentNode;
+  elLinksPrev ??= (elLinks = $('#links')).previousSibling;
   const det = elLinks.$('details');
   const prefId = 'manage.links.expanded';
   $toggleDataset(det, 'pref', numStyles && prefId);
   det.open = !numStyles || prefs.__values[prefId];
   if (!numStyles) installed.after(elLinks);
-  else elLinksParent.append(elLinks);
+  else elLinksPrev.after(elLinks);
   $rootCL.toggle('empty', !numStyles);
 }
