@@ -18,7 +18,7 @@ const TPL_STYLE = template.style;
 const xo = new IntersectionObserver(onIntersect);
 /** @type {HTMLElement} */
 export const installed = $id('installed');
-export const writerIcon = $('#write-wrapper .icon');
+const writerIcon = $('#write-wrapper .icon');
 const disabler = $('#disableAll-label');
 let errCsp, errRegexp;
 let titleCSP;
@@ -140,7 +140,7 @@ function makeCrumb(key, val, name, body, isDomain) {
   if (name) sp.name = name;
   return $create('a.write-style-link' + (isDomain ? '[subdomain]' : ''), {
     href: 'edit.html?' + new URLSearchParams(sp),
-    title: `${key}("${val}")`,
+    title: `${t('writeStyleFor')}\n${key}("${val}")`,
   }, body);
 }
 

@@ -11,7 +11,7 @@ import {clamp, sleep0, t} from '@/js/util';
 import {getActiveTab, ignoreChromeError} from '@/js/util-webext';
 import {openStyleFinder, pSideFinder} from './events';
 import {initHotkeys} from './hotkeys';
-import {createWriterElement, showStyles, updateStateIcon, writerIcon} from './render';
+import {createWriterElement, showStyles, updateStateIcon} from './render';
 import '@/css/onoffswitch.css';
 import './popup.css';
 
@@ -25,10 +25,7 @@ let prevHeight;
 
 (async function init(data, port) {
   data ??= (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
-  initPopup(data).then(() => {
-    writerIcon.title = t(isBlocked ? 'addStyleLabel' : 'writeStyleFor') + '\n' +
-      writerIcon.title;
-  });
+  initPopup(data);
   showStyles(data);
   initHotkeys(data);
   if (port) // re-entry from connectPort()

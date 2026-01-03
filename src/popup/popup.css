@@ -218,7 +218,7 @@ body {
   img {
     position: absolute;
     filter: drop-shadow(1px 1px 2px #0008);
-    right: $powerOverlap;
+    right: $pad;
   }
 }
 #disableAll {
