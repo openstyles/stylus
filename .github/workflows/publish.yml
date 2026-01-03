@@ -1,0 +1,46 @@
+name: publish
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to publish e.g. v2.4.1 (beta), v2.5.0 (stable if ends with ".0")
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{github.event.inputs.tag}}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: 'package.json'
+
+      - run: pnpm install --ignore-scripts # ignore postinstall hook
+      - run: pnpm test
+      - run: pnpm build-chrome-mv3
+        env:
+          PUBLISH: CWS
+
+      - name: upload "chrome-mv3" to github
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'stylus-chrome-mv3-${{env._VER}}'
+          path: 'dist/*'
+          if-no-files-found: error
+
+      - name: publish "chrome-mv3" to CWS
+        continue-on-error: true
+        working-directory:
+          dist
+        env:
+          EXTENSION_ID: ${{env.EXTENSION_ID}}
+          CLIENT_ID: ${{secrets.CLIENT_ID}}
+          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+          REFRESH_TOKEN: ${{secrets.REFRESH_TOKEN}}
+        run: npx chrome-webstore-upload-cli@3

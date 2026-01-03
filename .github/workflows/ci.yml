@@ -1,22 +1,18 @@
-name: ci/publish
+name: ci
 on:
   push:
     paths:
       - 'src/**'
+      - 'tools/**'
       - '*.js' # root configs
       - 'package.json'
       - '!src/types.d.ts'
       - .github/workflows/ci.yml
+    branches:
+      - "**"
 
   pull_request:
     branches: [master]
-
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: Tag to publish e.g. v2.4.1 (beta), v2.5.0 (stable if ends with ".0")
-        required: true
-        type: string
 
 jobs:
   build:
@@ -26,8 +22,6 @@ jobs:
         build: [chrome-mv3, firefox, mv2]
     steps:
       - uses: actions/checkout@v6
-        with:
-          ref: ${{github.event.inputs.tag}}
       - uses: pnpm/action-setup@v4
         with:
           version: 10
@@ -48,16 +42,3 @@ jobs:
           name: 'stylus-${{matrix.build}}-${{env._VER}}-${{env._REV}}'
           path: 'dist/*'
           if-no-files-found: error
-
-      - name: publish "chrome-mv3" to CWS
-        if: ${{matrix.build == 'chrome-mv3' && github.event_name == 'workflow_dispatch'}}
-        continue-on-error: true
-        working-directory:
-          dist
-        env:
-          CLIENT_ID: ${{secrets.CLIENT_ID}}
-          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
-          REFRESH_TOKEN: ${{secrets.REFRESH_TOKEN}}
-        run: |
-          node ../tools/define-extension-id.js
-          npx chrome-webstore-upload-cli@3

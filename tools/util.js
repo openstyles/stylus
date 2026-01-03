@@ -8,7 +8,7 @@ const ROOT = path.dirname(__dirname.replaceAll('\\', '/')) + '/';
 const SRC = ROOT + 'src/';
 
 const [TARGET, ZIP] = process.env.NODE_ENV?.split(':') || [''];
-const [BUILD, FLAVOR = 'mv2', CHANNEL] = TARGET.split('-');
+const [BUILD, FLAVOR = 'mv2'] = TARGET.split('-');
 const MV3 = FLAVOR === 'mv3';
 const DEV = process.env.npm_lifecycle_event?.startsWith('watch');
 
@@ -78,7 +78,6 @@ function transSourceMap(buf, from) {
 
 module.exports = {
   BUILD,
-  CHANNEL,
   CM_PACKAGE_PATH: path.dirname(require.resolve('codemirror/package.json')) + path.sep,
   DEV,
   FLAVOR,

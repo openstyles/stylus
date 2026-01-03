@@ -1,7 +1,6 @@
 'use strict';
 
 const fs = require('fs');
-const childProcess = require('child_process');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -16,12 +15,12 @@ const {RawEnvPlugin} = require('./tools/wp-raw-patch-plugin');
 const patchCodemirror = require('./tools/wp-patch-codemirror');
 const {
   escapeForRe, nukeHtmlSpaces, transESM2var, transSourceMap,
-  BUILD, CHANNEL, CM_PACKAGE_PATH, DEV, FLAVOR, MANIFEST, MV3, ROOT, TARGET, ZIP,
+  BUILD, CM_PACKAGE_PATH, DEV, FLAVOR, MANIFEST, MV3, ROOT, TARGET, ZIP,
 } = require('./tools/util');
 
 global.localStorage = {}; // workaround for node 25 and HtmlWebpackPlugin's `...global`
 
-const {DEBUG, GITHUB_ACTIONS} = process.env;
+const {DEBUG, GITHUB_ACTIONS, PUBLISH} = process.env;
 const SRC = ROOT + 'src/';
 const DST = `${ROOT}dist${GITHUB_ACTIONS ? '' : `-${TARGET}`}/`;
 const CSS = 'css/';
@@ -371,18 +370,23 @@ function makeManifest(files) {
   if (BUILD === 'firefox') {
     delete base.key;
   }
-  if (CHANNEL) {
-    base.name += ` (${CHANNEL})`;
-  }
-  if (MV3 && CHANNEL === 'beta' && parseInt(ver) === 2) {
-    ver = base.version = 3 + ver.slice(1);
-  }
   if (MV3 && (DEBUG || DEV)) {
     base.permissions.push('declarativeNetRequestFeedback');
   }
   if (GITHUB_ACTIONS) {
     delete base.key;
-    childProcess.execSync(`echo "_VER=${ver}" >> $GITHUB_ENV`);
+    fs.appendFileSync(process.env.GITHUB_ENV, `_VER=${ver}\n`, 'utf8');
+  }
+  if (PUBLISH === 'CWS') {
+    const isStable = ver.endsWith('.0');
+    const extId = isStable
+      ? 'clngdbkpkpeebahjckkjfobafhncgmne'
+      : 'apmmpaebfobifelkijhaljbmpcgbjbdo';
+    if (!isStable) {
+      base.name += ` (beta)`;
+      ver = base.version = ver.replace(/^2\./, '3.');
+    }
+    fs.appendFileSync(process.env.GITHUB_ENV, `EXTENSION_ID=${extId}\n`, 'utf8');
   }
   return JSON.stringify(base, null, 2);
 }
