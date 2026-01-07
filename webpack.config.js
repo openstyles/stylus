@@ -373,10 +373,6 @@ function makeManifest(files) {
   if (MV3 && (DEBUG || DEV)) {
     base.permissions.push('declarativeNetRequestFeedback');
   }
-  if (GITHUB_ACTIONS) {
-    delete base.key;
-    fs.appendFileSync(process.env.GITHUB_ENV, `_VER=${ver}\n`, 'utf8');
-  }
   if (PUBLISH === 'CWS') {
     const isStable = ver.endsWith('.0');
     const extId = isStable
@@ -385,8 +381,13 @@ function makeManifest(files) {
     if (!isStable) {
       base.name += ` (beta)`;
       ver = base.version = ver.replace(/^2\./, '3.');
+      ver += '-beta';
     }
     fs.appendFileSync(process.env.GITHUB_ENV, `EXTENSION_ID=${extId}\n`, 'utf8');
+  }
+  if (GITHUB_ACTIONS) {
+    delete base.key;
+    fs.appendFileSync(process.env.GITHUB_ENV, `_VER=${ver}\n`, 'utf8');
   }
   return JSON.stringify(base, null, 2);
 }
