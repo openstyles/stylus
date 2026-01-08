@@ -78,6 +78,7 @@ const ALIASES = {
     $rootCL: '$root.classList',
   },
 };
+const MIRROR_PREFIX = 'http://_/';
 const VARS = {
   API: 'API', // hiding the global from IDE
   BUILD,
@@ -87,11 +88,12 @@ const VARS = {
   ENTRY: false,
   IS_BG: false,
   JS,
+  MIRROR_PREFIX,
+  MIRROR_PREFIX_LEN: MIRROR_PREFIX.length,
   MV3,
   PAGE_BG: PAGE_BG.split('/').pop(),
   ZIP: !!ZIP,
 };
-const MIRROR_PREFIX = 'http://_/';
 const DEBUG_MODE = {
   GENERAL: 1,
   PORT: 2,
@@ -498,8 +500,6 @@ module.exports = [
       new RawEnvPlugin({
         ENTRY: 'sw',
         IS_BG: true,
-        MIRROR_PREFIX,
-        MIRROR_PREFIX_LEN: MIRROR_PREFIX.length,
       }, {
         KEEP_ALIVE: 'global.keepAlive',
       }),
