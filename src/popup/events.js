@@ -28,9 +28,10 @@ const selOptions = '#options-btn';
 /** @type {{[sel: string]: OnClickHandler}} */
 export const EntryClick = {
   '.style-name': Object.assign((evt, entry, button) => {
-    if (button || evt.altKey || evt.ctrlKey || MAC && evt.metaKey) {
-      if (evt.altKey) hotkeys.toggleStateInTab([entry], null);
-      else openEditor(evt, entry);
+    if (evt.altKey) {
+      hotkeys.toggleStateInTab([entry], null);
+    } else if (button || evt.ctrlKey || MAC && evt.metaKey) {
+      openEditor(evt, entry);
     } else if (!button && !evt.shiftKey) {
       API.styles.toggle(entry.styleId, !entry.$('input').checked);
     }
@@ -105,6 +106,8 @@ if (__.BUILD !== 'firefox' && (__.MV3 || CHROME)) {
   /* Firefox retains user activation only in mouseXXX and keyXXX events. */
   let elClick;
   window.onmousedown = window.onkeydown = evt => {
+    if (evt.repeat)
+      return;
     elClick = evt.target;
   };
   window.onmouseup = evt => {
