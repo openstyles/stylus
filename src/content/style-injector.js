@@ -93,7 +93,7 @@ function addAllElements() {
   if (!__.ENTRY && !checkCSP) {
     /** @param {SecurityPolicyViolationEvent} evt */
     checkCSP = evt => {
-      if (evt.isTrusted && evt.sourceFile === 'moz-extension') {
+      if (evt.isTrusted && /^(\w+-)?extension$/.test(evt.sourceFile)) {
         for (const style of list) {
           if (style.code.includes(evt.blockedURI)) {
             API.tabs.set(null, pPatchCsp, style.id, evt.blockedURI, true);
