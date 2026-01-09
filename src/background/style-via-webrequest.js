@@ -192,7 +192,7 @@ function modifyHeaders(req) {
     if (m) tabMan.set(req.tabId, 'nonce', req.frameId, payload.cfg.nonce = m[1]);
     // We don't change CSP if there are no styles when the page is loaded
     // TODO: show a reminder in the popup to reload the tab when the user enables a style
-    csp = cspOn && styled && {value: patchCsp(v)};
+    csp = cspOn && styled && (csp.value = patchCsp(v));
   }
   if (!styled) {
     removePreloadedStyles(req, key, data);
