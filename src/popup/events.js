@@ -93,7 +93,7 @@ onMessage.set(({method, reason, style}) => {
   if (busy) styleFinder.on?.(method, style.id, busy);
 });
 
-if (__.BUILD !== 'firefox' && (__.MV3 || CHROME)) {
+if (__.BUILD !== 'firefox' && (__.MV3 || CHROME) || !browserSidebar) {
   /* Chrome retains user activation in oncontextmenu, which handles both keyboard & right-click,
    * and is also the event where preventDefault() can actually suppress the built-in menu. */
   window.oncontextmenu = evt => clickRouter(evt, 2);

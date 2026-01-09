@@ -1,7 +1,7 @@
 /* postcss-simple-vars */
 $pad: var(--outer-padding);
 $padToEntryH: calc((var(--entry-h) - var(--font-size)) / 2);
-$entryActionW: var(--input-height);
+$entryActionW: var(--entry-h);
 $powerWidth: 30px;
 $powerOverlap: 4px; /* must be >= 1px (transparent edge) */
 
@@ -114,9 +114,6 @@ body {
   }
   .touch & {
     --gap: calc($pad/2);
-    input {
-      margin-right: $pad !important;
-    }
   }
 }
 
@@ -285,7 +282,7 @@ body {
     overflow: hidden;
     align-items: center;
   }
-  &:nth-child(-n+10) {
+  .non-touch &:nth-child(-n+10) {
     &::before {
       counter-increment: style-number;
       content: counter(style-number);
@@ -320,12 +317,14 @@ body {
     > :hover {
       background-color: var(--c95);
     }
-    > .menu-button:hover {
-      width: var(--entry-h);
-      margin: 0 calc(($entryActionW - var(--entry-h)) / 2);
-    }
-    > :is(.enable, .disable) {
-      display: none;
+    .non-touch & > .menu-button {
+      padding-right: 4px;
+      box-sizing: border-box;
+      &:hover {
+        margin-left: -2px;
+        padding-left: 2px;
+        width: calc($entryActionW + 2px);
+      }
     }
   }
   &.empty .i-empty {
