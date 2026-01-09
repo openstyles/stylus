@@ -22,8 +22,8 @@ export const get = (tabId, ...keyPath) => {
  * (tabId, 'foo', 'bar', 'etc', 123) will set tabId's meta to {foo: {bar: {etc: 123}}}
  */
 export const set = function (tabId, ...args) {
-  if (!+tabId) {
-    console.trace(`tabCache.set() params are invalid: ${tabId}, ${JSON.stringify(args)}`);
+  if (!(+tabId > 0)) { // null, undefined, NaN
+    __.DEBUGWARN(`tabCache.set() params are invalid: ${tabId}, ${JSON.stringify(args)}`);
     return;
   }
   const depth = args.length - 2;
