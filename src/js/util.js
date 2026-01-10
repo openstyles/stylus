@@ -206,6 +206,16 @@ export async function fetchText(url, opts) {
 
 /** @this {Object} DriveOptions */
 export function fetchWebDAV(url, init = {}) {
+  // SECURITY: Enforce HTTPS for remote WebDAV URLs to prevent credential exposure
+  const urlObj = new URL(url);
+  const isLocalhost = urlObj.hostname === 'localhost' ||
+                      urlObj.hostname === '127.0.0.1' ||
+                      urlObj.hostname === '[::1]' ||
+                      urlObj.hostname.endsWith('.local');
+  // Allow HTTP only for localhost, require HTTPS for all remote hosts
+  if (urlObj.protocol === 'http:' && !isLocalhost) {
+    throw new Error(`WebDAV sync requires HTTPS for remote hosts. Use HTTPS for: ${url}`);
+  }
   return fetch(url, {
     ...init,
     credentials: 'omit', // circumventing nextcloud CSRF token error
