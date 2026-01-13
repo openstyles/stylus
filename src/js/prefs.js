@@ -168,7 +168,7 @@ const defaults = {
 
   'popup.search.globals': false,
   'popup.sidePanel': false,
-  'popup.sidePanel.config': 20,
+  'popup.sidePanel.config': -1,
   'popup.sidePanel.editor': false,
   'popup.sidePanel.finder': false,
   'popup.sidePanel.manager': false,
