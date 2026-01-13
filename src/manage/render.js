@@ -91,8 +91,8 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
   const configurable = !!ud?.vars;
   const name = style.customName || style.name;
   const version = ud ? ud.version : '';
-  const isNew = UI.tableView;
-  if (isNew !== partNewUI) createParts(isNew);
+  const isTable = UI.tableView;
+  if (isTable !== partNewUI) createParts(isTable);
   partChecker.checked = style.enabled;
   partNameLink.firstChild.textContent = breakWord(name);
   partNameLink.href = partEditLink.href = partEditHrefBase + style.id;
@@ -105,7 +105,7 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
   partInfoSize.dataset.value = Math.log10(size || 1) >> 0; // for CSS to target big/small styles
   partInfoSize.textContent = renderSize(size);
   partInfoSize.title = `${t('genericSize')}: ${groupThousands(size)} B`;
-  if (!isNew) {
+  if (!isTable) {
     partOldConfigure.classList.toggle('hidden', !configurable);
     partOldCheckUpdate.classList.toggle('hidden', !updateUrl);
   }
@@ -120,7 +120,7 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
     (style.enabled ? 'enabled' : 'disabled') +
     (updateUrl ? ' updatable' : '') +
     (ud ? ' usercss' : '');
-  if (isNew && (updateUrl || configurable)) {
+  if (isTable && (updateUrl || configurable)) {
     entry.$('.actions').append(...[
       updateUrl && (tplUpdaterIcons ??= template.updaterIcons).cloneNode(true),
       configurable && (tplConfigureIcon ??= template.configureIcon).cloneNode(true),
