@@ -1,17 +1,17 @@
 import {kSidebar, UCD} from '@/js/consts';
-import {isSidebar} from '@/js/dom';
+import {isSidebar, isTouch} from '@/js/dom';
 import {configDialog} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {__values, subscribe} from '@/js/prefs';
-import {CHROME, MAC} from '@/js/ua';
-import {t} from '@/js/util';
+import {CHROME, FIREFOX, MAC} from '@/js/ua';
+import {NOP, t} from '@/js/util';
 import {getActiveTab, browserSidebar} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
 import {openMenu} from './menu';
-import {updateStyleEntry} from './render';
+import {installed, updateStyleEntry} from './render';
 
 /**
  * @callback OnClickHandler
@@ -82,6 +82,8 @@ $(selFinder).on('split-btn', async e => {
 });
 $(selManager).title += t('popupManageSiteStyles');
 $(selManager).on('split-btn', openManager);
+if (__.BUILD !== 'chrome' && FIREFOX && isTouch)
+  installed.on('click', NOP); // Fenec bug workaround: wrong action element in click event
 subscribe(Object.keys(sideTitleMap), updateTitles, true);
 onMessage.set(({method, reason, style}) => {
   if (!tabUrl)
