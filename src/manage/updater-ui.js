@@ -302,6 +302,6 @@ export function handleUpdateInstalled(entry, reason) {
   entry.classList.add('update-done', ...(isNew ? ['install-done'] : []));
   entry.classList.remove('can-update', 'updatable');
   entry.$('.update-note').textContent = note;
-  entry.$('.updated').title = note;
+  if (UI.tableView) entry.$('.updated').title = note;
   renderUpdatesOnlyFilter();
 }
