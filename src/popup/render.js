@@ -99,7 +99,7 @@ export function createWriterElement(frame, index) {
     el = (url.startsWith(ownRoot) ? makeExtCrumbs : makeWebCrumbs)(crumbs, url);
     el.onmouseenter = el.onmouseleave = el.onfocus = el.onblur = toggleUrlLink;
     if (!index) {
-      writerIcon.onclick = () => el.click();
+      writerIcon.href = el.href;
       writerIcon.title = el.title;
     }
   }

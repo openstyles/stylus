@@ -49,7 +49,7 @@ export const EntryClick = {
 
 /** All these handlers accept a right-click, `btn = 2` property is added below */
 const GlobalClick = {
-  '.write-style-link': openEditor,
+  'a[href*="edit.html"]': openEditor,
   [selManager + '~ .split-btn-menu a'](evt, ...args) {
     openManager(null, ...args);
   },
