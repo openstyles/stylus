@@ -15,8 +15,8 @@ importers:
         specifier: 5.65.20
         version: 5.65.20
       csslint-mod:
-        specifier: github:openstyles/csslint-mod#semver:v1.0.5
-        version: https://codeload.github.com/openstyles/csslint-mod/tar.gz/b26342603a4cd04dd0a9ff406c777a3b74d7891a
+        specifier: github:openstyles/csslint-mod#semver:v1.0.6
+        version: https://codeload.github.com/openstyles/csslint-mod/tar.gz/0a811e1ec653c4b34748a7f28a3be7ef80aa67f0
       db-to-cloud:
         specifier: ^0.8.1
         version: 0.8.1
@@ -1580,9 +1580,9 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
-  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/b26342603a4cd04dd0a9ff406c777a3b74d7891a:
-    resolution: {tarball: https://codeload.github.com/openstyles/csslint-mod/tar.gz/b26342603a4cd04dd0a9ff406c777a3b74d7891a}
-    version: 1.0.4
+  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/0a811e1ec653c4b34748a7f28a3be7ef80aa67f0:
+    resolution: {tarball: https://codeload.github.com/openstyles/csslint-mod/tar.gz/0a811e1ec653c4b34748a7f28a3be7ef80aa67f0}
+    version: 1.0.6
 
   cssnano-preset-default@7.0.10:
     resolution: {integrity: sha512-6ZBjW0Lf1K1Z+0OKUAUpEN62tSXmYChXWi2NAA0afxEVsj9a+MbcB1l5qel6BHJHmULai2fCGRthCeKSFbScpA==}
@@ -4886,7 +4886,7 @@ snapshots:
 
   cssesc@3.0.0: {}
 
-  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/b26342603a4cd04dd0a9ff406c777a3b74d7891a: {}
+  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/0a811e1ec653c4b34748a7f28a3be7ef80aa67f0: {}
 
   cssnano-preset-default@7.0.10(postcss@8.5.6):
     dependencies:
