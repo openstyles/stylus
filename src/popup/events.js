@@ -5,7 +5,7 @@ import {template} from '@/js/localization';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {__values, subscribe} from '@/js/prefs';
-import {CHROME, FIREFOX, MAC} from '@/js/ua';
+import {FIREFOX, MAC} from '@/js/ua';
 import {NOP, t} from '@/js/util';
 import {getActiveTab, browserSidebar} from '@/js/util-webext';
 import {tabId, tabUrl} from '.';
@@ -95,42 +95,34 @@ onMessage.set(({method, reason, style}) => {
   if (busy) styleFinder.on?.(method, style.id, busy);
 });
 
-if (__.BUILD !== 'firefox' && (__.MV3 || CHROME) || !browserSidebar) {
-  /* Chrome retains user activation in oncontextmenu, which handles both keyboard & right-click,
-   * and is also the event where preventDefault() can actually suppress the built-in menu. */
-  window.oncontextmenu = evt => clickRouter(evt, 2);
-  window.onclick = clickRouter;
-  window.onauxclick = evt => {
-    if (evt.button !== 2)
-      clickRouter(evt);
-  };
-} else {
-  /* Firefox retains user activation only in mouseXXX and keyXXX events. */
-  let elClick;
-  window.onmousedown = window.onkeydown = evt => {
-    if (evt.repeat)
-      return;
-    elClick = evt.target;
-  };
-  window.onmouseup = evt => {
-    if (evt.target === elClick)
-      elClick = !clickRouter(evt, undefined, elClick);
-  };
-  window.onkeyup = evt => {
-    if (evt.target === elClick && !evt.metaKey && !evt.altKey && !evt.ctrlKey
-    && (evt.key === (evt.shiftKey ? 'F10' : 'ContextMenu')))
-      elClick = !clickRouter(evt, 2, elClick);
-  };
-  window.oncontextmenu = () => elClick; // `false` suppresses the menu
+let hideContextMenu;
+window.on('auxclick', clickRouter, true);
+window.on('click', clickRouter, true);
+if (browserSidebar) {
+  window.on('contextmenu',
+    evt => hideContextMenu
+      ? evt.preventDefault() // suppress the menu if already handled in auxclick,
+      : clickRouter(evt, 2), // otherwise handle keyboard activated contextmenu
+    true);
+  if (__.BUILD !== 'chrome' && FIREFOX) {
+    /* Firefox doesn't retain user activation in oncontextmenu,
+       so we use it only to suppress the menu, while handling it via onkey.
+       Using onkeydown because it fires before oncontextmenu and sets hideContextMenu. */
+    window.on('keydown', evt => {
+      if (!evt.metaKey && !evt.altKey && !evt.ctrlKey
+      && (evt.key === (evt.shiftKey ? 'F10' : 'ContextMenu')))
+        clickRouter(evt, 2);
+    }, true);
+  }
 }
 
 /**
  * @param {MouseEvent|KeyboardEvent} event
  * @param {number} [btn]
- * @param {HTMLElement} [elClick]
- * @return {void|true}
  */
-function clickRouter(event, btn = event.button, elClick = event.target) {
+function clickRouter(event, btn = event.button) {
+  hideContextMenu = false;
+  const elClick = event.target;
   const entry = elClick.closest('.entry');
   const scope = entry ? EntryClick : GlobalClick;
   let el = elClick;
@@ -142,8 +134,9 @@ function clickRouter(event, btn = event.button, elClick = event.target) {
       if (!btn || fn.btn & /* using binary AND */btn) {
         event.preventDefault();
         fn.call(el, event, entry, btn);
+        hideContextMenu = event.type !== 'contextmenu';
+        return;
       }
-      return true;
     }
   }
 }
