@@ -9,7 +9,7 @@ import {CHROME} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
 import {capitalize, clipString, stringAsRegExpStr, t} from '@/js/util';
 import {MF} from '@/js/util-webext';
-import {isBlocked, tabId, tabUrl, tabUrlSupported} from '.';
+import {isBlocked, tabId, tabUrlSupported} from '.';
 import {openOptions, openStyleFinder, pSideConfig, tSideHint} from './events';
 import {closeMenu, menu, openMenu} from './menu';
 
@@ -279,7 +279,7 @@ export function updateStateIcon(newDark, newDisabled) {
 export async function updateStyleEntry(id, del) {
   const entry = $id(kStyleIdPrefix + id);
   const inMenu = id === menu.styleId && menu.isConnected;
-  const [res] = del ? [] : await API.styles.getByUrl(tabUrl, id, tabId, inMenu);
+  const [res] = del ? [] : await API.styles.getByIdInTab(id, tabId, inMenu);
   if (res) {
     const el = createStyleElement(Object.assign(res.style, res), entry);
     if (!el.isConnected) installed.append(el);
