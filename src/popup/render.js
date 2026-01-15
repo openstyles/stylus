@@ -279,7 +279,7 @@ export function updateStateIcon(newDark, newDisabled) {
 export async function updateStyleEntry(id, del) {
   const entry = $id(kStyleIdPrefix + id);
   const inMenu = id === menu.styleId && menu.isConnected;
-  const [res] = del ? [] : await API.styles.getByIdInTab(id, tabId, inMenu);
+  const res = !del && await API.styles.getByIdInTab(id, tabId, inMenu);
   if (res) {
     const el = createStyleElement(Object.assign(res.style, res), entry);
     if (!el.isConnected) installed.append(el);

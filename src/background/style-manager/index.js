@@ -85,23 +85,21 @@ export function getAllOrdered(keys) {
  * @param {number} [id]
  * @param {number} [tabId]
  * @param {boolean} [needsOvrs]
- * @returns {MatchUrlResult[]}
+ * @returns {MatchUrlResult|void}
  */
 export function getByIdInTab(id, tabId, needsOvrs) {
   const urlObj = tabCache[tabId]?.[kUrl] || {};
   const urls = new Set();
-  const res = [];
   for (const frameId in urlObj) {
     const url = urlObj[frameId];
     if (!urls.has(url)) {
       urls.add(url);
       for (const v of getByUrl(url, id, tabId, needsOvrs)) {
         v.frameUrl = +frameId ? url : '';
-        res.push(v);
+        return v;
       }
     }
   }
-  return res;
 }
 
 /**
