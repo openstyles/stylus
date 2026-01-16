@@ -106,10 +106,13 @@ Object.assign(COMMANDS, {
     // Stylus-lang allows a trailing ";" but sugarss doesn't, so we monkeypatch it
     stylelint.SugarSSParser.prototype.checkSemicolon = ovrCheckSemicolon;
     const cfgRules = opts.config.rules;
+    const kAtRuleDisallowedList = 'at-rule-disallowed-list';
+    let atRules = cfgRules[kAtRuleDisallowedList];
     for (const r in cfgRules)
       if (!stylelint.rules[r]) delete cfgRules[r];
-    (cfgRules['at-rule-disallowed-list'] ??= [])
-      .push('import');
+    if (!Array.isArray(atRules))
+      atRules = cfgRules[kAtRuleDisallowedList] = [];
+    atRules.push('import');
     for (let pass = 2; --pass >= 0;) {
       /* We try sugarss (for indented stylus-lang), then css mode, switching them on failure,
        * so that the succeeding syntax will be used next time first. */
