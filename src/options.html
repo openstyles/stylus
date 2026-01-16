@@ -220,7 +220,7 @@
             <p i18n="popupAutoResort"></p>
             <input type="checkbox" id="popup.autoResort" class="slider">
           </label>
-          <label show-if="!popup.sidePanel.editor">
+          <label show-if="!popup.sidePanel.editor:radio">
             <p i18n="popupOpenEditInWindow">
               <a i18n="title:popupOpenEditInWindowTooltip"
                  data-cmd="note" class="icon" tabindex="0">
@@ -244,7 +244,7 @@
           </a>
         </h2>
         <div class="items swap">
-          <label show-if="!openEditInWindow">
+          <label show-if="!openEditInWindow:radio">
             <p i18n="styleEditor"></p>
             <input type="checkbox" id="popup.sidePanel.editor" class="slider">
           </label>

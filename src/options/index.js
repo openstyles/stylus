@@ -100,13 +100,12 @@ for (const el of $$('[data-clickable]')) {
       i % 2 ? $create('span.clickable', {onclick: clickableValue}, p) : p));
 }
 for (const el of $$('[show-if]')) {
-  const [, not, id, op, opVal] = el.getAttribute('show-if')
-    .match(/^\s*(!\s*)?([.\w]+)\s*(?:(!?=)\s*(\S*))?/);
-  const alter = not && el.$('input[type="checkbox"]');
+  const [, not, id, op, opVal, mode] = el.getAttribute('show-if')
+    .match(/^\s*(!\s*)?([.\w]+)\s*(?:(!?=)\s*(\S*)|:(\w+))?/);
   (showIf[id] ??= []).push({el, not, op, opVal});
   prefs.subscribe(id, toggleShowIf, true);
-  if (alter)
-    alter.on('click', toggleAlternative);
+  if (mode === 'radio')
+    el.$('input').on('click', {handleEvent: toggleAlter, id});
   if (el.matches('.sites')) {
     el.appendChild(template.sites.cloneNode(true));
     for (const elDep of el.$$('[id*="$"]')) {
@@ -218,12 +217,9 @@ function onTextKey(e) {
   }
 }
 
-/** @this {HTMLInputElement} */
-function toggleAlternative() {
-  if (this.checked)
-    for (const {el, not} of showIf[this.id])
-      if (not)
-        el.$('input:checked')?.click();
+function toggleAlter(evt) {
+  if (evt.target.checked && $id(this.id).checked)
+    $id(this.id).click();
 }
 
 function toggleShowIf(key, val) {
