@@ -16,7 +16,11 @@ const MENU_KEYS = {
   ContextMenu: 1,
   Enter: 1,
 };
-const isEnabled = () => togglables[0] && $id(kStyleIdPrefix + togglables[0]).styleMeta.enabled;
+const isEnabled = () => {
+  let el = togglables[0];
+  if (el && (el.id || (el = $id(kStyleIdPrefix + el))))
+    return el.styleMeta.enabled;
+};
 let infoOn;
 let menuKey = 0;
 let oldBodyStyle;
