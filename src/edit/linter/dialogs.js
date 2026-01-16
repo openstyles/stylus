@@ -25,11 +25,11 @@ export async function showLintConfig() {
     return;
   }
   await import('@/cm/jsonlint-bundle');
+  isStylelint = linter === 'stylelint';
   const config = await getLZValue(LZ_KEY[linter]);
   const defaults = DEFAULTS[linter];
   const title = t('linterConfigPopupTitle', isStylelint ? 'Stylelint' : 'CSSLint');
   const activeRules = new Set(getActiveRules());
-  isStylelint = linter === 'stylelint';
   knownRules = KNOWN_RULES[linter] || (
     KNOWN_RULES[linter] = new Set((
       isStylelint
@@ -49,9 +49,10 @@ export async function showLintConfig() {
         delete cfg[id];
       }
     }
-    for (const id of missingRules) {
-      cfg[id] = isStylelint ? false : 0;
-    }
+    // Not adding for stylelint because some rules expect a string value
+    if (!isStylelint)
+      for (const id of missingRules)
+        cfg[id] = 0;
   }
   defaultConfig[linter] = stringifyConfig(defaults);
   popup = showCodeMirrorPopup(title, null, {
