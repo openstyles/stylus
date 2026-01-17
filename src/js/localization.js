@@ -39,7 +39,12 @@ const intlCache = {};
 /** Adds soft hyphens every 10 characters to ensure the long words break before breaking the layout */
 export const breakWord = text => text.length <= 10 ? text
   : text.replace(RX_WORD_BREAK, '$&\u00AD');
+
+// SECURITY: parseHtml is only used internally for template parsing
+// All user/translation content goes through sanitizeHtml() which implements
+// safe HTML parsing with a tag whitelist
 export const parseHtml = str => new DOMParser().parseFromString(str, 'text/html');
+
 export const tHTML = html => typeof html !== 'string'
   ? html
   : html.includes('<') // check for html tags
