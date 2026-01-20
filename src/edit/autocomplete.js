@@ -208,7 +208,7 @@ async function helper(cm) {
     if (prop) {
       if (!cssPropNames) await initCssProps();
       list = cssProps[prop + kCssPropSuffix];
-      if (list !== null) {
+      if (list != null) {
         list = (list.replace(rxNamedColors, cssColors) + cssSpecData.global).split('\n');
       }
       end = prev + execAt(rxPropChars, prev, text)[0].length;
