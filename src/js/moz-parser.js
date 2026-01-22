@@ -1,4 +1,5 @@
 import {FROM_CSS} from './sections-util';
+import {RX_META} from './util';
 /* global parserlib */
 
 /**
@@ -13,6 +14,7 @@ import {FROM_CSS} from './sections-util';
  * @property {?number} lastStyleId
  */
 export default function extractSections({code, styleId, fast = true}) {
+  const commentsAtEnd = /(\/\*(?:[^*]+|\*(?!\/))*\*\/\s*)*$/;
   const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
   const parser = new parserlib.css.Parser({
     noValidation: true,
@@ -31,7 +33,7 @@ export default function extractSections({code, styleId, fast = true}) {
   parser.addListener('startdocument', e => {
     const lastSection = sectionStack[sectionStack.length - 1];
     let outerText = mozStyle.slice(lastSection.start, e.offset);
-    const lastCmt = getLastComment(outerText);
+    const lastCmt = outerText.match(commentsAtEnd)[0];
     const section = {
       code: '',
       start: e.brace.offset + 1,
@@ -90,7 +92,7 @@ export default function extractSections({code, styleId, fast = true}) {
   });
 
   try {
-    parser.parse(code, {
+    parser.parse(code.replace(RX_META, ''), {
       reuseCache: !extractSections.lastStyleId || styleId === extractSections.lastStyleId,
     });
   } catch (e) {
@@ -123,28 +125,5 @@ export default function extractSections({code, styleId, fast = true}) {
       return;
     }
     sections.push(Object.assign({}, section));
-  }
-
-  function getLastComment(text) {
-    let open = text.length;
-    let close;
-    while (open) {
-      // at this point we're guaranteed to be outside of a comment
-      close = text.lastIndexOf('*/', open - 2);
-      if (close < 0) {
-        break;
-      }
-      // stop if a non-whitespace precedes and return what we currently have
-      const tailEmpty = !text.substring(close + 2, open).trim();
-      if (!tailEmpty) {
-        break;
-      }
-      // find a closed preceding comment
-      const prevClose = text.lastIndexOf('*/', close - 2);
-      // then find the real start of current comment
-      // e.g. /* preceding */  /* current /* current /* current */
-      open = text.indexOf('/*', prevClose < 0 ? 0 : prevClose + 2);
-    }
-    return open ? text.slice(open) : text;
   }
 }
