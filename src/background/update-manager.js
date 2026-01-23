@@ -12,6 +12,114 @@ import * as styleMan from './style-manager';
 import * as usercssMan from './usercss-manager';
 import {getEmbeddedMeta, toUsercss} from './uso-api';
 
+// Lightweight MD5 implementation (hex output) for integrity checks
+// Based on RFC 1321 algorithm adapted to JavaScript
+function computeMd5(str) {
+  function toUtf8(s) {
+    return unescape(encodeURIComponent(s));
+  }
+  function rhex(n) {
+    const s = '0123456789abcdef';
+    let j;
+    let out = '';
+    for (j = 0; j < 4; j++) out += s[(n >> (j * 8 + 4)) & 0x0f] + s[(n >> (j * 8)) & 0x0f];
+    return out;
+  }
+  function add(x, y) {
+    const l = (x & 0xffff) + (y & 0xffff);
+    const m = (x >> 16) + (y >> 16) + (l >> 16);
+    return (m << 16) | (l & 0xffff);
+  }
+  function rol(num, cnt) { return (num << cnt) | (num >>> (32 - cnt)); }
+  function cmn(q, aCmn, bCmn, xCmn, sCmn, tCmn) {
+    return add(rol(add(add(aCmn, q), add(xCmn, tCmn)), sCmn), bCmn);
+  }
+  function ff(aFf, bFf, cFf, dFf, xFf, sFf, tFf) {
+    return cmn((bFf & cFf) | (~bFf & dFf), aFf, bFf, xFf, sFf, tFf);
+  }
+  function gg(aGg, bGg, cGg, dGg, xGg, sGg, tGg) {
+    return cmn((bGg & dGg) | (cGg & ~dGg), aGg, bGg, xGg, sGg, tGg);
+  }
+  function hh(aHh, bHh, cHh, dHh, xHh, sHh, tHh) {
+    return cmn(bHh ^ cHh ^ dHh, aHh, bHh, xHh, sHh, tHh);
+  }
+  function ii(aIi, bIi, cIi, dIi, xIi, sIi, tIi) {
+    return cmn(cIi ^ (bIi | ~dIi), aIi, bIi, xIi, sIi, tIi);
+  }
+  function str2blks(s) {
+    const nblk = ((s.length + 8) >> 6) + 1;
+    const blks = new Array(nblk * 16).fill(0);
+    for (let i = 0; i < s.length; i++) blks[i >> 2] |= s.charCodeAt(i) << ((i % 4) * 8);
+    blks[s.length >> 2] |= 0x80 << ((s.length % 4) * 8);
+    blks[nblk * 16 - 2] = s.length * 8;
+    return blks;
+  }
+  const xBlks = str2blks(toUtf8(str));
+  let a = 1732584193;
+  let b = -271733879;
+  let c = -1732584194;
+  let d = 271733878;
+  for (let i = 0; i < xBlks.length; i += 16) {
+    const olda = a;
+    const oldb = b;
+    const oldc = c;
+    const oldd = d;
+    a = ff(a, b, c, d, xBlks[i + 0], 7, -680876936);
+    d = ff(d, a, b, c, xBlks[i + 1], 12, -389564586);
+    c = ff(c, d, a, b, xBlks[i + 2], 17, 606105819);
+    b = ff(b, c, d, a, xBlks[i + 3], 22, -1044525330);
+    a = ff(a, b, c, d, xBlks[i + 4], 7, -176418897);
+    d = ff(d, a, b, c, xBlks[i + 5], 12, 1200080426);
+    c = ff(c, d, a, b, xBlks[i + 6], 17, -1473231341);
+    b = ff(b, c, d, a, xBlks[i + 7], 22, -45705983);
+    a = ff(a, b, c, d, xBlks[i + 8], 7, 1770035416);
+    d = ff(d, a, b, c, xBlks[i + 9], 12, -1958414417);
+    c = ff(c, d, a, b, xBlks[i + 10], 17, -42063);
+    b = ff(b, c, d, a, xBlks[i + 11], 22, -1990404162);
+    a = ff(a, b, c, d, xBlks[i + 12], 7, 1804603682);
+    d = ff(d, a, b, c, xBlks[i + 13], 12, -40341101);
+    c = ff(c, d, a, b, xBlks[i + 14], 17, -1502002290);
+    b = ff(b, c, d, a, xBlks[i + 15], 22, 1236535329);
+    a = gg(a, b, c, d, xBlks[i + 1], 5, -165796510);
+    d = gg(d, a, b, c, xBlks[i + 6], 9, -1069501632);
+    c = gg(c, d, a, b, xBlks[i + 11], 14, 643717713);
+    b = gg(b, c, d, a, xBlks[i + 0], 20, -373897302);
+    a = gg(a, b, c, d, xBlks[i + 5], 5, -701558691);
+    d = gg(d, a, b, c, xBlks[i + 10], 9, 38016083);
+    c = gg(c, d, a, b, xBlks[i + 15], 14, -660478335);
+    b = gg(b, c, d, a, xBlks[i + 4], 20, -405537848);
+    a = gg(a, b, c, d, xBlks[i + 9], 5, 568446438);
+    d = gg(d, a, b, c, xBlks[i + 14], 9, -1019803690);
+    c = gg(c, d, a, b, xBlks[i + 3], 14, -187363961);
+    b = gg(b, c, d, a, xBlks[i + 8], 20, 1163531501);
+    a = gg(a, b, c, d, xBlks[i + 13], 5, -1444681467);
+    d = gg(d, a, b, c, xBlks[i + 2], 9, -51403784);
+    c = gg(c, d, a, b, xBlks[i + 7], 14, 1735328473);
+    b = gg(b, c, d, a, xBlks[i + 12], 20, -1926607734);
+    a = hh(a, b, c, d, xBlks[i + 5], 4, -378558);
+    d = hh(d, a, b, c, xBlks[i + 8], 11, -2022574463);
+    c = hh(c, d, a, b, xBlks[i + 11], 16, 1839030562);
+    b = hh(b, c, d, a, xBlks[i + 14], 23, -35309556);
+    a = hh(a, b, c, d, xBlks[i + 1], 4, -1530992060);
+    d = hh(d, a, b, c, xBlks[i + 4], 11, 1272893353);
+    c = hh(c, d, a, b, xBlks[i + 7], 16, -155497632);
+    b = hh(b, c, d, a, xBlks[i + 10], 23, -1094730640);
+    a = ii(a, b, c, d, xBlks[i + 0], 6, 681279174);
+    d = ii(d, a, b, c, xBlks[i + 7], 10, -358537222);
+    c = ii(c, d, a, b, xBlks[i + 14], 15, -722521979);
+    b = ii(b, c, d, a, xBlks[i + 5], 21, 76029189);
+    a = ii(a, b, c, d, xBlks[i + 12], 6, -640364487);
+    d = ii(d, a, b, c, xBlks[i + 3], 10, -421815835);
+    c = ii(c, d, a, b, xBlks[i + 10], 15, 530742520);
+    b = ii(b, c, d, a, xBlks[i + 1], 21, -995338651);
+    a = add(a, olda);
+    b = add(b, oldb);
+    c = add(c, oldc);
+    d = add(d, oldd);
+  }
+  return rhex(a) + rhex(b) + rhex(c) + rhex(d);
+}
+
 const STATES = /** @namespace UpdaterStates */ {
   UPDATED: 'updated',
   SKIPPED: 'skipped',
@@ -25,6 +133,7 @@ const STATES = /** @namespace UpdaterStates */ {
   ERROR_MD5:     'error: MD5 is invalid',
   ERROR_JSON:    'error: JSON is invalid',
   ERROR_VERSION: 'error: version is older than installed style',
+  INTEGRITY_MISMATCH: 'error: downloaded CSS does not match MD5',
 };
 export const getStates = () => STATES;
 const safeSleep = __.MV3 ? ms => __.KEEP_ALIVE(sleep(ms)) : sleep;
@@ -164,6 +273,16 @@ export async function checkStyle(opts) {
     }
     updateUrl = style.updateUrl = `${usoApi}Css/${usoId}`;
     const {result: css} = await tryDownload(updateUrl, {responseType: 'json'});
+    // SECURITY: Verify integrity - downloaded CSS should match MD5 from server
+    try {
+      const computedMd5 = computeMd5(css);
+      if (computedMd5 !== md5) {
+        return Promise.reject(STATES.INTEGRITY_MISMATCH);
+      }
+    } catch {
+      // If MD5 computation fails, treat as invalid MD5
+      return Promise.reject(STATES.ERROR_MD5);
+    }
     const json = await updateUsercss(css)
       || await toUsercss(usoId, varsUrl, css, style, md5, md5Url);
     json.originalMd5 = md5;

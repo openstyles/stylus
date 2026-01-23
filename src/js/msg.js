@@ -15,6 +15,31 @@ export const wrapError = error => ({
   }, error), // passing custom properties e.g. `error.index`
 });
 
+// SECURITY: Restrict messages to trusted content scripts
+// Only allow messages from extension's own content scripts
+function isMessageTrusted(sender) {
+  if (!sender.url && !sender.frameId) {
+    // Background script or extension page
+    return true;
+  }
+  // Check if message comes from our content script
+  if (sender.url?.startsWith(`chrome-extension://${chrome.runtime.id}`)) {
+    return true;
+  }
+  // Messages from web pages must be from content scripts only
+  // Content scripts loaded by extension are marked with specific properties
+  // Only trust content scripts injected by this extension
+  if (
+    sender.frameId !== undefined &&
+    sender.id === chrome.runtime.id &&
+    typeof sender.url === 'string' &&
+    (sender.url.startsWith('http://') || sender.url.startsWith('https://'))
+  ) {
+    return true;
+  }
+  return false;
+}
+
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 if (__.ENTRY) {
   chrome.runtime.onConnect.addListener(async port => {
@@ -52,6 +77,12 @@ export function _execute(data, sender, multi, broadcast) {
 }
 
 function onRuntimeMessage({data, multi, TDM, broadcast}, sender, sendResponse) {
+  // SECURITY: Validate message origin before processing
+  if (!isMessageTrusted(sender)) {
+    console.warn('[msg] Rejecting message from untrusted sender:', sender.url || sender);
+    sendResponse(wrapError(new Error('Message origin not trusted')));
+    return false;
+  }
   if (!__.MV3 && !__.IS_BG && data.method === 'backgroundReady') {
     bgReadySignal?.(true);
   }
