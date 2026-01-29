@@ -54,7 +54,6 @@ type StyleDataMap = Map<number, StyleDataMapEntry>;
 declare interface StyleDataMapEntry {
   style: StyleObj;
   preview?: StyleObj;
-  urls: Set<string>;
 }
 
 declare interface StyleSection {
@@ -82,6 +81,9 @@ declare interface TabCacheEntry {
 }
 
 declare namespace Injection {
+  interface Cache extends Map<number,Sections> {
+    maybe?: Set<number>;
+  }
   interface Response {
     cfg: Config;
     sections?: Sections[];
@@ -90,9 +92,11 @@ declare namespace Injection {
     [styleId: string]: Sections
   }
   interface Sections {
-    id: number,
-    code: string[] | string,
-    name: string,
+    id: number;
+    code: string[] | string;
+    name: string;
+    /** when not enabled normally but forced for a tab */
+    tabOvr: boolean;
   }
   interface SectionsContent extends Sections {
     code: string,
@@ -112,15 +116,6 @@ declare namespace Injection {
   interface Order {
     main: Record<string,number>;
     prio: Record<string,number>;
-  }
-}
-
-declare namespace MatchCache {
-  interface Entry {
-    url: string;
-    maybe?: Set<number>;
-    sections: Injection.SectionsMap;
-    tabOvr?: boolean;
   }
 }
 

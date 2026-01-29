@@ -16,7 +16,6 @@ import {getUrlOrigin} from '../tab-util';
 import * as usercssMan from '../usercss-manager';
 import * as uswApi from '../usw-api';
 import * as urlCache from './cache';
-import {buildCache} from './cache-builder';
 import './init';
 import {onBeforeSave, onSaved} from './fixer';
 import {matchOverrides, urlMatchOverride, urlMatchSection} from './matcher';
@@ -240,23 +239,20 @@ export function getSectionsByUrl(url, {id, init, dark} = {}) {
        TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
     url = v || url;
   }
-  const tabOverrides = td[kTabOvr];
-  const cache = (v = urlCache.data.get(url)) || {
-    url,
-    maybe: null,
-    sections: {},
-  };
-  if (!v || (v = cache.maybe) || tabOverrides)
-    buildCache(cache, url, v, tab.id, tabOverrides);
-  urlCache.add(cache);
-  const secs = cache.sections;
-  const secsArr = id
-    ? (v = secs[id]) && tabOverrides?.[id] !== false
-      ? [v]
-      : []
-    : (v = Object.values(secs)) && tabOverrides
-      ? v.filter(sec => sec[kTabOvr] !== false)
-      : v;
+  const cache = (v = urlCache.entries.get(url)) || new Map();
+  const tabOvr = td[kTabOvr] || false;
+  const secsArr = [];
+  let {maybe} = cache;
+  if (v && tabOvr)
+    for (const styleId in tabOvr)
+      if (tabOvr[styleId] && !cache.has(+styleId))
+        (maybe ??= new Set()).add(+styleId);
+  if (!v || maybe)
+    urlCache.create(url, cache, maybe, tabOvr);
+  urlCache.add(url, cache);
+  for (const sec of !id ? cache.values() : ((v = cache.get(id))) ? [v] : [])
+    if (tabOvr[sec.id] ?? !sec[kTabOvr])
+      secsArr.push(sec);
   if (init === true && secsArr.length) {
     (td[kUrl] ??= {})[frameId] ??= url;
   }
@@ -293,7 +289,7 @@ export async function importMany(items) {
       };
     }
   }
-  urlCache.clear();
+  urlCache.entries.clear();
   setTimeout(() => messages.forEach(args => broadcastStyleUpdated(...args)), IMPORT_THROTTLE);
   return Promise.all(res);
 }
@@ -445,7 +441,7 @@ export function toggleTabOvrMany(tabId, overrides) {
   const messages = [];
   const td = tabCache[tabId];
   const url = td[kUrl][0];
-  const cache = urlCache.data.get(url);
+  const cache = urlCache.entries.get(url);
   let tabOvr = td[kTabOvr] || {}; // not assigning it yet as it may end up empty
   for (const key in overrides) {
     const id = +key;
