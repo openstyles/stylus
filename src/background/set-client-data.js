@@ -39,7 +39,8 @@ const PROVIDERS = {
           query,
           mode: sp.get('searchMode') || prefs.__values['manage.searchMode'],
         }),
-      styles: styleMan.getCore({sections: true, size: true}),
+      // JSON.parse in the receiver is faster than JS parsing of a huge literal object
+      styles: JSON.stringify(styleMan.getCore({sections: true, size: true})),
       sync: syncMan.getStatus(true),
     };
   },
