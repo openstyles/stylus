@@ -42,19 +42,18 @@ export let WRBTest = __.BUILD !== 'firefox' && CHROME &&
     return res;
   });
 
-export let isVivaldi = !!(browserWindows && CHROME) && (async () => {
-  const wnd = (await browserWindows.getAll())[0] ||
-    await new Promise(resolve => browserWindows.onCreated.addListener(function onCreated(w) {
-      browserWindows.onCreated.removeListener(onCreated);
-      resolve(w);
-    }));
-  isVivaldi = !!(wnd && (wnd.vivExtData || wnd.extData));
-  return isVivaldi;
-})();
-
 export let bgBusy = global[k_busy] = (_ =>
   Object.assign(new Promise(cb => (_ = cb)), {[kResolve]: _})
 )();
+
+export let isVivaldi, vivaldiTest;
+if (__.BUILD !== 'firefox' && CHROME && browserWindows) {
+  vivaldiTest = (async (wnd = browserWindows.getLastFocused()) => (
+    isVivaldi = !!((wnd = await wnd) && (wnd.vivExtData || wnd.extData))
+  ));
+} else {
+  isVivaldi = false;
+}
 
 bgPreInit.push(WRBTest);
 bgBusy.then(() => {

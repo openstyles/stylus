@@ -3,7 +3,7 @@ import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
 import {isDark, setSystemDark} from './color-scheme';
-import {bgBusy, dataHub, isVivaldi, WRB, WRBTest} from './common';
+import {bgBusy, dataHub, isVivaldi, vivaldiTest, WRB, WRBTest} from './common';
 import {stateDB} from './db';
 import {ownPagesCommitted} from './navigation-manager';
 import makePopupData from './popup-data';
@@ -81,7 +81,7 @@ export default async function setClientData({
   const jobs = /** @namespace StylusClientData */ Object.assign({
     apply: styleMan.getSectionsByUrl.call({sender}, pageUrl, {init: true}),
     dark: isDark,
-    favicon: FIREFOX || isVivaldi,
+    favicon: FIREFOX || (isVivaldi ?? vivaldiTest()),
     prefs: nondefaults,
     tabId: tabId ?? -1,
     [kBadFavs]: (page === 'edit' || page === 'install-usercss' || page === 'manage')

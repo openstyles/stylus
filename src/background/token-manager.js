@@ -6,7 +6,7 @@ import * as URLS from '@/js/urls';
 import {clamp, getHost} from '@/js/util';
 import {browserWindows} from '@/js/util-webext';
 import launchWebAuthFlow from 'webext-launch-web-auth-flow';
-import {isVivaldi} from './common';
+import {isVivaldi, vivaldiTest} from './common';
 
 const AUTH = {
   dropbox: {
@@ -193,7 +193,7 @@ async function authUser(keys, name, interactive = false, hooks = null) {
 }
 
 async function authUserMV2(url, interactive, redirectUri) {
-  alwaysUseTab ??= await isVivaldi;
+  alwaysUseTab ??= isVivaldi ?? await vivaldiTest();
   const width = clamp(screen.availWidth - 100, 400, 800);
   const height = clamp(screen.availHeight - 100, 200, 800);
   const wnd = !alwaysUseTab && await browserWindows.getLastFocused();
