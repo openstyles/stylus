@@ -54,7 +54,7 @@ Stylus is a browser extension to restyle the websites via CSS themes, compatible
 
 ## Releases
 
-1. [Chrome Web Store](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne) or [beta](https://chrome.google.com/webstore/detail/stylus-beta/apmmpaebfobifelkijhaljbmpcgbjbdo)<br>for modern Chrome (v128+) and Chromium-based browsers like Brave, Opera, Vivaldi.
+1. [Chrome Web Store](https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne) or [beta](https://chromewebstore.google.com/detail/stylus-beta/apmmpaebfobifelkijhaljbmpcgbjbdo)<br>for modern Chrome (v128+) and Chromium-based browsers like Brave, Opera, Vivaldi.
 
 2. [Mozilla addons](https://addons.mozilla.org/firefox/addon/styl-us/) or [beta](https://github.com/openstyles/stylus/releases) (as an xpi file)<br>for Firefox and any Gecko-based browser.
 
