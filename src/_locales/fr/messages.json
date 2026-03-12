@@ -280,6 +280,9 @@
   "enableStyleLabel": {
     "message": "Activer"
   },
+  "exclude": {
+    "message": "Exclure"
+  },
   "exportCompatible": {
     "message": "Export (mode de compatibilité)"
   },
@@ -408,6 +411,9 @@
   "importReportLegendInvalid": {
     "message": "invalides ignorés"
   },
+  "importReportLegendOrphans": {
+    "message": "styles installés non présents dans la sauvegarde"
+  },
   "importReportLegendUpdatedBoth": {
     "message": "codes et méta-informations mis à jour"
   },
@@ -431,6 +437,9 @@
   },
   "importStyles": {
     "message": "Importer des styles"
+  },
+  "include": {
+    "message": "Inclure"
   },
   "installButton": {
     "message": "Installer le style"
@@ -776,6 +785,9 @@
   "numberedLine": {
     "message": "Ligne :"
   },
+  "openAsPopupWindow": {
+    "message": "… sans barre d’outils ni onglets"
+  },
   "openManage": {
     "message": "Gestion"
   },
@@ -813,6 +825,9 @@
   "optionKeepAliveIdle": {
     "message": "… même si le navigateur est inactif"
   },
+  "optionTargetIcons": {
+    "message": "Icônes pour les sites cibles"
+  },
   "optionTargetIconsNote": {
     "message": "Stylus utilise le service externe $SRV$",
     "placeholders": {
@@ -820,6 +835,9 @@
         "content": "$1"
       }
     }
+  },
+  "optionTargetNum": {
+    "message": "Nombre de sites cibles"
   },
   "optionsAdvanced": {
     "message": "Avancé"
@@ -853,6 +871,9 @@
   },
   "optionsAdvancedPatchCspNote": {
     "message": "Activez cela si les styles comportent des images ou des polices qui échoue à charger sur les sites avec une politique de sécurité de contenus stricte <CSP> (<Content-Security-Policy>).\n\nActiver cette option permettra d'alléger les restrictions du <CSP>, permettant les styles essentiels de charger. Cette option n'est entendue que pour les utilisateurs expérimentés qui comprennent les potentielles implications de sécurité que cela introduit, et accepte la responsabilité de surveiller le contenu qu'ils autorisent. Veuillez lire les attaques basé sur le CSS pour plus d’information.\n\nAussi sachez, que cette option en particulier n'est pas garanti de fonctionner si une autre extension modifie la réponse réseau avant."
+  },
+  "optionsAdvancedSites": {
+    "message": "… seulement sur les sites correspondants"
   },
   "optionsAdvancedStyleViaASS": {
     "message": "Contourner <CSP>: <style-src> avec <adoptedStyleSheets>"
@@ -1309,6 +1330,9 @@
   "styleSettings": {
     "message": "Paramètres du style"
   },
+  "styleSitesIncludeOvr": {
+    "message": "surcharger le style"
+  },
   "styleToMozillaFormatHelp": {
     "message": "Le code au format Mozilla peut être utilisé dans Stylish for Firefox et envoyé à userstyles.org."
   },
@@ -1346,6 +1370,12 @@
   },
   "toggleStyle": {
     "message": "(Dés)activer le style"
+  },
+  "toggleStylesPerm": {
+    "message": "de façon permanente"
+  },
+  "toggleStylesTab": {
+    "message": "dans cet onglet uniquement"
   },
   "undo": {
     "message": "Annuler"
