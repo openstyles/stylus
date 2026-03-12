@@ -10,7 +10,6 @@
  * html and title sanitize <foo> as <code>foo</code> if foo is not an allowed tag,
  * which we use to denote untranslatable terms and to highlight the terms automatically.
  */
-import {$createFragment} from './dom';
 import {t} from './util';
 
 /** @typedef {Record<string, Element|DocumentFragment>} TemplateCache */
@@ -39,7 +38,8 @@ const intlCache = {};
 /** Adds soft hyphens every 10 characters to ensure the long words break before breaking the layout */
 export const breakWord = text => text.length <= 10 ? text
   : text.replace(RX_WORD_BREAK, '$&\u00AD');
-export const parseHtml = str => new DOMParser().parseFromString(str, 'text/html');
+/** Only use for HTML in our source code, never for externally editable stuff like locales */
+export const parseHtml = str => new Range().createContextualFragment(str);
 export const tHTML = html => typeof html !== 'string'
   ? html
   : html.includes('<') // check for html tags
@@ -84,14 +84,16 @@ function createTemplate(el) {
   return res;
 }
 
+/** Only use for HTML in our source code, never for externally editable stuff like locales */
 export function htmlToTemplate(html) {
-  const el = parseHtml(html).body;
-  const first = el.firstChild;
-  const res = first.nextSibling ? $createFragment(el.childNodes) : first;
+  const frag = parseHtml(html);
+  const first = frag.firstChild;
+  const res = first.nextSibling ? frag : first;
   tElements(res);
   return res;
 }
 
+/** Only use for HTML in our source code, never for externally editable stuff like locales */
 export function htmlToTemplateCache(html) {
   for (const el of parseHtml(html).$$('template[data-id]')) createTemplate(el);
   return templateCache;
