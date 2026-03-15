@@ -155,23 +155,23 @@ export function getByUrl(url, id, tabId, needsOvrs) {
 /**
  * @param {{}} [opts]
  * @param {number} [opts.id] - process and return only one style
- * @param {boolean} [opts.code] - include `code` and `sourceCode`
- * @param {boolean} [opts.sections] - include `sections`
+ * @param {boolean} [opts.sections] - include `sections` stripped of `code`
+ * @param {boolean} [opts.src] - include full `sections` if sectioned or `sourceCode` if UserCSS
  * @param {boolean} [opts.vars] - include `usercssData.vars`
  * @return {StyleObj[] | StyleObj}
  */
-export function getCore({id, code, sections, size, vars} = {}) {
+export function getCore({id, sections, size, src, vars} = {}) {
   const res = [];
   for (let {style} of id ? [dataMap.get(id)] : dataMap.values()) {
     style = {...style};
     let tmp;
     if (size)
       style[k_size] = calcObjSize(style);
-    if (!code && sections)
+    if (sections)
       tmp = style.sections.map(sec => ({...sec, code: undefined}));
-    if (!code || !sections)
+    if (!src || !sections)
       style.sections = tmp;
-    if (!code)
+    if (!src)
       style.sourceCode = undefined;
     if (!vars && (tmp = style[UCD]) && tmp.vars)
       style[UCD] = {...tmp, vars: Object.keys(tmp.vars).length};

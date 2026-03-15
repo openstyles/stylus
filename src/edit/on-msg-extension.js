@@ -38,7 +38,7 @@ async function handleExternalUpdate({style, reason, editorId}) {
     editor.updateMeta();
     return;
   }
-  style = await API.styles.getCore({id: style.id, vars: true});
+  style = await API.styles.getCore({id: style.id, src: true, vars: true});
   if (reason === 'config') {
     for (const key in editor.style)
       if (key !== 'sourceCode' && key !== 'sections' && !(key in style))
