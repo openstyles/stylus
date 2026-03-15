@@ -3,12 +3,16 @@ import {API} from '@/js/msg-api';
 import {closeCurrentTab} from '@/js/util-webext';
 import editor from './editor';
 
+let replacing, replaceQueue;
+
 onMessage.set(request => {
+  if (!request.broadcast) // ignore duplicate message from broadcast() to this tab
+    return;
   const {style} = request;
   switch (request.method) {
     case 'styleUpdated':
       if (editor.style.id === style.id) {
-        handleExternalUpdate(request);
+        handleExternalUpdate(style, request.reason, request.editorId);
       }
       break;
     case 'styleDeleted':
@@ -19,7 +23,7 @@ onMessage.set(request => {
   }
 });
 
-async function handleExternalUpdate({style, reason, editorId}) {
+function handleExternalUpdate(style, reason, editorId) {
   if (reason === 'editPreview' ||
       reason === 'editPreviewEnd') {
     return;
@@ -38,6 +42,14 @@ async function handleExternalUpdate({style, reason, editorId}) {
     editor.updateMeta();
     return;
   }
+  (replaceQueue ??= []).push([style, reason]);
+  replacing = replacing
+    ? replacing.then(onReplaced, onReplaced)
+    : onReplaced();
+}
+
+async function onReplaced() {
+  let [style, reason] = replaceQueue.shift();
   style = await API.styles.getCore({id: style.id, src: true, vars: true});
   if (reason === 'config') {
     for (const key in editor.style)
