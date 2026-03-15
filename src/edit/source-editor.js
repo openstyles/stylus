@@ -228,7 +228,7 @@ export default function SourceEditor() {
       if (!sameCode) {
         const si0 = draft && draft.si.cms[0];
         const cursor = !si0 && cm.getCursor();
-        cm.setValue(style.sourceCode);
+        cm.setValue(newStyle.sourceCode);
         if (si0) {
           editor.applyScrollInfo(cm, si0);
         } else {
