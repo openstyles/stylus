@@ -181,7 +181,8 @@ export async function syncNow() {
 
 function initController() {
   return dbToCloud({
-    onGet: _id => getByUuid(_id) || uuidIndex.custom[_id],
+    onGet: _id => getByUuid(_id) || uuidIndex.custom[_id]
+      || Promise.reject('No such style UUID: ' + _id),
     async onPut(doc) {
       if (!doc) return; // TODO: delete it?
       const id = uuidIndex.get(doc._id);
