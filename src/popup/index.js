@@ -17,6 +17,9 @@ import './popup.css';
 
 const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
 const UNREACHABLE = 'unreachable';
+const isFullscreenPopup = MOBILE
+  && innerWidth > screen.availWidth - 200
+  && innerHeight > screen.availHeight - 200;
 export let tabId;
 export let tabUrl;
 export let tabUrlSupported;
@@ -31,7 +34,7 @@ let prevHeight;
   if (port) // re-entry from connectPort()
     return;
   prevHeight = Math.max(innerHeight, 150);
-  if (!MOBILE) window.on('resize', onWindowResize);
+  if (!isFullscreenPopup) window.on('resize', onWindowResize);
   if (urlParams.has(pSideFinder)) openStyleFinder();
   (function connectPort() {
     ignoreChromeError();
@@ -73,7 +76,7 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
     $rootCL.remove(UNREACHABLE, 'search-results-shown');
     $('#write-style').textContent = '';
   } else {
-    if (MOBILE || isSidebar) {
+    if (isFullscreenPopup || isSidebar) {
       $rootCL.add('maximized');
     } else {
       const kPopupWidth = 'popupWidth';
