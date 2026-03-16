@@ -169,7 +169,7 @@ export function getCore({id, sections, size, src, vars} = {}) {
       style[k_size] = calcObjSize(style);
     if (sections)
       tmp = style.sections.map(sec => ({...sec, code: undefined}));
-    if (!src || !sections)
+    if (!src || !sections && style[UCD])
       style.sections = tmp;
     if (!src)
       style.sourceCode = undefined;
