@@ -55,7 +55,7 @@ function update() {
       const not = m.charCodeAt(0) === 45/* - */;
       const re = m.charCodeAt(not) === 47/* / */ && m.charCodeAt(m.length - 1) === 47
         && m.slice(1 + not, -1);
-      m = re ? [re] : SITE_RE.exec(str);
+      m = re ? [re] : SITE_RE.exec(m);
       if (!m || seen.has(m[0]))
         continue;
       seen.add(m[0]);
@@ -80,29 +80,30 @@ function update() {
         continue;
       let res;
       if (globs.length) {
-        res = ['']; // reserving first elem to modify it for `multiSchemes`
-        let cur, curScheme, multiSchemes;
+        res = [' ^'];
+        let groupFirstSite, groupScheme, multiSchemes;
         for (const [scheme, hostPath] of globs) {
-          if (!cur) { // first iteration
+          if (groupScheme !== scheme) {
+            if (groupScheme) {
+              res.push(groupFirstSite || ' )', ' |');
+              multiSchemes = true;
+            }
             res.push(scheme);
-            curScheme = scheme;
-            cur = hostPath;
-          } else if (curScheme !== scheme) {
-            if (cur) res.push(cur, ' |', scheme); // just one site in previous run
-            else res.push(' ) |', scheme);
-            multiSchemes = true;
-            curScheme = scheme;
-            cur = hostPath;
-          } else if (cur) {
-            res.push(' ( ?:', cur, ' |', hostPath);
-            cur = null;
+            groupScheme = scheme;
+            groupFirstSite = hostPath;
           } else {
+            if (groupFirstSite) {
+              res.push(' ( ?:', groupFirstSite);
+              groupFirstSite = '';
+            }
             res.push(' |', hostPath);
           }
         }
-        cur = (cur || curScheme && ' )' || '') + (multiSchemes ? ' )' : '');
-        if (cur) res.push(cur);
-        res[0] = multiSchemes ? ' ^ ( ?:' : ' ^';
+        res.push(
+          groupFirstSite || groupScheme && ' )' || '',
+          multiSchemes ? ' )' : '',
+        );
+        if (multiSchemes) res[0] += ' ( ?:';
         res = globAsRegExpStr(res.join('')).replace(/ \\/g, '');
       }
       // TODO: show the error in the options
