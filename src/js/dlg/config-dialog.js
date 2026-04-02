@@ -9,11 +9,17 @@ import {MOBILE} from '@/js/ua';
 import './config-dialog.css';
 import '@/css/onoffswitch.css';
 
+/**
+ * @param {StyleObj|number} style
+ * @param {number} [y]
+ */
 export default async function configDialog(style, y) {
   const AUTOSAVE_DELAY = 400;
   let saving = false;
   let bodyStyle;
-  let ucd, varsHash, varNames, vars, varsInitial;
+  /** @type {(UsercssVar & {input: HTMLElement})[]} */
+  let vars;
+  let ucd, varsHash, varNames, varsInitial;
 
   if (typeof style === 'number')
     style = await API.styles.getCore({id: style, vars: true});
@@ -59,6 +65,7 @@ export default async function configDialog(style, y) {
 
   function onshow(box) {
     elCfg = box;
+    elCfg.dataset.styleName = style.name;
     box._buttons.$('button').after(
       $create('label#config-autosave-wrapper', {
         title: t('configOnChangeTooltip'),
@@ -310,7 +317,7 @@ export default async function configDialog(style, y) {
       resetter.onclick = resetOnClick;
 
       elements.push(
-        $create(`label.config-${va.type}`, [
+        $create(`label.config-${va.type}[data-var=${va.name}]`, [
           $create('span.config-name', breakWord(va.label)),
           ...children,
           resetter,
