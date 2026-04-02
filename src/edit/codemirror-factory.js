@@ -2,6 +2,8 @@ import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
 import {getStyleAtPos} from '@/cm/util';
 import {kCodeMirror} from '@/js/consts';
 import * as prefs from '@/js/prefs';
+import {styleJSONseemsValid, styleToCss} from '@/js/sections-util';
+import {tryJSONparse} from '@/js/util';
 import editor from './editor';
 import {rerouteHotkeys} from './util';
 
@@ -80,10 +82,28 @@ const onCmOption = (cm, name) => {
     cm[cm.options[name] ? 'on' : 'off']('beforeChange', onCmBeforeChange);
   }
 };
+const maybeImportOnPaste = (cm, evt) => {
+  let v, ucText;
+  let text = evt.clipboardData.getData('text') || '';
+  if (!/^\s*{\s*"doc"\s*:\s*{\s*"/.test(text)
+  || !(v = tryJSONparse(text))
+  || !styleJSONseemsValid(v = v.doc)) {
+    v = null;
+  } else if (!(ucText = v.sourceCode)) {
+    text = styleToCss(v);
+  }
+  if (!editor.isUsercss) {
+    editor.importOnPaste(cm, evt, ucText || text, !ucText && v?.sections);
+  } else if (v) {
+    evt.preventDefault();
+    cm.setValue(ucText || text);
+  }
+};
 CodeMirror.defineInitHook(cm => {
   cm.on('focus', onCmFocus);
   cm.on('blur', onCmBlur);
   cm.on('optionChange', onCmOption);
+  cm.on('paste', maybeImportOnPaste);
   if (cm.options[kLineWrapping]) cm.on('beforeChange', onCmBeforeChange);
 });
 

@@ -16,14 +16,20 @@ export const helpPopup = {
    * @param {string|true} title - plain text or `true` to use `body` instead of .title and .contents
    * @param {AppendableElementGuts} body - Node, html or plain text
    * @param {WritableElementProps} [props] - DOM props for the popup element
-   * @param {Object} [dataset] - dataset props for the popup element
-   * @returns {HTMLElement & {onClose: Set<function>}} the popup
+   * @param {string} [id]
+   * @returns {HelpPopupElement} the popup
    */
   show(title = '', body, props, id = title) {
     const div = $create(helpPopup.SEL, props);
     const old = id && $(`${helpPopup.SEL}[data-id="${CSS.escape(id)}"] > .i-close`);
     if (old) old.click();
     div.dataset.id = id;
+    /** @typedef {HTMLElement & {
+      _close: HTMLElement,
+      _title: HTMLElement,
+      _contents: HTMLElement
+      onClose: Set<function>,
+    }} HelpPopupElement */
     div.append(
       div._close = $create('i.i-close', {onclick: helpPopup.close}),
       div._title = $create('.title', title),
@@ -176,6 +182,12 @@ export function createHotkeyInput(prefId, {buttons = true, onDone}) {
   }
 }
 
+/**
+ * @param {string | true} title
+ * @param {AppendableElementGuts} html
+ * @param {CodeMirror.EditorConfiguration} [options]
+ * @return {HelpPopupElement & {codebox: CodeMirror.Editor}}
+ */
 export function showCodeMirrorPopup(title, html, options) {
   const popup = helpPopup.show(title, html, {className: 'big'});
 

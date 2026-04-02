@@ -69,7 +69,7 @@ async function importFromFile(file) {
     }
     const text = await textPromise;
     el.remove();
-    if (/^\s*\[/.test(text)) {
+    if (/^\s*[[{]/.test(text)) {
       await importFromString(text);
       setTimeout(() => queue.styles.clear(), IMPORT_THROTTLE * 2);
     } else if (RX_META.test(text)) {
@@ -95,7 +95,9 @@ async function importFromFile(file) {
 }
 
 async function importFromString(jsonString) {
-  const json = JSON.parse(jsonString);
+  let json = JSON.parse(jsonString) || [];
+  if (json._rev === json.doc?._rev)
+    json = [json.doc];
   const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
   const oldStylesSet = new Set(oldStyles.sort((a, b) =>
     (a = a.customName || a.name).toLowerCase() <

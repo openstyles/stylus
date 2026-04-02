@@ -53,6 +53,7 @@ export default function SectionsEditor() {
     sections,
 
     closestVisible,
+    importOnPaste,
     updateLivePreview,
     updateMeta,
 
@@ -375,7 +376,7 @@ export default function SectionsEditor() {
     popup.codebox.execCommand('selectAll');
   }
 
-  function showMozillaFormatImport(text = '') {
+  function showMozillaFormatImport(text, newSections) {
     const popup = showCodeMirrorPopup(t('styleFromMozillaFormatPrompt'),
       $create('.buttons', [
         $create('button', {
@@ -390,21 +391,25 @@ export default function SectionsEditor() {
           title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
           onclick: doImport,
         }),
-      ]));
+      ]),
+      {
+        readOnly: !!text,
+      });
     const contents = popup._contents;
-    contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
-    popup.codebox.focus();
-    popup.codebox.on('changes', cm => {
+    const cm = popup.codebox;
+    contents.insertBefore(cm.display.wrapper, contents.firstElementChild);
+    cm.focus();
+    cm.on('changes', () => {
       popup.classList.toggle('ready', !cm.isBlank());
       cm.markClean();
     });
     if (text) {
-      popup.codebox.setValue(text);
-      popup.codebox.clearHistory();
-      popup.codebox.markClean();
+      cm.setValue(text);
+      cm.clearHistory();
+      cm.markClean();
     }
     // overwrite default extraKeys as those are inapplicable in popup context
-    popup.codebox.options.extraKeys = {
+    cm.options.extraKeys = {
       'Ctrl-Enter': doImport,
       'Shift-Ctrl-Enter': () => doImport({replaceOldStyle: true}),
     };
@@ -412,14 +417,17 @@ export default function SectionsEditor() {
     async function doImport({replaceOldStyle = false}) {
       lockPageUI(true);
       try {
-        const code = popup.codebox.getValue().trim();
-        if (!code.match(RX_META)?.[0].includes('@preprocessor') ||
-            !await getPreprocessor(code) ||
+        text ||= cm.getValue().trim();
+        if (!text.match(RX_META)?.[0].includes('@preprocessor') ||
+            !await getPreprocessor(text) ||
             await messageBox.confirm(
               t('importPreprocessor'), 'pre-line',
               t('importPreprocessorTitle'))
         ) {
-          const {sections: newSections, errors} = await worker.parseMozFormat({code});
+          let errors;
+          if (!newSections) {
+            ({sections: newSections, errors} = await worker.parseMozFormat({code: text}));
+          }
           if (!newSections.length || errors.some(e => !e.recoverable)) {
             await Promise.reject(errors);
           }
@@ -444,10 +452,10 @@ export default function SectionsEditor() {
 
     function lockPageUI(locked) {
       $root.style.pointerEvents = locked ? 'none' : '';
-      if (popup.codebox) {
-        popup.classList.toggle('ready', locked ? false : !popup.codebox.isBlank());
-        popup.codebox.options.readOnly = locked;
-        popup.codebox.display.wrapper.style.opacity = locked ? '.5' : '';
+      if (popup.codebox === cm) {
+        popup.classList.toggle('ready', locked ? false : !cm.isBlank());
+        cm.options.readOnly = locked;
+        cm.display.wrapper.style.opacity = locked ? '.5' : '';
       }
     }
 
@@ -641,17 +649,15 @@ export default function SectionsEditor() {
 
   /** @param {EditorSection} section */
   function registerEvents(section) {
-    const {el, cm} = section;
+    const {el} = section;
     el.$('.remove-section').onclick = () => removeSection(section);
     el.$('.add-section').onclick = () => insertSectionAfter(undefined, section);
     el.$('.clone-section').onclick = () => insertSectionAfter(section.getModel(), section);
     el.$('.move-section-up').onclick = () => moveSectionUp(section);
     el.$('.move-section-down').onclick = () => moveSectionDown(section);
-    cm.on('paste', maybeImportOnPaste);
   }
 
-  function maybeImportOnPaste(cm, event) {
-    const text = event.clipboardData.getData('text') || '';
+  function importOnPaste(cm, event, text) {
     if (/@-moz-document/i.test(text) &&
         /@-moz-document\s+(url|url-prefix|domain|regexp)\(/i
           .test(text.replace(/\/\*([^*]+|\*(?!\/))*(\*\/|$)/g, ''))
