@@ -8,18 +8,16 @@ import {RX_META} from './util';
  * Doesn't move the comment with ==UserStyle== inside.
  * @param {Object} _
  * @param {string} _.code
- * @param {boolean} [_.fast] - uses topDocOnly option to extract sections as text
  * @param {number} [_.styleId] - used to preserve parserCache on subsequent runs over the same style
  * @returns {{sections: Array, errors: Array}}
  * @property {?number} lastStyleId
  */
-export default function extractSections({code, styleId, fast = true}) {
-  const commentsAtEnd = /(\/\*(?:[^*]+|\*(?!\/))*\*\/\s*)*$/;
+export default function extractSections({code, styleId}) {
   const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
   const parser = new parserlib.css.Parser({
     noValidation: true,
     starHack: true,
-    topDocOnly: fast,
+    topDocOnly: true,
   });
   const sectionStack = [{code: '', start: 0}];
   const errors = [];
@@ -33,7 +31,7 @@ export default function extractSections({code, styleId, fast = true}) {
   parser.addListener('startdocument', e => {
     const lastSection = sectionStack[sectionStack.length - 1];
     let outerText = mozStyle.slice(lastSection.start, e.offset);
-    const lastCmt = outerText.match(commentsAtEnd)[0];
+    const lastCmt = e.start.comment?.text || '';
     const section = {
       code: '',
       start: e.brace.offset + 1,
