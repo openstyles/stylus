@@ -70,14 +70,14 @@ onUnload.add((tabId, frameId) => {
 
 webNavigation.onErrorOccurred.addListener(removePreloadedStyles, WEBNAV_FILTER);
 
-if (CHROME && !__.MV3 && __.BUILD !== 'firefox') {
+if ((__.B_CHROME || __.B_ANY && CHROME) && !__.MV3) {
   chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
     urls: [ownRoot + '*.user.css'],
     types: [kMainFrame],
   }, ['blocking']);
 }
 
-if (CHROME && __.BUILD !== 'firefox') {
+if (__.B_CHROME || __.B_ANY && CHROME) {
   chrome.webRequest.onBeforeRequest.addListener(req => {
     // tabId < 0 means the popup is shown normally and not as a page in a tab
     dataHub.set(kPopup, req.tabId < 0 && makePopupData());
@@ -186,7 +186,8 @@ function modifyHeaders(req) {
   const styled = payload.sections.length;
   const cspOn = __values[pPatchCsp]
     && (!(v = optionSites[pPatchCsp]) || isOptionSite(v, req.url));
-  let csp = (FIREFOX || cspOn) && findHeader(responseHeaders, 'content-security-policy');
+  let csp = (__.B_FIREFOX || __.B_ANY && FIREFOX || cspOn)
+    && findHeader(responseHeaders, 'content-security-policy');
   if (csp) {
     const m = (v = csp.value).match(rxNONCE);
     if (m) tabMan.set(req.tabId, 'nonce', req.frameId, payload.cfg.nonce = m[1]);

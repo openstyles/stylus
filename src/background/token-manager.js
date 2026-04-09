@@ -63,7 +63,7 @@ const AUTH = {
 const NETWORK_LATENCY = 30; // seconds
 const DEFAULT_REDIRECT_URI = 'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/';
 
-let alwaysUseTab = !browserWindows || (FIREFOX ? false : null);
+let alwaysUseTab = !browserWindows || (__.B_FIREFOX || __.B_ANY && FIREFOX ? false : null);
 
 class TokenError extends Error {
   constructor(provider, message) {

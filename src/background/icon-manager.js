@@ -15,10 +15,10 @@ const staleBadges = new Set();
 const imageDataCache = {};
 const badgeOvr = {color: '', text: ''};
 // https://github.com/openstyles/stylus/issues/1287 Fenix can't use custom ImageData
-const FIREFOX_ANDROID = FIREFOX && MOBILE;
+const FIREFOX_ANDROID = (__.B_FIREFOX || __.B_ANY && FIREFOX) && MOBILE;
 const ICON_SIZES =
   !__.MV3 && VIVALDI ? [19, 38] : // old Vivaldi
-    __.MV3 || !FIREFOX ? [16, 32] : // Chromium
+    __.MV3 || !(__.B_FIREFOX || __.B_ANY && FIREFOX) ? [16, 32] : // Chromium
       MOBILE ? [32, 38] : // FF mobile 1x, 1.5x, 2x DPI // TODO: +48
         [16, 32, 38]; // FF desktop toolbar and panel 1x, 1.5x, 2x DPI // TODO: 38->48, +64
 const kBadgeDisabled = 'badgeDisabled';
@@ -166,8 +166,7 @@ function getStyleCount(tabId) {
 
 // Caches imageData for icon paths
 async function loadImage(url) {
-  const {OffscreenCanvas} = (__.MV3 || CHROME && self.createImageBitmap) && self || {};
-  const img = __.MV3 || OffscreenCanvas
+  const img = __.B_CHROME || __.B_ANY && CHROME
     ? await createImageBitmap(await (await fetch(url)).blob())
     : await new Promise((resolve, reject) =>
       Object.assign(new Image(), {
@@ -176,7 +175,8 @@ async function loadImage(url) {
         onerror: reject,
       }));
   const {width: w, height: h} = img;
-  const canvas = __.MV3 || OffscreenCanvas
+  // The check must be inlined, not reused as a variable, to enable elimination of dead code
+  const canvas = __.B_CHROME || __.B_ANY && CHROME
     ? new OffscreenCanvas(w, h)
     : Object.assign($tag('canvas'), {width: w, height: h});
   const ctx = canvas.getContext('2d');

@@ -34,8 +34,8 @@ export const uuidIndex = Object.assign(new Map(), {
   },
 });
 
-export let WRB = __.BUILD === 'chrome' ? null : !!FIREFOX;
-export let WRBTest = __.BUILD !== 'firefox' && CHROME &&
+export let WRB = __.B_CHROME ? null : __.B_FIREFOX || __.B_ANY && !!FIREFOX;
+export let WRBTest = (__.B_CHROME || __.B_ANY && CHROME) &&
   browser.permissions.contains({permissions: ['webRequestBlocking']}).then(res => {
     WRBTest = null;
     WRB = res;
@@ -47,7 +47,7 @@ export let bgBusy = global[k_busy] = (_ =>
 )();
 
 export let isVivaldi, vivaldiTest;
-if (__.BUILD !== 'firefox' && CHROME && browserWindows) {
+if ((__.B_CHROME || __.B_ANY && CHROME) && browserWindows) {
   vivaldiTest = (async (wnd = browserWindows.getLastFocused()) => (
     isVivaldi = !!((wnd = await wnd) && (wnd.vivExtData || wnd.extData))
   ));

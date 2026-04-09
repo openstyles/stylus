@@ -13,7 +13,7 @@ import ChromeStorageDB from './db-chrome-storage';
  https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_use_indexeddb_when/
 */
 
-let exec = __.BUILD === 'chrome' || CHROME
+let exec = __.B_CHROME || __.B_ANY && CHROME
   ? dbExecIndexedDB
   : tryUsingIndexedDB;
 const FALLBACK = 'dbInChromeStorage';
@@ -145,7 +145,7 @@ async function dbExecIndexedDB(dbName, method, ...args) {
   const store = (databases[dbName] ??= await open(dbName))
     .transaction([storeName], mode)
     .objectStore(storeName);
-  if (mode && dbName in MIRROR && (__.BUILD === 'chrome' || this !== testDB))
+  if (mode && dbName in MIRROR && (__.B_CHROME || this !== testDB))
     execMirror(...arguments);
   return method.endsWith('Many')
     ? storeMany(store, method.slice(0, -4), ...args)

@@ -18,7 +18,7 @@ export async function loadCmTheme(name = prefs.__values[THEME_KEY]) {
   } else if (!css) {
     css = `${__.CM_PATH}${name}.css`;
     if (!EL) {
-      if (__.BUILD !== 'chrome' && FIREFOX) {
+      if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
         EL = $tag('link');
         EL.rel = 'stylesheet';
       } else {
@@ -28,7 +28,7 @@ export async function loadCmTheme(name = prefs.__values[THEME_KEY]) {
       document.head.appendChild(EL);
     }
     // Firefox delays visual updates so we can fetch the theme asynchronously
-    if (__.BUILD !== 'chrome' && FIREFOX) {
+    if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
       EL.href = css;
       await new Promise(resolve => (EL.onload = resolve));
       css = '';

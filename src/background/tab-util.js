@@ -8,7 +8,9 @@ import {prefsDB} from './db';
 
 // FF57+ supports openerTabId, but not in Android
 // (detecting FF57 by the feature it added, not navigator.ua which may be spoofed in about:config)
-const HAS_OPENER = !!(browserWindows && (CHROME || global.AbortController));
+const HAS_OPENER = !!(
+  browserWindows && (__.B_CHROME || __.B_ANY && CHROME || global.AbortController)
+);
 const EMPTY_TAB = [
   // Chrome and simple forks
   'chrome://newtab/',
@@ -34,7 +36,7 @@ export async function openEditor(params) {
   const wnd = browserWindows && prefs.__values[pOpenEditInWindow];
   const wndPos = wnd && prefs.__values.windowPosition;
   const wndPopup = wnd && prefs.__values[pOpenEditInWindow + '.popup'] && {type: 'popup'};
-  const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047
+  const ffBug = wnd && (__.B_FIREFOX || __.B_ANY && FIREFOX); // https://bugzil.la/1271047
   if (wndPopup) usp.set(kPopup, '1');
   u.search = usp;
   for (let tab, retry = 0; retry < (wndPos ? 2 : 1); ++retry) {

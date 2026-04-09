@@ -1,6 +1,6 @@
 import {kInvokeAPI, kSidebar} from '@/js/consts';
 
-export const FF = __.BUILD !== 'chrome' && (
+export const FF = !__.B_CHROME && (
   __.ENTRY
     ? 'contextualIdentities' in chrome || 'activityLog' in chrome
     : global !== window

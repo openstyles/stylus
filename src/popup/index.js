@@ -110,12 +110,13 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
 
   if (ping0) return;
 
-  const isStore = FIREFOX ? tabUrl.startsWith('https://addons.mozilla.org/') :
+  const isStore =
+    __.B_FIREFOX || __.B_ANY && FIREFOX ? tabUrl.startsWith('https://addons.mozilla.org/') :
       OPERA ? tabUrl.startsWith('https://addons.opera.com/') :
         tabUrl.startsWith('https://chrome.google.com/webstore/') ||
         tabUrl.startsWith('https://chromewebstore.google.com/');
   blockPopup();
-  if (CHROME && isStore || !urlSupported) {
+  if ((__.B_CHROME || __.B_ANY && CHROME) && isStore || !urlSupported) {
     return;
   }
 
@@ -124,7 +125,8 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
       blockPopup(false);
       return;
     }
-    if (tab.status === 'complete' && (CHROME || tab.url !== kAboutBlank)) {
+    if (tab.status === 'complete'
+    && (__.B_CHROME || __.B_ANY && CHROME || tab.url !== kAboutBlank)) {
       break;
     }
     // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
@@ -134,9 +136,9 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
   }
 
   let info;
-  if (CHROME) {
+  if (__.B_CHROME || __.B_ANY && CHROME) {
     info = template.unreachableInfo;
-  } else {
+  } else if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
     info = $('.blocked-info');
     info.$('summary').textContent = t('unreachableAMO');
     const note = [

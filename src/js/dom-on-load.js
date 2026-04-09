@@ -33,7 +33,7 @@ onMessage.set(request => {
   }
 });
 // Removing transition-suppressor rule
-if (!CHROME || CHROME < 93) {
+if (__.B_FIREFOX || !__.MV3 && __.B_ANY && (!CHROME || CHROME < 93)) {
   nextSheet: for (const sheet of document.styleSheets) {
     for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {
       if (/#\\1\s?transition-suppressor/.test(rule.cssText)) {
@@ -170,7 +170,7 @@ function splitMenu(event) {
     moveFocus(menu, 0);
     setHocus(menu.firstChild, isHocused(pedal));
     xo.observe(menu);
-    if (__.BUILD !== 'chrome' && FIREFOX) // https://bugzil.la/1939973
+    if (__.B_FIREFOX || __.B_ANY && FIREFOX) // https://bugzil.la/1939973
       for (let el = wrapper; (el = el.offsetParent) && el.tagName !== 'BODY';)
         xo.observe(el);
   }

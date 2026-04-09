@@ -23,7 +23,7 @@ $rootCL.add(
   __.MV3 ? 'mv3' : 'mv2',
   MOBILE ? 'mobile' : 'desktop',
   WINDOWS ? 'windows' : 'non-windows',
-  FIREFOX ? 'firefox' : 'chromium',
+  __.B_FIREFOX || __.B_ANY && FIREFOX ? 'firefox' : 'chromium',
   ...OPERA ? ['opera'] : VIVALDI ? ['vivaldi'] : [],
   ...isSidebar ? [kSidebar] : isTab ? ['tab'] : [],
   isTouch ? 'touch' : 'non-touch',
@@ -79,8 +79,11 @@ function showUnhandledError(err) {
   const fontSize = 12;
   const el = document.getElementById(id) || document.createElement('textarea');
   const old = el.value;
-  const cur = ([FIREFOX && err.message, err.stack].filter(Boolean).join('\n') || `${err}`)
-    .trim().split(ownRoot).join('');
+  const cur = (
+    [(__.B_FIREFOX || __.B_ANY && FIREFOX) && err.message, err.stack]
+      .filter(Boolean).join('\n')
+    || `${err}`
+  ).trim().split(ownRoot).join('');
   const i = old.indexOf(cur);
   const text = el.value = i < 0
     ? [old, cur].filter(Boolean).join('\n\n')

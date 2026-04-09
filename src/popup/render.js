@@ -241,7 +241,7 @@ function onShowNotePartial({_body: el}) {
   el.append('\n\n', sanitizeHtml(t('styleRegexpPartialExplanation')));
   if ((el = el.$('a'))) {
     el.href = 'https://developer.mozilla.org/docs/Web/CSS/@document';
-    if (CHROME) el.title = el.href;
+    if (__.B_CHROME || __.B_ANY && CHROME) el.title = el.href;
   }
 }
 

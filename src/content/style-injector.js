@@ -3,7 +3,7 @@ import {API} from '@/js/msg-api';
 import * as msgApi from '@/js/msg-api';
 
 // allows Terser to drop unused code in targeted builds
-export const FF = __.BUILD !== 'chrome' && msgApi.FF;
+export const FF = !__.B_CHROME && msgApi.FF;
 const CLASS = 'stylus';
 const PREFIX = CLASS + '-';
 const MEDIA = 'screen, ' + PREFIX;
@@ -17,7 +17,7 @@ export const runtime = chrome.runtime;
 // Firefox uses a different id for moz-extension://
 export const ownId = __.MV3 ? runtime.id : runtime.getURL('').split('/')[2];
 export const isXml = !__.ENTRY && document instanceof XMLDocument;
-const wrappedDoc = __.BUILD !== 'chrome' && FF && document.wrappedJSObject
+const wrappedDoc = !__.B_CHROME && FF && document.wrappedJSObject
   || document;
 // styles are out of order if any of these elements is injected between them
 // except `style` on our own page as it contains overrides

@@ -81,7 +81,7 @@ export default async function setClientData({
   const jobs = /** @namespace StylusClientData */ Object.assign({
     apply: styleMan.getSectionsByUrl.call({sender}, pageUrl, {init: true}),
     dark: isDark,
-    favicon: FIREFOX || (isVivaldi ?? vivaldiTest()),
+    favicon: __.B_FIREFOX || __.B_ANY && FIREFOX || (isVivaldi ?? vivaldiTest()),
     prefs: nondefaults,
     tabId: tabId ?? -1,
     [kBadFavs]: (page === 'edit' || page === 'install-usercss' || page === 'manage')

@@ -226,7 +226,12 @@ function hideInfo() {
 function showInfo(box) {
   const el = box.firstChild;
   const wikiUrl = 'https://github.com/openstyles/stylus/wiki/Popup';
-  const a = $createLink({href: wikiUrl, title: CHROME ? wikiUrl : ''}, wikiText);
+  const a = $createLink({
+    href: wikiUrl,
+    title: __.B_CHROME || __.B_ANY && CHROME
+      ? wikiUrl
+      : '',
+  }, wikiText);
   const width = '23em';
   box._buttons.append(a);
   box.classList.add('hotkeys');

@@ -137,7 +137,7 @@ self.fitSelectBox = __.MV3 || cssFieldSizing ? NOP : ((
   el.value = value;
 })();
 
-if (__.BUILD !== 'chrome' && !('loading' in HTMLImageElement.prototype)) {
+if (!__.B_CHROME && !('loading' in HTMLImageElement.prototype)) {
   const proto = HTMLImageElement.prototype;
   const pSrc = Object.getOwnPropertyDescriptor(proto, 'src');
   const xo = new IntersectionObserver(entries => {

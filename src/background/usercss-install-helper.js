@@ -111,7 +111,7 @@ async function maybeInstall(tabId, url, oldUrl = '') {
       /^(https?|file|ftps?):/.test(url) &&
       /\.user\.(css|less|styl)$/.test(url.split(/[#?]/, 1)[0]) &&
       !oldUrl.startsWith(makeInstallerUrl(url))) {
-    const inTab = FIREFOX && url.startsWith('file:');
+    const inTab = (__.B_FIREFOX || __.B_ANY && FIREFOX) && url.startsWith('file:');
     const code = await (inTab ? loadFromFile : loadFromUrl)(tabId, url);
     if (!/^\s*</.test(code) && RX_META.test(code)) {
       await openInstallerPage(tabId, url, {code, inTab});

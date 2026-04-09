@@ -3,7 +3,7 @@ const origListeners = __.DEBUG && new WeakMap();
 if (__.MV3) {
   global.browser = chrome;
   if (__.DEBUG) addEventLogger();
-} else if (__.BUILD !== 'firefox' && !global.browser?.runtime) {
+} else if (!__.B_FIREFOX && !global.browser?.runtime) {
   /* Auto-promisifier with a fallback to direct call on signature error.
      The fallback isn't used now since we call all synchronous methods via `chrome` */
   const directEvents = ['addListener', 'removeListener', 'hasListener', 'hasListeners'];

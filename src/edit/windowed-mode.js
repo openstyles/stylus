@@ -47,7 +47,7 @@ async function onTabAttached(tabId, info) {
   // If there's only one tab in this window, it's been dragged to new window
   const openEditInWindow = win.tabs.length === 1;
   // FF-only because Chrome retardedly resets the size during dragging
-  if (openEditInWindow && FIREFOX) {
+  if (openEditInWindow && (__.B_FIREFOX || __.B_ANY && FIREFOX)) {
     browserWindows.update(info.newWindowId, prefs.__values['windowPosition']);
   }
   prefs.set(pOpenEditInWindow, openEditInWindow);

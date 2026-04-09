@@ -1,6 +1,10 @@
 declare var __: {
   API: 'API',
-  BUILD: '' | 'chrome' | 'firefox',
+  /** build */
+  B: 'any' | 'chrome' | 'firefox' | string,
+  B_ANY: boolean,
+  B_CHROME: boolean,
+  B_FIREFOX: boolean,
   CLIENT_DATA: 'clientData',
   CM_PATH: string,
   /** bit mask, 1: general, 2: port, 4: life (keepAlive) */

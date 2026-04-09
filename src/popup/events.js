@@ -82,7 +82,7 @@ $(selFinder).on('split-btn', async e => {
 });
 $(selManager).title += t('popupManageSiteStyles');
 $(selManager).on('split-btn', openManager);
-if (__.BUILD !== 'chrome' && FIREFOX && isTouch)
+if ((__.B_FIREFOX || __.B_ANY && FIREFOX) && isTouch)
   installed.on('click', NOP); // Fenec bug workaround: wrong action element in click event
 subscribe(Object.keys(sideTitleMap), updateTitles, true);
 onMessage.set(({method, reason, style}) => {
@@ -104,7 +104,7 @@ if (browserSidebar) {
       ? evt.preventDefault() // suppress the menu if already handled in auxclick,
       : clickRouter(evt, 2), // otherwise handle keyboard activated contextmenu
     true);
-  if (__.BUILD !== 'chrome' && FIREFOX) {
+  if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
     /* Firefox doesn't retain user activation in oncontextmenu,
        so we use it only to suppress the menu, while handling it via onkey.
        Using onkeydown because it fires before oncontextmenu and sets hideContextMenu. */
@@ -213,7 +213,7 @@ export async function sidebarOpen(path) {
     location.assign(path);
     return;
   }
-  if (__.BUILD === 'chrome') {
+  if (__.B_CHROME) {
     browserSidebar.setOptions({tabId, path});
     await browserSidebar.open({tabId});
   } else {

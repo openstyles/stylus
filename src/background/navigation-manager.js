@@ -28,7 +28,7 @@ webNavigation.onReferenceFragmentUpdated.addListener(onNavigation.bind(null, 'ha
   WEBNAV_FILTER_STYLABLE);
 
 async function onNavigation(navType, data) {
-  if (CHROME && __.BUILD !== 'firefox' &&
+  if ((__.B_CHROME || __.B_ANY && CHROME) &&
       data.timeStamp === prevData.timeStamp && deepEqual(data, prevData)) {
     return; // Chrome bug: listener is called twice with identical data
   }
@@ -90,7 +90,7 @@ if (!__.MV3) {
   /*
    * FF misses some about:blank iframes so we inject our content script explicitly
    */
-  if (__.BUILD !== 'chrome' && FIREFOX) {
+  if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
     webNavigation.onDOMContentLoaded.addListener(async ({tabId, frameId}) => {
       if (frameId && !await pingTab(tabId, frameId)) {
         for (const file of MF.content_scripts[0].js) {

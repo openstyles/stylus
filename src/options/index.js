@@ -57,7 +57,7 @@ $id('manage.newUI.favicons').onclick = () => {
   API.prefsDB.delete(kBadFavs);
 };
 $id('shortcuts').onclick = () => {
-  if (__.BUILD !== 'chrome' && FIREFOX) {
+  if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
     if (!browser.commands?.openShortcutSettings?.())
       customizeHotkeys();
   } else {
@@ -66,7 +66,8 @@ $id('shortcuts').onclick = () => {
     });
   }
 };
-$id('shortcuts').hidden = FIREFOX && !browser.commands?.update;
+$id('shortcuts').hidden = (__.B_FIREFOX || __.B_ANY && FIREFOX)
+  && !browser.commands?.update;
 $id('reset').onclick = async () => {
   if (await messageBox.confirm(t('confirmDiscardChanges'))) {
     for (const el of $$('input')) {

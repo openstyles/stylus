@@ -6,7 +6,7 @@ const FILENAME = 'offscreen.html';
 const DOC_URL = ownRoot + FILENAME;
 
 /** @type {OffscreenAPI | CommandsAPI} */
-const offscreen = createPortProxy(() => (
+const offscreen = /*@__PURE__*/createPortProxy(() => (
   creating ??= create().finally(done)
 ), {
   lock: '/' + FILENAME,

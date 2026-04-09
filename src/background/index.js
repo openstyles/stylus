@@ -80,12 +80,12 @@ Object.assign(API, /** @namespace API */ {
 
   //#endregion
 
-}, __.BUILD !== 'chrome' && FIREFOX && initStyleViaApi());
+}, (__.B_FIREFOX || __.B_ANY && FIREFOX) && initStyleViaApi());
 
 //#region Events
 
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
-  if (__.BUILD !== 'firefox' && CHROME) {
+  if (__.B_CHROME || __.B_ANY && CHROME) {
     reinjectContentScripts();
     initContextMenus();
   }
@@ -152,7 +152,7 @@ onMessage.set((m, sender) => {
   bgPreInit.length = 0;
   await Promise.all(bgInit.map(v => typeof v === 'function' ? v() : v));
   bgBusy[kResolve]();
-  if (__.BUILD !== 'chrome' && FIREFOX) {
+  if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
     initBrowserCommandsApi();
     initContextMenus();
   }

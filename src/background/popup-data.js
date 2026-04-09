@@ -41,7 +41,8 @@ export default async function makePopupData(tabId) {
   let tmp;
   let tab = await (tabId != null ? browser.tabs.get(tabId) : getActiveTab());
   tabId ??= tab.id;
-  if (FIREFOX && tab.status === 'loading' && tab.url === kAboutBlank) {
+  if ((__.B_FIREFOX || __.B_ANY && FIREFOX)
+  && tab.status === 'loading' && tab.url === kAboutBlank) {
     tab = await waitForTabUrl(tabId);
   }
   // In modern Chrome `url` is for the current tab's contents, so it may be undefined
@@ -58,7 +59,7 @@ export default async function makePopupData(tabId) {
   ] = await Promise.all([
     isOwn
       || supported(url) && pingTab(tabId),
-    isOwn && CHROME && __.BUILD !== 'firefox' && getAllFrames(url, tab)
+    isOwn && (__.B_CHROME || __.B_ANY && CHROME) && getAllFrames(url, tab)
       || browser.webNavigation.getAllFrames({tabId}),
   ]);
   // sorting frames and connecting children to parents

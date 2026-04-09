@@ -100,7 +100,8 @@ export async function openMenu(entry) {
     Object.assign(elHome, {
       href: url,
       // Firefox already shows the target of links in a popup
-      title: t('externalHomepage') + (FIREFOX ? '' : '\n' + url),
+      title: t('externalHomepage') +
+        (__.B_FIREFOX || __.B_ANY && FIREFOX ? '' : '\n' + url),
     });
   }
   menuCL.add('measure');

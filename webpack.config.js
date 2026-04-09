@@ -81,7 +81,10 @@ const ALIASES = {
 const MIRROR_PREFIX = 'http://_/';
 const VARS = {
   API: 'API', // hiding the global from IDE
-  BUILD,
+  B: BUILD,
+  B_ANY: BUILD !== 'chrome' && BUILD !== 'firefox',
+  B_CHROME: BUILD === 'chrome',
+  B_FIREFOX: BUILD === 'firefox',
   CLIENT_DATA: 'clientData', // hiding the global from IDE
   CM_PATH,
   DEV,

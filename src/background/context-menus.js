@@ -53,7 +53,7 @@ if (MENUS) {
     ];
   }
 }
-if (MENUS && (__.BUILD !== 'firefox' && CHROME)) {
+if (MENUS && (__.B_CHROME || __.B_ANY && CHROME)) {
   MENUS['editor.contextDelete'] = [(info, tab) => {
     sendTab(tab.id, {method: 'editDeleteText'});
   }, {

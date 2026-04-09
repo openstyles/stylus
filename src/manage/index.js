@@ -38,7 +38,7 @@ import '@/css/target-site.css';
   router.update();
   showStyles(JSON.parse(data.styles), data.ids);
   initSyncButton(data.sync);
-  if (!__.MV3 && __.BUILD !== 'firefox' && CHROME >= 80 && CHROME <= 88) {
+  if (!__.MV3 && (__.B_CHROME || __.B_ANY && CHROME) && CHROME >= 80 && CHROME <= 88) {
     // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598
     window.on('pagehide', () => {
       $$('input[type=checkbox]').forEach((el, i) => (el.name = `bug${i}`));
