@@ -41,7 +41,7 @@ export default function extractSections({code, styleId}) {
       !/==userstyle==/i.test(lastCmt)) {
       if (lastCmt) {
         section.code = lastCmt + '\n';
-        outerText = outerText.slice(0, -lastCmt.length);
+        outerText = outerText.slice(0, -lastCmt.length - outerText.match(/\s*$/)[0].length);
       }
       outerText = outerText.match(/^\s*/)[0] + outerText.trim();
     }
