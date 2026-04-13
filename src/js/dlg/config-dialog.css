@@ -43,7 +43,7 @@
 }
 
 .config-body {
-  & label {
+  label {
     display: flex;
     align-items: center;
     --item-padY: .75em;
@@ -87,11 +87,16 @@
     left: auto;
     position: relative;
   }
-  & input[type="text"] {
+  input[type="text"] {
     padding-left: 0.25em;
   }
-  & .slider {
+  .slider {
     --width: 40px;
+  }
+  a.icon {
+    margin-left: calc(var(--pad) / 2);
+    display: inline-flex;
+    vertical-align: sub;
   }
 }
 
@@ -125,7 +130,7 @@
   position: absolute;
   right: var(--iconR);
   cursor: pointer;
-  & i {
+  i {
     color: var(--c65);
     font-size: var(--icon);
     padding: 0 1px;

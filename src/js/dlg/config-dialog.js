@@ -316,9 +316,16 @@ export default async function configDialog(style, y) {
       resetter.va = va;
       resetter.onclick = resetOnClick;
 
+      const {label} = va;
+      const i = label.indexOf('\n');
+      const labelGuts = [breakWord(i > 0 ? label.slice(0, i).trim() : label)];
+      if (i > 0) labelGuts.push(
+        $create('a.icon[data-cmd=note][tabindex=0]', {title: label.slice(i + 1).trim()},
+          $create('i.i-info')
+        ));
       elements.push(
         $create(`label.config-${va.type}[data-var=${va.name}]`, [
-          $create('span.config-name', breakWord(va.label)),
+          $create('span.config-name', labelGuts),
           ...children,
           resetter,
         ]));
