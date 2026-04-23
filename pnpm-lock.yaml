@@ -12,6 +12,7 @@ overrides:
   serialize-javascript@<=7.0.2: '>=7.0.3'
   serialize-javascript@<7.0.5: '>=7.0.5'
   '@xmldom/xmldom@<0.8.12': '>=0.8.12'
+  '@xmldom/xmldom@>=0.9.0 <0.9.10': '>=0.9.10'
 
 importers:
 
@@ -25,7 +26,7 @@ importers:
         version: 5.65.20
       csslint-mod:
         specifier: github:openstyles/csslint-mod#semver:v1.0.7
-        version: https://codeload.github.com/openstyles/csslint-mod/tar.gz/1fdfabcb000844d01a1012f94252c4ea32921da6
+        version: https://codeload.github.com/openstyles/csslint-mod/tar.gz/ee6c3b70db571ba83d0f417518d6a72775212130
       db-to-cloud:
         specifier: ^0.8.1
         version: 0.8.1
@@ -1219,6 +1220,7 @@ packages:
   '@xmldom/xmldom@0.9.9':
     resolution: {integrity: sha512-qycIHAucxy/LXAYIjmLmtQ8q9GPnMbnjG1KXhWm9o5sCr6pOYDATkMPiTNa6/v8eELyqOQ2FsEqeoFYmgv/gJg==}
     engines: {node: '>=14.6'}
+    deprecated: this version has critical issues, please update to the latest version
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -1565,8 +1567,8 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
-  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/1fdfabcb000844d01a1012f94252c4ea32921da6:
-    resolution: {tarball: https://codeload.github.com/openstyles/csslint-mod/tar.gz/1fdfabcb000844d01a1012f94252c4ea32921da6}
+  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/ee6c3b70db571ba83d0f417518d6a72775212130:
+    resolution: {tarball: https://codeload.github.com/openstyles/csslint-mod/tar.gz/ee6c3b70db571ba83d0f417518d6a72775212130}
     version: 1.0.7
 
   cssnano-preset-default@7.0.10:
@@ -1858,11 +1860,13 @@ packages:
 
   glob@10.5.0:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@11.1.0:
     resolution: {integrity: sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==}
     engines: {node: 20 || >=22}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   global-modules@2.0.0:
@@ -4840,7 +4844,7 @@ snapshots:
 
   cssesc@3.0.0: {}
 
-  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/1fdfabcb000844d01a1012f94252c4ea32921da6: {}
+  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/ee6c3b70db571ba83d0f417518d6a72775212130: {}
 
   cssnano-preset-default@7.0.10(postcss@8.5.6):
     dependencies:
