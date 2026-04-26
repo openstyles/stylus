@@ -1,7 +1,7 @@
 import {CodeMirror, extraKeys} from '@/cm';
-import {kCodeMirror, pFavicons, UCD} from '@/js/consts';
+import {kCodeMirror, pFavicons} from '@/js/consts';
 import {$create} from '@/js/dom';
-import {messageBox} from '@/js/dom-util';
+import {messageBox, setInputValue} from '@/js/dom-util';
 import {htmlToTemplateCache, templateCache} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
@@ -417,19 +417,25 @@ export default function SectionsEditor() {
     async function doImport({replaceOldStyle = false}) {
       lockPageUI(true);
       try {
-        text ||= cm.getValue().trim();
-        if (!text.match(RX_META)?.[0].includes('@preprocessor') ||
-            !await getPreprocessor(text) ||
+        const code = text || cm.getValue().trim();
+        const meta = code.match(RX_META);
+        if (!meta?.[0].match(/[\r\n]\s*@preprocessor\s+\S/) ||
             await messageBox.confirm(
               t('importPreprocessor'), 'pre-line',
               t('importPreprocessorTitle'))
         ) {
-          let errors;
+          let errors, name;
           if (!newSections) {
-            ({sections: newSections, errors} = await worker.parseMozFormat({code: text}));
+            ({sections: newSections, errors} = await worker.parseMozFormat({code}));
           }
-          if (!newSections.length || errors.some(e => !e.recoverable)) {
-            await Promise.reject(errors);
+          if (!newSections?.length || errors.some(e => !e.recoverable)) {
+            throw errors;
+          }
+          if (meta
+          && (replaceOldStyle || !style.id)
+          && (name = meta[0].match(/[\r\n]\s*@name\s+(.+)|$/)[1].trim())) {
+            setInputValue($id('name'), name); // allows Ctrl-Z to undo
+            editor.updateName(true);
           }
           await initSections(newSections, {
             replace: replaceOldStyle,
@@ -439,17 +445,10 @@ export default function SectionsEditor() {
           helpPopup.close();
         }
       } catch (err) {
-        showError(err);
+        if (err) showError(err);
       }
       lockPageUI(false);
     }
-
-    async function getPreprocessor(code) {
-      try {
-        return (await API.usercss.buildMeta({sourceCode: code}))[UCD].preprocessor;
-      } catch {}
-    }
-
     function lockPageUI(locked) {
       $root.style.pointerEvents = locked ? 'none' : '';
       if (popup.codebox === cm) {
@@ -458,7 +457,6 @@ export default function SectionsEditor() {
         cm.display.wrapper.style.opacity = locked ? '.5' : '';
       }
     }
-
     function showError(errors) {
       messageBox.show({
         className: 'center danger',
