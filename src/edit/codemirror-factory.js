@@ -292,7 +292,7 @@ function selectTokenOnDoubleclick(cm, {ch, line}) {
   let b = (rxWord.lastIndex = ch) + rxWord.exec(text)[0].length;
   let [style, i] = ch ? getStyleAtPos(styles, ch) : [styles[1], 0];
   let a = ch;
-  while (style && !(style = style.replace(/(^| )(overlay( \S+)?|CodeMirror-\S*)/g, '')) && i > 2)
+  while (style && !(style = style.split('overlay ', 1)[0].trim()) && i > 2)
     style = styles[(i -= 2) + 1];
   if (!style || style && /comment|string|uso-variable/.test(style)) {
     let rx = /[\w\u00A1-\uFFFF]/y;

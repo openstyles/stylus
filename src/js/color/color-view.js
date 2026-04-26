@@ -337,20 +337,24 @@ function colorizeLine(state, lineHandle) {
 
 function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
   const {styles, text} = lineHandle;
+  const stylesLen = styles.length;
+  const spanGeneration = state.now;
+  // all comments may get blanked out in the loop
+  const endsWithComment = text.endsWith('*/');
   let spanIndex = 0;
   let span, style, start, end, len, isHex, func, color;
   let {markedSpans} = lineHandle;
   let spansSorted = false;
   let spansZombies = markedSpans && markedSpans.length;
-  const spanGeneration = state.now;
-  // all comments may get blanked out in the loop
-  const endsWithComment = text.endsWith('*/');
-
-  for (let i = styleIndex, j, rxFunc; i + 1 < styles.length; i += 2) {
-    style = styles[i + 1];
-    if (!style || !RX_STYLE.test(style)) continue;
+  for (let i = styleIndex, j, rxFunc; i + 1 < stylesLen; i += 2) {
+    if (!(style = styles[i + 1]) ||
+        !(style = style.split('overlay ', 1)[0].trim()) ||
+        !RX_STYLE.test(style))
+      continue;
 
     start = i > 2 ? styles[i - 2] : 0;
+    while (i + 3 < stylesLen && (end = styles[i + 3]) && end.startsWith(style))
+      i += 2;
     end = styles[i];
     len = end - start;
     isHex = text.charCodeAt(start) === 35/* # */;
