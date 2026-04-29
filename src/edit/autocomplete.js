@@ -18,7 +18,7 @@ const rxCmTopFunc = /^(top|documentTypes|atBlock)/;
 const rxCmVarTagColor = /^(variable|tag|error)/;
 const rxConsume = /([-\w]*\s*:\s?)?/yu;
 const rxCruftAtStart = /^[^\w\s]\s*/;
-const rxFilterable = /(--|[#.\w])\S*\s*$|@/;
+const rxFilterable = /(--|[#.\w])\S*\s*$|@|!(i(m(p(o(r(t(a(nt?)?)?)?)?)?)?)?)?/i;
 const rxHexColor = /[0-9a-f]+\b|$|\s/yi;
 const rxMaybeProp1 = /^(prop(erty|\?)|atom|error|tag)/;
 const rxMaybeProp2 = /^(block|atBlock_parens|maybeprop)/;
@@ -70,28 +70,29 @@ async function helper(cm) {
     prevData &&
     prevLine === line &&
     prevCh <= ch &&
-    prevData.from.ch < ch &&
+    (prev = prevData.from.ch) < ch &&
     prevMatch === text.slice(prevCh - prevMatch.length, prevCh) &&
     (i = text.slice(prevCh, ch).match(rxPropOrEnd)) &&
     (prevMatch += i[1], !i[2])
   ) {
     list = prevData.list;
-    for (let a = 0, ok = 0, v;
-         a < list.length || ok && !(list.length = ok);
-         a++) {
+    end = 0;
+    for (let a = 0, v; a < list.length; a++) {
       v = list[a];
       if ((v.text || v).indexOf(prevMatch) === v.i) {
-        if (ok < a) list[ok] = v;
-        ok++;
+        if (end < a) list[end] = v;
+        end++;
       }
     }
+    list.length = end;
     prevLine = line;
-    prevCh = prevData.to.ch = list.length !== 1 ? ch
-      : prevData.from.ch + ((i = list[0]).text || i).length;
+    prevData.from.ch = prev += text.slice(prev, ch).match(/^\s*/)[0].length;
+    prevCh = prevData.to.ch = end !== 1 ? ch
+      : prev + (end && (i = list[0]).text || i).length;
     prevData.len = prevMatch.length;
     return prevData;
   }
-  prevData = null;
+  prev = prevData = null;
   if (i) {
     prop = prevMatch;
     prev = end = ch;
@@ -266,7 +267,9 @@ async function helper(cm) {
     }
     list.push(...values1.values(), ...values2.values());
   }
-  prev += Math.max(0, str.search(rxNonSpace));
+  i = str.search(rxNonSpace);
+  prev += i < 0 ? str.length : i;
+  if (end < prev) end = prev;
   prevMatch = text.slice(prev, ch);
   prevLine = line;
   prevCh = ch;
