@@ -96,7 +96,7 @@ async function importFromFile(file) {
 
 async function importFromString(jsonString) {
   let json = JSON.parse(jsonString) || [];
-  if (json._rev === json.doc?._rev)
+  if (json._rev && json._rev === json.doc?._rev)
     json = [json.doc];
   const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
   const oldStylesSet = new Set(oldStyles.sort((a, b) =>
