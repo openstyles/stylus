@@ -877,7 +877,7 @@ a.icon {
 
 /************ full-width only ************/
 /* TODO: maybe move more rules here so we don't need to reset them in @media(max-width: 850px) */
-@media (min-width: 851px) {
+@media screen and (min-width: 851px), compact {
   #header > :not(#details-wrapper):not(#header-resizer) {
     margin-left: $pad;
     margin-right: $pad;

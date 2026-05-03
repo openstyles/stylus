@@ -49,8 +49,10 @@ if ($rootCL.contains('normal-layout')) {
     mq = matchMedia(`(max-width: ${val}px)`);
     (mq.onchange = toggleCompact)(mq);
     getCssMediaRuleByName('compact', m => {
-      k = m.mediaText.replace(/\d+/, val);
-      if (m.mediaText !== k) m.mediaText = k;
+      const s1 = m.mediaText;
+      const s2 = s1.replace(/((?:(min-)|max-)?width\W+)\d+/g,
+        (s, prop, min) => prop + (min ? val + 1 : val));
+      if (s1 !== s2) m.mediaText = s2;
     });
   }, true);
 }
