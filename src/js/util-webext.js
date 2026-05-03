@@ -1,4 +1,5 @@
 import './browser';
+import {MOBILE} from '@/js/ua';
 import {k_deepCopy} from './consts';
 import {ownRoot} from './urls';
 import {deepCopy} from './util';
@@ -14,7 +15,7 @@ export const MF_ICON_PATH = /*@__PURE__*/ MF_ICON.slice(0, MF_ICON.lastIndexOf('
 export const MF_ICON_EXT = /*@__PURE__*/ MF_ICON.slice(MF_ICON.lastIndexOf('.'));
 
 export const browserAction = __.MV3 ? chrome.action : browser.browserAction;
-export const browserSidebar = __.MV3 ? chrome.sidePanel : browser.sidebarAction;
+export const browserSidebar = __.MV3 && !MOBILE ? chrome.sidePanel : browser.sidebarAction;
 export const browserWindows = browser.windows;
 /** A scoped listener won't trigger for our [big] stuff in `local`, Chrome 73+, FF */
 export const onStorageChanged = chrome.storage.sync.onChanged || chrome.storage.onChanged;
