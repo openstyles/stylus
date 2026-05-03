@@ -36,7 +36,10 @@ Object.assign(API, /** @namespace API */ {
 
   //#region API data/db/info
 
-  data: dataHub,
+  data: {
+    get: dataHub.get.bind(dataHub),
+    has: dataHub.has.bind(dataHub),
+  },
 
   //#endregion
   //#region API misc actions
