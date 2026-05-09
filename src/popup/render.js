@@ -224,7 +224,7 @@ export function createStyleElement(style, entry) {
 
 function renderErrCsp(entry, elCsp, csp) {
   errCsp ??= template.errCsp;
-  titleCSP ??= `${t('openOptions')} 🞂 ${t('optionsAdvancedPatchCsp')}:\n<pre>`;
+  titleCSP ??= `${t('styleAssetsCSP', t('optionsAdvancedPatchCsp'))}:\n<pre>`;
   elCsp ??= entry.$('.main-controls').appendChild(errCsp.cloneNode(true));
   elCsp.title = titleCSP + Object.keys(csp).map(k => clipString(k, 50)).join('\n') + '</pre>';
   elCsp.dataset.title = titleCSP + Object.keys(csp).join('\n') + '</pre>';

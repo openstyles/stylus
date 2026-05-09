@@ -93,10 +93,15 @@ function addAllElements() {
   if (!__.ENTRY && !checkCSP) {
     /** @param {SecurityPolicyViolationEvent} evt */
     checkCSP = evt => {
-      if (evt.isTrusted && /^(\w+-)?extension$/.test(evt.sourceFile)) {
+      let src, u;
+      if (evt.isTrusted && (!(src = evt.sourceFile) || /^(\w+-)?extension$/.test(src))) {
+        const sent = new Set();
         for (const style of list) {
-          if (style.code.includes(evt.blockedURI)) {
-            API.tabs.set(null, pPatchCsp, style.id, evt.blockedURI, true);
+          if ((u = evt.blockedURI)
+          && (u === 'inline' ? src && (u = 'data:') : style.code.includes(u))
+          && !sent.has(u += ` (${evt.violatedDirective})`)) {
+            API.tabs.set(null, pPatchCsp, style.id, u, true);
+            sent.add(u);
           }
         }
       }

@@ -1609,6 +1609,15 @@
     "message": "Sort contents",
     "description": "Label for the sort info popup in style manager"
   },
+  "styleAssetsCSP": {
+    "message": "Style assets listed below were blocked by the webpage, you can enable \"$CSP$\" option to load them:",
+    "description": "$CSP$ = translation for \"Patch CSP to allow style assets\"",
+    "placeholders": {
+      "CSP": {
+        "content": "$1"
+      }
+    }
+  },
   "styleBadRegexp": {
     "message": "Regexp is invalid.",
     "description": "Validation message for a bad regexp in a style"
