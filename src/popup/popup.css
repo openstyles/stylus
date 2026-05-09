@@ -432,6 +432,9 @@ a.configure[target="_blank"] .i-config {
       overflow: hidden;
     }
   }
+  &.enabled header {
+    background: var(--accent-5);
+  }
   &.delete {
     > div, [data-cmd=delete] {
       border-color: #c00;
@@ -456,9 +459,6 @@ a.configure[target="_blank"] .i-config {
     i {
       font-size: 20px;
     }
-  }
-  &.enabled header {
-    background: var(--accent-5);
   }
   [data-ovr] {
     &::before {
