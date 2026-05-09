@@ -286,7 +286,10 @@ export async function updateStyleEntry(id, del) {
     reSort();
     if (inMenu) openMenu(el);
   } else {
-    entry?.remove();
+    if (entry) {
+      entry.remove();
+      reSort();
+    }
     if (inMenu) closeMenu();
   }
 }
