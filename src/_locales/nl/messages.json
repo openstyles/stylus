@@ -1289,6 +1289,14 @@
   "sortStylesHelpTitle": {
     "message": "Inhoud sorteren"
   },
+  "styleAssetsCSP": {
+    "message": "De stijlmiddelen hieronder zijn geblokkeerd door de webpagina; u kunt de optie ‘$CSP$’ inschakelen om ze te laden:",
+    "placeholders": {
+      "CSP": {
+        "content": "$1"
+      }
+    }
+  },
   "styleBadRegexp": {
     "message": "Regexp is ongeldig."
   },

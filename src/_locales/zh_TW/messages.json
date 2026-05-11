@@ -1320,6 +1320,14 @@
   "sortStylesHelpTitle": {
     "message": "排序內容"
   },
+  "styleAssetsCSP": {
+    "message": "下列樣式資源遭網頁封鎖，您可以啟用「$CSP$」選項來載入它們：",
+    "placeholders": {
+      "CSP": {
+        "content": "$1"
+      }
+    }
+  },
   "styleBadRegexp": {
     "message": "正規表示式無效。"
   },

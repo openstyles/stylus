@@ -1320,6 +1320,14 @@
   "sortStylesHelpTitle": {
     "message": "Sortuj zawartość"
   },
+  "styleAssetsCSP": {
+    "message": "Poniższe zasoby stylów zostały zablokowane przez stronę internetową. Aby je załadować, możesz włączyć opcję „$CSP$”.",
+    "placeholders": {
+      "CSP": {
+        "content": "$1"
+      }
+    }
+  },
   "styleBadRegexp": {
     "message": "Regexp jest nieprawidłowe."
   },
