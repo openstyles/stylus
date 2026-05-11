@@ -4,6 +4,8 @@ export const DEFAULTS = {
   stylelint: {
     // WARNING! onConfigSave() expects these rules to be arrays and enabled.
     rules: {
+      'at-rule-descriptor-no-unknown': ENABLED_AS_WARNING,
+      'at-rule-descriptor-value-no-unknown': ENABLED_AS_WARNING,
       'at-rule-no-unknown': [true, {
         'ignoreAtRules': ['extend', 'extends', 'css', 'block'],
         ...WARNING,
@@ -15,13 +17,17 @@ export const DEFAULTS = {
         ...WARNING,
       }],
       'declaration-block-no-shorthand-property-overrides': ENABLED_AS_WARNING,
+      'declaration-property-value-no-unknown': ENABLED_AS_WARNING,
       'font-family-no-duplicate-names': ENABLED_AS_WARNING,
       'function-calc-no-unspaced-operator': ENABLED_AS_WARNING,
       'function-linear-gradient-no-nonstandard-direction': ENABLED_AS_WARNING,
       'keyframe-declaration-no-important': ENABLED_AS_WARNING,
       'media-feature-name-no-unknown': ENABLED_AS_WARNING,
+      'nesting-selector-no-missing-scoping-root': ENABLED_AS_WARNING,
       'no-invalid-double-slash-comments': ENABLED_AS_WARNING,
+      'no-invalid-position-declaration': ENABLED_AS_WARNING,
       'property-no-unknown': ENABLED_AS_WARNING,
+      'selector-no-invalid': ENABLED_AS_WARNING,
       'selector-pseudo-class-no-unknown': ENABLED_AS_WARNING,
       'selector-pseudo-element-no-unknown': ENABLED_AS_WARNING,
       'string-no-newline': ENABLED_AS_WARNING,
