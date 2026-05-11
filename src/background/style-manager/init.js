@@ -17,8 +17,8 @@ bgInit.push(async () => {
   ]);
   if (!orderFromDb)
     orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder);
-  if (!styles[0])
-    styles = mirrored = await execMirror(DB, 'getAll');
+  if (!styles.length)
+    styles = (mirrored = await execMirror(DB, 'getAll')) || styles;
   initStyleMap(styles, mirrored);
   setOrderImpl(orderFromDb, {store: false});
   __.DEBUGLOG('styleMan init done');

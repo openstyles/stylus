@@ -214,7 +214,9 @@ function create(event) {
 }
 
 export async function execMirror(dbName, method, a, b) {
-  const mirror = MIRROR[dbName] ??= await caches.open(dbName);
+  const mirror = MIRROR[dbName] ??= await caches.open(dbName).catch(() => false);
+  if (!mirror)
+    return;
   switch (method) {
     case 'delete':
       return mirror.delete(__.MIRROR_PREFIX + a);
@@ -259,7 +261,10 @@ export async function execMirror(dbName, method, a, b) {
 
 export async function mirrorStorage(dataMap) {
   let val;
-  let keys = new Set(await execMirror(DB, 'getAllKeys'));
+  let keys = await execMirror(DB, 'getAllKeys');
+  if (!keys)
+    return;
+  keys = new Set(keys);
   for (const {style} of dataMap.values()) {
     if (!keys.has(style.id)) {
       await sleep0();
