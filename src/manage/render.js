@@ -5,6 +5,7 @@ import {breakWord, template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {TO_CSS} from '@/js/sections-util';
 import {renderTargetIcons} from '@/js/target-icons';
+import {FIREFOX} from '@/js/ua';
 import {sessionStore, t} from '@/js/util';
 import {filterAndAppend} from './filters';
 import * as sorter from './sorter';
@@ -254,22 +255,22 @@ export async function showStyles(styles, matchUrlIds) {
   const shouldRenderAll = scrollY > window.innerHeight
     || sessionStore.justEditedStyleId
     || canRenderAll;
+  // Some Firefox versions effectively freeze performance.now() over a very long span of time
+  const perfSource = !shouldRenderAll && (__.B_FIREFOX || __.B_ANY && FIREFOX ? Date : performance);
+  const t0 = perfSource && perfSource.now();
   const renderBin = document.createDocumentFragment();
   fitNameColumn(styles);
   fitSizeColumn(dummies);
   updateTotal(num);
   let numIconized; // keeping it undefined so the comparison is false if favicons are disabled
-  for (let i = 0, t0 = !shouldRenderAll && performance.now(), entry, done; ;) {
-    while (!(done = i === num) && (
-      shouldRenderAll ||
-      (i & 7) < 7 ||
-      performance.now() - t0 < 50
-    )) {
-      entry = createStyleElement(sorted[i++]);
-      if (matchUrlIds && !matchUrlIds.includes(entry.styleMeta.id))
-        entry.classList.add('not-matching', 'hidden');
-      renderBin.appendChild(entry);
-    }
+  if (num) for (let i = 0, entry, done; ; i++) {
+    entry = createStyleElement(sorted[i]);
+    if (matchUrlIds && !matchUrlIds.includes(entry.styleMeta.id))
+      entry.classList.add('not-matching', 'hidden');
+    renderBin.appendChild(entry);
+    done = i === num - 1;
+    if (!done && (shouldRenderAll || (i & 7) < 7 || perfSource.now() - t0 < 50))
+      continue;
     if (!numIconized && UI.favicons) {
       numIconized = i;
       renderTargetIcons(renderBin);
