@@ -36,7 +36,7 @@ import '@/css/target-site.css';
   router.makeToggle('#injection-order-button', 'injection-order', InjectionOrder);
   router.makeToggle('#update-history-button', 'update-history', UpdateHistory);
   router.update();
-  showStyles(JSON.parse(data.styles), data.ids);
+  showStyles(__.MV3 ? JSON.parse(data.styles) : data.styles, data.ids);
   initSyncButton(data.sync);
   if (!__.MV3 && (__.B_CHROME || __.B_ANY && CHROME) && CHROME >= 80 && CHROME <= 88) {
     // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598

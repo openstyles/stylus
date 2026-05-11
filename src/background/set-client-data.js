@@ -33,6 +33,7 @@ const PROVIDERS = {
   manage(url) {
     const sp = url.searchParams;
     const query = sp.get('search') || undefined/*to enable client's parameter default value*/;
+    const styles = styleMan.getCore({sections: true, size: true});
     return /** @namespace StylusClientData */ {
       ids: query
         && styleMan.searchDb({
@@ -40,7 +41,7 @@ const PROVIDERS = {
           mode: sp.get('searchMode') || prefs.__values['manage.searchMode'],
         }),
       // JSON.parse in the receiver is faster than JS parsing of a huge literal object
-      styles: JSON.stringify(styleMan.getCore({sections: true, size: true})),
+      styles: __.MV3 ? JSON.stringify(styles) : styles,
       sync: syncMan.getStatus(true),
     };
   },
