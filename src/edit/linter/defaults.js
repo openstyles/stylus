@@ -42,7 +42,7 @@ export const DEFAULTS = {
     'globals-in-document': 1,
     'known-properties': 1,
     'known-pseudos': 1,
-    'selector-newline': 1,
+    'selector-newline-no-indent': 1,
     'shorthand-overrides': 1,
     'simple-not': 1,
     'warnings': 1,
