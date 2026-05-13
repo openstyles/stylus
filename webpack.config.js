@@ -119,29 +119,28 @@ const addWrapper = (banner = INTRO + ';', footer = '}', test = /\.js$/) => [
   new webpack.BannerPlugin({raw: true, test, banner}),
   new webpack.BannerPlugin({raw: true, test, banner: footer, footer: true}),
 ];
-const getTerserOptions = (cm, ovr) => ({
+/** @return {TerserPlugin.BasePluginOptions &
+ * TerserPlugin.DefinedDefaultMinimizerAndOptions<import('terser/tools/terser').MinifyOptions>} */
+const getTerserOptions = cm => ({
   [cm ? 'include' : 'exclude']: /node_modules|codemirror(?!-factory)|src[/\\]cm[/\\]css(-data)?\.js/,
   extractComments: false,
   terserOptions: {
     ecma: MV3 ? 2024 : 2017,
     compress: {
+      global_defs: Object.fromEntries(Object.entries(ALIASES.funcs).map(e => ['@' + e[0], e[1]])),
+      lhs_constants: false,
       pure_getters: true,
-      global_defs: Object.entries(ALIASES.funcs).reduce((res, [key, val]) => {
-        res['@' + key] = val;
-        return res;
-      }, {}),
       reduce_funcs: false,
+      sequences: 0,
     },
     output: {
       ascii_only: false,
       comments: false,
       wrap_func_args: false,
     },
-    ...ovr ?? {
-      mangle: !!cm || {
-        reserved: new Set(),
-        keep_classnames: true,
-      },
+    mangle: !!cm || {
+      reserved: new Set(),
+      keep_classnames: true,
     },
   },
 });
@@ -348,13 +347,6 @@ function makeContentScript(name) {
     entry: '@/content/' + name,
     output: {path: DST + JS},
     plugins: addWrapper(intro, '})()}'),
-    optimization: {
-      minimizer: DEV ? [] : [
-        // mangling vars/funcs improves performance by a fraction of millisecond,
-        // but on 1000 pages+frames it'll accumulate to a fraction of a second
-        new TerserPlugin(getTerserOptions(false, {mangle: true})),
-      ],
-    },
   }));
 }
 

@@ -17,7 +17,7 @@
 
 const webpack = require('webpack');
 const RG = webpack.RuntimeGlobals;
-const ReplaceSource = require('webpack-sources/lib/ReplaceSource');
+const {ReplaceSource} = webpack.sources;
 const ConcatenatedModule =
   require('webpack/lib/optimize/ConcatenatedModule');
 const HarmonyExportInitFragment =
@@ -34,9 +34,9 @@ const rxVar = /\b__\.([$_A-Z][$_A-Z\d]*)\b/g;
 /** Patching (0,module.export) */
 const rxCall = /^\(0,([$\w]+\.[$\w]+)\)$/;
 /** Preserve names of exports, functions, classes, global vars, and arrow funcs */
-const rxUnmangled = /(?:function|class|\nexport (?:const|let)|const (?=\w+ = .+?=>))\s+([$a-z]\w+)\b/gi;
+const rxUnmangled = /(?<=(function|class|\nexport (?:const|let)|const (?=\w+ = .+?=>))\s+)[$a-z][$\w]+/gi;
+const rxMangle = /webpack|^(document|global|window|moduleId|cachedModule|(parent)?chunkLoading\w*|installed\w*?Chunk\w*)$/i;
 const rxWebpackCmt = /^\/\*+\/.*/;
-const MANGLE = ['document', 'global', 'window', 'moduleId', 'cachedModule'];
 const STAGE = (/**@type {typeof import('webpack/types').Compilation}*/webpack.Compilation)
   .PROCESS_ASSETS_STAGE_OPTIMIZE_COMPATIBILITY;
 const NAME = __filename.slice(__dirname.length + 1).replace(/\.\w+$/, '');
@@ -76,9 +76,9 @@ class RawEnvPlugin {
           const assetSource = assets[assetName];
           const str = assetSource.source();
           if (reserved) {
-            for (const m of `${str}`.replace(rxWebpackCmt, '').matchAll(rxUnmangled))
-              reserved.add(m[1]);
-            MANGLE.forEach(reserved.delete, reserved);
+            for (const id of `${str}`.replace(rxWebpackCmt, '').match(rxUnmangled) || [])
+              if (!rxMangle.test(id))
+                reserved.add(id);
           }
           let replacer;
           for (let m, val; (m = rxVar.exec(str));) {
