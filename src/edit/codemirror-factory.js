@@ -290,7 +290,7 @@ function selectTokenOnDoubleclick(cm, {ch, line}) {
   const {styles, text} = cm.getLineHandle(line);
   const rxWord = /[-\w\u00A1-\uFFFF]*/y;
   let b = (rxWord.lastIndex = ch) + rxWord.exec(text)[0].length;
-  let [style, i] = ch ? getStyleAtPos(styles, ch) : [styles[1], 0];
+  let [style, i] = ch ? getStyleAtPos(styles, ch) : [styles[2], 2];
   let a = ch;
   while (style && !(style = style.split('overlay ', 1)[0].trim()) && i > 2)
     style = styles[(i -= 2) + 1];
