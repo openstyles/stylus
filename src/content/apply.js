@@ -11,13 +11,8 @@ const isUnstylable = FF && isXml;
 const clone = __.ENTRY
   ? global[k_deepCopy] // will be used in extension context
   : !FF && (val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val);
-let isFrameSameOrigin = false;
-if (isFrame) {
-  try {
-    isFrameSameOrigin = Object.getOwnPropertyDescriptor(parent.location, 'href');
-    isFrameSameOrigin = !!isFrameSameOrigin?.get;
-  } catch {}
-}
+const {parent} = window;
+const isFrameSameOrigin = isFrame && !!frameElement;
 const isFrameNoUrl = isFrameSameOrigin && location.protocol === 'about:';
 
 /** Polyfill for documentId in Firefox and Chrome pre-106 */
@@ -37,10 +32,6 @@ const navHubParent = isFrameNoUrl && (FF ? parent : parent[NAV_ID]) || null;
 /** @type {MediaQueryList} */
 let mqDark;
 
-// dynamic iframes don't have a URL yet so we'll use their parent's URL (hash isn't inherited)
-let matchUrl = isFrameNoUrl
-  ? parent.location.href.split('#')[0]
-  : location.href;
 let offscreen;
 /** @type chrome.runtime.Port */
 let port;
@@ -49,7 +40,15 @@ let throttledCount;
 let lazyBadge = isFrame;
 /** @type IntersectionObserver */
 let xo;
-
+let matchUrl;
+if (!isFrameNoUrl) {
+  matchUrl = location.href;
+} else { // a same-origin about:blank iframe, let's use the parent's URL without a hash
+  let wnd = parent;
+  while ((matchUrl = wnd.location.href.split('#')[0]).startsWith('about:') && wnd.frameElement) {
+    wnd = wnd.parent;
+  }
+}
 if (!FF) {
   global[Symbol.for('xo')] = (el, cb) => {
     if (!xo) xo = new IntersectionObserver(onIntersect, {rootMargin: '100%'});
