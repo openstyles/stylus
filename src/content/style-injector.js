@@ -75,13 +75,13 @@ export function toggle(enable) {
 
 function addElement(el, before) {
   if (ass) {
-    const sheets = assV2 || wrappedDoc[kAss].slice();
+    const sheets = assV2 || !__.MV3 && wrappedDoc[kAss].slice();
     let i = assIndexOf(sheets, el);
     if (i >= 0) el = sheets.splice(i, 1)[0];
     i = before ? assIndexOf(sheets, before) : -1;
     if (i >= 0) sheets.splice(i, 0, el);
     else sheets.push(el);
-    if (!assV2) wrappedDoc[kAss] = sheets;
+    if (!__.MV3 && !assV2) wrappedDoc[kAss] = sheets;
   } else {
     updateRoot().insertBefore(el, before);
   }
@@ -118,11 +118,11 @@ function removeElement(el) {
   if (el.remove) {
     el.remove();
   } else if (ass) {
-    const sheets = assV2 || wrappedDoc[kAss].slice();
+    const sheets = assV2 || !__.MV3 && wrappedDoc[kAss].slice();
     const i = assIndexOf(sheets, el);
     if (i >= 0) {
       sheets.splice(i, 1);
-      if (!assV2) wrappedDoc[kAss] = sheets;
+      if (!__.MV3 && !assV2) wrappedDoc[kAss] = sheets;
     }
   }
 }
@@ -136,7 +136,9 @@ function removeAllElements() {
 function replaceAss(readd) {
   const elems = list.map(s => s.el);
   const res = !__.ENTRY && FF ? cloneInto([], wrappedDoc) /* global cloneInto */ : [];
-  for (let arr = assV2 || wrappedDoc[kAss], i = 0, el; i < arr.length && (el = arr[i]); i++) {
+  for (let arr = assV2 || !__.MV3 && wrappedDoc[kAss], i = 0, el;
+       i < arr.length && (el = arr[i]);
+       i++) {
     if (assIndexOf(elems, el) < 0) res.push(el);
   }
   if (readd) res.push(...elems);
@@ -205,7 +207,7 @@ function createStyle(style) {
     id = MEDIA + id;
     el = new CSSStyleSheet({media: id});
     setTextAndName(el, style);
-    for (let arr = assV2 || wrappedDoc[kAss], i = 0, m; i < arr.length; i++) {
+    for (let arr = assV2 || !__.MV3 && wrappedDoc[kAss], i = 0, m; i < arr.length; i++) {
       if ((m = arr[i].media).mediaText === id) m.mediaText += '-old';
     }
     return el;
@@ -288,11 +290,11 @@ and since userAgent.navigator can be spoofed via about:config or devtools,
 we're checking for getPreventDefault that was removed in FF59
 */
 function initCreationDoc(style) {
-  creationDoc = FF && Event.prototype.getPreventDefault ? document : wrappedDoc;
+  creationDoc = __.MV3 || FF && Event.prototype.getPreventDefault ? document : wrappedDoc;
   for (let retry = 0, el, ok; !ok && retry < 2; retry++) {
     createElement = creationDoc.createElement.bind(creationDoc);
     createElementNS = creationDoc.createElementNS.bind(creationDoc);
-    if (!FF) {
+    if (__.MV3 || __.B_CHROME || !FF) {
       return;
     }
     if (!retry || ffCsp) {
@@ -329,7 +331,7 @@ function restoreOrder(mutations) {
   if (!el) {
     bad = false;
   } else if (ass) {
-    if (!assV2) ass = wrappedDoc[kAss];
+    if (!__.MV3 && !assV2) ass = wrappedDoc[kAss];
     for (let len = list.length, base = ass.length - len, i = 0; i < len; i++) {
       if (base < 0 || (
         !FF
