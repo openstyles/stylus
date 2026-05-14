@@ -119,7 +119,7 @@ function showUnhandledError(err) {
     transition:opacity .25s;
     color:#fff;
     border-top: 2px solid #fff;
-    padding: ${fontSize / 2}px;
+    padding: 1ex 1em;
     font: ${fontSize}px/1 sans-serif;
     box-sizing: content-box;
     display: flex;
@@ -141,11 +141,11 @@ function showUnhandledError(err) {
     elText.spellcheck = false;
     elText.style.cssText = important(inherited + `\
       background: none;
-      field-sizing: content;
+      flex: 1 1 auto;
       height: ${height}px;
       max-height: 50vh;
       border: none;
-      resize: horizontal;
+      resize: none;
     `);
     elCopy.append(t('copy'));
     elLink.append(t('reportBug'));
@@ -160,7 +160,7 @@ function showUnhandledError(err) {
     elLink.target = '_blank';
     elLink.rel = 'noopener';
     elLink.style.cssText = important(inherited);
-    el.append(elText, elCopy, elLink);
+    el.append(elLink, elCopy, elText);
   }
   parent.style.minHeight = height * 2 + 'px';
   parent.style.minWidth = maxLen * fontSize * .5 + 'px';
