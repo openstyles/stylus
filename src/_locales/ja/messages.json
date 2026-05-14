@@ -1285,6 +1285,14 @@
   "sortStylesHelpTitle": {
     "message": "コンテンツの並べ替え"
   },
+  "styleAssetsCSP": {
+    "message": "以下のスタイルのアセットはウェブページによってブロックされました。「$CSP$」オプションを有効にすることでロード可能です。",
+    "placeholders": {
+      "CSP": {
+        "content": "$1"
+      }
+    }
+  },
   "styleBadRegexp": {
     "message": "正規表現は無効です。"
   },

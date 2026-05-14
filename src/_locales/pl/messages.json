@@ -1189,6 +1189,9 @@
   "replaceWith": {
     "message": "Zamień na"
   },
+  "reportBug": {
+    "message": "Zgłoś błąd"
+  },
   "restoreTemplate": {
     "message": "Przywróć szablon domyślny.\n\n(Aktualnie otwarte strony edytora nie ulegną zmianie.)"
   },
