@@ -189,6 +189,7 @@ h1 {
   width: calc(100% / var(--columns, 1));
   contain-intrinsic-block-size: auto 10em;
   content-visibility: auto;
+  --padY: 1rem;
   &:first-child {
     border-top: none;
   }
@@ -253,12 +254,12 @@ h1 {
 .oldUI .disabled h2::after,
 .entry.usercss .style-name-link::after {
   font-size: 11px;
-  border-radius: 4px;
+  border-radius: 5px;
   margin-left: 1ex;
   white-space: nowrap;
   content: "UC";
   background-color: hsla(180, 35%, 50%, .35);
-  padding: 2px 3px;
+  padding: 2px 5px;
   color: var(--fg);
 }
 .oldUI .disabled h2::after {
@@ -352,6 +353,10 @@ h1 {
   }
   .select-wrapper {
     margin-left: -3px;
+    select {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    }
     &::after {
       margin-top: 2px;
       top: 0;
@@ -539,9 +544,15 @@ button i {
   border: 1px solid var(--c65);
 }
 
+#search {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
 #manage\.newUI\.sort {
   padding: 0 18px 0 4px;
   width: 100%;
+  border-radius: 10px;
 }
 
 #incremental-search {
