@@ -1,8 +1,10 @@
 import {kSidebar, pFavicons, pFaviconsGray} from '@/js/consts';
 import {isTab} from '@/js/msg-api';
 import {ownRoot} from '@/js/urls';
+import {mapObj, t} from '@/js/util';
+import {MF} from '@/js/util-webext';
 import {$toggleClasses, header, isSidebar, isTouch} from './dom';
-import {getCssMediaRuleByName} from './dom-util';
+import {getCssMediaRuleByName, important} from './dom-util';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
 import './msg-init';
@@ -79,25 +81,33 @@ function showUnhandledError(err) {
   // (c) tophf: reusing the function I wrote for Violentmonkey (MIT license)
   const id = 'unhandledError';
   const fontSize = 12;
-  const el = document.getElementById(id) || document.createElement('textarea');
-  const old = el.value;
+  const elOld = $id(id);
+  const el = elOld || $tag('div');
+  const elText = el.$('textarea') || $tag('textarea');
+  const elLink = el.$('a') || $tag('a');
+  const old = elText.value;
   const cur = (
     [(__.B_FIREFOX || __.B_ANY && FIREFOX) && err.message, err.stack]
       .filter(Boolean).join('\n')
     || `${err}`
   ).trim().split(ownRoot).join('');
   const i = old.indexOf(cur);
-  const text = el.value = i < 0
+  const text = elText.value = i < 0
     ? [old, cur].filter(Boolean).join('\n\n')
     : old.slice(0, i).replace(/\((\d+) times\) $|$/, (s, num) => `(${++num || 1} times) `) +
       old.slice(i);
   const lines = text.split('\n');
   const height = fontSize * (lines.length + .5);
   const maxLen = lines.map(s => 1e9 + s.length).sort().pop() - 1e9;
-  const parent = document.body || document.documentElement;
-  const oldStyle = parent.style.cssText;
+  const parent = $root;
+  const formattedText = '```\n' + elText.value + '\n```\n\n' +
+    navigator.userAgent.replace(
+      /^.*\((\S+)\s+\D*(\d+).*?\)[^(]+[^)]+\)\s+(.+?)\/(\d+).*/,
+      '- OS: $1 $2\n- Browser: $3 $4\n') +
+    `- Stylus: ${MF.version} (MV${__.MV3 ? 3 : 2})\n`;
+  const shownBody = '...';
+  let oldStyle = parent._style ??= mapObj(parent.style, null, ['minHeight', 'minWidth']);
   el.id = id;
-  el.readOnly = true;
   // using an inline style because we don't know if our CSS is loaded at this stage
   el.style.cssText = `\
     position:fixed;
@@ -107,27 +117,51 @@ function showUnhandledError(err) {
     bottom:0;
     background:darkred;
     transition:opacity .25s;
-    cursor:copy;
     color:#fff;
     border-top: 2px solid #fff;
     padding: ${fontSize / 2}px;
     font: ${fontSize}px/1 sans-serif;
     box-sizing: content-box;
-    width: 100%;
-    height: ${height}px;
-    max-height: 50vh;
-    border: none;
-    resize: none;
+    display: flex;
+    flex-flow: wrap;
+    align-items: center;
+    gap: 1rem;
   `.replace(/;/g, '!important;');
-  el.spellcheck = false;
-  el.title = chrome.i18n.getMessage('copy');
-  el.onclick ??= () => {
-    el.select();
-    if (document.execCommand('copy')) {
+  elLink.href = (
+    elLink.title = 'https://github.com/openstyles/stylus/issues/new?' + new URLSearchParams({
+      title: `${location.pathname.slice(1, -5/*drop ".html"*/)}: Unhandled error ${err.message}`,
+      labels: 'bug',
+      body: shownBody,
+    })
+  ).slice(0, -shownBody.length) + encodeURIComponent(formattedText);
+  if (!elOld) {
+    const inherited = `font: inherit; color: inherit;`;
+    const elCopy = $tag('button');
+    elText.readOnly = true;
+    elText.spellcheck = false;
+    elText.style.cssText = important(inherited + `\
+      background: none;
+      field-sizing: content;
+      height: ${height}px;
+      max-height: 50vh;
+      border: none;
+      resize: horizontal;
+    `);
+    elCopy.append(t('copy'));
+    elLink.append(t('reportBug'));
+    elCopy.onclick =
+    elLink.onclick = function () {
+      if (!this.href)
+        navigator.clipboard.writeText(formattedText);
       el.remove();
-      parent.style.cssText = oldStyle;
-    }
-  };
+      Object.assign(parent.style, oldStyle);
+      oldStyle = parent._style = null;
+    };
+    elLink.target = '_blank';
+    elLink.rel = 'noopener';
+    elLink.style.cssText = important(inherited);
+    el.append(elText, elCopy, elLink);
+  }
   parent.style.minHeight = height * 2 + 'px';
   parent.style.minWidth = maxLen * fontSize * .5 + 'px';
   parent.appendChild(el);
