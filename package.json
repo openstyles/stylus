@@ -54,7 +54,7 @@
     "string-replace-loader": "^3.3.0",
     "svg2ttf": "^6.1.0",
     "svgicons2svgfont": "^15.0.1",
-    "terser": "^5.47.1",
+    "terser": "any",
     "terser-webpack-plugin": "^5.6.0",
     "webpack": "^5.106.2",
     "webpack-bundle-analyzer": "^5.3.0",

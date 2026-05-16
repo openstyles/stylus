@@ -163,7 +163,7 @@ importers:
         specifier: ^15.0.1
         version: 15.0.1
       terser:
-        specifier: ^5.47.1
+        specifier: ^5.6.0
         version: 5.47.1
       terser-webpack-plugin:
         specifier: ^5.6.0
