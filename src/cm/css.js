@@ -3,10 +3,43 @@
  * Distributed under an MIT license: https://codemirror.net/5/LICENSE
  * Modded by Stylus Team: switched to charCodeAt, Set, unicode in ids, keywords from csslint-mod
  */
+import {showUnhandledError} from '@/js/dom-init';
 /* eslint-disable no-shadow,one-var,one-var-declaration-per-line,prefer-const */
 import CodeMirror from 'codemirror';
 import * as cssData from './css-data';
 
+const kAllowNested = 'allowNested';
+const kAtom = 'atom';
+const kBlock = 'block';
+const kComment = 'comment';
+const kError = 'error';
+const kHash = 'hash';
+const kInterpolation = 'interpolation';
+const kKeyframes = 'keyframes';
+const kKeyword = 'keyword';
+const kLineComment = 'lineComment';
+const kMaybeProp = 'maybeprop';
+const kOperator = 'operator';
+const kProperty = 'property';
+const kRestrictedAtBlock = 'restricted_atBlock';
+const kRestrictedAtBlockBefore = 'restricted_atBlock_before';
+const kTokenHooks = 'tokenHooks';
+const kVariable = 'variable';
+const kVariable2 = 'variable-2';
+const kVariableDefinition = 'variable-definition';
+const kWord = 'word';
+const keywords = {
+  colorKeywords: new Set(cssData.colorKeywords),
+  counterDescriptors: new Set(cssData.counterDescriptors),
+  documentTypes: new Set(cssData.documentTypes),
+  fontProperties: new Set(cssData.fontProperties),
+  mediaFeatures: new Set(cssData.mediaFeatures),
+  mediaTypes: new Set(cssData.mediaTypes),
+  mediaValueKeywords: new Set(cssData.mediaValueKeywords),
+  nonStandardPropertyKeywords: new Set(cssData.nonStandardPropertyKeywords),
+  propertyKeywords: new Set(cssData.propertyKeywords),
+  valueKeywords: new Set(cssData.valueKeywords),
+};
 const rxColon = /(?:\s+|\/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$))*:/y;
 const rxDocFunc = /(?:url(?:-prefix)?|domain|regexp)\(\s*(['")])?/iy;
 const rxHexColor = /#[\da-f]{3}(?:[\da-f](?:[\da-f]{2}(?:[\da-f]{2})?)?)?/yi;
@@ -15,8 +48,6 @@ const rxNumberDot = /\d+(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxNumberSign = /(?:\d+(?:\.\d*)?|\.?\d+)(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxSpace = /[\s\u00a0]+/y;
 const rxSpaceRParenEOL = /[\s\u00a0]*(?=\)|$)/y;
-/** [1] = whether the comment is closed */
-const rxCommentTail = /(?:[^*]+|\*(?!\/))*(\*\/|$)/y;
 const rxStringDoubleQ = /\s*(?:[^\\"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*/y;
 const rxStringSingleQ = /\s*(?:[^\\']+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*/y;
 const rxUniAny = /[-\w\\\u00A1-\uFFFF]*/y;
@@ -24,6 +55,7 @@ const rxUniVar = /-[-\w\\\u00A1-\uFFFF]*/y;
 const rxUniClass = /-?[_a-zA-Z\\\u00A1-\uFFFF][-\w\\\u00A1-\uFFFF]*/y;
 const rxUnquotedUrl = /\s*(?:[^()\s\\'"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*\s*/y;
 const rxUnquotedBadUrl = /(?:[^)\\]|\\[^)])+/y;
+const states = {};
 /**
  * @param {CodeMirror.StringStream} stream
  * @param {RegExp} rx - must be sticky
@@ -35,6 +67,7 @@ const stickyMatch = (stream, rx, consume = true) => {
   return rx.test(stream.string) && (consume && (stream.pos = rx.lastIndex), true);
 };
 
+let rxAtRules;
 let tokenStringDouble, tokenStringSingle, tokenUrl, tokenUrlEnd, tokenBadUrl;
 
 // TODO: patch `eatWhile` and `match` + use WeakMap for converted non-sticky regexps
@@ -43,12 +76,12 @@ CodeMirror.StringStream.prototype.eatSpace = function () {
   return rxSpace.test(this.string) && !!(this.pos = rxSpace.lastIndex);
 };
 
-CodeMirror.defineMode('css', function (config, parserConfig) {
+CodeMirror.defineMode('css', (config, parserConfig) => {
   const inline = parserConfig.inline;
   if (!parserConfig.propertyKeywords) parserConfig = CodeMirror.resolveMode('text/css');
 
   const indentUnit = config.indentUnit,
-    tokenHooks = parserConfig.tokenHooks,
+    tokenHooks = parserConfig[kTokenHooks],
     documentTypes = parserConfig.documentTypes || new Set(),
     mediaTypes = parserConfig.mediaTypes || new Set(),
     mediaFeatures = parserConfig.mediaFeatures || new Set(),
@@ -59,12 +92,14 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
     counterDescriptors = parserConfig.counterDescriptors || new Set(),
     colorKeywords = parserConfig.colorKeywords || new Set(),
     valueKeywords = parserConfig.valueKeywords || new Set(),
-    allowNested = parserConfig.allowNested,
-    lineComment = parserConfig.lineComment,
+    allowNested = parserConfig[kAllowNested],
+    lineComment = parserConfig[kLineComment],
     supportsAtComponent = parserConfig.supportsAtComponent === true,
     highlightNonStandardPropertyKeywords = config.highlightNonStandardPropertyKeywords !== false;
 
   let type, override;
+  let prevStream;
+  let prevCounter = 0;
 
   // Tokenizers
 
@@ -75,10 +110,11 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
   function tokenBase(stream, state) {
     let res;
     const str = stream.string;
-    const c = str.charCodeAt(stream.pos);
-    const pos = stream.pos += c != null;
-    if (tokenHooks[c]) {
-      res = tokenHooks[c](stream, state);
+    const pos = ++stream.pos; // advance stream
+    const c = str.charCodeAt(pos - 1);
+    const hook = tokenHooks.get(c);
+    if (hook) {
+      res = hook(stream, state);
       if (res === false) res = null;
     } else if (c === 64/* @ */ && stickyMatch(stream, /[-\w\\]+/y)) {
       res = 'def';
@@ -94,11 +130,11 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
       return state.tokenize(stream, state);
     } else if (c === 35/* # */) {
       stickyMatch(stream, rxUniAny);
-      res = 'atom';
-      type = 'hash';
+      res = kAtom;
+      type = kHash;
     } else if (c === 33/* ! */) {
       stickyMatch(stream, /\s*\w*/y);
-      res = 'keyword';
+      res = kKeyword;
       type = 'important';
     } else if (c === 46/* . */ ? stickyMatch(stream, rxNumberDot)
       : c === 43/* + */ || c === 45/* - */ ? stickyMatch(stream, rxNumberSign)
@@ -107,8 +143,8 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
       type = 'unit';
     } else if (c === 45/* - */) {
       if (stickyMatch(stream, rxUniVar)) {
-        res = 'variable-2';
-        type = stickyMatch(stream, rxColon, false) ? 'variable-definition' : 'variable';
+        res = kVariable2;
+        type = stickyMatch(stream, rxColon, false) ? kVariableDefinition : kVariable;
       } else if (stickyMatch(stream, /\w+-/y)) {
         res = type = 'meta';
       } else {
@@ -134,10 +170,10 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
           (res = rxDocFunc.exec(str)) && !res[1]
         )) state.tokenize = tokenParenthesized;
         res = 'variable callee';
-        type = 'variable';
+        type = kVariable;
       } else {
-        res = 'property';
-        type = 'word';
+        res = kProperty;
+        type = kWord;
       }
     } else {
       type = null;
@@ -152,21 +188,27 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
    * @param {CodeMirror.CSS.State} state
    */
   function tokenString(quote, stream, state) {
-    type = !stickyMatch(stream, this) || this === rxUnquotedBadUrl ? 'error' : 'string';
-    const next = stream.string.charCodeAt(stream.pos);
+    type = !stickyMatch(stream, this) || this === rxUnquotedBadUrl ? kError : 'string';
+    let tokenize;
+    const {string: str, pos} = stream;
+    const next = str.charCodeAt(pos);
     if (next === quote) {
-      stream.pos += quote !== 41/* ) */;
-      state.tokenize = null;
-    } else if (next) {
-      state.tokenize = quote === 41
-        ? tokenBadUrl ??= tokenString.bind(rxUnquotedBadUrl, 41/* ) */)
-        : (type = 'error', null);
+      if (quote !== 41/* ) */)
+        stream.pos++;
+    } else if (next >= 0 /* not NaN */) {
+      if (quote === 41) {
+        tokenize = tokenBadUrl ??= tokenString.bind(rxUnquotedBadUrl, 41/* ) */);
+      } else {
+        type = kError;
+      }
     } else if (quote === 41) {
-      state.tokenize = tokenUrlEnd ??= tokenString.bind(rxSpaceRParenEOL, 41/* ) */);
-    } else if (stream.string.charCodeAt(stream.pos - 1) !== 92/* \ */) {
-      type = 'error';
-      state.tokenize = null;
+      tokenize = tokenUrlEnd ??= tokenString.bind(rxSpaceRParenEOL, 41/* ) */);
+    } else if (str.charCodeAt(pos - 1) !== 92/* \ */) {
+      type = kError;
+    } else {
+      return type;
     }
+    state.tokenize = tokenize;
     return type;
   }
 
@@ -236,15 +278,13 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
   function wordAsValue(stream) {
     const word = stream.current().toLowerCase();
     if (valueKeywords.has(word)) {
-      override = 'atom';
+      override = kAtom;
     } else if (colorKeywords.has(word)) {
-      override = 'keyword';
+      override = kKeyword;
     } else {
-      override = 'variable';
+      override = kVariable;
     }
   }
-
-  const states = {};
 
   /**
    * @param {string} type
@@ -254,19 +294,19 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
   states.top = (type, stream, state) => {
     switch (type) {
       case '{':
-        return pushContext(state, stream, 'block');
+        return pushContext(state, stream, kBlock);
       case '}':
         return state.context.prev ? popContext(state) : state.context.type;
-      case 'hash':
+      case kHash:
         override = 'builtin';
         break;
-      case 'word':
+      case kWord:
         override = 'tag';
         break;
-      case 'variable-definition':
-        return 'maybeprop';
-      case 'interpolation':
-        return pushContext(state, stream, 'interpolation');
+      case kVariableDefinition:
+        return kMaybeProp;
+      case kInterpolation:
+        return pushContext(state, stream, kInterpolation);
       case ':':
         return 'pseudo';
       case '(':
@@ -291,13 +331,13 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
       case '@function':
       case '@property':
         state.stateArg = type;
-        return 'restricted_atBlock_before';
+        return kRestrictedAtBlockBefore;
       case '@keyframes':
       case '@-moz-keyframes':
       case '@-ms-keyframes':
       case '@-o-keyframes':
       case '@-webkit-keyframes':
-        return 'keyframes';
+        return kKeyframes;
       default:
         if (type && type.charCodeAt(0) === 64/* @ */)
           return pushContext(state, stream, 'at');
@@ -310,31 +350,31 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
    * @param {CodeMirror.StringStream} stream
    * @param {CodeMirror.CSS.State} state
    */
-  states.block = (type, stream, state) => {
+  states[kBlock] = (type, stream, state) => {
     switch (type) {
-      case 'word':
+      case kWord:
         type = stream.current().toLowerCase();
         if (propertyKeywords.has(type)) {
-          override = 'property';
-          type = 'maybeprop';
+          override = kProperty;
+          type = kMaybeProp;
         } else if (nonStandardPropertyKeywords.has(type)) {
-          override = highlightNonStandardPropertyKeywords ? 'string-2' : 'property';
-          type = 'maybeprop';
+          override = highlightNonStandardPropertyKeywords ? 'string-2' : kProperty;
+          type = kMaybeProp;
         } else if (allowNested) {
-          override = stickyMatch(stream, /\s*:(?:\s|$)/y, false) ? 'property' : 'tag';
-          type = 'block';
+          override = stickyMatch(stream, /\s*:(?:\s|$)/y, false) ? kProperty : 'tag';
+          type = kBlock;
         } else {
-          override += ' error';
-          type = 'maybeprop';
+          override += ' ' + kError;
+          type = kMaybeProp;
         }
         return type;
       case 'meta':
-        return 'block';
-      case 'hash':
+        return kBlock;
+      case kHash:
       case 'qualifier':
         if (!allowNested) {
-          override = 'error';
-          return 'block';
+          override = kError;
+          return kBlock;
         }
         // fallthrough to default
       default:
@@ -347,7 +387,7 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
    * @param {CodeMirror.StringStream} stream
    * @param {CodeMirror.CSS.State} state
    */
-  states.maybeprop = (type, stream, state) =>
+  states[kMaybeProp] = (type, stream, state) =>
     type === ':'
       ? pushContext(state, stream, 'prop')
       : pass(type, stream, state);
@@ -368,16 +408,16 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
         return popAndPass(type, stream, state);
       case '(':
         return pushContext(state, stream, 'parens');
-      case 'hash':
+      case kHash:
         rxHexColor.lastIndex = stream.start;
         if (!rxHexColor.exec(stream.string))
-          override += ' error';
+          override += ' ' + kError;
         break;
-      case 'word':
+      case kWord:
         wordAsValue(stream);
         break;
-      case 'interpolation':
-        return pushContext(state, stream, 'interpolation');
+      case kInterpolation:
+        return pushContext(state, stream, kInterpolation);
     }
     return 'prop';
   };
@@ -391,9 +431,9 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
     switch (type) {
       case '}':
         return popContext(state);
-      case 'word':
-        override = 'property';
-        return 'maybeprop';
+      case kWord:
+        override = kProperty;
+        return kMaybeProp;
     }
     return state.context.type;
   };
@@ -412,9 +452,9 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
         return popContext(state);
       case '(':
         return pushContext(state, stream, 'parens');
-      case 'interpolation':
-        return pushContext(state, stream, 'interpolation');
-      case 'word':
+      case kInterpolation:
+        return pushContext(state, stream, kInterpolation);
+      case kWord:
         wordAsValue(stream);
         break;
     }
@@ -430,7 +470,7 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
     switch (type) {
       case 'meta':
         return 'pseudo';
-      case 'word':
+      case kWord:
         override = 'variable-3';
         return state.context.type;
     }
@@ -443,7 +483,7 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
    * @param {CodeMirror.CSS.State} state
    */
   states.documentTypes = (type, stream, state) => {
-    if (type === 'word' && documentTypes.has(stream.current().toLowerCase())) {
+    if (type === kWord && documentTypes.has(stream.current().toLowerCase())) {
       override = 'tag';
       return state.context.type;
     } else {
@@ -464,29 +504,29 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
       case ';':
         return popAndPass(type, stream, state);
       case '{':
-        return popContext(state) && pushContext(state, stream, allowNested ? 'block' : 'top');
-      case 'interpolation':
-        return pushContext(state, stream, 'interpolation');
-      case 'word': {
+        return popContext(state) && pushContext(state, stream, allowNested ? kBlock : 'top');
+      case kInterpolation:
+        return pushContext(state, stream, kInterpolation);
+      case kWord: {
         const word = stream.current().toLowerCase();
         if (word === 'only' || word === 'not' || word === 'and' || word === 'or') {
-          override = 'keyword';
+          override = kKeyword;
         } else if (mediaTypes.has(word)) {
           override = 'attribute';
         } else if (mediaFeatures.has(word)) {
-          override = 'property';
+          override = kProperty;
         } else if (mediaValueKeywords.has(word)) {
-          override = 'keyword';
+          override = kKeyword;
         } else if (propertyKeywords.has(word)) {
-          override = 'property';
+          override = kProperty;
         } else if (nonStandardPropertyKeywords.has(word)) {
-          override = highlightNonStandardPropertyKeywords ? 'string-2' : 'property';
+          override = highlightNonStandardPropertyKeywords ? 'string-2' : kProperty;
         } else if (valueKeywords.has(word)) {
-          override = 'atom';
+          override = kAtom;
         } else if (colorKeywords.has(word)) {
-          override = 'keyword';
+          override = kKeyword;
         } else {
-          override = 'error';
+          override = kError;
         }
       }
     }
@@ -504,9 +544,9 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
         return popAndPass(type, stream, state);
       case '{':
         return popContext(state) &&
-          pushContext(state, stream, allowNested ? 'block' : 'top', false);
-      case 'word':
-        override = 'error';
+          pushContext(state, stream, allowNested ? kBlock : 'top', false);
+      case kWord:
+        override = kError;
         break;
     }
     return state.context.type;
@@ -533,14 +573,14 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
    * @param {CodeMirror.StringStream} stream
    * @param {CodeMirror.CSS.State} state
    */
-  states.restricted_atBlock_before = (type, stream, state) => {
+  states[kRestrictedAtBlockBefore] = (type, stream, state) => {
     switch (type) {
       case '{':
-        return pushContext(state, stream, 'restricted_atBlock');
-      case 'word':
+        return pushContext(state, stream, kRestrictedAtBlock);
+      case kWord:
         if (state.stateArg === '@counter-style') {
-          override = 'variable';
-          return 'restricted_atBlock_before';
+          override = kVariable;
+          return kRestrictedAtBlockBefore;
         }
         break;
     }
@@ -552,21 +592,21 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
    * @param {CodeMirror.StringStream} stream
    * @param {CodeMirror.CSS.State} state
    */
-  states.restricted_atBlock = (type, stream, state) => {
+  states[kRestrictedAtBlock] = (type, stream, state) => {
     switch (type) {
       case '}':
         state.stateArg = null;
         return popContext(state);
-      case 'word':
+      case kWord:
         type = state.stateArg;
         override = (
           type === '@font-face' ? !fontProperties.has(stream.current().toLowerCase())
             : type === '@counter-style' && !counterDescriptors.has(stream.current().toLowerCase())
-        ) ? 'error'
-          : 'property';
-        return 'maybeprop';
+        ) ? kError
+          : kProperty;
+        return kMaybeProp;
     }
-    return 'restricted_atBlock';
+    return kRestrictedAtBlock;
   };
 
   /**
@@ -576,9 +616,9 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
    */
   states.keyframes = (type, stream, state) => {
     switch (type) {
-      case 'word':
-        override = 'variable';
-        return 'keyframes';
+      case kWord:
+        override = kVariable;
+        return kKeyframes;
       case '{':
         return pushContext(state, stream, 'top');
     }
@@ -597,10 +637,10 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
       case '{':
       case '}':
         return popAndPass(type, stream, state);
-      case 'word':
+      case kWord:
         override = 'tag';
         break;
-      case 'hash':
+      case kHash:
         override = 'builtin';
         break;
     }
@@ -619,53 +659,69 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
       case '{':
       case ';':
         return popAndPass(type, stream, state);
-      case 'word':
-        override = 'variable';
+      case kWord:
+        override = kVariable;
         break;
-      case 'variable':
+      case kVariable:
       case '(':
       case ')':
         break;
       default:
-        override = 'error';
+        override = kError;
     }
-    return 'interpolation';
+    return kInterpolation;
   };
 
   return {
     /** @namespace CodeMirror.CSS.State */
     startState: base => ({
       tokenize: null,
-      state: inline ? 'block' : 'top',
+      state: inline ? kBlock : 'top',
       stateArg: null,
-      context: new Context(inline ? 'block' : 'top', base || 0, null),
+      context: new Context(inline ? kBlock : 'top', base || 0, null),
     }),
 
     /**
      * @param {CodeMirror.StringStream} stream
      * @param {CodeMirror.CSS.State} state
      */
-    token: function (stream, state) {
-      if (!state.tokenize && stream.eatSpace()) return null;
-      let style = (state.tokenize || tokenBase)(stream, state);
-      if (style && typeof style === 'object') {
-        type = style[1];
-        style = style[0];
+    token(stream, state) {
+      const {tokenize} = state;
+      const {pos} = stream;
+      if (!tokenize && stream.eatSpace()) {
+        override = null;
+      } else {
+        let style = (tokenize || tokenBase)(stream, state);
+        if (style && typeof style === 'object') {
+          type = style[1];
+          style = style[0];
+        }
+        override = style;
+        if (type !== kComment) {
+          state.state = states[state.state](type, stream, state);
+        }
       }
-      override = style;
-      if (type !== 'comment') {
-        state.state = states[state.state](type, stream, state);
+      if (stream.pos === stream.start) { // TODO: remove after finding out the culprit
+        // CM calls token() 10 times before giving up
+        if (prevStream !== stream) {
+          prevStream = stream;
+          prevCounter = 0;
+        } else if (++prevCounter === 9) {
+          stream.pos = stream.string.length; // pacify CM by butchering this line
+          showUnhandledError(new Error(
+            `cm/css.js did not advance stream at ${pos}, ${override}, ${type}: ${stream.string}`));
+        }
       }
       return override;
     },
 
-    indent: function (state, textAfter) {
+    indent(state, textAfter) {
       let cx = state.context, ch = textAfter && textAfter.charAt(0);
       let indent = cx.indent;
       if (cx.type === 'prop' && (ch === '}' || ch === ')')) cx = cx.prev;
       if (cx.prev) {
-        if (ch === '}' && (cx.type === 'block' || cx.type === 'top' ||
-          cx.type === 'interpolation' || cx.type === 'restricted_atBlock')) {
+        if (ch === '}' && (cx.type === kBlock || cx.type === 'top' ||
+          cx.type === kInterpolation || cx.type === kRestrictedAtBlock)) {
           // Resume indentation from parent context.
           cx = cx.prev;
           indent = cx.indent;
@@ -682,32 +738,23 @@ CodeMirror.defineMode('css', function (config, parserConfig) {
     blockCommentStart: '/*',
     blockCommentEnd: '*/',
     blockCommentContinue: ' * ',
-    lineComment,
+    [kLineComment]: lineComment,
     fold: 'brace',
   };
 });
 
-const keywords = {
-  colorKeywords: new Set(cssData.colorKeywords),
-  counterDescriptors: new Set(cssData.counterDescriptors),
-  documentTypes: new Set(cssData.documentTypes),
-  fontProperties: new Set(cssData.fontProperties),
-  mediaFeatures: new Set(cssData.mediaFeatures),
-  mediaTypes: new Set(cssData.mediaTypes),
-  mediaValueKeywords: new Set(cssData.mediaValueKeywords),
-  nonStandardPropertyKeywords: new Set(cssData.nonStandardPropertyKeywords),
-  propertyKeywords: new Set(cssData.propertyKeywords),
-  valueKeywords: new Set(cssData.valueKeywords),
-};
-
 CodeMirror.registerHelper('hintWords', 'css', [
+  ...cssData.atRules,
   ...cssData.colorKeywords,
+  ...cssData.counterDescriptors,
   ...cssData.documentTypes,
+  ...cssData.fontProperties,
   ...cssData.mediaFeatures,
   ...cssData.mediaTypes,
   ...cssData.mediaValueKeywords,
   ...cssData.nonStandardPropertyKeywords,
   ...cssData.propertyKeywords,
+  ...cssData.pseudos,
   ...cssData.valueKeywords,
 ]);
 
@@ -720,13 +767,13 @@ function hookLineComment(stream, state) {
   switch (c) {
     case 47/* / */:
       stream.skipToEnd();
-      return ['comment', 'comment'];
+      return [kComment, kComment];
     case 42/* * */:
       stream.pos++;
       state.tokenize = tokenCComment;
       return tokenCComment(stream, state);
     default:
-      return ['operator', 'operator'];
+      return [kOperator, kOperator];
   }
 }
 
@@ -735,87 +782,87 @@ function hookLineComment(stream, state) {
  * @param {CodeMirror.CSS.State} state
  */
 function tokenCComment(stream, state) {
-  rxCommentTail.lastIndex = stream.pos;
-  if (rxCommentTail.exec(stream.string)?.[1])
-    state.tokenize = null;
-  stream.pos = rxCommentTail.lastIndex;
-  return ['comment', 'comment'];
+  const str = stream.string;
+  const i = str.indexOf('*/', stream.pos);
+  stream.pos = i < 0 ? str.length : (state.tokenize = null, i);
+  return [kComment, kComment];
 }
 
 CodeMirror.defineMIME('text/css', {
   ...keywords,
-  tokenHooks: {
+  [kAllowNested]: true,
+  [kTokenHooks]: new Map([
     /**
      * @param {CodeMirror.StringStream} stream
      * @param {CodeMirror.CSS.State} state
      */
-    47/* / */: (stream, state) => {
+    [47/* / */, (stream, state) => {
       if (stream.string.charCodeAt(stream.pos) !== 42/* * */)
         return false;
       stream.pos++;
       state.tokenize = tokenCComment;
       return tokenCComment(stream, state);
-    },
-  },
+    }],
+  ]),
   name: 'css',
 });
 
 CodeMirror.defineMIME('text/x-scss', {
   ...keywords,
-  allowNested: true,
-  lineComment: '//',
-  tokenHooks: {
-    47/* / */: hookLineComment,
-    58/* : */: stream => {
+  [kAllowNested]: true,
+  [kLineComment]: '//',
+  [kTokenHooks]: new Map([
+    [47/* / */, hookLineComment],
+    [58/* : */, stream => {
       if (stickyMatch(stream, /\s*\{/y, false)) {
         return [null, null];
       }
       return false;
-    },
-    36/* $ */: stream => {
+    }],
+    [36/* $ */, stream => {
       stickyMatch(stream, /[\w-]+/y);
       if (stickyMatch(stream, /\s*:/y, false)) {
-        return ['variable-2', 'variable-definition'];
+        return [kVariable2, kVariableDefinition];
       }
-      return ['variable-2', 'variable'];
-    },
+      return [kVariable2, kVariable];
+    }],
     /** @param {CodeMirror.StringStream} stream */
-    35/* # */: stream => {
+    [35/* # */, stream => {
       if (stream.string.charCodeAt(stream.pos) !== 123/* { */)
         return false;
       stream.pos++;
-      return [null, 'interpolation'];
-    },
-  },
+      return [null, kInterpolation];
+    }],
+  ]),
   name: 'css',
   helperType: 'scss',
 });
 
 CodeMirror.defineMIME('text/x-less', {
   ...keywords,
-  allowNested: true,
-  lineComment: '//',
-  tokenHooks: {
-    47/* / */: hookLineComment,
+  [kAllowNested]: true,
+  [kLineComment]: '//',
+  [kTokenHooks]: new Map([
+    [47/* / */, hookLineComment],
     /** @param {CodeMirror.StringStream} stream */
-    64/* @ */: stream => {
+    [64/* @ */, stream => {
       if (stream.string.charCodeAt(stream.pos) === 123/* { */) {
         stream.pos++;
-        return [null, 'interpolation'];
+        return [null, kInterpolation];
       }
-      if (stickyMatch(stream, /(?:charset|(?:-moz-)?document|font-face|import|(?:-(?:moz|ms|o|webkit)-)?keyframes|media|namespace|page|supports)\b/iy, false)) {
+      rxAtRules ??= new RegExp(
+        String.raw`(?:-(?:moz|ms|o|webkit)-)?(?:${cssData.atRules.join('|')})(?![-\w\\])`, 'iy');
+      if (stickyMatch(stream, rxAtRules, false)) {
         return false;
       }
       stickyMatch(stream, /[\w\\-]/y);
       if (stickyMatch(stream, /\s*:/y, false)) {
-        return ['variable-2', 'variable-definition'];
+        return [kVariable2, kVariableDefinition];
       }
-      return ['variable-2', 'variable'];
-    },
-    38/* & */: function () {
-      return ['atom', 'atom'];
-    },
-  },
+      return [kVariable2, kVariable];
+    }],
+    [38/* & */, () => [kAtom, kAtom]],
+  ]),
   name: 'css',
   helperType: 'less',
 });
@@ -823,19 +870,19 @@ CodeMirror.defineMIME('text/x-less', {
 CodeMirror.defineMIME('text/x-gss', {
   ...keywords,
   supportsAtComponent: true,
-  tokenHooks: {
+  [kTokenHooks]: new Map([
     /**
      * @param {CodeMirror.StringStream} stream
      * @param {CodeMirror.CSS.State} state
      */
-    47/* / */: (stream, state) => {
+    [47/* / */, (stream, state) => {
       if (stream.string.charCodeAt(stream.pos) !== 42/* * */)
         return false;
       stream.pos++;
       state.tokenize = tokenCComment;
       return tokenCComment(stream, state);
-    },
-  },
+    }],
+  ]),
   name: 'css',
   helperType: 'gss',
 });

@@ -77,7 +77,7 @@ window.on('load', () => import('./dom-on-load'), {once: true});
 window.on('error', e => showUnhandledError(e.error));
 window.on('unhandledrejection', e => showUnhandledError(e.reason));
 
-function showUnhandledError(err) {
+export function showUnhandledError(err) {
   // (c) tophf: reusing the function I wrote for Violentmonkey (MIT license)
   const id = 'unhandledError';
   const fontSize = 12;

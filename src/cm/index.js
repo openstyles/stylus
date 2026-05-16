@@ -87,7 +87,6 @@ export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
   };
 
   deepMerge(prefs.__values['editor.options'], Object.assign(CodeMirror.defaults, defaults));
-  CodeMirror.mimeModes['text/css'].allowNested = true;
 
   // Adding hotkeys to some keymaps except 'basic' which is primitive by design
   {
