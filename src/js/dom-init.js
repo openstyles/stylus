@@ -125,7 +125,7 @@ function showUnhandledError(err) {
     display: flex;
     flex-flow: wrap;
     align-items: center;
-    gap: 1rem;
+    gap: 4px 1rem;
   `.replace(/;/g, '!important;');
   elLink.href = (
     elLink.title = 'https://github.com/openstyles/stylus/issues/new?' + new URLSearchParams({
@@ -136,7 +136,8 @@ function showUnhandledError(err) {
   ).slice(0, -shownBody.length) + encodeURIComponent(formattedText);
   if (!elOld) {
     const inherited = `font: inherit; color: inherit;`;
-    const elCopy = $tag('button');
+    const elClose = $tag('button');
+    const elCopy = $tag('i');
     elText.readOnly = true;
     elText.spellcheck = false;
     elText.style.cssText = important(inherited + `\
@@ -147,11 +148,18 @@ function showUnhandledError(err) {
       border: none;
       resize: none;
     `);
-    elCopy.append(t('copy'));
+    elCopy.className = 'i-copy';
+    elCopy.title = t('copy');
+    elCopy.style.cssText = important(`\
+      color: inherit;
+      cursor: copy;
+    `);
+    elClose.append(t('confirmClose'));
     elLink.append(t('reportBug'));
-    elCopy.onclick =
-    elLink.onclick = function () {
-      if (!this.href)
+    el.onclick = ({target}) => {
+      if (target === el || target === elText)
+        return;
+      if (target === elCopy)
         navigator.clipboard.writeText(formattedText);
       el.remove();
       Object.assign(parent.style, oldStyle);
@@ -160,7 +168,7 @@ function showUnhandledError(err) {
     elLink.target = '_blank';
     elLink.rel = 'noopener';
     elLink.style.cssText = important(inherited);
-    el.append(elLink, elCopy, elText);
+    el.append(elLink, elCopy, elClose, elText);
   }
   parent.style.minHeight = height * 2 + 'px';
   parent.style.minWidth = maxLen * fontSize * .5 + 'px';
