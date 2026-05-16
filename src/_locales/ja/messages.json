@@ -1154,6 +1154,9 @@
   "replaceWith": {
     "message": "次に置換"
   },
+  "reportBug": {
+    "message": "不具合を報告"
+  },
   "restoreTemplate": {
     "message": "デフォルトのテンプレートに戻す。\n\n（現在エディタで開いているものは変化しません。）"
   },
