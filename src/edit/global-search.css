@@ -71,6 +71,7 @@
     display: flex;
     align-items: center;
     padding-left: .5em;
+    gap: 2px;
     opacity: .5;
     transition: opacity .25s;
     a:last-child {
@@ -82,33 +83,25 @@
     opacity: 1;
   }
   [data-action] {
-    display: block;
+    display: flex;
     padding: 2px;
+    cursor: default;
+    &:hover {
+      color: var(--accent-1);
+    }
   }
 
   /*********** case-sensitivity ****************/
 
+  [data-action="spaces"],
   [data-action="case"] {
-    text-decoration: none;
     font-weight: bold;
     color: currentColor;
-    cursor: pointer;
     padding: 0 .5em;
     line-height: 20px;
-    display: block;
     position: relative;
-    &[data-enabled]::after {
-      content: "";
-      left: 0;
-      right: 0;
-      bottom: 0;
-      position: absolute;
-      border-color: hsla(180, 100%, 30%, .5);
-      border-style: none none solid none;
-      border-width: 4px;
-    }
-    &:hover {
-      text-decoration: underline;
+    &[data-enabled] {
+      background: hsla(180, 100%, 30%, .25);
     }
   }
 

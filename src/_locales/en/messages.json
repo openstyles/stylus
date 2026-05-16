@@ -1510,6 +1510,10 @@
     "message": "Weekly installs",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
+  "searchLooseSpaces": {
+    "message": "Space matches any number of spaces",
+    "description": "Tooltip for the '_' icon that enables loose space matching in the editor -> Ctrl-F dialog"
+  },
   "searchStyleQueryHint": {
     "message": "Search style names (case-sensitively if an uppercase letter is used):\nsome words - all these words in any order\n\"some phrase\" - this exact phrase without quotes\n/foo.*bar/i - regular expression without spaces (use \\s instead)",
     "description": "Tooltip shown for the text input in the popup's inline style finder"

@@ -4,7 +4,7 @@ import {cssFieldSizing, $toggleDataset, $create} from '@/js/dom';
 import {setInputValue} from '@/js/dom-util';
 import {htmlToTemplateCache, templateCache} from '@/js/localization';
 import {chromeLocal} from '@/js/storage-util';
-import {debounce, RX_MAYBE_REGEXP, stringAsRegExp, t, tryRegExp} from '@/js/util';
+import {debounce, RX_MAYBE_REGEXP, stringAsRegExpStr, t, tryRegExp} from '@/js/util';
 import {CodeMirror} from '@/cm';
 import editor from './editor';
 import html from './global-search.html';
@@ -19,7 +19,7 @@ const ANNOTATE_SCROLLBAR_OPTIONS = {maxMatches: 10e3};
 const STORAGE_UPDATE_DELAY = 500;
 
 const DLG_ID = 'search-replace-dialog';
-const DLG_STYLE_ID = 'search-replace-dialog-style';
+const DLG_STYLE_ID = DLG_ID + '-style';
 const TARGET_CLASS = 'search-target-editor';
 const MATCH_CLASS = 'search-target-match';
 const MATCH_TOKEN_NAME = 'searching';
@@ -33,6 +33,7 @@ let stateRX;
 /** used by overlay and doSearchInApplies, equals to rx || stringAsRegExp(find) */
 let stateRX2;
 
+let stateLooseSpaces = true;
 let stateIcase = true;
 let stateReverse = false;
 let stateLastFind = '';
@@ -65,6 +66,14 @@ const stateSearchInApplies = !editor.isUsercss;
 //endregion
 //region Events
 
+const toggleActionEnabled = (el, state, now) => {
+  $toggleDataset(el, 'enabled', state);
+  if (now) {
+    stateLastFind = '';
+    doSearch({canAdvance: false});
+  }
+};
+
 const ACTIONS = {
   key: {
     'Enter': () => {
@@ -92,11 +101,11 @@ const ACTIONS = {
     clear() {
       setInputValue(this._input, '');
     },
+    spaces() {
+      toggleActionEnabled(this, stateLooseSpaces = !stateLooseSpaces, true);
+    },
     case() {
-      stateIcase = !stateIcase;
-      stateLastFind = '';
-      $toggleDataset(this, 'enabled', !stateIcase);
-      doSearch({canAdvance: false});
+      toggleActionEnabled(this, stateIcase = !stateIcase, true);
     },
   },
 };
@@ -181,11 +190,18 @@ function initState({initReplace} = {}) {
     stateNumApplies = -1;
     stateLastFind = text;
     const match = text && text.match(RX_MAYBE_REGEXP);
-    const unicodeFlag = 'unicode' in RegExp.prototype ? 'u' : '';
-    const string2regexpFlags = (stateIcase ? 'gi' : 'g') + unicodeFlag;
-    stateRX = match && tryRegExp(match[1], 'g' + match[2].replace(/[guy]/g, '') + unicodeFlag) ||
-      text && (stateIcase || text.includes('\n')) && stringAsRegExp(text, string2regexpFlags);
-    stateRX2 = stateRX || text && stringAsRegExp(text, string2regexpFlags);
+    const string2regexpFlags = stateIcase ? 'gi' : 'g';
+    let rxStr;
+    stateRX = match && tryRegExp(match[1], 'g' + match[2].replace(/[guy]/g, '')) ||
+      text && (rxStr = stateIcase || text.includes('\n'));
+    if (rxStr || text && !stateRX) {
+      rxStr = stringAsRegExpStr(text);
+      rxStr = new RegExp(
+        stateLooseSpaces ? rxStr.replace(/\s+/, '\\s+') : rxStr,
+        string2regexpFlags);
+      stateRX = rxStr;
+    }
+    stateRX2 = stateRX || rxStr;
     stateCursorOptions = {
       caseFold: !stateRX && stateIcase,
       multiline: true,
@@ -560,7 +576,8 @@ function createDialog(type) {
 
   stateInput = createInput(0, INPUT_PROPS, stateFind);
   stateInput2 = createInput(1, INPUT2_PROPS, stateReplace);
-  $toggleDataset(dialog.$('[data-action="case"]'), 'enabled', !stateIcase);
+  toggleActionEnabled(dialog.$('[data-action="case"]'), !stateIcase);
+  toggleActionEnabled(dialog.$('[data-action="spaces"]'), stateLooseSpaces);
   stateTally = dialog.$('[data-type="tally"]');
 
   const colors = {
@@ -571,31 +588,25 @@ function createDialog(type) {
   $root.appendChild(
     $id(DLG_STYLE_ID) ||
     $create('style#' + DLG_STYLE_ID)
-  ).textContent = `
-    #search-replace-dialog {
+  ).textContent = /*language=css*/ `\
+    & {
       background-color: ${colors.body.bg};
     }
-    #search-replace-dialog textarea {
+    & textarea {
       color: ${colors.body.fore};
       background-color: ${colors.input.bg};
     }
-    #search-replace-dialog i {
+    & [data-action] {
       color: ${colors.icon.fore};
     }
-    #search-replace-dialog [data-action="case"] {
-      color: ${colors.icon.fore};
-    }
-    #search-replace-dialog[data-type="replace"] button:hover i,
-    #search-replace-dialog i:hover {
+    &[data-type="replace"] button:hover [data-action],
+    & [data-action]:hover {
       color: var(--cmin);
     }
-    #search-replace-dialog [data-action="case"]:hover {
-      color: var(--cmin);
-    }
-    #search-replace-dialog [data-action="clear"] {
+    & [data-action="clear"] {
       background-color: ${colors.input.bg.replace(/[^,]+$/, '') + '.75)'};
     }
-  `;
+  `.replace(/&/, `[id=${DLG_ID}]`);
 
   document.body.appendChild(dialog);
   dispatchEvent(new Event('showHotkeyInTooltip'));
