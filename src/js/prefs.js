@@ -21,6 +21,7 @@ export const clientData = !__.IS_BG && (
       frameId: window === top ? 0 : 1,
       url: location.href,
     }).then(data => {
+      if (data.err) onerror(data.err);
       data = makePropertyPopProxy(data);
       setBadFavs(data);
       setAll(data.prefs);
@@ -291,6 +292,7 @@ if (__.IS_BG) {
   busy = ready = new Promise(cb => (setReady = cb));
   busy.set = (...args) => setReady(setAll(...args));
 } else if (__.MV3) {
+  if (clientData.err) onerror(clientData.err);
   setBadFavs(clientData);
   setAll(clientData.prefs);
   ready = Promise.resolve();

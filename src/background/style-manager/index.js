@@ -267,7 +267,7 @@ export async function importMany(items) {
   for (let style of items) {
     try {
       style = onBeforeSave(style) || style;
-      if (style.sourceCode && style[UCD]) {
+      if (style[UCD]) {
         await usercssMan.buildCode(style);
       }
       res.push(styles.push(style) - 1);

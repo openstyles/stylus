@@ -74,10 +74,11 @@ if (prefs.knownKeys.includes(
 })();
 
 window.on('load', () => import('./dom-on-load'), {once: true});
-window.on('error', e => showUnhandledError(e.error));
-window.on('unhandledrejection', e => showUnhandledError(e.reason));
+/** onerror() is called from prefs.js directly to avoid importing this DOM module in bg */
+window.onerror = window.onunhandledrejection = showUnhandledError;
 
-export function showUnhandledError(err) {
+export function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params */) {
+  err = err.reason || err; // for onunhandledrejection
   // (c) tophf: reusing the function I wrote for Violentmonkey (MIT license)
   const id = 'unhandledError';
   const fontSize = 12;

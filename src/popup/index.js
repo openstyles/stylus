@@ -27,7 +27,7 @@ export let isBlocked;
 let prevHeight;
 
 (async function init(data, port) {
-  data ??= (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
+  data ??= (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup] || {};
   initPopup(data);
   showStyles(data);
   initHotkeys(data);

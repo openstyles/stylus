@@ -43,6 +43,9 @@ global.onfetch = evt => {
       dark: !!+sp.get('dark'),
       frameId: +sp.get('frameId'),
       url: pageUrl,
+    }).catch(err => {
+      err.message = 'Internal failure.\n' + err.message;
+      return {err};
     });
     clientDataJobs.set(pageUrl, job);
     job.finally(() => clientDataJobs.delete(pageUrl));
