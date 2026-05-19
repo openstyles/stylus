@@ -1178,6 +1178,9 @@
   "searchGlobalStylesHint": {
     "message": "名前に検索テキストか現在のサイトが入っていれば、全サイトに適用されるスタイルを含めます"
   },
+  "searchLooseSpaces": {
+    "message": "スペースは任意の数のスペースにマッチします"
+  },
   "searchNumberOfResults": {
     "message": "マッチ数"
   },

@@ -1472,6 +1472,10 @@
     "message": "Includes styles that apply to all sites if the name contains the search text or the current site",
     "description": "Tooltip for searchGlobalStyles checkbox"
   },
+  "searchLooseSpaces": {
+    "message": "Space matches any number of spaces",
+    "description": "Tooltip for the '_' icon that enables loose space matching in the editor -> Ctrl-F dialog"
+  },
   "searchNumberOfResults": {
     "message": "Number of matches",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
@@ -1509,10 +1513,6 @@
   "searchResultWeeklyCount": {
     "message": "Weekly installs",
     "description": "Text for label that shows the number of times a search result was installed during last week"
-  },
-  "searchLooseSpaces": {
-    "message": "Space matches any number of spaces",
-    "description": "Tooltip for the '_' icon that enables loose space matching in the editor -> Ctrl-F dialog"
   },
   "searchStyleQueryHint": {
     "message": "Search style names (case-sensitively if an uppercase letter is used):\nsome words - all these words in any order\n\"some phrase\" - this exact phrase without quotes\n/foo.*bar/i - regular expression without spaces (use \\s instead)",

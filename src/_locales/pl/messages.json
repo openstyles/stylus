@@ -1213,6 +1213,9 @@
   "searchGlobalStylesHint": {
     "message": "Uwzględnia style, które są stosowane do wszystkich witryn, jeśli nazwa zawiera tekst wyszukiwania lub bieżącą witrynę"
   },
+  "searchLooseSpaces": {
+    "message": "Spacja pasuje do dowolnej liczby spacji"
+  },
   "searchNumberOfResults": {
     "message": "Liczba dopasowań"
   },

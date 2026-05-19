@@ -1189,6 +1189,9 @@
   "replaceWith": {
     "message": "取代為"
   },
+  "reportBug": {
+    "message": "回報臭蟲"
+  },
   "restoreTemplate": {
     "message": "還原預設範本。\n\n（不會變更目前開啟的編輯器頁面。）"
   },
@@ -1209,6 +1212,9 @@
   },
   "searchGlobalStylesHint": {
     "message": "如果名稱包含搜尋文字或目前網站，則包括適用於所有網站的樣式"
+  },
+  "searchLooseSpaces": {
+    "message": "空格代表任意數量的空格"
   },
   "searchNumberOfResults": {
     "message": "符合數量"
