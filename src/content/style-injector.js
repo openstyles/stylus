@@ -93,15 +93,16 @@ function addAllElements() {
   if (!__.ENTRY && !checkCSP) {
     /** @param {SecurityPolicyViolationEvent} evt */
     checkCSP = evt => {
-      let src, u;
-      if (evt.isTrusted && (!(src = evt.sourceFile) || /^(\w+-)?extension$/.test(src))) {
-        const sent = new Set();
+      let sent, src, u, what;
+      if (evt.isTrusted
+      && (u = evt.blockedURI)
+      && /(default|style|img|font)-src/.test(what = evt.violatedDirective)
+      && !(sent ??= new Set()).has(what = u + ` (${what})`)
+      && (!(src = evt.sourceFile) || /^(\w+-)?extension$/.test(src))) {
         for (const style of list) {
-          if ((u = evt.blockedURI)
-          && (u === 'inline' ? src && (u = 'data:') : style.code.includes(u))
-          && !sent.has(u += ` (${evt.violatedDirective})`)) {
-            API.tabs.set(null, pPatchCsp, style.id, u, true);
-            sent.add(u);
+          if (nonCommentIncludes(style.code, u === 'inline' ? (u = 'data:') : u)) {
+            API.tabs.set(null, pPatchCsp, style.id, what, true);
+            sent.add(what);
           }
         }
       }
@@ -371,6 +372,27 @@ function restoreOrder(mutations) {
 export function sort() {
   list.sort(compare);
   if (isEnabled) addAllElements();
+}
+
+/** Much faster than parsing or pre-stripping of comments via regex. */
+function nonCommentIncludes(str, needle) {
+  let i, j, cStart, cEnd;
+  while (
+    (i = cEnd) !== -1 /*unclosed comment*/ &&
+    (i = str.indexOf(needle, i)) >= 0
+  ) {
+    if (i > cStart && i < cEnd) // still inside last known comment
+      continue;
+    while ( // finding the comment enclosing or following the needle
+      (cStart = str.indexOf('/*', cEnd)) >= 0 &&
+      // skipping the needle as it may have /* or */ inside e.g. there are such URLs
+      (cStart < i || cStart >= (j = i + needle.length) || (cStart = str.indexOf('/*', j)) >= 0) &&
+      (cEnd = str.indexOf('*/', cStart)) >= 0 &&
+      cEnd < i
+    ) {/*NOP*/}
+    if (cStart < 0 || cStart > i) // no comment or it starts after the needle
+      return true;
+  }
 }
 
 export function updateConfig(cfg) {
