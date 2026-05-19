@@ -51,8 +51,7 @@ export function fixKnownProblems(style, revive) {
       res = 2;
     }
   }
-  if (!revive)
-    return res && style;
+  res += inferHomepage(style);
   /* Upgrade the old way of customizing local names */
   const {originalName} = style;
   if (originalName) {
@@ -81,17 +80,6 @@ export function fixKnownProblems(style, revive) {
     delete style.url;
     delete style.installationUrl;
   }
-  /* Default homepage URL for external styles installed from a known distro */
-  if (
-    (!style.url || !style.installationUrl) &&
-    (v = style.updateUrl) &&
-    (v = URLS.makeInstallUrl(v) ||
-        (v = /\d+/.exec(style.md5Url)) && `${URLS.uso}styles/${v[0]}`
-    )
-  ) {
-    if (!style.url) res = style.url = v;
-    if (!style.installationUrl) res = style.installationUrl = v;
-  }
   if (revive && (
     !Array.isArray(v = style.sections) && (v = 0, true) ||
     /* @import must precede `vars` that we add at beginning */
@@ -105,6 +93,22 @@ export function fixKnownProblems(style, revive) {
     return usercssMan.buildCode(style);
   }
   return res && style;
+}
+
+/** Default homepage URL for external styles installed from a known distro */
+export function inferHomepage(style) {
+  let res, v;
+  if (
+    (!style.url || !style.installationUrl) &&
+    (v = style.updateUrl) &&
+    (v = URLS.makeInstallUrl(v) ||
+        (v = /\d+/.exec(style.md5Url)) && `${URLS.uso}styles/${v[0]}`
+    )
+  ) {
+    if (!style.url) res = style.url = v;
+    if (!style.installationUrl) res = style.installationUrl = v;
+  }
+  return !!res;
 }
 
 export function onBeforeSave(style) {

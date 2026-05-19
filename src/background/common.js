@@ -2,9 +2,6 @@ import {k_busy, kResolve} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {browserWindows} from '@/js/util-webext';
 
-/** Minimal init for a wake-up event */
-export const bgPreInit = [];
-export const bgInit = [];
 /** @type {Map<string,Promise>} */
 export const clientDataJobs = __.MV3 && new Map();
 
@@ -42,6 +39,9 @@ export let WRBTest = (__.B_CHROME || __.B_ANY && CHROME) &&
     return res;
   });
 
+/** Minimal init for a wake-up event */
+export let bgPreInit = [];
+export let bgInit = [];
 export let bgBusy = global[k_busy] = (_ =>
   Object.assign(new Promise(cb => (_ = cb)), {[kResolve]: _})
 )();
@@ -57,7 +57,7 @@ if ((__.B_CHROME || __.B_ANY && CHROME) && browserWindows) {
 
 bgPreInit.push(WRBTest);
 bgBusy.then(() => {
-  bgBusy = null;
+  bgBusy = bgPreInit = bgInit = null;
   delete global[k_busy];
 });
 

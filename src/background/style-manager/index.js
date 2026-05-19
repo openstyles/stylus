@@ -373,8 +373,8 @@ export function removeMany(ids, reason) {
 }
 
 /** @returns {Promise<StyleObj>} */
-export async function save(style, reason, msg) {
-  const newId = await db.put(onBeforeSave(style) || style);
+export async function save(style, reason, msg, alreadyFixed) {
+  const newId = await db.put(!alreadyFixed && onBeforeSave(style) || style);
   return onSaved(style, reason, newId, msg);
 }
 
