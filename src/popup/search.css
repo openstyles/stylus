@@ -112,12 +112,12 @@ html:not(.search-results-shown) {
   margin-bottom: .5em;
   color: var(--c30);
   overflow-wrap: break-word;
-  & img {
+  img {
     width: 20px;
     height: 20px;
     margin: -6px 4px -6px 0;
   }
-  & span {
+  span {
     font-size: var(--font-size);
     font-weight: 600;
   }
@@ -190,9 +190,16 @@ html:not(.search-results-shown) {
   box-shadow: none;
 }
 .search-result-install,
-.search-result-uninstall,
-.search-result:not([data-installed]):not([data-customizable]) .search-result-customize {
+.search-result-uninstall {
   display: none;
+}
+.search-result {
+  &:not([data-installed]),
+  &:not([data-customizable]) {
+    .search-result-customize {
+      display: none;
+    }
+  }
 }
 .search-result.not-matching .search-result-customize {
   opacity: .5;
@@ -231,17 +238,17 @@ html:not(.search-results-shown) {
     opacity: 1;
   }
 
-  & dt {
+  dt {
     display: none;
   }
 
-  & dd {
+  dd {
     margin: 0;
   }
 
-  & [data-type="author"] {
+  [data-type="author"] {
     max-width: 30%;
-    & a {
+    a {
       color: inherit;
       font-weight: bold;
       white-space: nowrap;
@@ -252,8 +259,8 @@ html:not(.search-results-shown) {
   }
 
 
-  & [data-type="rating"] {
-    & dd {
+  [data-type="rating"] {
+    dd {
       text-align: center;
       font-weight: bold;
     }
@@ -273,7 +280,7 @@ html:not(.search-results-shown) {
 
   :is([data-type="weekly"], [data-type="total"]) {
     text-align: right;
-    & dd {
+    dd {
       font-weight: bold;
     }
   }
@@ -332,7 +339,7 @@ html:not(.search-results-shown) {
     margin-top: 1em;
     margin-bottom: 0;
   }
-  & label {
+  label {
     vertical-align: middle;
     user-select: none;
   }
