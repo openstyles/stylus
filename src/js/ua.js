@@ -1,7 +1,8 @@
 const uad = navigator.userAgentData;
 const ua = uad || navigator.userAgent;
 const brands = uad ? /*@__PURE__*/ uad.brands.map(_ => `${_.brand}/${_.version}`).join(' ') : ua;
-const platform = uad ? uad.platform : ua;
+// TODO: remove navigator.platform when minimum_chrome_version >= 93
+const platform = uad ? uad.platform || navigator.platform : ua;
 const chromeVer = /*@__PURE__*/ +brands.match(/Chrom\w*\/(\d+)|$/)[1];
 export const CHROME = chromeVer;
 export const FIREFOX = chromeVer ? NaN : /*@__PURE__*/ +brands.match(/Firefox\w*\/(\d+)|$/)[1];
