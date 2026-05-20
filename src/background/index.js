@@ -20,9 +20,8 @@ import download from './download';
 import {refreshIconsWhenReady, updateIconBadge} from './icon-manager';
 import {setPrefs} from './prefs-api';
 import setClientData from './set-client-data';
-import {save} from './style-manager';
 import * as styleMan from './style-manager';
-import {inferHomepage} from './style-manager/fixer';
+import {inferHomepages} from './style-manager/fixer';
 import {dataMap} from './style-manager/util';
 import initStyleViaApi from './style-via-api';
 import './style-via-webrequest';
@@ -90,7 +89,6 @@ Object.assign(API, /** @namespace API */ {
 //#region Events
 
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
-  let run;
   if (__.B_CHROME || __.B_ANY && CHROME) {
     reinjectContentScripts();
     initContextMenus();
@@ -103,37 +101,16 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     prefsDB.delete(kBadFavs); // old Stylus marked all icons as bad when network was offline
   }
   if (/^[23]\.3\.(1[89]|2[0-3])$/.test(previousVersion)) { // .18-.23 didn't set home url
-    (run ||= []).push(async () => {
-      const toWrite = [];
-      let skip, style;
-      for ({style} of dataMap.values())
-        if (inferHomepage(style))
-          toWrite.push([style.id, style._rev]);
-      for (const [id, rev] of toWrite) {
-        if (!skip)
-          await sleep(50);
-        if (!(skip = !(style = dataMap.get(id)?.style))
-        && (rev === style._rev || inferHomepage(style))) {
-          await save(style, false, undefined, /*alreadyFixed=*/true);
-        }
-      }
-    });
+    if (bgInit?.length) bgInit.push(inferHomepages);
+    else inferHomepages();
   }
   if (__.MV3) {
-    (run ||= []).push(
+    (bgPreInit?.length ? bgPreInit : bgInit || []).push(
       DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules)))
         .then(() => prefs.ready)
         .then(() => usercssMan.toggleUrlInstaller()),
       DNR.getSessionRules().then(rules => updateSessionRules(undefined, getRuleIds(rules))),
     );
-  }
-  if (run) {
-    if (bgInit?.length)
-      bgInit.push(...run);
-    else (async () => {
-      if (bgBusy) await bgBusy;
-      for (const fn of run) fn();
-    })();
   }
   onStartup();
 });

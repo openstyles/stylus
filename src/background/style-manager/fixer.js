@@ -1,8 +1,9 @@
 import {UCD} from '@/js/consts';
 import * as URLS from '@/js/urls';
-import {isEmptyObj} from '@/js/util';
+import {isEmptyObj, sleep} from '@/js/util';
 import * as syncMan from '../sync-manager';
 import * as usercssMan from '../usercss-manager';
+import {save} from '.';
 import {updateSections} from './cache';
 import {broadcastStyleUpdated, dataMap, storeInMap} from './util';
 
@@ -109,6 +110,22 @@ export function inferHomepage(style) {
     if (!style.installationUrl) res = style.installationUrl = v;
   }
   return !!res;
+}
+
+export async function inferHomepages() {
+  const toWrite = [];
+  let skip, style;
+  for ({style} of dataMap.values())
+    if (inferHomepage(style))
+      toWrite.push([style.id, style._rev]);
+  for (const [id, rev] of toWrite) {
+    if (!skip)
+      await sleep(50);
+    if (!(skip = !(style = dataMap.get(id)?.style))
+      && (rev === style._rev || inferHomepage(style))) {
+      await save(style, false, undefined, /*alreadyFixed=*/true);
+    }
+  }
 }
 
 export function onBeforeSave(style) {
