@@ -96,7 +96,7 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
       target = getWorkerPort(getTarget, console.error);
     } else if (!target) {
       target = typeof getTarget === 'function' ? getTarget() : getTarget;
-      if (target.then) target = await target;
+      if (target?.then) target = await target;
     }
     if (target instanceof MessagePort) {
       port = target;

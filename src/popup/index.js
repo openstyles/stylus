@@ -28,6 +28,7 @@ let prevHeight;
 
 (async function init(data, port) {
   data ??= (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup] || {};
+  if (!data.tab || !data.frames) return;
   initPopup(data);
   showStyles(data);
   initHotkeys(data);
