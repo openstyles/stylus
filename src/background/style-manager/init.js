@@ -1,6 +1,7 @@
 import {DB, kInjectionOrder, kResolve} from '@/js/consts';
 import {onConnect, onDisconnect} from '@/js/msg';
 import {STORAGE_KEY} from '@/js/prefs';
+import {styleJSONseemsValid} from '@/js/sections-util';
 import * as colorScheme from '../color-scheme';
 import {bgBusy, bgInit, onSchemeChange} from '../common';
 import {db, draftsDB, execMirror, prefsDB} from '../db';
@@ -10,15 +11,22 @@ import {broadcastStyleUpdated, dataMap, setOrderImpl, storeInMap} from './util';
 
 bgInit.push(async () => {
   __.DEBUGLOG('styleMan init...');
-  let mirrored;
+  let mirrored, validated;
   let [orderFromDb, styles] = await Promise.all([
     prefsDB.get(kInjectionOrder),
     db.getAll(),
   ]);
   if (!orderFromDb)
     orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder);
-  if (!styles.length)
-    styles = (mirrored = await execMirror(DB, 'getAll')) || styles;
+  validated = styles.filter(styleJSONseemsValid);
+  if ((!validated.length || validated.length < styles.length)
+  && (mirrored = await execMirror(DB, 'getAll'))) {
+    styles = validated;
+    validated = new Set(validated.map(s => s.id));
+    for (const s of mirrored)
+      if (s && !validated.has(s.id))
+        styles.push(s);
+  }
   initStyleMap(styles, mirrored);
   setOrderImpl(orderFromDb, {store: false});
   __.DEBUGLOG('styleMan init done');
@@ -64,7 +72,7 @@ async function initStyleMap(styles, mirrored) {
     style = styles[i];
     if (+style.id > 0
     && typeof style._id === 'string'
-    && typeof style.sections?.[0]?.code === 'string') {
+    && styleJSONseemsValid(style)) {
       storeInMap(style);
       if (mirrored) {
         if (i > len) styles[len] = style;
@@ -80,9 +88,8 @@ async function initStyleMap(styles, mirrored) {
   if (lost)
     console.error(`Skipped ${lost.length} unrecoverable styles:`, lost);
   if (fixed) {
-    console[mirrored ? 'log' : 'warn'](`Fixed ${fixed.size} styles, ids:`, ...fixed.keys());
-    fixed = await Promise.all([...fixed.values(), bgBusy]);
-    fixed.pop();
+    fixed = (await Promise.all([...fixed.values(), bgBusy])).filter(styleJSONseemsValid);
+    console[mirrored ? 'log' : 'warn']('Fixed styles:', fixed);
     if (mirrored) {
       styles.push(...fixed);
       fixed.forEach(storeInMap);
