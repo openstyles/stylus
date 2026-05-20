@@ -178,7 +178,8 @@ function handleDelete(id) {
 }
 
 function handleUpdate(style, {reason, method} = {}) {
-  if (reason === 'editPreview' || reason === 'editPreviewEnd') return;
+  if (!style || reason === 'editPreview' || reason === 'editPreviewEnd')
+    return;
   let entry;
   let oldEntry = $id(kStyleIdPrefix + style.id);
   if (oldEntry && method === 'styleUpdated') {

@@ -4,7 +4,7 @@ import {important, messageBox, setupLivePrefs} from '@/js/dom-util';
 import {breakWord} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
-import {clamp, debounce, deepCopy, sleep, t} from '@/js/util';
+import {clamp, debounce, deepCopy, NOP, sleep, t} from '@/js/util';
 import {MOBILE} from '@/js/ua';
 import './config-dialog.css';
 import '@/css/onoffswitch.css';
@@ -21,8 +21,9 @@ export default async function configDialog(style, y) {
   let vars;
   let ucd, varsHash, varNames, varsInitial;
 
-  if (typeof style === 'number')
-    style = await API.styles.getCore({id: style, vars: true});
+  if (typeof style === 'number'
+  && !(style = await API.styles.getCore({id: style, vars: true})))
+    return;
 
   init(false, false);
   const isPopup = document.body.id === 'stylus-popup';
@@ -149,7 +150,7 @@ export default async function configDialog(style, y) {
       return;
     }
     const bgStyle = style.id &&
-      await API.styles.getCore({id: style.id, vars: true}).catch(() => ({}));
+      (await API.styles.getCore({id: style.id, vars: true}).catch(NOP) || {});
     style.enabled = true;
     const styleVars = style[UCD].vars;
     const bgVars = !style.id ? styleVars : bgStyle[UCD]?.vars || {};

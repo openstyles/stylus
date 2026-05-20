@@ -162,7 +162,7 @@ export function getByUrl(url, id, tabId, needsOvrs) {
  */
 export function getCore({id, sections, size, src, vars} = {}) {
   const res = [];
-  for (let {style} of id ? [dataMap.get(id)] : dataMap.values()) {
+  for (let {style} of id ? [dataMap.get(id)].filter(Boolean) : dataMap.values()) {
     style = {...style};
     let tmp;
     if (size)

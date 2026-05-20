@@ -51,6 +51,8 @@ function handleExternalUpdate(style, reason, editorId) {
 async function onReplaced() {
   let [style, reason] = replaceQueue.shift();
   style = await API.styles.getCore({id: style.id, src: true, vars: true});
+  if (!style)
+    return;
   if (reason === 'config') {
     for (const key in editor.style)
       if (key !== 'sourceCode' && key !== 'sections' && !(key in style))
