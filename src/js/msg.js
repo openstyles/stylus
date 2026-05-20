@@ -31,6 +31,8 @@ export function _execute(data, sender, multi, broadcast) {
   let result;
   let res;
   let i = 0;
+  if (__.IS_BG && (res = global[k_busy]))
+    return res.then(_execute.bind(null, data, sender, multi, broadcast));
   if (__.ENTRY !== 'sw' && multi) {
     multi = data.length > 1 && data;
     data = data[0];
@@ -59,10 +61,7 @@ function onRuntimeMessage({data, multi, TDM, broadcast}, sender, sendResponse) {
     return;
   }
   sender.TDM = TDM;
-  let res;
-  res = __.IS_BG && (res = global[k_busy])
-    ? res.then(_execute.bind(null, data, sender, multi, broadcast))
-    : _execute(data, sender, multi, broadcast);
+  const res = _execute(data, sender, multi, broadcast);
   if (broadcast)
     return;
   if (res instanceof Promise) {

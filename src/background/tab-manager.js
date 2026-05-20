@@ -90,7 +90,9 @@ bgInit.push(async () => {
       for (const id of savedById.keys())
         if (!tabCache[id])
           (toDel ??= []).push(id);
-      if (toDel) stateDB.deleteMany(toDel);
+      if (toDel)
+        stateDB.deleteMany(toDel) // TODO: remove catch() when the reason is found
+          .catch(err => console.warn(err.message + ' Keys: ' + toDel));
       if (toPut) putObject(toPut);
     }
     prefs.subscribe(pKeepAlive, (key, val) => {

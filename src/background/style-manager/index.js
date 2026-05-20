@@ -133,7 +133,12 @@ export function getByUrl(url, id, tabId, needsOvrs) {
     const isIncluded = matching;
     let empty = true;
     let sloppy = false;
-    for (let arr = style.sections, i = 0; i < arr.length && (!matching || empty || !sloppy); i++) {
+    let arr = style.sections;
+    if (!arr) { // TODO: remove when the reason is found
+      arr = [];
+      console.error('No sections:', style);
+    }
+    for (let i = 0; i < arr.length && (!matching || empty || !sloppy); i++) {
       const sec = arr[i];
       const secMatch = isIncluded || urlMatchSection(query, sec, true);
       if (!secMatch)
