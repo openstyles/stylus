@@ -10,6 +10,11 @@ import setClientData from '../set-client-data';
 import offscreen from '../offscreen';
 import '..';
 
+/** @type {ResponseInit} */
+const RESPONSE_INIT = {
+  headers: {'cache-control': 'no-cache'},
+};
+
 if (__.DEBUG) {
   global.onunhandledrejection = global.onerror = e => {
     e = e.reason || e.error || e;
@@ -46,7 +51,8 @@ global.onfetch = evt => {
     }).catch(err => {
       err.message = 'Internal failure.\n' + err.message;
       return {err};
-    });
+    }).then(res =>
+      new Response(`Object.assign(${__.CLIENT_DATA},${JSON.stringify(res)})`, RESPONSE_INIT));
     clientDataJobs.set(pageUrl, job);
     job.finally(() => clientDataJobs.delete(pageUrl));
     evt.respondWith(job);

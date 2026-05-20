@@ -13,10 +13,6 @@ import * as syncMan from './sync-manager';
 import * as usercssTemplate from './usercss-template';
 
 const kEditorScrollInfo = 'editorScrollInfo';
-/** @type {ResponseInit} */
-const RESPONSE_INIT = {
-  headers: {'cache-control': 'no-cache'},
-};
 const PROVIDERS = {
   edit(url) {
     const id = +url.searchParams.get('id');
@@ -93,7 +89,5 @@ export default async function setClientData({
   if (pagesForUrl && !pagesForUrl.length)
     delete ownPagesCommitted[url];
   Object.keys(jobs).forEach((id, i) => (jobs[id] = results[i]));
-  return __.MV3
-    ? new Response(`Object.assign(${__.CLIENT_DATA},${JSON.stringify(jobs)})`, RESPONSE_INIT)
-    : jobs;
+  return jobs;
 }
