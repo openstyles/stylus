@@ -44,7 +44,6 @@ export const DEFAULTS = {
     'known-pseudos': 1,
     'selector-newline-no-indent': 1,
     'shorthand-overrides': 1,
-    'simple-not': 1,
     'warnings': 1,
   },
 };
