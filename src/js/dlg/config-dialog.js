@@ -4,7 +4,7 @@ import {important, messageBox, setupLivePrefs} from '@/js/dom-util';
 import {breakWord} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
-import {clamp, debounce, deepCopy, NOP, sleep, t} from '@/js/util';
+import {clamp, debounce, deepCopy, NOP, t} from '@/js/util';
 import {MOBILE} from '@/js/ua';
 import './config-dialog.css';
 import '@/css/onoffswitch.css';
@@ -15,7 +15,7 @@ import '@/css/onoffswitch.css';
  */
 export default async function configDialog(style, y) {
   const AUTOSAVE_DELAY = 400;
-  let saving = false;
+  let saving, savingScheduled;
   let bodyStyle;
   /** @type {(UsercssVar & {input: HTMLElement})[]} */
   let vars;
@@ -117,7 +117,7 @@ export default async function configDialog(style, y) {
     if (va) {
       va.dirty = varsInitial[va.name] !== (isDefault(va) ? va.default : va.value);
       if (prefs.__values['config.autosave'] && !justSaved) {
-        debounce(save, AUTOSAVE_DELAY, {anyChangeIsDirty: true});
+        savingScheduled ||= debounce(save, AUTOSAVE_DELAY, {anyChangeIsDirty: true});
         return;
       }
       renderValueState(va);
@@ -140,20 +140,23 @@ export default async function configDialog(style, y) {
   }
 
   async function save({anyChangeIsDirty = false} = {}) {
-    for (let delay = 1; saving && delay < 1000; delay *= 2) {
-      await sleep(delay);
-    }
-    if (saving) {
-      throw 'Could not save: still saving previous results...';
-    }
+    if (saving)
+      await saving;
+    savingScheduled = false;
     if (!vars.some(va => va.dirty || anyChangeIsDirty && va.value !== va.savedValue)) {
       return;
     }
-    const bgStyle = style.id &&
-      (await API.styles.getCore({id: style.id, vars: true}).catch(NOP) || {});
+    const {id} = style;
+    const bgStyle = id ? await API.styles.getCore({id, vars: true}).catch(NOP) : {};
+    if (!bgStyle) { // deleted
+      btnClose.click();
+      return;
+    }
     style.enabled = true;
     const styleVars = style[UCD].vars;
-    const bgVars = !style.id ? styleVars : bgStyle[UCD]?.vars || {};
+    const bgVars = id
+      ? bgStyle[UCD]?.vars || {}
+      : styleVars;
     const invalid = [];
     let numValid = 0;
     for (const va of vars) {
@@ -195,9 +198,10 @@ export default async function configDialog(style, y) {
     if (!numValid) {
       return;
     }
-    saving = true;
     try {
-      const newVars = !style.id ? styleVars : await API.usercss.configVars(style.id, styleVars);
+      const newVars = id
+        ? await (saving = API.usercss.configVars(id, styleVars))
+        : styleVars;
       varsInitial = getInitialValues(newVars);
       vars.forEach(va => onchange({target: va.input, justSaved: true}));
       renderValues();
