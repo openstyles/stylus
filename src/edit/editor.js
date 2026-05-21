@@ -170,7 +170,7 @@ const editor = self.editor = {
               : clipString(entry.target) + (entry.numTargets > 1 ? ', ...' : ''));
           if (s.length > 30) el.title = s;
         }
-        el = el.nextElementSibling;
+        el = el?.nextElementSibling;
       }
     }
     while (toc.length > sections.length) {
