@@ -72,6 +72,12 @@ export const debounce = /*@__PURE__*/(() => {
   });
 })();
 
+export const describeClient = () => ({
+  dark: isCssDarkScheme(),
+  frameId: window === top ? 0 : 1,
+  url: location.href,
+});
+
 export const makePropertyPopProxy = data => new Proxy(data, {
   get: (obj, k, v) => ((
     (v = obj[k]),

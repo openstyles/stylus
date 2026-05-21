@@ -3,6 +3,7 @@ import {kSidebar} from '@/js/consts';
 import {$create, $toggleDataset, isSidebar} from '@/js/dom';
 import {animateElement, setupLiveDetails, setupLivePrefs} from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
+import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import * as syncUtil from '@/js/sync-util';
 import {CHROME} from '@/js/ua';
@@ -21,7 +22,7 @@ import './manage-table.css';
 import '@/css/target-site.css';
 
 (async () => {
-  const data = __.MV3 ? prefs.clientData : await prefs.clientData;
+  const data = __.MV3 && swController ? prefs.clientData : await prefs.clientData;
   const selectorOpts = '#manage-options-button, #sync-styles';
   setupLiveDetails();
   setupLivePrefs();

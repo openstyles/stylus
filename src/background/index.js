@@ -50,6 +50,7 @@ Object.assign(API, /** @namespace API */ {
   openManager,
   openURL,
   pingTab,
+  setClientData,
   setPrefs,
   setSystemDark,
   updateIconBadge,
@@ -73,14 +74,6 @@ Object.assign(API, /** @namespace API */ {
   usercss: usercssMan,
   uso: usoApi,
   usw: uswApi,
-
-  //#endregion
-
-}, !__.MV3 && /** @namespace API */ {
-
-  //#region API for MV2
-
-  setClientData,
 
   //#endregion
 

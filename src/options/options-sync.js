@@ -2,12 +2,13 @@ import {$create, $toggleDataset} from '@/js/dom';
 import {template} from '@/js/localization';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
+import {swController} from '@/js/msg-init';
 import {clientData} from '@/js/prefs';
 import {connected, disconnected, DRIVE_NAMES, getStatusText} from '@/js/sync-util';
 import {t} from '@/js/util';
 
 (async () => {
-  let {sync: status, syncOpts} = __.MV3 ? clientData : await clientData;
+  let {sync: status, syncOpts} = __.MV3 && swController ? clientData : await clientData;
   const elSync = template.body.$('.sync-options');
   const elCloud = elSync.$('.cloud-name');
   const elToggle = elSync.$('.connect');

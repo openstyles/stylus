@@ -1,6 +1,6 @@
 import '../intro'; // sets global.API
 import './keep-alive'; // sets global.keepAlive
-import {kMainFrame, kSubFrame} from '@/js/consts';
+import {CLIENT_DATA_PREFIX, kMainFrame, kSubFrame} from '@/js/consts';
 import {_execute} from '@/js/msg';
 import {initRemotePort} from '@/js/port';
 import {ownRoot} from '@/js/urls';
@@ -10,6 +10,7 @@ import setClientData from '../set-client-data';
 import offscreen from '../offscreen';
 import '..';
 
+const CLIENT_DATA_PREFIX_URL = ownRoot + CLIENT_DATA_PREFIX;
 /** @type {ResponseInit} */
 const RESPONSE_INIT = {
   headers: {'cache-control': 'no-cache'},
@@ -25,7 +26,7 @@ if (__.DEBUG) {
 /** @param {ExtendableEvent} evt */
 global.oninstall = evt => {
   evt.addRoutes({
-    condition: {urlPattern: `${ownRoot}*.html?clientData*`},
+    condition: {urlPattern: `${CLIENT_DATA_PREFIX_URL}*`},
     source: 'fetch-event',
   });
   evt.addRoutes({
@@ -41,7 +42,7 @@ global.onfetch = evt => {
   if (!url.startsWith(ownRoot)) {
     return; // shouldn't happen but addRoutes may be bugged
   }
-  if (url.includes('?clientData')) {
+  if (url.startsWith(CLIENT_DATA_PREFIX_URL)) {
     const sp = new URL(url).searchParams;
     const pageUrl = sp.get('url');
     const job = setClientData({
@@ -52,7 +53,7 @@ global.onfetch = evt => {
       err.message = 'Internal failure.\n' + err.message;
       return {err};
     }).then(res =>
-      new Response(`Object.assign(${__.CLIENT_DATA},${JSON.stringify(res)})`, RESPONSE_INIT));
+      new Response(`${__.CLIENT_DATA}=${JSON.stringify(res)}`, RESPONSE_INIT));
     clientDataJobs.set(pageUrl, job);
     job.finally(() => clientDataJobs.delete(pageUrl));
     evt.respondWith(job);

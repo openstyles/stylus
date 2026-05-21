@@ -9,6 +9,7 @@
 import {$create} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
 import {onMessage} from './msg';
+import {swController} from './msg-init';
 import {clientData} from './prefs';
 import {actionPopupUrl} from './urls';
 import {MF_ICON_EXT, MF_ICON_PATH} from './util-webext';
@@ -25,8 +26,11 @@ export let isDark;
 
 (async () => {
   let favicon;
-  if (window === top) ({dark: isDark, favicon} = __.MV3 ? clientData : await clientData);
-  else isDark = parent.document.documentElement.dataset.uiTheme === 'dark';
+  if (window === top) {
+    ({dark: isDark, favicon} = __.MV3 && swController ? clientData : await clientData);
+  } else {
+    isDark = parent.document.documentElement.dataset.uiTheme === 'dark';
+  }
   updateDOM();
   onMessage.set(e => {
     if (e.method === 'colorScheme' && isDark !== e.value) {

@@ -5,6 +5,7 @@ import {$create} from '@/js/dom';
 import {getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '@/js/dom-util';
 import {htmlToTemplate, tBody, template, templateCache} from '@/js/localization';
 import {API} from '@/js/msg-api';
+import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {FIREFOX, MAC, OPERA} from '@/js/ua';
 import {favicon, usoa, usw} from '@/js/urls';
@@ -123,7 +124,7 @@ if (browserSidebar)
   $rootCL.add('has-sidebar');
 setupLivePrefs();
 (async () => {
-  const {wrb} = __.MV3 ? prefs.clientData : await prefs.clientData;
+  const {wrb} = __.MV3 && swController ? prefs.clientData : await prefs.clientData;
   if (wrb)
     return;
   const id = chrome.runtime.id;

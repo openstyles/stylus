@@ -5,6 +5,7 @@
  * Only for pure declarations with no side effects or marked with /*@__PURE__*/
 /** */// TODO: collect consts from the entire code
 
+export const CLIENT_DATA_PREFIX = 'data?';
 export const UCD = 'usercssData';
 export const kAboutBlank = 'about:blank';
 export const kAppJson = 'application/json';

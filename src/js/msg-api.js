@@ -31,8 +31,8 @@ export let TDM = __.ENTRY === 'offscreen' ? 1
 
 if (__.ENTRY !== true) {
   isTab = !__.ENTRY;
-} else if (__.MV3) {
-  isTab = global[__.CLIENT_DATA].tabId >= 0;
+} else if (__.MV3 && (isTab = global[__.CLIENT_DATA])) {
+  isTab = isTab.tabId >= 0;
 } else if (new URLSearchParams(location.search).has(kSidebar)) {
   isTab = false;
 } else if (!(

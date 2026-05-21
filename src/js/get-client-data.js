@@ -1,8 +1,7 @@
-import {isCssDarkScheme, makePropertyPopProxy} from './util';
+import {CLIENT_DATA_PREFIX} from '@/js/consts';
+import {describeClient} from './util';
 
-self[__.CLIENT_DATA] = makePropertyPopProxy({});
-document.write(`<script src="?clientData&${new URLSearchParams({
-  dark: +isCssDarkScheme(),
-  frameId: window === top ? 0 : 1,
-  url: location,
-})}"></script>`);
+document.write(`<script src="${CLIENT_DATA_PREFIX}${
+  new URLSearchParams(/*@__INLINE__*/describeClient())
+}"></script>`
+);

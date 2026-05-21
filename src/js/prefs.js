@@ -1,26 +1,21 @@
 /** Don't use this file in content script context! */
 import {
   k_busy, kBadFavs, pDisableAll, pExposeIframes, pFavicons, pFaviconsGray, pManageNewUi,
-  pManageNewUiTargets,
-  pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr, pUrlInstaller,
+  pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr, pUrlInstaller,
 } from '@/js/consts';
 import {API} from './msg-api';
-import {deepCopy, deepEqual, isCssDarkScheme, makePropertyPopProxy} from './util';
+import {swController} from './msg-init'; // also installs API handler for own pages
+import {deepCopy, deepEqual, describeClient, makePropertyPopProxy} from './util';
 import {onStorageChanged} from './util-webext';
-import './msg-init'; // installs direct `API` handler
 
 let busy, ready, setReady;
 let toUpload;
 
 /** @type {StylusClientData & {then: (cb: (data: StylusClientData) => ?) => Promise}} */
 export const clientData = !__.IS_BG && (
-  __.MV3
-    ? global[__.CLIENT_DATA]
-    : API.setClientData({
-      dark: isCssDarkScheme(),
-      frameId: window === top ? 0 : 1,
-      url: location.href,
-    }).then(data => {
+  __.MV3 && swController
+    ? makePropertyPopProxy(global[__.CLIENT_DATA])
+    : API.setClientData(/*@__INLINE__*/describeClient()).then(data => {
       if (data.err) onerror(data.err);
       data = makePropertyPopProxy(data);
       setBadFavs(data);
@@ -291,7 +286,7 @@ function setBadFavs(data) {
 if (__.IS_BG) {
   busy = ready = new Promise(cb => (setReady = cb));
   busy.set = (...args) => setReady(setAll(...args));
-} else if (__.MV3) {
+} else if (__.MV3 && swController) {
   if (clientData.err) onerror(clientData.err);
   setBadFavs(clientData);
   setAll(clientData.prefs);

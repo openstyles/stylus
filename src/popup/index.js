@@ -4,6 +4,7 @@ import {isSidebar, urlParams} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {sanitizeHtml, template} from '@/js/localization';
 import {API} from '@/js/msg-api';
+import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MAC, MOBILE, OPERA} from '@/js/ua';
@@ -27,7 +28,7 @@ export let isBlocked;
 let prevHeight;
 
 (async function init(data, port) {
-  data ??= (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup] || {};
+  data ??= (__.MV3 && swController ? prefs.clientData : await prefs.clientData)[kPopup] || {};
   initPopup(data);
   showStyles(data);
   initHotkeys(data);

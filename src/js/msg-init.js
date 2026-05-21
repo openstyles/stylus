@@ -15,9 +15,12 @@ const needsTab = {
   updateIconBadge: 1,
   styleViaAPI: 1,
 };
+const navSW = __.MV3 && __.ENTRY !== 'sw' && navigator.serviceWorker;
+export const swController = __.MV3 && __.ENTRY !== 'sw' && navSW.controller;
 /** @type {MessagePort} */
-const swExec = __.MV3 &&
-  createPortExec(() => navigator.serviceWorker.controller, {lock: swPath});
+const swExec = __.MV3 && __.ENTRY !== 'sw' &&
+  createPortExec(swController || navSW.ready.then(reg => reg.active),
+    {lock: swPath});
 const workerApiPrefix = 'worker.';
 let workerProxy;
 export let bg = __.IS_BG ? self : !__.MV3 && chrome.extension.getBackgroundPage();

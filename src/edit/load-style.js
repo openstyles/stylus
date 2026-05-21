@@ -1,5 +1,6 @@
 import {loadCmTheme} from '@/cm';
 import {urlParams} from '@/js/dom';
+import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {FROM_CSS} from '@/js/sections-util';
 import {clipString, sessionStore, tryURL} from '@/js/util';
@@ -11,9 +12,9 @@ if (location.hash) { // redirected from devtools -> "open in a new tab"
 
 let id = +urlParams.get('id');
 
-export default __.MV3
-  ? loadStyle(prefs.clientData)
-  : prefs.clientData.then(loadStyle);
+export default __.MV3 && swController
+  && loadStyle(prefs.clientData)
+  || prefs.clientData.then(loadStyle);
 
 function loadStyle({style = makeNewStyleObj(), isUC, si, template}) {
   Object.assign(editor.style, style);
