@@ -1,6 +1,7 @@
 import {kAppUrlencoded, kContentType} from '@/js/consts';
 import {uso, usoJson} from '@/js/urls';
 import {tryJSONparse} from '@/js/util';
+import {ignoreChromeError} from '@/js/util-webext';
 
 /** @type {Record<string, {req: Promise, ports: Set<chrome.runtime.Port>}>} */
 const jobs = {};
@@ -32,7 +33,10 @@ export default function download(url, params = {}) {
   if (params.port) {
     const ports = job.ports || (job.ports = new Set());
     const p = chrome.runtime.connect({name: params.port});
-    p.onDisconnect.addListener(() => ports.delete(p));
+    p.onDisconnect.addListener(() => {
+      ignoreChromeError();
+      ports.delete(p);
+    });
     ports.add(p);
   }
   return job.req;

@@ -2,6 +2,8 @@ import {DB, kInjectionOrder, kResolve} from '@/js/consts';
 import {onConnect, onDisconnect} from '@/js/msg';
 import {STORAGE_KEY} from '@/js/prefs';
 import {styleJSONseemsValid} from '@/js/sections-util';
+import {NOP} from '@/js/util';
+import {ignoreChromeError} from '@/js/util-webext';
 import * as colorScheme from '../color-scheme';
 import {bgBusy, bgInit, onSchemeChange} from '../common';
 import {db, draftsDB, execMirror, prefsDB} from '../db';
@@ -43,13 +45,14 @@ onSchemeChange.add(() => {
 // Using ports to reliably track when the client is closed, however not for messaging,
 // because our `API` is much faster due to direct invocation.
 onDisconnect.draft = port => {
+  ignoreChromeError();
   if (__.MV3) port[kResolve]();
   const id = port.name.split(':')[1];
-  draftsDB.delete(+id || id).catch(() => {
-  });
+  draftsDB.delete(+id || id).catch(NOP);
 };
 
 onDisconnect.livePreview = port => {
+  ignoreChromeError();
   if (__.MV3) port[kResolve]();
   const id = +port.name.split(':')[1];
   const data = dataMap.get(id);
