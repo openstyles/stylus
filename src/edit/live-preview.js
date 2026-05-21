@@ -58,6 +58,8 @@ async function updatePreviewer(newData) {
     await API.styles.preview(newData);
     el.hidden = true;
   } catch (err) {
+    if (typeof err === 'string')
+      err = new Error(err);
     const ucd = newData[UCD];
     const pp = ucd && ucd.preprocessor;
     const shift = err._varLines + 1 || 0;
