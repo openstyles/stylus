@@ -756,30 +756,23 @@ button.icon {
   opacity: .25;
 }
 .blocked-info {
-  background-color: var(--c98);
+  border-bottom: var(--border);
+  > * {
+    display: block;
+    padding: $pad;
+    margin: 0;
+  }
   > :first-child {
     font-weight: bold;
-    background-color: var(--bg);
   }
-  &[open] > summary {
-    cursor: zoom-out;
+  > :nth-child(n + 2) {
+    background-color: var(--c98);
   }
-  > div:first-child,
-  p {
-    margin: 0;
-    padding: $pad;
-    border-bottom: var(--border);
+  [data-cmd="note"] {
+    cursor: help;
   }
   code {
     overflow-wrap: break-word;
-  }
-}
-body > details > summary {
-  border-bottom: var(--border);
-  padding: $pad $pad $pad 0;
-  cursor: zoom-in;
-  &::marker {
-    margin: 0;
   }
 }
 

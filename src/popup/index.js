@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import {kAboutBlank, kPopup} from '@/js/consts';
-import {isSidebar, urlParams} from '@/js/dom';
+import {$create, isSidebar, urlParams} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {sanitizeHtml, template} from '@/js/localization';
 import {API} from '@/js/msg-api';
@@ -141,19 +141,20 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
     info = template.unreachableInfo;
   } else if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
     info = $('.blocked-info');
-    info.$('summary').textContent = t('unreachableAMO');
+    info.textContent = '';
     const note = [
       !isStore && t('unreachableCSP', t('optionsAdvancedPatchCsp')),
       isStore && t(FIREFOX >= 59 ? 'unreachableAMOHint' : 'unreachableMozSiteHintOldFF'),
       FIREFOX >= 60 && t('unreachableMozSiteHint'),
     ].filter(Boolean).join('\n');
-    const p = info.$('p');
-    p.textContent = '';
-    p.append(sanitizeHtml(note));
+    info.append(
+      $create('b', t('unreachableAMO')),
+      $create('p', sanitizeHtml(note)),
+    );
   }
   // Chrome "Allow access to file URLs" in chrome://extensions message
   if ((el = tabUrl.startsWith('file:') ? 'unreachableFileHint' : OPERA && 'unreachableOpera')) {
-    info.appendChild($tag('p')).append(t(el));
+    info.append($create('p', t(el)));
   }
   $rootCL.add(UNREACHABLE);
   $('.blocked-info').replaceWith(info);
