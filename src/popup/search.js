@@ -117,7 +117,10 @@ styleFinder.inSite = event => {
   const add = (prefix, str) => str ? prefix + str : '';
   const where = event.detail;
   const q = encodeURIComponent($id('search-query').value.trim());
-  const catQ = category + add('+', q);
+  const isStylus = category === STYLUS_CATEGORY;
+  const cat = isStylus ? 'Stylus' : category;
+  const andQ = add('&q=', q);
+  const catQ = cat + add('+', q);
   const href =
     where === 'uso' &&
       `${URLS.uso}styles/browse${q ? `?search_terms=${catQ}`
@@ -125,12 +128,12 @@ styleFinder.inSite = event => {
     where === 'usoa' &&
       `${URLS.usoa}browse/styles?search=%23${catQ}` ||
     where === 'usw' &&
-      `${URLS.usw}search?q=${catQ}` ||
+      `${URLS.usw}search?${isStylus ? 'q=' + cat : 'category=' + cat + andQ}` ||
     where === 'gf' &&
       `https://greasyfork.org/scripts${tabUrlSupported
         ? tryURL(tabUrl).hostname.replace(/^(www\.)?/, '/by-site/')
         : ''
-      }?language=css${add('&q=', q)}`;
+      }?language=css${andQ}`;
   openURLandHide.call({href}, event);
 };
 $id('search-query').oninput = function () {
