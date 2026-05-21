@@ -1,5 +1,4 @@
 import {k_busy, kInvokeAPI} from '@/js/consts';
-import {ignoreChromeError} from '@/js/util-webext';
 import {bgReadySignal} from './msg-api';
 
 /** @type {Map<function,boolean>} true: returned value is used as the reply */
@@ -24,7 +23,7 @@ if (__.ENTRY) {
     const fnOn = onConnect[name];
     const fnOff = onDisconnect[name];
     if (fnOn) fnOn(port);
-    port.onDisconnect.addListener(fnOff || ignoreChromeError);
+    port.onDisconnect.addListener(fnOff || (() => chrome.runtime.lastError));
   });
 }
 

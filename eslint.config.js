@@ -333,6 +333,19 @@ module.exports = [
     },
   },
   //#endregion
+  //#region SRC used in content scripts
+  {
+    files: [
+      'src/content/*',
+      'src/js/msg.js',
+      'src/js/msg-api.js',
+    ],
+    rules: {
+      // TODO: use sideEffects:false in webpack?
+      'no-restricted-imports': [2, '@/js/util-webext'],
+    },
+  },
+  //#endregion
   //#region Background service worker
   {
     files: ['src/background/sw/**/*'],
