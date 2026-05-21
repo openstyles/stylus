@@ -784,7 +784,7 @@ function hookLineComment(stream, state) {
 function tokenCComment(stream, state) {
   const str = stream.string;
   const i = str.indexOf('*/', stream.pos);
-  stream.pos = i < 0 ? str.length : (state.tokenize = null, i);
+  stream.pos = i < 0 ? str.length : (state.tokenize = null, i + 2);
   return [kComment, kComment];
 }
 
