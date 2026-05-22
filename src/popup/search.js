@@ -215,6 +215,7 @@ function error(err) {
   dom.error.textContent = err && err.message || `${err}`;
   dom.error.hidden = false;
   dom.list.hidden = true;
+  $rootCL.add('search-results-shown');
   if (dom.error.getBoundingClientRect().bottom < 0) {
     dom.error.scrollIntoView(true);
   }
