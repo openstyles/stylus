@@ -1198,6 +1198,9 @@
   "replaceWith": {
     "message": "استبدال بـ"
   },
+  "reportBug": {
+    "message": "أبلغ عن الخطأ"
+  },
   "restoreTemplate": {
     "message": "استعادة القالب الافتراضي.\n\n(لن تتغير صفحات المحرر المفتوحة حاليًا.)"
   },
@@ -1218,6 +1221,9 @@
   },
   "searchGlobalStylesHint": {
     "message": "يتضمن الأنماط التي تنطبق على جميع المواقع إذا كان الاسم يحتوي على نص البحث أو الموقع الحالي"
+  },
+  "searchLooseSpaces": {
+    "message": "تتطابق المسافة مع أي عدد من المسافات"
   },
   "searchNumberOfResults": {
     "message": "عدد المطابقات"
@@ -1328,6 +1334,14 @@
   },
   "sortStylesHelpTitle": {
     "message": "فرز المحتويات"
+  },
+  "styleAssetsCSP": {
+    "message": "أصول النمط المدرجة أدناه تم حظرها بواسطة صفحة الويب، يمكنك تمكين خيار \"$CSP$\"  لتحميلها:",
+    "placeholders": {
+      "CSP": {
+        "content": "$1"
+      }
+    }
   },
   "styleBadRegexp": {
     "message": "التعبير النمطي غير صالح."
