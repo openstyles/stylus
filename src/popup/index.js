@@ -2,7 +2,7 @@ import '@/js/dom-init';
 import {kAboutBlank, kPopup} from '@/js/consts';
 import {$create, isSidebar, urlParams} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
-import {sanitizeHtml, template} from '@/js/localization';
+import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
@@ -10,7 +10,7 @@ import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MAC, MOBILE, OPERA} from '@/js/ua';
 import {clamp, sleep0, t} from '@/js/util';
 import {getActiveTab, ignoreChromeError} from '@/js/util-webext';
-import {openStyleFinder, pSideFinder} from './events';
+import {openStyleFinder, pSideFinder, selUnstylable} from './events';
 import {initHotkeys} from './hotkeys';
 import {createWriterElement, showStyles, updateStateIcon} from './render';
 import '@/css/onoffswitch.css';
@@ -140,21 +140,17 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
   if (__.B_CHROME || __.B_ANY && CHROME) {
     info = template.unreachableInfo;
   } else if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
-    info = $('.blocked-info');
-    info.textContent = '';
-    const note = [
+    info = $(selUnstylable);
+    info.$('a').title = [
       !isStore && t('unreachableCSP', t('optionsAdvancedPatchCsp')),
       isStore && t(FIREFOX >= 59 ? 'unreachableAMOHint' : 'unreachableMozSiteHintOldFF'),
       FIREFOX >= 60 && t('unreachableMozSiteHint'),
     ].filter(Boolean).join('\n');
-    info.append(
-      $create('b', t('unreachableAMO')),
-      $create('p', sanitizeHtml(note)),
-    );
+    info.$('span').textContent = t('unreachableAMO');
   }
   // Chrome "Allow access to file URLs" in chrome://extensions message
   if ((el = tabUrl.startsWith('file:') ? 'unreachableFileHint' : OPERA && 'unreachableOpera')) {
-    info.append($create('p', t(el)));
+    info.append($create('div', t(el)));
   }
   $rootCL.add(UNREACHABLE);
   $('.blocked-info').replaceWith(info);

@@ -124,11 +124,10 @@ body {
 }
 
 #no-styles {
+  cursor: default;
+  padding: $pad;
   &:hover {
     color: var(--accent-1);
-  }
-  b {
-    display: block;
   }
 }
 
@@ -760,16 +759,9 @@ button.icon {
   > * {
     display: block;
     padding: $pad;
-    margin: 0;
-  }
-  > :first-child {
-    font-weight: bold;
   }
   > :nth-child(n + 2) {
-    background-color: var(--c98);
-  }
-  [data-cmd="note"] {
-    cursor: help;
+    border-top: var(--border);
   }
   code {
     overflow-wrap: break-word;
@@ -808,7 +800,12 @@ button.icon {
     white-space: nowrap;
   }
 }
-
+#message-box.inline {
+  position: static;
+  > div {
+    max-height: none;
+  }
+}
 @media (max-height: 130px) {
   #find-split {
     --menu-pad: .25em;

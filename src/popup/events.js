@@ -25,6 +25,7 @@ const selEdit = '.style-edit-link';
 const selFinder = '#find-styles-btn';
 const selManager = '#popup-manage-button';
 const selOptions = '#options-btn';
+export const selUnstylable = '#unstylable';
 /** @type {{[sel: string]: OnClickHandler}} */
 export const EntryClick = {
   '.style-name': Object.assign((evt, entry, button) => {
@@ -76,6 +77,10 @@ const sideTitleMap = {
 
 for (const sel in GlobalClick)
   GlobalClick[sel].btn = 2;
+$(selUnstylable + ' a').onShowNote = box => {
+  box.classList.add('inline');
+  $(selUnstylable).after(box);
+};
 $(selFinder).on('split-btn', async e => {
   if (!styleFinder.on) await import('./search');
   styleFinder.inSite(e);

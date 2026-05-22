@@ -25,18 +25,11 @@ let titleCSP;
 
 let initNoStyles = () => {
   initNoStyles = null;
-  const el = $('#no-styles summary');
-  const measure = el.firstChild;
-  const cmd = $create('b',
-    {style: `padding-left: ${measure.offsetLeft + 'px'}`},
-    t('findStylesOnline'));
-  // measuring an empty element to ensure it's one line for correct layout calc
-  measure.textContent = t('noStylesForSite');
-  el.append(cmd);
+  const el = $('#no-styles');
   el.on('click', () => {
     openStyleFinder();
-    el.parentElement.style.pointerEvents = 'none';
-    cmd.remove();
+    el.style.pointerEvents = 'none';
+    el.$('b').remove();
   }, {once: true});
 };
 
