@@ -13,6 +13,7 @@ import {clamp, debounce, t, tryURL} from './util';
 
 const SPLIT_BTN_MENU = '.split-btn-menu';
 const tooltips = new WeakMap();
+const noteBoxes = new WeakMap();
 /** Strips all normal html tags but allows <invalid-html-tags> which we use to emphasize stuff */
 const rxTag = /<(?:\/[a-z]+|[a-z]+(?:\s+[^>]*)?)>/g;
 const rxLong1 = /([.?!]\s+|[．。？！]\s*|(?:<[^\s<>][^<>]*>)?.{55,70},)\s+/gu;
@@ -211,18 +212,30 @@ function suppressFocusRingOnClick({target}) {
 
 function showTooltipNote(event) {
   const note = event.target.closest('[data-cmd=note]');
-  if (note) {
-    event.preventDefault();
-    event.stopPropagation();
-    const internal = note.dataset.title;
-    const text = internal || tooltips.get(note) || note.title;
-    messageBox.show({
-      className: 'note',
-      contents: text.includes('<') ? sanitizeHtml(text, internal) : text,
-      buttons: [t('confirmClose')],
-      onshow: note.onShowNote,
-    }).then(note.onHideNote);
+  if (!note)
+    return;
+  event.preventDefault();
+  event.stopPropagation();
+  if (noteBoxes.has(note)) {
+    noteBoxes.get(note).close();
+    noteBoxes.delete(note);
+    return;
   }
+  const internal = note.dataset.title;
+  const text = internal || tooltips.get(note) || note.title;
+  const {onShowNote, onHideNote} = note;
+  messageBox.show({
+    className: 'note',
+    contents: text.includes('<') ? sanitizeHtml(text, internal) : text,
+    buttons: [t('confirmClose')],
+    onshow(box) {
+      noteBoxes.set(note, this);
+      onShowNote?.call(this, box);
+    },
+  }).then(res => {
+    noteBoxes.delete(note);
+    onHideNote?.(res);
+  });
 }
 
 export function splitLongTooltips(elems) {
