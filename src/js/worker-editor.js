@@ -79,7 +79,7 @@ Object.assign(COMMANDS, {
       all: res,
       ats: atKeys.sort(),
       colors: NamedColors.join('\n') + '\n' + Object.keys(VTFunctions.color).join('(\n') + '(',
-      global: '\n' + GlobalKeywords.join('\n'),
+      global: GlobalKeywords,
       keys: keys.filter(Boolean),
     };
   },

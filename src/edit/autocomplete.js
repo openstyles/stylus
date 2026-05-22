@@ -210,7 +210,8 @@ async function helper(cm) {
       if (!cssPropNames) await initCssProps();
       list = cssProps[prop + kCssPropSuffix];
       if (list != null) {
-        list = (list.replace(rxNamedColors, cssColors) + cssSpecData.global).split('\n');
+        list = list ? list.replace(rxNamedColors, cssColors).split('\n') : [];
+        list.push(...cssSpecData.global);
       }
       end = prev + execAt(rxPropChars, prev, text)[0].length;
     }
