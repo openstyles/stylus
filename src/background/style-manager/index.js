@@ -29,9 +29,11 @@ export {getById as get, matchOverrides};
 
 /** @returns {Promise<void>} */
 export async function config(id, prop, value) {
-  const style = getById(id);
-  const d = dataMap.get(id);
-  style[prop] = (d.preview || {})[prop] = value;
+  const {style, preview: pv} = dataMap.get(id) || {};
+  if (!style)
+    return 0;
+  style[prop] = value;
+  if (pv) pv[prop] = value;
   if (prop === kInclusions || prop === kOverridden || prop === kExclusions)
     urlCache.updateSections(id);
   await save(style, 'config');
@@ -185,9 +187,10 @@ export function getCore({id, sections, size, src, vars} = {}) {
   return id ? res[0] : res;
 }
 
-/** @returns {string | {[remoteId:string]: styleId}}>} */
+/** @returns {[number, boolean] | {[remoteId:string]: [number, boolean]} | '' || 0} */
 export function getRemoteInfo(id) {
-  if (id) return calcRemoteId(getById(id));
+  if (id)
+    return !(id = dataMap.get(id)) ? 0 : calcRemoteId(id.style);
   const res = {};
   for (const {style} of dataMap.values()) {
     const [rid, vars] = calcRemoteId(style);
@@ -331,6 +334,8 @@ export async function preview(style) {
  * @returns {number} style id
  */
 export function remove(id, reason, many) {
+  if (!dataMap.has(id))
+    return 0;
   const {style} = dataMap.get(id);
   const sync = reason !== 'sync';
   const uuid = style._id;
@@ -390,7 +395,9 @@ export async function setOrder(value) {
 
 /** @returns {Promise<void>} */
 export async function toggle(id, enabled) {
-  const style = getById(id);
+  const {style} = dataMap.get(id) || {};
+  if (!style)
+    return 0;
   style.enabled = !!enabled;
   await save(style, 'toggle');
 }
@@ -403,8 +410,8 @@ export async function toggleMany(ids, enabled) {
   const styles = [];
   let errors;
   for (let i = 0; i < ids.length; i++) {
-    try {
-      const {style} = dataMap.get(+ids[i]) || {};
+    const {style} = dataMap.get(ids[i]) || {};
+    if (style) try {
       onBeforeSave(style);
       style.enabled = !!(Array.isArray(enabled) ? enabled[i] : enabled);
       styles.push(style);
@@ -428,7 +435,9 @@ export async function toggleMany(ids, enabled) {
  * @returns {Promise<void>}
  */
 export function toggleSiteOvr(id, val, type, isAdd) {
-  const style = dataMap.get(id).style;
+  const style = dataMap.get(id)?.style;
+  if (!style)
+    return 0;
   if (toggleSiteOvrImpl(style, val, type, isAdd) + toggleSiteOvrImpl(style, val, !type, false)) {
     urlCache.updateSections(id);
     return save(style, 'config', {
