@@ -130,6 +130,10 @@ function StyleSettings(ui) {
   }
 
   function saveValue({dom = 'value', get = PASS, key}, el) {
+    if (!style.id) {
+      style[key] = get(el[dom]);
+      return;
+    }
     return API.styles.config(style.id, key, get(el[dom]));
   }
 

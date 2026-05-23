@@ -1,5 +1,5 @@
 import {UCD} from '@/js/consts';
-import {deepCopy, mapObj, RX_META, t} from '@/js/util';
+import {deepCopy, makeUserCssFindFilter, RX_META, t} from '@/js/util';
 import download from './download';
 import * as styleMan from './style-manager';
 import {worker} from './util';
@@ -122,13 +122,15 @@ export async function editSave(style, msg) {
 }
 
 /**
- * @param {Object} data - style object or usercssData
- * @return {StyleObj|void}
+ * @param {StyleObj | UsercssData} data
+ * @param {boolean} [returnBoolean]
+ * @return {StyleObj | void}
  */
-export function find(data) {
-  if (data.id) return styleMan.get(data.id);
-  const filter = mapObj(data[UCD] || data, null, ['name', 'namespace']);
-  return styleMan.find(filter, UCD);
+export function find(data, returnBoolean) {
+  const res = data.id
+    ? styleMan.get(data.id)
+    : styleMan.find(makeUserCssFindFilter(data[UCD] || data), UCD);
+  return returnBoolean ? !!res : res;
 }
 
 export function getVersion(data) {

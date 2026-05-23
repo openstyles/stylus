@@ -5,7 +5,7 @@ import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleToCss} from '@/js/sections-util';
-import {NOP, RX_META, t} from '@/js/util';
+import {makeUserCssFindFilter, NOP, RX_META, t} from '@/js/util';
 import {CodeMirror} from '@/cm';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';
@@ -27,6 +27,7 @@ export default function SourceEditor() {
   `.replace(/^\s+/gm, '');
   let savedGeneration;
   let prevMode = NaN;
+  let /** @type {Promise} */ pendingMeta;
   let prevSel;
   let updateTocFocusPending;
 
@@ -59,6 +60,7 @@ export default function SourceEditor() {
     style[UCD] = meta;
     style.name = meta.name;
     style.url = meta.homepageURL || style.installationUrl;
+    pendingMeta = null;
     updateMeta();
   });
   const kToc = 'editor.toc.expanded';
@@ -89,11 +91,7 @@ export default function SourceEditor() {
     getEditors: () => [cm],
     getEditorTitle: () => '',
     getValue: asObject => asObject
-      ? {
-        customName: style.customName,
-        enabled: style.enabled,
-        sourceCode: cm.getValue(),
-      }
+      ? {...style, sourceCode: cm.getValue()}
       : cm.getValue(),
     getSearchableInputs: () => [],
     isSame: styleObj => styleObj.sourceCode === cm.getValue(),
@@ -108,15 +106,15 @@ export default function SourceEditor() {
       }
     },
     async saveImpl() {
-      const sourceCode = cm.getValue();
+      const {id} = style;
       let res;
       try {
-        const {customName, enabled, id} = style;
-        res = !id && await API.usercss.build({sourceCode, checkDup: true, metaOnly: true});
-        if (res && res.dup) {
+        if (pendingMeta)
+          await pendingMeta;
+        if (!id && await API.usercss.find({id, [UCD]: makeUserCssFindFilter(style[UCD])})) {
           messageBox.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
         } else {
-          res = await API.usercss.editSave({customName, enabled, id, sourceCode}, editor.msg);
+          res = await API.usercss.editSave(editor.getValue(true), editor.msg);
           // Awaiting inside `try` so that exceptions go to our `catch`
           await replaceStyle(res.style);
           if ((res.badRe = getBadRegexps(res.style))) {
@@ -135,7 +133,7 @@ export default function SourceEditor() {
   cm.on('changes', (_, changes) => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
     editor.livePreviewLazy(updateLivePreview);
-    metaCompiler(changes);
+    pendingMeta = metaCompiler(changes);
   });
   cm.on('optionChange', (_cm, option) => {
     if (option !== 'mode') return;
