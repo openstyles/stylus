@@ -8,24 +8,14 @@ import {pingTab, sendTab} from './broadcast';
 import {bgBusy, onUrlChange} from './common';
 import {tabCache} from './tab-manager';
 
-/** @type {{ url: chrome.events.UrlFilter[] }} */
-const WEBNAV_FILTER_STYLABLE = {
-  url: [
-    {schemes: ['http', 'https', 'file', 'ftp', 'ftps']},
-    {urlPrefix: ownRoot},
-  ],
-};
 export const kCommitted = 'committed';
 /** @type {{[url: string]: number[]}} */
 export const ownPagesCommitted = {};
 let prevData = {};
 
-webNavigation.onCommitted.addListener(onNavigation.bind(null, kCommitted),
-  WEBNAV_FILTER_STYLABLE);
-webNavigation.onHistoryStateUpdated.addListener(onNavigation.bind(null, 'history'),
-  WEBNAV_FILTER_STYLABLE);
-webNavigation.onReferenceFragmentUpdated.addListener(onNavigation.bind(null, 'hash'),
-  WEBNAV_FILTER_STYLABLE);
+webNavigation.onCommitted.addListener(onNavigation.bind(null, kCommitted));
+webNavigation.onHistoryStateUpdated.addListener(onNavigation.bind(null, 'history'));
+webNavigation.onReferenceFragmentUpdated.addListener(onNavigation.bind(null, 'hash'));
 
 async function onNavigation(navType, data) {
   if ((__.B_CHROME || __.B_ANY && CHROME) &&
