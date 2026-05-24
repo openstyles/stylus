@@ -9,6 +9,7 @@ import {bgBusy} from './common';
 import {db} from './db';
 import download from './download';
 import * as styleMan from './style-manager';
+import {styleMap} from './style-manager/util';
 import * as usercssMan from './usercss-manager';
 import {getEmbeddedMeta, toUsercss} from './uso-api';
 
@@ -66,7 +67,7 @@ export async function checkAllStyles({
   schedule();
   checkingAll = true;
   const port = observe && chrome.runtime.connect({name: 'updater'});
-  const styles = styleMan.getAll().filter(s =>
+  const styles = [...styleMap.values()].filter(s =>
     s.updateUrl &&
     s.updatable !== false &&
     (!onlyEnabled || s.enabled));

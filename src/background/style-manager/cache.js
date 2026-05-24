@@ -2,7 +2,7 @@ import {kExclusions, kInclusions, kOverridden, kTabOvr} from '@/js/consts';
 import {styleCodeEmpty} from '@/js/sections-util';
 import {themeAllowsStyle} from '../color-scheme';
 import {urlMatchOverride, urlMatchSection} from './matcher';
-import {dataMap} from './util';
+import {styleMap, stylePreviewMap} from './util';
 
 const MAX = 1000;
 /** @type {Map<string,Injection.Cache>} */
@@ -22,16 +22,18 @@ export function add(url, val) {
  */
 export function create(url, cache, maybe, tabOvr) {
   const query = {url};
-  for (let entry of maybe || dataMap.values()) {
+  for (let style of maybe || styleMap.values()) {
+    let forced, id, isIncluded, v;
     if (maybe) {
-      if (maybe.delete(entry) && !maybe.size)
+      id = style;
+      if (maybe.delete(id) && !maybe.size)
         cache.maybe = null;
-      if (!(entry = dataMap.get(entry)))
+      if (!(style = styleMap.get(id)))
         continue;
+    } else {
+      id = style.id;
     }
-    let forced, isIncluded, v;
-    const style = entry.preview || entry.style;
-    const id = style.id;
+    style = stylePreviewMap.get(id) || style;
     if (style.enabled
       && themeAllowsStyle(style)
       && (!(v = style[kExclusions]) || !v.length || !v.some(urlMatchOverride, query))

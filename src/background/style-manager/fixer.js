@@ -5,7 +5,7 @@ import * as syncMan from '../sync-manager';
 import * as usercssMan from '../usercss-manager';
 import {save} from '.';
 import {updateSections} from './cache';
-import {broadcastStyleUpdated, dataMap, storeInMap} from './util';
+import {broadcastStyleUpdated, styleMap, storeInMap} from './util';
 
 /** uuidv4 helper: converts to a 4-digit hex string and adds "-" at required positions */
 const hex4 = num => (num < 0x1000 ? num + 0x10000 : num).toString(16).slice(-4);
@@ -115,13 +115,13 @@ export function inferHomepage(style) {
 export async function inferHomepages() {
   const toWrite = [];
   let skip, style;
-  for ({style} of dataMap.values())
+  for (style of styleMap.values())
     if (inferHomepage(style))
       toWrite.push([style.id, style._rev]);
   for (const [id, rev] of toWrite) {
     if (!skip)
       await sleep(50);
-    if (!(skip = !(style = dataMap.get(id)?.style))
+    if (!(skip = !(style = styleMap.get(id)))
       && (rev === style._rev || inferHomepage(style))) {
       await save(style, false, undefined, /*alreadyFixed=*/true);
     }
@@ -141,17 +141,13 @@ export function onBeforeSave(style) {
  * @returns {StyleObj}
  */
 export function onSaved(style, reason, id = style.id, msg) {
-  if (style.id == null) style.id = id;
-  const data = dataMap.get(id);
-  if (!data) {
-    storeInMap(style);
-  } else {
-    data.style = style;
-  }
+  const isNew = !styleMap.has(id);
+  style.id ??= id;
+  storeInMap(style);
   if (reason !== false) {
-    broadcastStyleUpdated(style, reason, !data, msg);
+    broadcastStyleUpdated(style, reason, isNew, msg);
   } else {
-    updateSections(style.id);
+    updateSections(id);
   }
   if (reason !== 'sync') {
     syncMan.putDoc(style);

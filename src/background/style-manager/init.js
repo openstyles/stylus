@@ -9,7 +9,7 @@ import {bgBusy, bgInit, onSchemeChange} from '../common';
 import {db, draftsDB, execMirror, prefsDB} from '../db';
 import './init';
 import {fixKnownProblems} from './fixer';
-import {broadcastStyleUpdated, dataMap, setOrderImpl, storeInMap} from './util';
+import {broadcastStyleUpdated, setOrderImpl, storeInMap, styleMap, stylePreviewMap} from './util';
 
 bgInit.push(async () => {
   __.DEBUGLOG('styleMan init...');
@@ -35,7 +35,7 @@ bgInit.push(async () => {
 });
 
 onSchemeChange.add(() => {
-  for (const {style} of dataMap.values()) {
+  for (const style of styleMap.values()) {
     if (colorScheme.SCHEMES.includes(style.preferScheme)) {
       broadcastStyleUpdated(style, 'colorScheme');
     }
@@ -55,10 +55,10 @@ onDisconnect.livePreview = port => {
   ignoreChromeError();
   if (__.MV3) port[kResolve]();
   const id = +port.name.split(':')[1];
-  const data = dataMap.get(id);
-  if (!data) return;
-  data.preview = null;
-  broadcastStyleUpdated(data.style, 'editPreviewEnd');
+  const style = styleMap.get(id);
+  if (!style) return;
+  stylePreviewMap.delete(id);
+  broadcastStyleUpdated(style, 'editPreviewEnd');
 };
 
 if (__.MV3) {

@@ -22,7 +22,7 @@ import {setPrefs} from './prefs-api';
 import setClientData from './set-client-data';
 import * as styleMan from './style-manager';
 import {inferHomepages} from './style-manager/fixer';
-import {dataMap} from './style-manager/util';
+import {styleMap} from './style-manager/util';
 import initStyleViaApi from './style-via-api';
 import './style-via-webrequest';
 import * as syncMan from './sync-manager';
@@ -131,7 +131,7 @@ async function onStartup() {
   }
   if (bgBusy)
     await bgBusy;
-  mirrorStorage(dataMap);
+  mirrorStorage(styleMap);
 }
 
 onMessage.set((m, sender) => {

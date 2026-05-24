@@ -4,7 +4,7 @@ import {
 } from '@/js/consts';
 import {__values} from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
-import {calcObjSize, isEmptyObj, mapObj} from '@/js/util';
+import {calcObjSize, isEmptyObj, mapObj, NOP} from '@/js/util';
 import {broadcast, broadcastExtension, sendTab} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {uuidIndex} from '../common';
@@ -20,8 +20,8 @@ import './init';
 import {onBeforeSave, onSaved} from './fixer';
 import {matchOverrides, urlMatchOverride, urlMatchSection} from './matcher';
 import {
-  broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, mergeWithMapped, order,
-  orderWrap, setOrderImpl, toggleSiteOvrImpl,
+  broadcastStyleUpdated, calcRemoteId, getById, getByUuid, mergeWithMapped, order, orderWrap,
+  setOrderImpl, styleMap, stylePreviewMap, toggleSiteOvrImpl,
 } from './util';
 
 export * from '../style-search-db';
@@ -29,11 +29,11 @@ export {getById as get, matchOverrides};
 
 /** @returns {Promise<void>} */
 export async function config(id, prop, value) {
-  const {style, preview: pv} = dataMap.get(id) || {};
+  const style = styleMap.get(id);
   if (!style)
     return 0;
   style[prop] = value;
-  if (pv) pv[prop] = value;
+  (stylePreviewMap.get(id) || {})[prop] = value;
   if (prop === kInclusions || prop === kOverridden || prop === kExclusions)
     urlCache.updateSections(id);
   await save(style, 'config');
@@ -43,13 +43,13 @@ export async function config(id, prop, value) {
 export function editSave(style, msg) {
   style = mergeWithMapped(style);
   style.updateDate = Date.now();
-  draftsDB.delete(style.id).catch(() => {});
+  draftsDB.delete(style.id).catch(NOP);
   return save(style, 'editSave', msg);
 }
 
 /** @returns {StyleObj|void} */
 export function find(filter, subkey) {
-  for (const {style} of dataMap.values()) {
+  for (const style of styleMap.values()) {
     let obj = subkey ? style[subkey] : style;
     if (!obj) continue;
     for (const key in filter) {
@@ -62,7 +62,7 @@ export function find(filter, subkey) {
   }
 }
 
-export const getAll = () => Array.from(dataMap.values(), v => v.style);
+export const getAll = () => [...styleMap.values()];
 
 /** @returns {{[type: string]: string[]}}>} */
 export const getOrder = () => orderWrap.value;
@@ -70,8 +70,8 @@ export const getOrder = () => orderWrap.value;
 /** @returns {{[type: string]: StyleObj[]}}>} */
 export function getAllOrdered(keys) {
   const res = mapObj(orderWrap.value, group => group.map(getByUuid).filter(Boolean));
-  if (res.main.length + res.prio.length < dataMap.size) {
-    for (const {style} of dataMap.values()) {
+  if (res.main.length + res.prio.length < styleMap.size) {
+    for (const style of styleMap.values()) {
       if (!(style.id in order.main) && !(style.id in order.prio)) {
         res.main.push(style);
       }
@@ -118,7 +118,7 @@ export function getByUrl(url, id, tabId, needsOvrs) {
   const td = tabCache[tabId];
   const tabOverrides = td?.[kTabOvr];
   const tabCSP = td?.[pPatchCsp];
-  for (const {style} of id ? [dataMap.get(id)].filter(Boolean) : dataMap.values()) {
+  for (const style of id ? [styleMap.get(id)].filter(Boolean) : styleMap.values()) {
     let ovr;
     let matching;
     /** Make sure to use the same logic in getAppliedCode and getByUrl
@@ -169,7 +169,7 @@ export function getByUrl(url, id, tabId, needsOvrs) {
  */
 export function getCore({id, sections, size, src, vars} = {}) {
   const res = [];
-  for (let {style} of id ? [dataMap.get(id)].filter(Boolean) : dataMap.values()) {
+  for (let style of id ? [styleMap.get(id)].filter(Boolean) : styleMap.values()) {
     style = {...style};
     let tmp;
     if (size)
@@ -190,9 +190,11 @@ export function getCore({id, sections, size, src, vars} = {}) {
 /** @returns {[number, boolean] | {[remoteId:string]: [number, boolean]} | '' || 0} */
 export function getRemoteInfo(id) {
   if (id)
-    return !(id = dataMap.get(id)) ? 0 : calcRemoteId(id.style);
+    return styleMap.has(id)
+      ? calcRemoteId(styleMap.get(id))
+      : 0;
   const res = {};
-  for (const {style} of dataMap.values()) {
+  for (const style of styleMap.values()) {
     const [rid, vars] = calcRemoteId(style);
     if (rid) res[rid] = [style.id, vars];
   }
@@ -289,7 +291,7 @@ export async function importMany(items) {
     r = res[i];
     if (!r.err) {
       const id = events[r];
-      const isNew = !dataMap.has(id);
+      const isNew = !styleMap.has(id);
       const style = onSaved(styles[r], false, id);
       messages.push([style, 'import', isNew]);
       res[i] = {
@@ -303,7 +305,7 @@ export async function importMany(items) {
 }
 
 /** @returns {Promise<StyleObj>} */
-export async function install(style, reason = dataMap.has(style.id) ? 'update' : 'install') {
+export async function install(style, reason = styleMap.has(style.id) ? 'update' : 'install') {
   style = mergeWithMapped(style);
   style.originalDigest = await calcStyleDigest(style);
   // FIXME: update updateDate? what about usercss config?
@@ -322,7 +324,7 @@ export async function preview(style) {
     delete res.style.enabled;
     Object.assign(style, res.style);
   }
-  dataMap.get(style.id).preview = style;
+  stylePreviewMap.set(style.id, style);
   broadcastStyleUpdated(style, 'editPreview');
   return res.log;
 }
@@ -334,14 +336,15 @@ export async function preview(style) {
  * @returns {number} style id
  */
 export function remove(id, reason, many) {
-  if (!dataMap.has(id))
+  if (!styleMap.has(id))
     return 0;
-  const {style} = dataMap.get(id);
+  const style = styleMap.get(id);
   const sync = reason !== 'sync';
   const uuid = style._id;
   if (sync) syncMan.remove(uuid, Date.now());
   urlCache.updateSections(id, true);
-  dataMap.delete(id);
+  styleMap.delete(id);
+  stylePreviewMap.delete(id);
   uuidIndex.delete(uuid);
   if (!many) {
     db.delete(id);
@@ -354,7 +357,7 @@ export function remove(id, reason, many) {
     setOrderImpl(orderWrap, {calc: false});
   }
   if (style._usw && style._usw.token) {
-    // Must be called after the style is deleted from dataMap
+    // Must be called after the style is deleted from styleMap
     uswApi.revoke(id);
   }
   broadcast({
@@ -395,7 +398,7 @@ export async function setOrder(value) {
 
 /** @returns {Promise<void>} */
 export async function toggle(id, enabled) {
-  const {style} = dataMap.get(id) || {};
+  const style = styleMap.get(id) || {};
   if (!style)
     return 0;
   style.enabled = !!enabled;
@@ -410,7 +413,7 @@ export async function toggleMany(ids, enabled) {
   const styles = [];
   let errors;
   for (let i = 0; i < ids.length; i++) {
-    const {style} = dataMap.get(ids[i]) || {};
+    const style = styleMap.get(ids[i]) || {};
     if (style) try {
       onBeforeSave(style);
       style.enabled = !!(Array.isArray(enabled) ? enabled[i] : enabled);
@@ -435,7 +438,7 @@ export async function toggleMany(ids, enabled) {
  * @returns {Promise<void>}
  */
 export function toggleSiteOvr(id, val, type, isAdd) {
-  const style = dataMap.get(id)?.style;
+  const style = styleMap.get(id);
   if (!style)
     return 0;
   if (toggleSiteOvrImpl(style, val, type, isAdd) + toggleSiteOvrImpl(style, val, !type, false)) {
@@ -460,15 +463,15 @@ export function toggleTabOvrMany(tabId, overrides) {
   for (const key in overrides) {
     const id = +key;
     const val = overrides[key];
-    const data = dataMap.get(id);
+    const style = styleMap.get(id);
     const dirty = tabOvr[key] != val; // eslint-disable-line eqeqeq
-    if (!data || !dirty) continue;
+    if (!style || !dirty) continue;
     if (val == null) delete tabOvr[key]; else tabOvr[key] = val;
     if (cache) (cache.maybe ??= new Set()).add(id);
     messages.push({
       method: 'styleUpdated',
       reason: kTabOvr,
-      style: {id, enabled: val ?? data.style.enabled},
+      style: {id, enabled: val ?? style.enabled},
     });
   }
   if (td[kTabOvr] || !isEmptyObj(tabOvr) || (tabOvr = undefined, true)) {

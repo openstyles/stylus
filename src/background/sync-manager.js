@@ -11,7 +11,7 @@ import {cloudDrive, dbToCloud} from './db-to-cloud-broker';
 import {overrideBadge} from './icon-manager';
 import * as styleMan from './style-manager';
 import {onSaved} from './style-manager/fixer';
-import {getByUuid} from './style-manager/util';
+import {getByUuid, styleMap} from './style-manager/util';
 import {getToken, revokeToken} from './token-manager';
 
 export {getToken};
@@ -209,7 +209,7 @@ function initController() {
         styleMan.remove(id, 'sync');
     },
     onFirstSync() {
-      for (const i of Object.values(uuidIndex.custom).concat(styleMan.getAll())) {
+      for (const i of Object.values(uuidIndex.custom).concat([...styleMap.values()])) {
         ctrl.put(i._id, i._rev);
       }
     },

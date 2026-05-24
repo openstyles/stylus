@@ -2,7 +2,7 @@ import {kExclusions, kInclusions} from '@/js/consts';
 import {styleCodeEmpty} from '@/js/sections-util';
 import {ownRoot} from '@/js/urls';
 import {globAsRegExpStr, RX_MAYBE_REGEXP, tryURL} from '@/js/util';
-import {getById} from './util';
+import {styleMap} from './util';
 
 const BAD_MATCHER = /^$/;
 const EXT_RE = /\bextension\b/;
@@ -59,7 +59,7 @@ function compile(text) {
  * @return {string}
  */
 export function matchOverrides(what, url) {
-  if (+what) what = getById(what);
+  if (+what) what = styleMap.get(what);
   url = {url};
   const inc = what[kInclusions]?.filter(urlMatchOverride, url).join('\n+');
   const exc = what[kExclusions]?.filter(urlMatchOverride, url).join('\n-');

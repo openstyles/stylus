@@ -8,8 +8,10 @@ import {prefsDB} from '../db';
 import * as syncMan from '../sync-manager';
 import {updateSections} from './cache';
 
-/** @type {StyleDataMap} */
-export const dataMap = new Map();
+/** @type {Map<number,StyleObj>} */
+export const styleMap = new Map();
+/** @type {Map<StyleObj,StyleObj>} */
+export const stylePreviewMap = new Map();
 
 export const order = /** @type {Injection.Order} */{main: {}, prio: {}};
 export const orderWrap = {
@@ -30,21 +32,18 @@ export function calcRemoteId({md5Url, updateUrl, [UCD]: ucd} = {}) {
   ];
 }
 
-/** @returns {StyleObj} */
-const createNewStyle = () => ({
-  enabled: true,
-  installDate: Date.now(),
-});
+/** @returns {StyleObj|void} */
+export const getById = id => styleMap.get(+id);
 
 /** @returns {StyleObj|void} */
-export const getById = id => dataMap.get(+id)?.style;
-
-/** @returns {StyleObj|void} */
-export const getByUuid = uuid => getById(uuidIndex.get(uuid));
+export const getByUuid = uuid => styleMap.get(uuidIndex.get(uuid));
 
 /** @returns {StyleObj} */
 export const mergeWithMapped = style => ({
-  ...getById(style.id) || createNewStyle(),
+  ...styleMap.get(style.id) || {
+    enabled: true,
+    installDate: Date.now(),
+  },
   ...style,
 });
 
@@ -95,13 +94,12 @@ export async function setOrderImpl(data, {
   }
 }
 
-/** @returns {void} */
+/** @param {StyleObj} style */
 export function storeInMap(style) {
-  dataMap.set(style.id, {
-    style,
-    urls: new Set(),
-  });
-  uuidIndex.set(style._id, style.id);
+  const {id} = style;
+  styleMap.set(id, style);
+  stylePreviewMap.delete(id);
+  uuidIndex.set(style._id, id);
 }
 
 export function toggleSiteOvrImpl(style, val, type, add) {

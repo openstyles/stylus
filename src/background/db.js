@@ -259,13 +259,13 @@ export async function execMirror(dbName, method, a, b) {
   }
 }
 
-export async function mirrorStorage(dataMap) {
+export async function mirrorStorage(styleMap) {
   let val;
   let keys = await execMirror(DB, 'getAllKeys');
   if (!keys)
     return;
   keys = new Set(keys);
-  for (const {style} of dataMap.values()) {
+  for (const style of styleMap.values()) {
     if (!keys.has(style.id)) {
       await sleep0();
       await execMirror(DB, 'put', style);

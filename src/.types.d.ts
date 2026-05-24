@@ -53,13 +53,6 @@ declare interface StyleObj {
   _usw?: USWorldData;
 }
 
-type StyleDataMap = Map<number, StyleDataMapEntry>;
-
-declare interface StyleDataMapEntry {
-  style: StyleObj;
-  preview?: StyleObj;
-}
-
 declare interface StyleSection {
   code: string[];
   /** Non-enumerable, added internally on demand in styleMan */
