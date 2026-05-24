@@ -1,10 +1,10 @@
 import {kSidebar, pFavicons, pFaviconsGray} from '@/js/consts';
 import {isTab} from '@/js/msg-api';
 import {ownRoot} from '@/js/urls';
-import {mapObj, t} from '@/js/util';
+import {t} from '@/js/util';
 import {MF} from '@/js/util-webext';
-import {$toggleClasses, header, isSidebar, isTouch} from './dom';
-import {getCssMediaRuleByName, important} from './dom-util';
+import {$create, $toggleClasses, header, isSidebar, isTouch} from './dom';
+import {getCssMediaRuleByName} from './dom-util';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
 import './msg-init';
@@ -13,6 +13,7 @@ import './util-webext';
 import '@/content/apply'; // must run after msg (swaps `API`) and util-webext (exposes _deepCopy)
 
 export let mqCompact;
+let elError, elErrorLink;
 
 prefs.subscribe('disableAll', (_, val) => {
   $rootCL.toggle('all-disabled', val);
@@ -79,99 +80,48 @@ window.onerror = window.onunhandledrejection = showUnhandledError;
 
 export function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params */) {
   err = err.reason || err; // for onunhandledrejection
-  // (c) tophf: reusing the function I wrote for Violentmonkey (MIT license)
-  const id = 'unhandledError';
-  const fontSize = 12;
-  const elOld = $id(id);
-  const el = elOld || $tag('div');
-  const elText = el.$('textarea') || $tag('textarea');
-  const elLink = el.$('a') || $tag('a');
-  const old = elText.value;
-  const cur = (
-    [(__.B_FIREFOX || __.B_ANY && FIREFOX) && err.message, err.stack]
-      .filter(Boolean).join('\n')
-    || `${err}`
-  ).trim().split(ownRoot).join('');
-  const i = old.indexOf(cur);
-  const text = elText.value = i < 0
-    ? [old, cur].filter(Boolean).join('\n\n')
-    : old.slice(0, i).replace(/\((\d+) times\) $|$/, (s, num) => `(${++num || 1} times) `) +
-      old.slice(i);
-  const lines = text.split('\n');
-  const height = fontSize * (lines.length + .5);
-  const maxLen = lines.map(s => 1e9 + s.length).sort().pop() - 1e9;
+  if (!elError) {
+    elError = $tag('div');
+    elError.id = 'unhandledError';
+    const elCopy = $create('a', {tabIndex: 0, title: t('copy')});
+    const elClose = $create('a', {tabIndex: 0, title: t('confirmClose')});
+    elCopy.append($create('i.i-copy'));
+    elClose.append($create('i.i-close'));
+    elErrorLink = $create('a', {target: '_blank', rel: 'noopener'}, t('reportBug'));
+    elError.append(elErrorLink, elCopy, elClose);
+    elError.onclick = ({target}) => {
+      if (target === elError || target.closest('details'))
+        return;
+      if (target === elCopy)
+        navigator.clipboard.writeText(formattedText);
+      elError.remove();
+    };
+  }
+  const msg = (`${err.message || err}`).trim().split(ownRoot).join('') + '\n';
+  let el = [].find.call(elError.$$('summary'), s => s.innerText === msg);
+  if (el) {
+    el.dataset.num = (+el.dataset.num || 1) + 1;
+  } else {
+    elError.appendChild($tag('details')).append(
+      el = $create('summary', msg),
+      err.stack?.replace(msg, '') || '',
+    );
+  }
   const parent = $root;
-  const formattedText = '```\n' + elText.value + '\n```\n\n' +
+  const formattedText = '```\n' +
+    [].map.call(elError.$$('details'), _ => _.innerText).join('\n\n') +
+    '\n```\n\n' +
     navigator.userAgent.replace(
       /^.*\((\S+)\s+\D*(\d+).*?\)[^(]+[^)]+\)\s+(.+?)\/(\d+).*/,
       '- OS: $1 $2\n- Browser: $3 $4\n') +
     `- Stylus: ${MF.version} (MV${__.MV3 ? 3 : 2})\n`;
   const shownBody = '...';
-  let oldStyle = parent._style ??= mapObj(parent.style, null, ['minHeight', 'minWidth']);
-  el.id = id;
-  // using an inline style because we don't know if our CSS is loaded at this stage
-  el.style.cssText = `\
-    position:fixed;
-    z-index:${1e9};
-    left:0;
-    right:0;
-    bottom:0;
-    background:darkred;
-    transition:opacity .25s;
-    color:#fff;
-    border-top: 2px solid #fff;
-    padding: 1ex 1em;
-    font: ${fontSize}px/1 sans-serif;
-    box-sizing: content-box;
-    display: flex;
-    flex-flow: wrap;
-    align-items: center;
-    gap: 4px 1rem;
-  `.replace(/;/g, '!important;');
-  elLink.href = (
-    elLink.title = 'https://github.com/openstyles/stylus/issues/new?' + new URLSearchParams({
+  elErrorLink.href = (
+    elErrorLink.title = 'https://github.com/openstyles/stylus/issues/new?' + new URLSearchParams({
       title: `${location.pathname.slice(1, -5/*drop ".html"*/)}: Unhandled error ${err.message}`,
       labels: 'bug',
       body: shownBody,
     })
   ).slice(0, -shownBody.length) + encodeURIComponent(formattedText);
-  if (!elOld) {
-    const inherited = `font: inherit; color: inherit;`;
-    const elClose = $tag('button');
-    const elCopy = $tag('i');
-    elText.readOnly = true;
-    elText.spellcheck = false;
-    elText.style.cssText = important(inherited + `\
-      background: none;
-      flex: 1 1 auto;
-      height: ${height}px;
-      max-height: 50vh;
-      border: none;
-      resize: none;
-    `);
-    elCopy.className = 'i-copy';
-    elCopy.title = t('copy');
-    elCopy.style.cssText = important(`\
-      color: inherit;
-      cursor: copy;
-    `);
-    elClose.append(t('confirmClose'));
-    elLink.append(t('reportBug'));
-    el.onclick = ({target}) => {
-      if (target === el || target === elText)
-        return;
-      if (target === elCopy)
-        navigator.clipboard.writeText(formattedText);
-      el.remove();
-      Object.assign(parent.style, oldStyle);
-      oldStyle = parent._style = null;
-    };
-    elLink.target = '_blank';
-    elLink.rel = 'noopener';
-    elLink.style.cssText = important(inherited);
-    el.append(elLink, elCopy, elClose, elText);
-  }
-  parent.style.minHeight = height * 2 + 'px';
-  parent.style.minWidth = maxLen * fontSize * .5 + 'px';
-  parent.appendChild(el);
+  parent.appendChild(elError);
 }

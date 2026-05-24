@@ -11,6 +11,7 @@
 :root {
   --family: Arial, "Helvetica Neue", Helvetica, system-ui, sans-serif;
   --font-size: 12px;
+  --font: normal var(--font-size) var(--family);
   --icon-font-size: 20px;
   --input-height: 24px;
   --cmin: hsl(0, 0%, 00%);
@@ -51,7 +52,7 @@
   }
 }
 body {
-  font: normal var(--font-size) var(--family);
+  font: var(--font);
   background-color: var(--bg);
   color: var(--fg);
   margin: 0;
@@ -507,6 +508,52 @@ body {
   & > :hover {
     background-color: hsla(180deg, 50%, 50%, .25);
     color: var(--fg);
+  }
+}
+
+#unhandledError {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: darkred;
+  color: #fff;
+  border-top: 2px solid #fff;
+  transition: opacity .25s;
+  padding: 1ex 1em;
+  font: var(--font);
+  line-height: 1;
+  box-sizing: content-box;
+  display: flex;
+  flex-flow: wrap;
+  align-items: center;
+  gap: 4px 1rem;
+  details {
+    white-space: pre-wrap;
+  }
+  summary {
+    &:hover {
+      color: inherit;
+      text-decoration: underline;
+    }
+    &[data-num]::before {
+      content: '[' attr(data-num) 'x] ';
+    }
+  }
+  a {
+    font: inherit;
+    color: inherit;
+    &:hover {
+      color: yellow;
+    }
+  }
+  i {
+    color: inherit;
+  }
+  .i-copy {
+    cursor: copy;
+    font-size: var(--icon-font-size);
   }
 }
 
