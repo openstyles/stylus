@@ -75,7 +75,7 @@ export default async function setClientData({
   const pagesForUrl = ownPagesCommitted[pageUrl];
   const tabId = pagesForUrl?.shift();
   const sender = {frameId, tab: {id: tabId, url: pageUrl}};
-  const jobs = /** @namespace StylusClientData */ Object.assign({
+  const jobs = Object.assign(/** @namespace StylusClientData */ {
     apply: styleMan.getSectionsByUrl.call({sender}, pageUrl, {init: true}),
     dark: isDark,
     favicon: __.B_FIREFOX || __.B_ANY && FIREFOX || (isVivaldi ?? vivaldiTest()),

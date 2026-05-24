@@ -75,7 +75,7 @@ async function init() {
   if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
   let data;
   if (__.ENTRY && (data = global[__.CLIENT_DATA])) {
-    data = (/**@type{StylusClientData}*/__.MV3 ? data : await data).apply;
+    data = (/**@type{StylusClientData}*/data.then ? await data : data).apply;
   } else {
     data = isFrameNoUrl && !FF && clone(parent[parent.Symbol.for(SYM_ID)]);
     if (data) await new Promise(onFrameElementInView);
