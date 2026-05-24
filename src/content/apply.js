@@ -74,12 +74,15 @@ addEventListener(kPageShow, onBFCache);
 async function init() {
   if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
   let data;
-  if (__.ENTRY && (data = global[__.CLIENT_DATA])) {
-    data = (/**@type{StylusClientData}*/data.then ? await data : data).apply;
+  if (__.ENTRY) {
+    data = (data = global[__.CLIENT_DATA])
+      && (/**@type{StylusClientData}*/data.then ? await data : data).apply;
+  } else if ((
+    data = isFrameNoUrl && !FF && clone(parent[parent.Symbol.for(SYM_ID)])
+  )) {
+    await new Promise(onFrameElementInView);
   } else {
-    data = isFrameNoUrl && !FF && clone(parent[parent.Symbol.for(SYM_ID)]);
-    if (data) await new Promise(onFrameElementInView);
-    else data = !__.ENTRY && !isFrameSameOrigin && !isXml && getStylesViaXhr();
+    data = !isFrameSameOrigin && !isXml && getStylesViaXhr();
     // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
   }
   if (!runtime.id)

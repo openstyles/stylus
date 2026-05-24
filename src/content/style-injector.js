@@ -148,6 +148,8 @@ function replaceAss(readd) {
 
 export function apply({cfg, sections}, isReplace) {
   if (cfg) updateConfig(cfg);
+  if (!sections)
+    return;
   const ids = isReplace && new Set();
   for (const style of sections) {
     const {id, code} = style;
