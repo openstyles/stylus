@@ -271,7 +271,7 @@ export default function SourceEditor() {
       e.index >= 0 && cm.posFromIndex(e.index) || // usercss meta parser
       e.offset >= 0 && {line: e.line - 1, ch: e.col - 1} // csslint code parser
     ).filter(Boolean);
-    const pp = errStyle[UCD].preprocessor;
+    const pp = errStyle[UCD]?.preprocessor;
     const ppUrl = editor.ppDemo[pp];
     cm.setSelections(points.map(p => ({anchor: p, head: p})));
     messageBox.show({
