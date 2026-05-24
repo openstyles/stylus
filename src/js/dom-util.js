@@ -156,7 +156,8 @@ export function saveWindowPosition(prefKey) {
  */
 export function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
   // align to the top/bottom of the visible area if wasn't visible
-  if (!element.parentNode) return;
+  if (!element.isConnected)
+    return;
   const {top, height} = element.getBoundingClientRect();
   const {top: parentTop, bottom: parentBottom} = element.parentNode.getBoundingClientRect();
   const windowHeight = window.innerHeight;

@@ -19,8 +19,16 @@ installed.on('click', onEntryClicked);
 installed.on('contextmenu', onEntryClicked);
 installed.on('mouseover', lazyAddEntryTitle, {passive: true});
 installed.on('mouseout', lazyAddEntryTitle, {passive: true});
-window.on('pageshow', handleVisibilityChange);
-window.on('pagehide', handleVisibilityChange);
+window.on('pageshow', e => {
+  if (e.persisted && (e = +sessionStore.justEditedStyleId)) {
+    // TODO: update all elements in-place, not just the last edited style
+    handleUpdateForId(e, {method: 'styleUpdated'});
+    delete sessionStore.justEditedStyleId;
+  }
+});
+window.on('beforeunload', () => {
+  history.replaceState({scrollY: window.scrollY}, document.title, location);
+});
 onMessage.set(m => {
   switch (m.method) {
     case 'styleUpdated':
@@ -226,15 +234,4 @@ function handleUpdate(style, {reason, method} = {}) {
 
 async function handleUpdateForId(id, opts) {
   handleUpdate(await API.styles.getCore({id, sections: true, size: true}), opts);
-}
-
-export function handleVisibilityChange(e) {
-  const id = Number(sessionStore.justEditedStyleId);
-  if (e.type === 'pageshow' && e.persisted && id) {
-    // TODO: update all elements in-place, not just the last edited style
-    handleUpdateForId(id, {method: 'styleUpdated'});
-    delete sessionStore.justEditedStyleId;
-  } else if (e.type === 'pagehide') {
-    history.replaceState({scrollY: window.scrollY}, document.title);
-  }
 }

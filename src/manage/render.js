@@ -95,6 +95,8 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
   const isTable = UI.tableView;
   if (isTable !== partNewUI) createParts(isTable);
   partChecker.checked = style.enabled;
+  // Remember checker state on history back/forward when number of shown styles change
+  partChecker.name = 'c' + style.id;
   partNameLink.firstChild.textContent = breakWord(name);
   partNameLink.href = partEditLink.href = partEditHrefBase + style.id;
   partHomepage.href = partHomepage.title = style.url || '';
@@ -213,8 +215,8 @@ function highlightEditedStyle() {
   const entry = $id(kStyleIdPrefix + sessionStore.justEditedStyleId);
   delete sessionStore.justEditedStyleId;
   if (entry) {
-    animateElement(entry);
-    requestAnimationFrame(() => scrollElementIntoView(entry));
+    scrollElementIntoView(entry);
+    setTimeout(animateElement, 0, entry);
   }
 }
 
@@ -282,7 +284,9 @@ export async function showStyles(styles, matchUrlIds) {
     await new Promise(requestAnimationFrame);
   }
   if (sessionStore.justEditedStyleId)
-    setTimeout(highlightEditedStyle); // delaying to avoid forced layout
+    highlightEditedStyle();
+  else if (scrollY >= 0)
+    window.scrollY = scrollY;
   if (numIconized < numStyles)
     requestIdleCallback(() => renderTargetIcons(installed));
 }

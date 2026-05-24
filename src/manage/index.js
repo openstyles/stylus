@@ -6,7 +6,6 @@ import {onMessage} from '@/js/msg';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import * as syncUtil from '@/js/sync-util';
-import {CHROME} from '@/js/ua';
 import {favicon} from '@/js/urls';
 import {t} from '@/js/util';
 import InjectionOrder from './injection-order';
@@ -39,12 +38,6 @@ import '@/css/target-site.css';
   router.update();
   showStyles(__.MV3 ? JSON.parse(data.styles || '[]') : data.styles || [], data.ids);
   initSyncButton(data.sync || {});
-  if (!__.MV3 && (__.B_CHROME || __.B_ANY && CHROME) && CHROME >= 80 && CHROME <= 88) {
-    // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598
-    window.on('pagehide', () => {
-      $$('input[type=checkbox]').forEach((el, i) => (el.name = `bug${i}`));
-    });
-  }
   import('./import-export');
 })();
 
