@@ -47,6 +47,9 @@ export default function SourceEditor() {
       editor.viewTo = 0;
     },
   });
+  const getStyleValue = asObject => asObject
+    ? {...style, sourceCode: cm.getValue(), sections: undefined, [UCD]: undefined}
+    : cm.getValue();
   const metaCompiler = createMetaCompiler(meta => {
     const {vars} = style[UCD] || {};
     if (vars) {
@@ -90,9 +93,7 @@ export default function SourceEditor() {
     getCurrentLinter,
     getEditors: () => [cm],
     getEditorTitle: () => '',
-    getValue: asObject => asObject
-      ? {...style, sourceCode: cm.getValue()}
-      : cm.getValue(),
+    getValue: getStyleValue,
     getSearchableInputs: () => [],
     isSame: styleObj => styleObj.sourceCode === cm.getValue(),
     prevEditor: nextPrevSection.bind(null, -1),
@@ -106,24 +107,29 @@ export default function SourceEditor() {
       }
     },
     async saveImpl() {
-      const {id} = style;
-      let res;
+      if (pendingMeta)
+        await pendingMeta;
+      let savedStyle;
       try {
-        if (pendingMeta)
-          await pendingMeta;
-        if (!id && await API.usercss.find({id, [UCD]: makeUserCssFindFilter(style[UCD])})) {
+        if (!style.id && await API.usercss.find({
+          id: style.id,
+          [UCD]: makeUserCssFindFilter(style[UCD]),
+        })) {
           messageBox.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
         } else {
-          res = await API.usercss.editSave(editor.getValue(true), editor.msg);
+          const res = await API.usercss.editSave(getStyleValue(true), editor.msg);
+          const badRe = (savedStyle = res.style).sections
+            .flatMap(sec => sec.regexps || [])
+            .map((r, _) => (_ = failRegexp(r)) && `${_}: ${r}`)
+            .filter(Boolean)
+            .join('\n\n');
+          if (badRe) messageBox.alert(badRe, 'danger pre', t('styleBadRegexp'));
+          showLog(res.log);
           // Awaiting inside `try` so that exceptions go to our `catch`
-          await replaceStyle(res.style);
-          if ((res.badRe = getBadRegexps(res.style))) {
-            messageBox.alert(res.badRe, 'danger pre', t('styleBadRegexp'));
-          }
+          await replaceStyle(savedStyle);
         }
-        showLog(res.log);
       } catch (err) {
-        showSaveError(err, res && res.style || style);
+        showSaveError(err, savedStyle || style);
       }
     },
     scrollToEditor: NOP,
@@ -320,19 +326,6 @@ export default function SourceEditor() {
       deltaMode === 2 || shiftKey ? Math.sign(deltaY) * cm.display.scroller.clientHeight :
       // WheelEvent.DOM_DELTA_PIXEL
       deltaY;
-  }
-
-  function getBadRegexps({sections}) {
-    const res = [];
-    for (const {regexps} of sections) {
-      if (regexps) {
-        for (const r of regexps) {
-          const err = failRegexp(r);
-          if (err) res.push(`${err}: ${r}`);
-        }
-      }
-    }
-    return res.join('\n\n');
   }
 
   function getModeName() {
