@@ -148,8 +148,8 @@ const {insertTab, insertSoftTab} = CodeMirror.commands;
   }
 })();
 
-prefs.subscribe(prefKeys, (key, val) => {
-  if (key === THEME_KEY) loadCmTheme(val);
+prefs.subscribe(prefKeys, async (key, val) => {
+  if (key === THEME_KEY) await loadCmTheme(val);
   cmFactory.globalSetOption(prefToCmOpt(key), val);
 });
 
