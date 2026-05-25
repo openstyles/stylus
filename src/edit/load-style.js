@@ -13,10 +13,11 @@ if (location.hash) { // redirected from devtools -> "open in a new tab"
 let id = +urlParams.get('id');
 
 export default __.MV3 && swController
-  && loadStyle(prefs.clientData)
-  || prefs.clientData.then(loadStyle);
+  ? loadStyle(prefs.clientData)
+  : prefs.clientData.then(loadStyle);
 
-function loadStyle({style = makeNewStyleObj(), isUC, si, template}) {
+/** @param {StylusClientData} _ */
+function loadStyle({style = makeNewStyleObj(), isUC, si, template, theme, themeText}) {
   Object.assign(editor.style, style);
   Object.assign(editor, /** @namespace Editor */ {
     template,
@@ -33,7 +34,7 @@ function loadStyle({style = makeNewStyleObj(), isUC, si, template}) {
     const str = `${urlParams}`;
     history.replaceState({}, '', location.pathname + (str ? '?' : '') + str);
   }
-  return loadCmTheme();
+  loadCmTheme(theme, themeText);
 }
 
 function makeNewStyleObj() {

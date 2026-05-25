@@ -1,7 +1,8 @@
-import {kBadFavs, kEditorScrollInfo, kPopup, UCD} from '@/js/consts';
+import {kBadFavs, kEditorScrollInfo, kPopup, pEditorTheme, UCD} from '@/js/consts';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
+import {fetchText, NOP} from '@/js/util';
 import {isDark, setSystemDark} from './color-scheme';
 import {bgBusy, dataHub, isVivaldi, vivaldiTest, WRB, WRBTest} from './common';
 import {stateDB} from './db';
@@ -12,18 +13,25 @@ import * as styleMan from './style-manager';
 import * as syncMan from './sync-manager';
 import * as usercssTemplate from './usercss-template';
 
+const CM_THEMES_TEXT = {};
 const PROVIDERS = {
   edit(url) {
     const id = +url.searchParams.get('id');
     const style = styleMan.get(id);
     const isUC = style ? UCD in style : prefs.__values.newStyleAsUsercss;
     const siKey = kEditorScrollInfo + id;
-    return /** @namespace StylusClientData */ {
+    let v;
+    v = /** @namespace StylusClientData */ {
       style,
       isUC,
       si: style && (__.MV3 ? stateDB.get(siKey) : dataHub.get(siKey)),
       template: !style && isUC && (usercssTemplate.value || usercssTemplate.load()),
+      theme: v = prefs.__values[pEditorTheme],
+      themeText: v !== prefs.__defaults[pEditorTheme] && (
+        CM_THEMES_TEXT[v = `${__.CM_PATH}${v}.css`] ??= fetchText(v).catch(NOP)
+      ),
     };
+    return v;
   },
   manage(url) {
     const sp = url.searchParams;

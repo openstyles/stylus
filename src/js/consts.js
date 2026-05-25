@@ -53,6 +53,7 @@ export const BIT_SYS_DARK = 2;
 
 //#region prefs
 export const pDisableAll = 'disableAll';
+export const pEditorTheme = 'editor.theme';
 export const pExposeIframes = 'exposeIframes';
 export const pKeepAlive = 'keepAlive';
 export const pManageNewUi = 'manage.newUI';

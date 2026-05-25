@@ -1,8 +1,8 @@
 /** Don't use this file in content script context! */
 import {
-  k_busy, kBadFavs, pDisableAll, pExposeIframes, pFavicons, pFaviconsGray, pManageNewUi,
-  pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr, pSync,
-  pUrlInstaller,
+  k_busy, kBadFavs, pDisableAll, pEditorTheme, pExposeIframes, pFavicons, pFaviconsGray,
+  pManageNewUi, pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr,
+  pSync, pUrlInstaller,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {swController} from './msg-init'; // also installs API handler for own pages
@@ -98,7 +98,7 @@ const defaults = {
   'editor.indentWithTabs': false, // smart indent with tabs
   'editor.tabSize': 4,            // tab width, in spaces
   'editor.keyMap': 'default',
-  'editor.theme': 'default',      // CSS theme
+  [pEditorTheme]: 'default',      // CSS theme
   // CSS beautifier
   'editor.beautify': {
     selector_separator_newline: true,

@@ -1,13 +1,14 @@
+import {pEditorTheme} from '@/js/consts';
 import * as prefs from '@/js/prefs';
-import {FIREFOX} from '@/js/ua';
+import {fetchText} from '@/js/util';
 
 /** @type {{ [name: string]: string }} */
 export const THEMES = __.THEMES;
-export const THEME_KEY = 'editor.theme';
-const DEFAULT = 'default';
+export const THEME_KEY = pEditorTheme;
+const DEFAULT = prefs.__defaults[THEME_KEY];
 let EL;
 
-export async function loadCmTheme(name = prefs.__values[THEME_KEY]) {
+export async function loadCmTheme(name = prefs.__values[THEME_KEY], text) {
   let css;
   if (name === DEFAULT) {
     css = '';
@@ -16,27 +17,11 @@ export async function loadCmTheme(name = prefs.__values[THEME_KEY]) {
     name = DEFAULT;
     prefs.set(THEME_KEY, name);
   } else if (!css) {
-    css = `${__.CM_PATH}${name}.css`;
+    css = THEMES[name] = text || await fetchText(`${__.CM_PATH}${name}.css`);
     if (!EL) {
-      if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
-        EL = $tag('link');
-        EL.rel = 'stylesheet';
-      } else {
-        EL = $tag('style');
-      }
+      EL = $tag('style');
       EL.id = 'cm-theme';
       document.head.appendChild(EL);
-    }
-    // Firefox delays visual updates so we can fetch the theme asynchronously
-    if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
-      EL.href = css;
-      await new Promise(resolve => (EL.onload = resolve));
-      css = '';
-    } else {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', css, /*async=*/false);
-      xhr.send();
-      css = THEMES[name] = xhr.response;
     }
   }
   if (EL) EL.textContent = css;
