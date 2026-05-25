@@ -39,6 +39,7 @@ let curDriveName;
 let delayedInit;
 let resolveOnSync;
 let scheduling;
+let starting;
 let syncingNow;
 
 chrome.alarms.onAlarm.addListener(async a => {
@@ -96,7 +97,11 @@ export async function getDriveOptions(driveName) {
   return (await chromeSync.get(key))[key] || {};
 }
 
-export async function start(name = delayedInit) {
+export function start(name = delayedInit) {
+  return (starting ??= doStart(name).finally(() => { starting = null; }));
+}
+
+async function doStart(name) {
   const isInit = name && name === delayedInit;
   const isStop = status.state === STATES.disconnecting;
   delayedInit = false;
