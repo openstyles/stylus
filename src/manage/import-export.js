@@ -6,14 +6,15 @@ import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleJSONseemsValid, styleSectionsEqual} from '@/js/sections-util';
 import {MOBILE} from '@/js/ua';
-import {clipString, debounce, deepEqual, hasOwn, isEmptyObj, RX_META, t} from '@/js/util';
+import {clipString, debounce, deepCopy, deepEqual, hasOwn, isEmptyObj, RX_META, t} from '@/js/util';
 import {addEntryTitle, queue} from './util';
 
+const btnImport = $id('import');
 Object.assign($id('export'), {
   onclick: exportToFile,
   oncontextmenu: exportToFile,
 }).on('split-btn', exportToFile);
-$id('import').onclick = () => importFromFile();
+btnImport.onclick = () => importFromFile();
 
 Object.assign(document.body, {
   ondragover(event) {
@@ -49,6 +50,18 @@ Object.assign(document.body, {
     setTimeout(() => this.ondragend(), 250);
   },
 });
+
+async function collectSettings(clonePrefs) {
+  const [order, lz] = await Promise.all([
+    API.styles.getOrder(),
+    chromeSync.getLZValues(),
+  ]);
+  return {
+    [prefs.STORAGE_KEY]: clonePrefs ? deepCopy(prefs.__values) : prefs.__values,
+    order,
+    ...lz,
+  };
+}
 
 async function importFromFile(file) {
   let resolve, reject;
@@ -108,7 +121,7 @@ async function importFromString(jsonString) {
     .map(style => style.customName && [style.customName.trim(), style])
     .filter(Boolean));
   const oldStylesByName = new Map(oldStyles.map(style => [style.name.trim(), style]));
-  const oldOrder = await API.styles.getOrder();
+  const {order: oldOrder, [prefs.STORAGE_KEY]: oldPrefs, ...oldLZ} = await collectSettings(true);
   const items = [];
   const GROUP = 30;
   const INFO = Symbol('info'); // for private props that shouldn't be transferred into API
@@ -122,6 +135,8 @@ async function importFromString(jsonString) {
     invalid: {names: [], legend: 'importReportLegendInvalid'},
   };
   let order;
+  btnImport.disabled = true;
+  btnImport.dataset.after = `...`;
   await Promise.all(json.map(analyze));
   for (const group of items) {
     const styles = await API.styles.importMany(group);
@@ -134,6 +149,8 @@ async function importFromString(jsonString) {
   }
   // TODO: set each style's order during import on-the-fly
   await API.styles.setOrder(order);
+  btnImport.disabled = false;
+  delete btnImport.dataset.after;
   return done();
 
   function analyze(item, index) {
@@ -376,9 +393,11 @@ async function importFromString(jsonString) {
       ...stats.codeOnly.ids,
       ...stats.added.ids,
     ];
-    await Promise.all(newIds.map(id => API.styles.remove(id)));
-    await API.styles.importMany(newIds.map(id => oldStylesById.get(id)).filter(Boolean));
+    await API.setPrefs(oldPrefs); // must be done before removing/importing to set sync option
+    await API.styles.removeMany(newIds);
+    await API.styles.importMany(newIds.map(oldStylesById.get, oldStylesById).filter(Boolean));
     await API.styles.setOrder(oldOrder);
+    await chromeSync.setLZValues(oldLZ);
     await messageBox.show({
       title: t('importReportUndoneTitle'),
       contents: newIds.length + ' ' + t('importReportUndone'),
@@ -424,10 +443,7 @@ async function exportToFile(e, styles, suffix = '') {
   e?.preventDefault();
   const keepDupSections = e && (e.type === 'contextmenu' || e.shiftKey || e.detail === 'compat');
   const data = [
-    Object.assign({
-      [prefs.STORAGE_KEY]: prefs.__values,
-      order: await API.styles.getOrder(),
-    }, await chromeSync.getLZValues()),
+    await collectSettings(),
     ...(styles || await API.styles.getAll()).map(cleanupStyle),
   ];
   const text = JSON.stringify(data, null, '  ');

@@ -1,6 +1,6 @@
 import {compressToUTF16, decompressFromUTF16} from 'lz-string-unsafe';
 import './browser';
-import {sleep, tryJSONparse} from './util';
+import {mapObj, sleep, tryJSONparse} from './util';
 
 const syncApi = browser.storage.sync;
 const kMAX = 'MAX_WRITE_OPERATIONS_PER_MINUTE';
@@ -17,10 +17,11 @@ export const remove = /*@__PURE__*/run.bind(syncApi.remove);
 export const get = /*@__PURE__*/syncApi.get.bind(syncApi);
 /** @type {(what: object) => Promise<void>} */
 export const set = /*@__PURE__*/run.bind(syncApi.set);
-const toLZ = value => compressToUTF16(JSON.stringify(value));
+const toLZ = value => value && compressToUTF16(JSON.stringify(value));
 export const unLZ = val => tryJSONparse(decompressFromUTF16(val));
 export const getLZValue = async key => unLZ((await get(key))[key]);
 export const setLZValue = (key, value) => set({[key]: toLZ(value)});
+export const setLZValues = data => set(mapObj(data, toLZ, Object.values(LZ_KEY)));
 
 let busy;
 
@@ -31,12 +32,6 @@ export async function getLZValues(keys = Object.values(LZ_KEY)) {
     data[key] = value && unLZ(value);
   }
   return data;
-}
-
-export function setLZValues(data) {
-  const res = {};
-  for (const key in data) res[key] = toLZ(data[key]);
-  return set(res);
 }
 
 export async function run(...args) {

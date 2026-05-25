@@ -351,6 +351,9 @@ summary {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+[data-after]::after {
+  content: attr(data-after);
+}
 
 html:not(.all-disabled) {
   & body:not(#stylus-popup) #disableAll-label:not([data-persist]) {
