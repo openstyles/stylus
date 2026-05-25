@@ -1,4 +1,4 @@
-import {kBadFavs, kPopup, UCD} from '@/js/consts';
+import {kBadFavs, kEditorScrollInfo, kPopup, UCD} from '@/js/consts';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
@@ -12,7 +12,6 @@ import * as styleMan from './style-manager';
 import * as syncMan from './sync-manager';
 import * as usercssTemplate from './usercss-template';
 
-const kEditorScrollInfo = 'editorScrollInfo';
 const PROVIDERS = {
   edit(url) {
     const id = +url.searchParams.get('id');

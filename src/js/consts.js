@@ -17,6 +17,7 @@ export const kContentType = 'content-type'; // must be lowercase!
 export const kCssPropSuffix = ': ';
 export const kDark = 'dark';
 export const kDisableAll = 'disableAll';
+export const kEditorScrollInfo = 'editorScrollInfo';
 export const kEditorSettings = 'editorSettings';
 export const kExclusions = 'exclusions';
 export const kHocused = 'focusedViaClick';

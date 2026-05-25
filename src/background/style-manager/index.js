@@ -1,6 +1,6 @@
 import {
-  IMPORT_THROTTLE, k_size, kExclusions, kInclusions, kOverridden, kTabOvr, kUrl, pDisableAll,
-  pExposeIframes, pKeepAlive, pPatchCsp, pStyleViaASS, pStyleViaXhr, UCD,
+  IMPORT_THROTTLE, k_size, kEditorScrollInfo, kExclusions, kInclusions, kOverridden, kTabOvr, kUrl,
+  pDisableAll, pExposeIframes, pKeepAlive, pPatchCsp, pStyleViaASS, pStyleViaXhr, UCD,
 } from '@/js/consts';
 import {__values} from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
@@ -8,7 +8,7 @@ import {calcObjSize, isEmptyObj, mapObj, NOP} from '@/js/util';
 import {broadcast, broadcastExtension, sendTab} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {uuidIndex} from '../common';
-import {db, draftsDB} from '../db';
+import {db, draftsDB, stateDB} from '../db';
 import {isOptionSite, optionSites} from '../option-sites';
 import * as syncMan from '../sync-manager';
 import {tabCache, set as tabSet} from '../tab-manager';
@@ -343,6 +343,7 @@ export function remove(id, reason, many) {
   const uuid = style._id;
   if (sync) syncMan.remove(uuid, Date.now());
   urlCache.updateSections(id, true);
+  stateDB.delete(kEditorScrollInfo + id);
   styleMap.delete(id);
   stylePreviewMap.delete(id);
   uuidIndex.delete(uuid);
