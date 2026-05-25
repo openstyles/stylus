@@ -1,11 +1,10 @@
-import colorMimicry from '@/js/color/color-mimicry';
+import {CodeMirror} from '@/cm';
 import {kCodeMirror} from '@/js/consts';
-import {cssFieldSizing, $toggleDataset, $create} from '@/js/dom';
+import {$toggleDataset, cssFieldSizing} from '@/js/dom';
 import {setInputValue} from '@/js/dom-util';
 import {htmlToTemplateCache, templateCache} from '@/js/localization';
 import {chromeLocal} from '@/js/storage-util';
 import {debounce, RX_MAYBE_REGEXP, stringAsRegExpStr, t, tryRegExp} from '@/js/util';
-import {CodeMirror} from '@/cm';
 import editor from './editor';
 import html from './global-search.html';
 
@@ -19,7 +18,6 @@ const ANNOTATE_SCROLLBAR_OPTIONS = {maxMatches: 10e3};
 const STORAGE_UPDATE_DELAY = 500;
 
 const DLG_ID = 'search-replace-dialog';
-const DLG_STYLE_ID = DLG_ID + '-style';
 const TARGET_CLASS = 'search-target-editor';
 const MATCH_CLASS = 'search-target-match';
 const MATCH_TOKEN_NAME = 'searching';
@@ -579,34 +577,6 @@ function createDialog(type) {
   toggleActionEnabled(dialog.$('[data-action="case"]'), !stateIcase);
   toggleActionEnabled(dialog.$('[data-action="spaces"]'), stateLooseSpaces);
   stateTally = dialog.$('[data-type="tally"]');
-
-  const colors = {
-    body: colorMimicry(document.body, {bg: 'backgroundColor'}),
-    input: colorMimicry($('input:not(:disabled)'), {bg: 'backgroundColor'}),
-    icon: colorMimicry($$('i.i-info')[1]),
-  };
-  $root.appendChild(
-    $id(DLG_STYLE_ID) ||
-    $create('style#' + DLG_STYLE_ID)
-  ).textContent = /*language=css*/ `\
-    & {
-      background-color: ${colors.body.bg};
-    }
-    & textarea {
-      color: ${colors.body.fore};
-      background-color: ${colors.input.bg};
-    }
-    & [data-action] {
-      color: ${colors.icon.fore};
-    }
-    &[data-type="replace"] button:hover [data-action],
-    & [data-action]:hover {
-      color: var(--cmin);
-    }
-    & [data-action="clear"] {
-      background-color: ${colors.input.bg.replace(/[^,]+$/, '') + '.75)'};
-    }
-  `.replace(/&/, `[id=${DLG_ID}]`);
 
   document.body.appendChild(dialog);
   dispatchEvent(new Event('showHotkeyInTooltip'));

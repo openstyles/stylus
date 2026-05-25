@@ -36,7 +36,7 @@
   width: 5em;
 }
 .CodeMirror-search-hint {
-  color: var(--c50);
+  color: var(--c30);
 }
 .CodeMirror-activeline .applies-to {
   &::before {
