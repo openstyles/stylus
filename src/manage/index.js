@@ -1,5 +1,5 @@
 import '@/js/dom-init';
-import {kSidebar} from '@/js/consts';
+import {kSidebar, pSync} from '@/js/consts';
 import {$create, $toggleDataset, isSidebar} from '@/js/dom';
 import {animateElement, setupLiveDetails, setupLivePrefs} from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
@@ -54,7 +54,7 @@ function initSyncButton(sync) {
   const el = $id('sync-styles');
   const elMsg = $('#backup p');
   const render = val => {
-    const driveId = val.drive || prefs.__values['sync.enabled'];
+    const driveId = val.drive || prefs.__values[pSync];
     const drive = syncUtil.DRIVE_NAMES[driveId];
     const hasFav = drive && driveId !== 'webdav';
     const img = el.$('img');
@@ -70,6 +70,7 @@ function initSyncButton(sync) {
   onMessage.set(e => {
     if (e.method === 'syncStatusUpdate') render(e.status);
   });
+  prefs.subscribe(pSync, (k, v) => v === 'none' && render({}));
   render(sync);
 }
 

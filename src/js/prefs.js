@@ -1,7 +1,8 @@
 /** Don't use this file in content script context! */
 import {
   k_busy, kBadFavs, pDisableAll, pExposeIframes, pFavicons, pFaviconsGray, pManageNewUi,
-  pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr, pUrlInstaller,
+  pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr, pSync,
+  pUrlInstaller,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {swController} from './msg-init'; // also installs API handler for own pages
@@ -148,7 +149,7 @@ const defaults = {
   'hotkey.styleDisableAll': '',
   'hotkey.toggleTab': '',
 
-  'sync.enabled': 'none',
+  [pSync]: 'none',
 
   'iconset': -1,                  // 0 = dark-themed icon
                                   // 1 = light-themed icon

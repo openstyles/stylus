@@ -1,5 +1,6 @@
 import '@/js/browser';
 import * as chromeSync from '@/js/chrome-sync';
+import {pSync} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
 import * as STATES from '@/js/sync-util';
@@ -19,7 +20,7 @@ export {getToken};
 //#region Init
 
 const ALARM_ID = 'syncNow';
-const PREF_ID = 'sync.enabled';
+const PREF_ID = pSync;
 /** (minutes) to give the browser some time at startup to open the active tab etc. */
 const SYNC_INIT_DELAY = 10 / 60;
 /** (minutes) to debounce syncing after an item is uploaded/deleted. */
@@ -291,7 +292,7 @@ async function getDrive(name) {
   return cloudDrive[name](opts);
 }
 
-async function schedule(isInit, prefVal = curDriveName) {
+async function schedule(prefKey, prefVal = curDriveName, isInit) {
   if (scheduling) return;
   scheduling = true;
   /** @type {?chrome.alarms.Alarm} */
@@ -300,7 +301,8 @@ async function schedule(isInit, prefVal = curDriveName) {
   if (!delayedInit) {
     status.state = STATES.disconnected;
     if (alarm) chrome.alarms.clear(ALARM_ID);
-    if (isInit) emitStatusChange();
+    if (isInit || prefVal === 'none')
+      emitStatusChange();
   } else if (!alarm
     || Math.abs((alarm.periodInMinutes || 1e99) - SYNC_INTERVAL) > 1e-6
     || ((alarm.scheduledTime - Date.now()) / 60e3 + SYNC_INTERVAL) % SYNC_INTERVAL >

@@ -1,9 +1,10 @@
+import {pSync} from '@/js/consts';
 import {$create, $toggleDataset} from '@/js/dom';
 import {template} from '@/js/localization';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {swController} from '@/js/msg-init';
-import {clientData} from '@/js/prefs';
+import {clientData, set as prefsSet} from '@/js/prefs';
 import {connected, disconnected, DRIVE_NAMES, getStatusText} from '@/js/sync-util';
 import {t} from '@/js/util';
 
@@ -54,9 +55,10 @@ import {t} from '@/js/util';
     updateButtons();
   }
 
-  async function updateButtons() {
+  async function updateButtons(evt) {
     const state = status.state;
     const isConnected = state === connected;
+    const isNone = elCloud.value === 'none';
     const off = state === disconnected;
     const drv = status.drive;
     if (drv) elCloud.value = drv;
@@ -71,11 +73,13 @@ import {t} from '@/js/util';
       el.hidden = el.dataset.drive !== elCloud.value;
       el.disabled = !off;
     }
-    $toggleDataset(elSync, 'enabled', elCloud.value !== 'none');
+    $toggleDataset(elSync, 'enabled', !isNone);
     syncOpts ??= await API.sync.getDriveOptions(elCloud.value);
     for (const el of $$driveOptions()) {
       el.value = syncOpts[el.dataset.option] || '';
     }
+    if (evt && isNone)
+      prefsSet(pSync, 'none');
     syncOpts = null; // clearing the initial value from clientData so that next time API is called
   }
 })();

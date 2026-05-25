@@ -63,5 +63,6 @@ export const pOpenEditInWindow = 'openEditInWindow';
 export const pPatchCsp = 'patchCsp';
 export const pStyleViaASS = 'styleViaASS';
 export const pStyleViaXhr = 'styleViaXhr';
+export const pSync = 'sync.enabled';
 export const pUrlInstaller = 'urlInstaller';
 //#endregion
