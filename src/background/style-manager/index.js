@@ -414,7 +414,7 @@ export async function toggleMany(ids, enabled) {
   const styles = [];
   let errors;
   for (let i = 0; i < ids.length; i++) {
-    const style = styleMap.get(ids[i]) || {};
+    const style = styleMap.get(ids[i]);
     if (style) try {
       onBeforeSave(style);
       style.enabled = !!(Array.isArray(enabled) ? enabled[i] : enabled);
