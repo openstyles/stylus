@@ -1,0 +1,53 @@
+#unhandledError {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: darkred;
+  color: #fff;
+  border-top: 2px solid #fff;
+  transition: opacity .25s;
+  padding: 1ex 1em;
+  font: var(--font);
+  line-height: 1;
+  box-sizing: content-box;
+  display: flex;
+  flex-flow: wrap;
+  align-items: center;
+  gap: 4px 1rem;
+  details {
+    white-space: pre-wrap;
+  }
+  summary {
+    &:hover {
+      color: inherit;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    [data-num]::before {
+      content: '[' attr(data-num) 'x] ';
+    }
+  }
+  a, span {
+    font: inherit;
+    color: inherit;
+    &:hover {
+      color: yellow;
+    }
+  }
+  a {
+    font-weight: bold;
+  }
+  span {
+    margin-right: 1em;
+  }
+  i {
+    color: inherit;
+  }
+  .i-copy {
+    cursor: copy;
+    font-size: var(--icon-font-size);
+  }
+}

@@ -84,7 +84,10 @@ function createTemplate(el) {
   return res;
 }
 
-/** Only use for HTML in our source code, never for externally editable stuff like locales */
+/** Only use for HTML in our source code, never for externally editable stuff like locales
+ * @param {string} html
+ * @return {HTMLElement|DocumentFragment}
+ */
 export function htmlToTemplate(html) {
   const frag = parseHtml(html);
   const first = frag.firstChild;

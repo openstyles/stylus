@@ -3,7 +3,6 @@
  * Distributed under an MIT license: https://codemirror.net/5/LICENSE
  * Modded by Stylus Team: switched to charCodeAt, Set, unicode in ids, keywords from csslint-mod
  */
-import {showUnhandledError} from '@/js/dom-init';
 /* eslint-disable no-shadow,one-var,one-var-declaration-per-line,prefer-const */
 import CodeMirror from 'codemirror';
 import * as cssData from './css-data';
@@ -708,7 +707,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
           prevCounter = 0;
         } else if (++prevCounter === 9) {
           stream.pos = stream.string.length; // pacify CM by butchering this line
-          showUnhandledError(new Error(
+          onerror(new Error( // invoking showUnhandledError()
             `cm/css.js did not advance stream at ${pos}, ${override}, ${type}: ${stream.string}`));
         }
       }

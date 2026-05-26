@@ -422,7 +422,7 @@ module.exports = [
             [-10, 'vendors', /node_modules/],
           ].map(([priority, name, test]) => [name, {
             test: test instanceof RegExp ? test :
-              new RegExp(String.raw`(${test.replaceAll('/', SEP_ESC)}).*\.(css|js)$`),
+              new RegExp(String.raw`(${test.replaceAll('/', SEP_ESC)}).*\.(css|js|html)$`),
             name,
             priority,
           }])),

@@ -1,19 +1,16 @@
 import {kSidebar, pFavicons, pFaviconsGray} from '@/js/consts';
 import {isTab} from '@/js/msg-api';
-import {ownRoot} from '@/js/urls';
-import {t} from '@/js/util';
-import {MF} from '@/js/util-webext';
-import {$create, $toggleClasses, header, isSidebar, isTouch} from './dom';
+import {$toggleClasses, header, isSidebar, isTouch} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
+import './dom-error';
 import './msg-init';
 import './themer';
 import './util-webext';
 import '@/content/apply'; // must run after msg (swaps `API`) and util-webext (exposes _deepCopy)
 
 export let mqCompact;
-let elError, elErrorLink;
 
 prefs.subscribe('disableAll', (_, val) => {
   $rootCL.toggle('all-disabled', val);
@@ -75,53 +72,3 @@ if (prefs.knownKeys.includes(
 })();
 
 window.on('load', () => import('./dom-on-load'), {once: true});
-/** onerror() is called from prefs.js directly to avoid importing this DOM module in bg */
-window.onerror = window.onunhandledrejection = showUnhandledError;
-
-export function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params */) {
-  err = err.reason || err; // for onunhandledrejection
-  if (!elError) {
-    elError = $tag('div');
-    elError.id = 'unhandledError';
-    const elCopy = $create('a', {tabIndex: 0, title: t('copy')});
-    const elClose = $create('a', {tabIndex: 0, title: t('confirmClose')});
-    elCopy.append($create('i.i-copy'));
-    elClose.append($create('i.i-close'));
-    elErrorLink = $create('a', {target: '_blank', rel: 'noopener'}, t('reportBug'));
-    elError.append(elErrorLink, elCopy, elClose);
-    elError.onclick = ({target}) => {
-      if (target === elError || target.closest('details'))
-        return;
-      if (target === elCopy)
-        navigator.clipboard.writeText(formattedText);
-      elError.remove();
-    };
-  }
-  const msg = (`${err.message || err}`).trim().split(ownRoot).join('') + '\n';
-  let el = [].find.call(elError.$$('summary'), s => s.innerText === msg);
-  if (el) {
-    el.dataset.num = (+el.dataset.num || 1) + 1;
-  } else {
-    elError.appendChild($tag('details')).append(
-      el = $create('summary', msg),
-      err.stack?.replace(msg, '') || '',
-    );
-  }
-  const parent = $root;
-  const formattedText = '```\n' +
-    [].map.call(elError.$$('details'), _ => _.innerText).join('\n\n') +
-    '\n```\n\n' +
-    navigator.userAgent.replace(
-      /^.*\((\S+)\s+\D*(\d+).*?\)[^(]+[^)]+\)\s+(.+?)\/(\d+).*/,
-      '- OS: $1 $2\n- Browser: $3 $4\n') +
-    `- Stylus: ${MF.version} (MV${__.MV3 ? 3 : 2})\n`;
-  const shownBody = '...';
-  elErrorLink.href = (
-    elErrorLink.title = 'https://github.com/openstyles/stylus/issues/new?' + new URLSearchParams({
-      title: `${location.pathname.slice(1, -5/*drop ".html"*/)}: Unhandled error ${err.message}`,
-      labels: 'bug',
-      body: shownBody,
-    })
-  ).slice(0, -shownBody.length) + encodeURIComponent(formattedText);
-  parent.appendChild(elError);
-}
