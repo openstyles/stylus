@@ -283,10 +283,10 @@ export async function showStyles(styles, matchUrlIds) {
       break;
     await new Promise(requestAnimationFrame);
   }
-  if (sessionStore.justEditedStyleId)
-    highlightEditedStyle();
-  else if (scrollY >= 0)
+  if (scrollY >= 0)
     window.scrollY = scrollY;
+  if (sessionStore.justEditedStyleId)
+    setTimeout(highlightEditedStyle);
   if (numIconized < numStyles)
     requestIdleCallback(() => renderTargetIcons(installed));
 }
