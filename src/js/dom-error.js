@@ -17,11 +17,10 @@ function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params *
     const formatText = target => '```\n' +
       [].map.call((target?.closest('details') || elError).$$('span, pre'),
         (_, i) => _.textContent + (i % 2 ? '\n' : ''))
-        .join('\n') + '```\n\n' +
+        .join('\n') + '```\n\n- UA: ' +
       navigator.userAgent.replace(
-        /^.*\((\S+)\s+\D*(\d+).*?\)[^(]+[^)]+\)\s+(.+?)\/(\d+).*/,
-        '- OS: $1 $2\n- Browser: $3 $4\n') +
-      `- Stylus: ${MF.version} (MV${__.MV3 ? 3 : 2})\n`;
+        /\(KHTML.+?\) |(Mozilla|AppleWebKit|Gecko)\S+ | Safari\/537\.36/g, '') +
+      `\n- Stylus: ${MF.version} (MV${__.MV3 ? 3 : 2})\n`;
     const onauxclick = elError.onauxclick = async (evt, target = evt.target) => {
       if (target.href !== '')
         return;
