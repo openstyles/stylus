@@ -45,6 +45,7 @@
   }
   i {
     color: inherit;
+    pointer-events: none;
   }
   .i-copy {
     cursor: copy;

@@ -16,8 +16,8 @@ function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params *
     [elError, elEntry] = htmlToTemplate(htmlError).children;
     const formatText = target => '```\n' +
       [].map.call((target?.closest('details') || elError).$$('span, pre'),
-        (_, i) => _.innerText + (i % 2 ? '\n\n' : '\n'))
-        .join('') + '\n```\n\n' +
+        (_, i) => _.textContent + (i % 2 ? '\n' : ''))
+        .join('\n') + '```\n\n' +
       navigator.userAgent.replace(
         /^.*\((\S+)\s+\D*(\d+).*?\)[^(]+[^)]+\)\s+(.+?)\/(\d+).*/,
         '- OS: $1 $2\n- Browser: $3 $4\n') +
