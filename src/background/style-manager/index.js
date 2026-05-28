@@ -7,7 +7,7 @@ import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
 import {calcObjSize, isEmptyObj, mapObj, NOP} from '@/js/util';
 import {broadcast, broadcastExtension, sendTab} from '../broadcast';
 import * as colorScheme from '../color-scheme';
-import {uuidIndex} from '../common';
+import {dataHub, uuidIndex} from '../common';
 import {db, draftsDB, stateDB} from '../db';
 import {isOptionSite, optionSites} from '../option-sites';
 import * as syncMan from '../sync-manager';
@@ -343,7 +343,8 @@ export function remove(id, reason, many) {
   const uuid = style._id;
   if (sync) syncMan.remove(uuid, Date.now());
   urlCache.updateSections(id, true);
-  stateDB.delete(kEditorScrollInfo + id);
+  if (__.MV3) stateDB.delete(kEditorScrollInfo + id);
+  else dataHub.delete(kEditorScrollInfo + id);
   styleMap.delete(id);
   stylePreviewMap.delete(id);
   uuidIndex.delete(uuid);
