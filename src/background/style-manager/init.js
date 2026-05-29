@@ -19,10 +19,10 @@ bgInit.push(async () => {
     db.getAll(),
   ]);
   if (!orderFromDb)
-    orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder);
+    orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder).catch(console.error);
   validated = styles.filter(styleJSONseemsValid);
   if ((!validated.length || validated.length < styles.length)
-  && (mirrored = await execMirror(DB, 'getAll'))) {
+  && (mirrored = await execMirror(DB, 'getAll').catch(console.error))) {
     styles = validated;
     validated = new Set(validated.map(s => s.id));
     for (const s of mirrored)
