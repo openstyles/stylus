@@ -11,6 +11,7 @@ import {
 import cmFactory from './codemirror-factory';
 import editor from './editor';
 import {worker} from './util';
+import './autocomplete.css';
 
 const rxCmAnyProp = /^(prop(erty)?|variable-2|string-2)\b/;
 const rxCmProp = /prop/;

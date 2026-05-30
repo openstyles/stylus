@@ -1,12 +1,11 @@
 import '@/js/dom-init';
 import {tBody} from '@/js/localization';
 import * as prefs from '@/js/prefs';
-import {CodeMirror} from '@/cm';
 import CompactHeader, {toggleSticky} from './compact-header';
 import editor from './editor';
 import EditorHeader from './editor-header';
 import * as linterMan from './linter';
-import loading from './load-style';
+import {loading} from './load-style';
 import './on-msg-extension';
 import './settings';
 import SectionsEditor from './sections-editor';
@@ -16,8 +15,6 @@ import './live-preview';
 import USWIntegration from './usw-integration';
 import './windowed-mode';
 import './edit.css';
-/** Loading here to avoid a separate tiny file in dist */
-import './autocomplete.css';
 import '@/css/target-site.css';
 
 tBody();
@@ -32,26 +29,11 @@ tBody();
   editor.dirty.onChange(editor.updateDirty);
   prefs.subscribe('editor.linter', () => linterMan.run());
   CompactHeader();
-  import('./lazy-init');
-  const cmCommands = CodeMirror.commands;
-  for (const cmd of ['find', 'findNext', 'findPrev', 'replace', 'replaceAll']) {
-    cmCommands[cmd] = async (...args) => {
-      await (await import('./global-search')).init();
-      cmCommands[cmd](...args);
-    };
-  }
   // enabling after init to prevent flash of validation failure on an empty name
   $id('name').required = !editor.isUsercss;
   $id('save-button').onclick = editor.save;
   $id('cancel-button').onclick = editor.cancel;
   // $id('testRE').hidden = !editor.style.sections.some(({regexps: r}) => r && r.length);
-  $id('testRE').onclick = async function () {
-    (this.onclick = (await import('./regexp-tester')).toggle)(true);
-  };
-  $id('lint-help').on('click', async function (evt) {
-    evt.preventDefault(); // prevent toggling <details>
-    (this.onclick = (await import('./linter/dialogs')).showLintHelp)();
-  }, true); // capture to prevent toggling <details>
   const elSec = $id('sections-list');
   const elToc = $id('toc');
   const moDetails = new MutationObserver(([{target: sec}]) => {

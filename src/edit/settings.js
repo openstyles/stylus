@@ -7,6 +7,7 @@ import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {debounce, t, tryURL} from '@/js/util';
 import editor from './editor';
+import {loadingLazy} from './load-style';
 import {createHotkeyInput, helpPopup} from './util';
 import './settings.css';
 import htmlEditorSettings from './editor-settings.html';
@@ -192,14 +193,10 @@ function EditorSettings(ui) {
     popup.$('input').focus();
   };
 
-  ui.$('#keyMap-help').onclick = async function () {
-    (this.onclick = (await import('./keymap-help')).keymapHelp)();
-  };
-
-  ui.$('#linter-settings').onclick = async function () {
-    (this.onclick = (await import('./linter/dialogs')).showLintConfig)();
-  };
-
   setupLivePrefs(ui);
   prefs.subscribe('editor.linter', editor.updateLinterSwitch, true);
+  loadingLazy.then(lazy => {
+    ui.$('#keyMap-help').onclick = lazy.keymapHelp;
+    ui.$('#linter-settings').onclick = lazy.showLintConfig;
+  });
 }

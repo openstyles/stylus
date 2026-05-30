@@ -1,11 +1,12 @@
 import {CodeMirror} from '@/cm';
-import {kCodeMirror} from '@/js/consts';
+import {kCodeMirror, kEditorState} from '@/js/consts';
 import {$toggleDataset, cssFieldSizing} from '@/js/dom';
 import {setInputValue} from '@/js/dom-util';
 import {htmlToTemplateCache, templateCache} from '@/js/localization';
 import {chromeLocal} from '@/js/storage-util';
 import {debounce, RX_MAYBE_REGEXP, stringAsRegExpStr, t, tryRegExp} from '@/js/util';
 import editor from './editor';
+import {loading} from './load-style';
 import html from './global-search.html';
 
 htmlToTemplateCache(html);
@@ -173,11 +174,9 @@ const COMMANDS = {
   },
 };
 COMMANDS.replaceAll = COMMANDS.replace;
-
-//endregion
-
 Object.assign(CodeMirror.commands, COMMANDS);
 
+//endregion
 //region Find
 
 function initState({initReplace} = {}) {
@@ -843,21 +842,23 @@ function radiateArray(arr, focalIndex) {
   return result;
 }
 
-export async function init() {
-  ({
-    find: stateFind = stateFind,
-    replace: stateReplace = stateReplace,
-    icase: stateIcase = stateIcase,
-  } = await chromeLocal.getValue('editor') || {});
-}
-
 function writeStorage() {
-  chromeLocal.getValue('editor').then((val = {}) => {
+  chromeLocal.getValue(kEditorState).then((val = {}) => {
     val.find = stateFind;
     val.replace = stateReplace;
     val.icase = stateIcase;
-    chromeLocal.set({editor: val});
+    chromeLocal.set({[kEditorState]: val});
   });
 }
 
 //endregion
+
+(async () => {
+  if (loading)
+    await loading;
+  ({
+    find: stateFind = stateFind,
+    replace: stateReplace = stateReplace,
+    icase: stateIcase = stateIcase,
+  } = editor.state || {});
+})();

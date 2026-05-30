@@ -1,3 +1,4 @@
+import ColorPicker from '@/js/color/color-picker';
 import {UCD} from '@/js/consts';
 import {$create, $createLink, isSidebar} from '@/js/dom';
 import {important, messageBox, setupLivePrefs} from '@/js/dom-util';
@@ -28,7 +29,7 @@ export default async function configDialog(style, y) {
   init(false, false);
   const isPopup = document.body.id === 'stylus-popup';
   const colorpicker = vars.some(v => v.type === 'color')
-    ? (await import('@/js/color/color-picker')).default()
+    ? ColorPicker()
     : null;
   const elBody = $create('.config-body');
   const btnSave = $create('button[data-cmd=save]',

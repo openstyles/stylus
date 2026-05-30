@@ -12,17 +12,20 @@ if (location.hash) { // redirected from devtools -> "open in a new tab"
 
 let id = +urlParams.get('id');
 
-export default __.MV3 && swController
+export const loading = __.MV3 && swController
   ? loadStyle(prefs.clientData)
   : prefs.clientData.then(loadStyle);
 
+export const loadingLazy = import(/* webpackChunkName: "editor-lazy" */'./load-lazy-ui');
+
 /** @param {StylusClientData} _ */
-function loadStyle({style = makeNewStyleObj(), isUC, si, template, theme, themeText}) {
+function loadStyle({style = makeNewStyleObj(), isUC, si, state, template, theme, themeText}) {
   Object.assign(editor.style, style);
   Object.assign(editor, /** @namespace Editor */ {
     template,
     isUsercss: isUC,
     scrollInfo: si || {},
+    state,
   });
   editor.updateClass();
   editor.updateTitle(false);

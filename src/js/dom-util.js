@@ -2,11 +2,11 @@ import {kHocused, kHocusedAttr} from '@/js/consts';
 import {mqCompact} from '@/js/dom-init';
 import {notIncludedInArray} from '@/js/util';
 import {$create, $toggleDataset, cssFieldSizing} from './dom';
+export {default as configDialog} from './dlg/config-dialog'; // must precede message-box
 import * as messageBox from './dlg/message-box';
 import * as prefs from './prefs';
 import '@/css/spinner.css';
 
-export {default as configDialog} from './dlg/config-dialog';
 export {messageBox};
 
 /**

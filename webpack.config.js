@@ -408,12 +408,13 @@ module.exports = [
         name: 'common',
       },
       splitChunks: {
-        chunks: c => c.name !== 'jsonlint',
+        chunks: c => !c.name?.match(/jsonlint|lazy/),
         cacheGroups: {
           codemirror: {
             test: new RegExp([
               '/cm/(?!jsonlint)',
               '/codemirror/(?!mode/javascript)',
+              '/vendor-overwrites/codemirror',
             ].join('|').replaceAll('/', SEP_ESC)),
             name: 'codemirror',
             enforce: true,
