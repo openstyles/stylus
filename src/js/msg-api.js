@@ -15,9 +15,9 @@ export const apiHandler = !__.IS_BG && {
 };
 /** @typedef {{}} API */
 /** @type {API} */
-export const API = __.IS_BG
-  ? global[__.API]
-  : global[__.API] = new Proxy({name: ''}, apiHandler);
+export const API = global[__.API] = __.IS_BG
+  ? {}
+  : new Proxy({name: ''}, apiHandler);
 export const isFrame = !__.IS_BG && window !== top;
 export let isTab;
 
