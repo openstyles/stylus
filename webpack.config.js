@@ -207,11 +207,13 @@ const getBaseConfig = () => ({
         },
       }, {
         loader: './tools/wp-cjs-to-esm-loader.js',
-        test: new RegExp(`/node_modules/(${escapeForRe([
+        test: new RegExp(`/node_modules/(${[
           '@eight04/',
           'db-to-cloud',
+          '.*?universal-base64',
+          'usercss-meta',
           'webext-launch-web-auth-flow',
-        ].join('\n')).replaceAll('\n', '|')})`.replaceAll('/', SEP_ESC)),
+        ].join('|')})`.replaceAll('/', SEP_ESC)),
       }, {
         loader: './tools/wp-lzstring-loader.js',
         test: require.resolve('lz-string-unsafe'),
@@ -261,7 +263,7 @@ const getBaseConfig = () => ({
 
 function getChunkFileName({chunk}) {
   let res = (chunk.name || chunk.id)
-    .replace(/(^|-)(css|js(_(color|dlg))?|vendor-overwrites_.+?_)|_js$/g, '')
+    .replace(/(^|-)(css|js(?=\W)|js_(color|dlg)|vendor-overwrites_.+?_)|_js$/g, '')
     .replace(/node_modules(.+?node_modules)?/g, '')
     .replace(/^[-_]+|[-_]+$|(?<=[-_])[-_]+/g, '')
     .replace(/[-_](css|js)(?=$|[-_])/g, '');
@@ -406,20 +408,19 @@ module.exports = [
         name: 'common',
       },
       splitChunks: {
-        chunks: 'all',
+        chunks: c => c.name !== 'jsonlint',
         cacheGroups: {
           codemirror: {
             test: new RegExp([
-              SRC_ESC + 'cm' + SEP_ESC,
-              'codemirror(?!-factory)', // `factory` is our code
-            ].join('|')),
+              '/cm/(?!jsonlint)',
+              '/codemirror/(?!mode/javascript)',
+            ].join('|').replaceAll('/', SEP_ESC)),
             name: 'codemirror',
             enforce: true,
           },
           ...Object.fromEntries([
             [2, 'color', `^${SRC_ESC}js/color/`],
             [1, 'common', `^${SRC_ESC}(content|js)/|/lz-string(-unsafe)?/`],
-            [-10, 'vendors', /node_modules/],
           ].map(([priority, name, test]) => [name, {
             test: test instanceof RegExp ? test :
               new RegExp(String.raw`(${test.replaceAll('/', SEP_ESC)}).*\.(css|js|html)$`),
@@ -532,13 +533,9 @@ module.exports = [
   makeContentScript('apply.js'),
   makeContentScript('hook-uso.js'),
   MV3 && makeContentScript('hook-uso-page-mv3.js'),
-  makeLibrary('@/js/worker.js', undefined, {
+  makeLibrary('@/js/worker', undefined, {
     plugins: [new RawEnvPlugin({ENTRY: 'worker'})],
   }),
-  makeLibrary('@/js/color/color-converter.js', '*:colorConverter'),
-  makeLibrary('@/js/meta-parser.js', 'metaParser'),
-  makeLibrary('@/js/moz-parser.js', 'extractSections'),
-  makeLibrary('@/js/usercss-compiler.js', 'compileUsercss'),
 ].filter(Boolean);
 
 module.exports.parallelism = 2;

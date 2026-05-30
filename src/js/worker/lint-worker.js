@@ -1,14 +1,14 @@
 import {kCssPropSuffix} from '@/js/consts';
-import {COMMANDS} from './port';
-import {importScriptsOnce} from './worker-util';
+import {metaLint} from './meta-parser';
+import {CSSLint, loadCSSLint, loadParserlib, loadStylelint, parserlib, stylelint} from './util';
 
 let sugarss = null;
 
 /** @namespace WorkerAPI */
-Object.assign(COMMANDS, {
+export default {
 
   csslint(code, config) {
-    importScriptsOnce('parserlib.js', 'csslint.js'); /* global CSSLint */
+    if (!CSSLint) loadCSSLint();
     config.import = 1;
     const results = CSSLint.verify(code, config).messages;
     let len = 0;
@@ -31,7 +31,7 @@ Object.assign(COMMANDS, {
   },
 
   getCssPropsValues() {
-    importScriptsOnce('parserlib.js'); /* global parserlib */
+    if (!parserlib) loadParserlib();
     const {
       css: {GlobalKeywords, NamedColors, Parser: {AT}, Properties},
       util: {describeProp, VTFunctions},
@@ -89,8 +89,7 @@ Object.assign(COMMANDS, {
   },
 
   metalint(code) {
-    importScriptsOnce('meta-parser.js'); /* global metaParser */
-    const result = metaParser.lint(code);
+    const result = metaLint(code);
     // extract needed info
     result.errors = result.errors.map(err => ({
       code: err.code,
@@ -102,7 +101,7 @@ Object.assign(COMMANDS, {
   },
 
   async stylelint(opts) {
-    importScriptsOnce('stylelint.js'); /* global stylelint */
+    if (!stylelint) loadStylelint();
     // Stylus-lang allows a trailing ";" but sugarss doesn't, so we monkeypatch it
     stylelint.SugarSSParser.prototype.checkSemicolon = ovrCheckSemicolon;
     const cfgRules = opts.config.rules;
@@ -117,7 +116,7 @@ Object.assign(COMMANDS, {
       /* We try sugarss (for indented stylus-lang), then css mode, switching them on failure,
        * so that the succeeding syntax will be used next time first. */
       if (opts.mode === 'stylus') {
-        if (sugarss == null) sugarss = !opts.code.includes('{');
+        sugarss ??= !opts.code.includes('{');
         opts.config.customSyntax = sugarss ? 'sugarss' : '';
       }
       const res = (await stylelint.lint(opts)).results[0];
@@ -130,12 +129,12 @@ Object.assign(COMMANDS, {
       return collectStylelintResults(errors, opts);
     }
   },
-});
+};
 
 const ruleRetriever = {
 
   csslint() {
-    importScriptsOnce('parserlib.js', 'csslint.js');
+    if (!CSSLint) loadCSSLint();
     return CSSLint.getRuleList().map(rule => {
       const output = {};
       for (const [key, value] of Object.entries(rule)) {
@@ -148,7 +147,7 @@ const ruleRetriever = {
   },
 
   stylelint() {
-    importScriptsOnce('stylelint.js');
+    if (!stylelint) loadStylelint();
     const options = {};
     const rxPossible = /\bpossible:("[^"]*?"|\[[^\]]*?]|\{[^}]*?})/g;
     const rxString = /"([-\w\s]{3,}?)"/g;

@@ -1,5 +1,5 @@
-import {createParser, ParseError} from 'usercss-meta';
-import {importScriptsOnce} from './worker-util';
+import {createParser, ParseError} from 'usercss-meta/dist/usercss-meta';
+import * as colorConverter from '@/js/color/color-converter';
 
 const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
 const options = {
@@ -24,7 +24,6 @@ const options = {
       }
     },
     color: state => {
-      importScriptsOnce('color-converter.js'); /* global colorConverter */
       const color = colorConverter.parse(state.value);
       if (!color) {
         throw new ParseError({
@@ -43,23 +42,17 @@ const looseParser = createParser(Object.assign({}, options, {
   unknownKey: 'throw',
 }));
 
-const metaParser = {
-
-  lint: looseParser.parse,
-  parse: parser.parse,
-
-  nullifyInvalidVars(vars) {
-    for (const va of Object.values(vars)) {
-      if (va.value !== null) {
-        try {
-          parser.validateVar(va);
-        } catch {
-          va.value = null;
-        }
+export const metaLint = looseParser.parse;
+export const metaParse = parser.parse;
+export const nullifyInvalidVars = vars => {
+  for (const va of Object.values(vars)) {
+    if (va.value !== null) {
+      try {
+        parser.validateVar(va);
+      } catch {
+        va.value = null;
       }
     }
-    return vars;
-  },
+  }
+  return vars;
 };
-
-export default metaParser;

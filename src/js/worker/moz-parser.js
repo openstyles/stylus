@@ -1,6 +1,6 @@
-import {FROM_CSS} from './sections-util';
-import {RX_META} from './util';
-/* global parserlib */
+import {FROM_CSS} from '../sections-util';
+import {RX_META} from '../util';
+import {loadParserlib, parserlib} from './util';
 
 /**
  * Extracts @-moz-document blocks into sections and the code between them into global sections.
@@ -13,6 +13,7 @@ import {RX_META} from './util';
  * @property {?number} lastStyleId
  */
 export default function extractSections({code, styleId}) {
+  if (!parserlib) loadParserlib();
   const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
   const parser = new parserlib.css.Parser({
     noValidation: true,
@@ -91,7 +92,7 @@ export default function extractSections({code, styleId}) {
 
   try {
     parser.parse(code.replace(RX_META, ''), {
-      reuseCache: !extractSections.lastStyleId || styleId === extractSections.lastStyleId,
+      reuseCache: !extractSectionsLastStyleId || styleId === extractSectionsLastStyleId,
     });
   } catch (e) {
     errors.push(e);
@@ -102,7 +103,7 @@ export default function extractSections({code, styleId}) {
     }
     err.message = `${err.line}:${err.col} ${err.message}`;
   }
-  extractSections.lastStyleId = styleId;
+  extractSectionsLastStyleId = styleId;
 
   return {sections, errors};
 
@@ -125,3 +126,5 @@ export default function extractSections({code, styleId}) {
     sections.push(Object.assign({}, section));
   }
 }
+
+let extractSectionsLastStyleId;

@@ -2,6 +2,7 @@
 
 const globals = require('globals');
 
+const WORKERS = ['src/js/worker/**'];
 const SHIMS = 'tools/shim/*.js';
 const SRC_GLOBALS = {
   ...globals.es2024,
@@ -306,6 +307,7 @@ module.exports = [
   //#region SRC
   {
     files: ['src/**/*.js'],
+    ignores: WORKERS,
     languageOptions: {
       ecmaVersion: 2024,
       globals: {
@@ -358,7 +360,7 @@ module.exports = [
   },
   //#region Workers
   {
-    files: ['src/**/*worker*.js'],
+    files: WORKERS,
     languageOptions: {
       globals: {
         ...globals.worker,

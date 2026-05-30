@@ -426,7 +426,7 @@ export default function SectionsEditor() {
         ) {
           let errors, name;
           if (!newSections) {
-            ({sections: newSections, errors} = await worker.parseMozFormat({code}));
+            ({sections: newSections, errors} = await worker.extractSections({code}));
           }
           if (!newSections?.length || errors.some(e => !e.recoverable)) {
             throw errors;

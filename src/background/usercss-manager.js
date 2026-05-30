@@ -83,7 +83,7 @@ export async function buildMeta(style) {
     return Promise.reject(new Error('Could not find metadata.'));
   }
   try {
-    const {metadata} = await worker.parseUsercssMeta(match[0]);
+    const {metadata} = await worker.metaParse(match[0]);
     style[UCD] = metadata;
     // https://github.com/openstyles/stylus/issues/560#issuecomment-440561196
     for (const [key, globalKey] of GLOBAL_META) {

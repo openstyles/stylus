@@ -1,6 +1,6 @@
 import {NOP, sleep} from '@/js/util';
 
-export const CLIENT = Symbol('client');
+export const CLIENT = /*@__PURE__*/Symbol('client');
 export const COMMANDS = {__proto__: null};
 const PATH_OFFSCREEN = '/offscreen.html';
 const PATH = location.pathname;

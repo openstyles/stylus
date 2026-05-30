@@ -46,7 +46,7 @@ function fakeUsercssHeader(style, usw) {
 
 async function linkStyle(style, sourceCode) {
   const {id, name} = style;
-  const {metadata} = await worker.parseUsercssMeta(sourceCode.match(RX_META)[0]);
+  const {metadata} = await worker.metaParse(sourceCode.match(RX_META)[0]);
   const out = {name, sourceCode, [UCD]: {}};
   for (const k of KEYS_OUT) out[k] = out[UCD][k] = metadata[k] || '';
   pushId(id, out);

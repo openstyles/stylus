@@ -1,7 +1,10 @@
-import {styleCodeEmpty} from './sections-util';
-import {importScriptsOnce} from './worker-util';
+import * as colorConverter from '@/js/color/color-converter';
+import {styleCodeEmpty} from '../sections-util';
+import extractSections from './moz-parser';
+import {importScripts, loadParserlib, parserlib} from './util';
 
 let builderChain = Promise.resolve();
+let StylusRenderer, less;
 
 const BUILDERS = Object.assign(Object.create(null), {
 
@@ -20,7 +23,7 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   stylus: {
     pre(source, vars) {
-      importScriptsOnce('stylus-lang.js'); /* global StylusRenderer */
+      StylusRenderer ??= (importScripts('stylus-lang.js'), global.StylusRenderer);
       return new Promise((resolve, reject) => {
         const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
         new StylusRenderer(varDef + source)
@@ -31,16 +34,17 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   less: {
     async pre(source, vars) {
-      if (!self.less) {
-        self.document = {currentScript: {}};
-        self.window = self;
-        self.less = {
+      if (!less) {
+        global.document = {currentScript: {}};
+        global.window = global;
+        global.less = {
           logLevel: 0,
           useFileCache: false,
           onReady: false,
         };
+        importScripts('less.js');
+        less = global.less;
       }
-      importScriptsOnce('less.js'); /* global less */
       const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
       try {
         return (await less.render(varDefs + source, {math: 'parens-division'})).css;
@@ -52,7 +56,6 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   uso: {
     pre(source, vars) {
-      importScriptsOnce('color-converter.js'); /* global colorConverter */
       const pool = Object.create(null);
       return doReplace(source);
 
@@ -130,7 +133,6 @@ export default async function compileUsercss(preprocessor, code, vars) {
     });
     await builderChain;
   }
-  importScriptsOnce('moz-parser.js', 'parserlib.js'); /* global extractSections */
   const res = extractSections({code});
   if (builder.post) {
     builder.post(res.sections, vars);
@@ -179,7 +181,7 @@ function spliceCssAfterGlobals(section, newText, after) {
   const {code} = section;
   const rx = /@import\s/gi;
   if ((rx.lastIndex = after, rx.test(code))) {
-    importScriptsOnce('parserlib.js'); /* global parserlib */
+    if (!parserlib) loadParserlib();
     const P = new parserlib.css.Parser({globalsOnly: true}); P.parse(code);
     const {col, line, offset} = P.stream.token || P.stream.peekCached();
     // normalizing newlines in non-usercss to match line:col from parserlib

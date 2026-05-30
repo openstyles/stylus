@@ -1,5 +1,5 @@
 import {$create, $createFragment} from '@/js/dom';
-import DraggableList from '@eight04/draggable-list';
+import DraggableList from '@eight04/draggable-list/dist/draggable-list.esm';
 import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import {t} from '@/js/util';
