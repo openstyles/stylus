@@ -16,6 +16,7 @@ let bgLock;
 let timer;
 
 if (navLocks) {
+  __.DEBUGPORT('%c%s port lock', 'color:red', PATH);
   navLocks.request(PATH, () => new Promise(NOP));
 }
 if (__.MV3 && __.ENTRY === true || __.ENTRY === 'offscreen') {
@@ -36,6 +37,7 @@ if (__.ENTRY === 'offscreen') {
         autoClose();
       } else if (!bgLock) {
         if (timer) timer = clearTimeout(timer);
+        __.DEBUGPORT('%c%s port lock on sw', 'color:red', PATH);
         bgLock = navLocks.request('/sw.js', () => autoClose());
       }
     },
@@ -181,7 +183,7 @@ export function initRemotePort(evt, silent) {
   async function onMessage(portEvent) {
     const data = portEvent.data;
     const {args, id} = data.id ? data : JSON.parse(data);
-    __.DEBUGPORT('%c%s port onmessage', 'color:green', PATH, id, args, portEvent);
+    __.DEBUGPORT('%c%s port onmessage', 'color:green', PATH, id, ...args, portEvent);
     let res, err;
     numJobs++;
     if (timer) timer = clearTimeout(timer);
@@ -198,7 +200,7 @@ export function initRemotePort(evt, silent) {
         err = [e];
       }
     }
-    __.DEBUGPORT('%c%s port response', 'color:blue', PATH, id, {res, err});
+    __.DEBUGPORT('%c%s port response', 'color:blue', PATH, id, {res, err}, {numJobs, bgLock});
     if (!silent) port.postMessage({id, res, err}, portEvent._transfer);
     if (!--numJobs && willAutoClose && !bgLock) {
       autoClose(TTL);
@@ -212,8 +214,9 @@ function autoClose(delay) {
     bgLock = null;
   }
   if (!bgLock && !numJobs && !timer) {
-    timer = setTimeout(close, delay || Math.max(0, lastBusy + TTL - performance.now()));
+    timer = setTimeout(close, delay ||= Math.max(0, lastBusy + TTL - performance.now()));
   }
+  __.DEBUGPORT('%c%s port autoClose', 'color:red', PATH, {delay, numJobs, bgLock, timer});
 }
 
 /** @return {MessagePort} */

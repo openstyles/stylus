@@ -45,10 +45,13 @@ if (__.MV3) {
     ruleIds = await stateDB.get(kRuleIds) || {};
     for (const id in ruleIds) ruleIdKeys[ruleIds[id]] = +id;
   })());
-  bgBusy.then(() => setTimeout(() => subscribe(pStyleViaXhr, (key, val) => {
-    if (val || offscreen[CLIENT])
-      offscreen.keepAlive(val);
-  }, true), clientDataJobs.size ? 50/*let the client page load first*/ : 0));
+  bgBusy.then(() => setTimeout(() => {
+    subscribe(pStyleViaXhr, (key, val) => {
+      if (val || offscreen[CLIENT]) {
+        offscreen.keepAlive(val);
+      }
+    }, true);
+  }, clientDataJobs.size ? 1000/*let the client page load first*/ : 0));
 }
 
 subscribe([pDisableAll], setup, true);
