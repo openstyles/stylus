@@ -22,7 +22,7 @@ jobs:
         build: [chrome-mv3, firefox, mv2]
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10
       - uses: actions/setup-node@v6
@@ -37,7 +37,7 @@ jobs:
       - run: pnpm build-${{matrix.build}}
 
       - name: upload "${{matrix.build}}" to github
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: 'stylus-${{matrix.build}}-${{env._VER}}-${{env._REV}}'
           path: 'dist/*'

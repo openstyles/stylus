@@ -45,6 +45,7 @@
     "husky": "^9.1.7",
     "jszip": "^3.10.1",
     "mini-css-extract-plugin": "^2.10.2",
+    "only-allow": "^1.2.2",
     "postcss": "^8.5.14",
     "postcss-calc": "^10.1.1",
     "postcss-loader": "^8.2.1",
@@ -79,6 +80,7 @@
     "bump": "pnpm version patch",
     "bump-stable": "pnpm version minor",
     "prepare": "husky",
+    "preinstall": "npx only-allow pnpm",
     "postinstall": "node tools/build-cm-css-data.js"
   },
   "pnpm": {
@@ -102,6 +104,7 @@
     }
   },
   "engines": {
-    "node": ">=22.12.0"
-  }
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@10.34.1+sha512.b58fbde6dca66a929538021581f648b4570b6ca19b18e7cbd7f2c07a7b24454155388dacdf08f2af3678e88a6d1fe04f9d609df24bf51735a060ea041b374ab7"
 }
