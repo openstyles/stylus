@@ -151,12 +151,13 @@ export function apply({cfg, sections}, isReplace) {
   if (!sections)
     return;
   const ids = isReplace && new Set();
+  let old;
   for (const style of sections) {
     const {id, code} = style;
     const codeStr = Array.isArray(code)
       ? style.code = code.join('')
       : code;
-    const old = table.get(id);
+    old = table.get(id);
     if (!old) {
       style.el = createStyle(style);
       table.set(id, style);
@@ -176,8 +177,14 @@ export function apply({cfg, sections}, isReplace) {
     for (let i = list.length, s; --i >= 0;) if (!ids.has((s = list[i]).id)) removeStyle(s);
   }
   if (isEnabled) {
-    if (!isTransitionPatched) applyTransitionPatch(sections);
-    restoreOrder();
+    if (!isTransitionPatched)
+      applyTransitionPatch(sections);
+    if ((__.B_FIREFOX || __.B_ANY && FF) && assV2 && old && !isReplace && sections.length === 1) {
+      // TODO: remove when Firefox fixes #2123
+      wrappedDoc[kAss] = wrappedDoc[kAss]; // eslint-disable-line no-self-assign
+    } else {
+      restoreOrder();
+    }
   }
   emitUpdate();
 }
