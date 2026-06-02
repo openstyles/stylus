@@ -16,7 +16,7 @@ export const loading = __.MV3 && swController
   ? loadStyle(prefs.clientData)
   : prefs.clientData.then(loadStyle);
 
-export const loadingLazy = import(/* webpackChunkName: "editor-lazy" */'./load-lazy-ui');
+export const loadingLazy = import(/* webpackChunkName: "edit-lazy" */'./load-lazy-ui');
 
 /** @param {StylusClientData} _ */
 function loadStyle({style = makeNewStyleObj(), isUC, si, state, template, theme, themeText}) {
