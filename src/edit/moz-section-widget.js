@@ -1,5 +1,6 @@
 import colorMimicry from '@/js/color/color-mimicry';
 import {pFavicons} from '@/js/consts';
+import {$toggleDataset} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
 import * as prefs from '@/js/prefs';
@@ -63,9 +64,11 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
        */
       async '.add-applies-to'(elItem, func) {
         const pos = func.item.find(1);
-        cm.replaceRange(`, ${func.str.type}("")`, pos, pos);
+        const type = func.str.type;
+        const elList = !type && elItem.parentElement;
+        cm.replaceRange(type ? `, ${type}("")` : func.str.value + 'domain("") ', pos, pos);
         await sleep0();
-        elItem.nextElementSibling.$('input').focus();
+        (elList || elItem.nextElementSibling).$('input').focus();
       },
     };
 
@@ -327,9 +330,6 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
         slot = el;
       }
     }
-    if (!funcs.length && (!oldItems || oldItems.length)) {
-      // TPL.appliesToEverything.cloneNode(true);
-    }
     setProp(sec, 'widgetFuncs', items);
     elList[KEY] = items;
     container[KEY] = sec;
@@ -343,28 +343,31 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
    * @returns {MarkedFunc}
    */
   function renderFunc(func, old = {}) {
+    const {start} = func;
+    const {line} = start;
     const {
       type,
       value,
       isQuoted = false,
-      start,
-      start: {line},
-      typeEnd = {line, ch: start.ch + type.length},
-      valuePos = {line, ch: typeEnd.ch + 1 + Boolean(isQuoted)},
-      valueEnd = {line, ch: valuePos.ch + value.length},
-      end = {line, ch: valueEnd.ch + Boolean(isQuoted) + 1},
+      typeEnd = !type ? start : {line, ch: start.ch + type.length},
+      valuePos = !type ? start : {line, ch: typeEnd.ch + 1 + Boolean(isQuoted)},
+      valueEnd = !type ? start : {line, ch: valuePos.ch + value.length},
+      end = !type ? start : {line, ch: valueEnd.ch + Boolean(isQuoted) + 1},
     } = func;
     const el = old.item?.[KEY] || tplAppliesToItem.cloneNode(true);
     const elVal = el.$(C_VALUE);
+    const elType = el.$(C_TYPE);
     /** @namespace MarkedFunc */
     const res = el[KEY] = {
       str: {type, value},
       item: markFuncPart(start, end, old.item, el),
-      type: markFuncPart(start, typeEnd, old.type, el.$(C_TYPE), type, toLowerCase),
+      type: markFuncPart(start, typeEnd, old.type, elType, type, toLowerCase),
       value: markFuncPart(valuePos, valueEnd, old.value, elVal, value, fromDoubleslash),
     };
     if (el.dataset.type !== type) {
-      el.dataset.type = type;
+      $toggleDataset(el, 'type', type);
+      if (!type || elType.disabled)
+        elType.disabled = !type;
       elVal.focus = focusRegexp;
       editor.toggleRegexp(elVal, type);
     }

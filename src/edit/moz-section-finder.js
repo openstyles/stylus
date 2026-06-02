@@ -5,10 +5,10 @@ import {trimCommentLabel} from './util';
 export default function MozSectionFinder(cm) {
   const KEY = 'MozSectionFinder';
   const MOZ_DOC_LEN = '@-moz-document'.length;
-  const rxDOC = /@-moz-document(\s+|$)/ig;
+  const rxDOC = /@-moz-document(?:\s+|(\s*)({)|$)/ig;
   const rxVOID = /\s*}/y;
   const rxFUNC = /([-a-z]+)\(/iy;
-  const rxNEXT = /(\s*)(.)?/y;
+  const rxNEXT = /(\s*)(?:(.)\s*)?/y;
   const rxSPACE = /\s+/y;
   const rxTokDOC = /^(?!comment|string)/;
   const rxTokCOMMENT = /^comment(\s|$)/;
@@ -200,7 +200,7 @@ export default function MozSectionFinder(cm) {
       }
       let ch = line === from.line ? from.ch : 0;
       while (true) {
-        let m;
+        let m, nullSection;
         if (!goal) {
           // useful for minified styles with long lines
           if ((line - to.line || ch - to.ch) >= 0) {
@@ -224,7 +224,12 @@ export default function MozSectionFinder(cm) {
           };
           if (rxTokDOC.test(cm.getTokenTypeAt(section.start))) {
             found.push(section);
-            goal = '_func';
+            if (m[2]) {
+              nullSection = !m[1];
+              goal = '';
+            } else {
+              goal = '_func';
+            }
           } else {
             continue;
           }
@@ -330,9 +335,9 @@ export default function MozSectionFinder(cm) {
             rxNEXT.lastIndex = ch;
             s = text.match(rxNEXT);
             goal = s[2];
-            goal = goal === ',' ? '_func' :
-              goal === '{' ? '_cmt' :
-                !goal && '_,'; // non-space something at this place = syntax error
+            goal = goal === ',' ? 'func' :
+              goal === '{' ? 'cmt' :
+                !goal && ','; // non-space something at this place = syntax error
             if (!goal) {
               goal = 'error';
               break;
@@ -342,6 +347,8 @@ export default function MozSectionFinder(cm) {
               goal = '';
               break;
             }
+            if (s[1])
+              goal = '_' + goal;
           }
           if (goal === ',') {
             goal = text[ch] === ',' ? '_func' : '';
@@ -355,6 +362,13 @@ export default function MozSectionFinder(cm) {
         // ...or a EOL, in which case we'll advance to the next line
         if (goal) {
           return;
+        }
+        if (!funcs.length) {
+          funcs[0] = /** @type {MozSectionFunc} */ {
+            type: '',
+            value: nullSection ? ' ' : '',
+            start: {line, ch: section.end.ch - 1},
+          };
         }
       }
     });

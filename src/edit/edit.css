@@ -559,6 +559,9 @@ a.icon {
         display: none;
       }
     }
+    &:only-child .remove-applies-to {
+      display: none;
+    }
     .add-applies-to:first-child {
       margin-left: 1rem;
     }
@@ -591,20 +594,20 @@ a.icon {
 .remove-applies-to {
   font-size: 0;
   cursor: pointer;
+  margin-left: $plus-minus-pad;
+  i {
+    pointer-events: none;
+    color: var(--c60);
+    line-height: var(--input-height);
+  }
+  &:hover i {
+    color: var(--fg);
+  }
+}
+.add-applies-to {
   margin-right: $plus-minus-pad;
 }
-.remove-applies-to {
-  margin-left: $plus-minus-pad;
-}
-:is(.add-applies-to, .remove-applies-to) i {
-  pointer-events: none;
-  color: var(--c60);
-  line-height: var(--input-height);
-}
-:is(.add-applies-to, .remove-applies-to):hover i {
-  pointer-events: none;
-  color: var(--fg);
-}
+
 /************ help popup ************/
 #help-popup {
   --pad-x: 1.5rem;
@@ -870,7 +873,8 @@ a.icon {
     padding: $targetGapY calc($pad025 + var(--cm-bar-width, 0)) 0 $pad075;
     font-family: var(--family);
     > label,
-    li[data-type] option[value=""] {
+    li[data-type] option[value=""],
+    li:not([data-type]) option:not([value=""]) {
       display: none;
     }
     li:not([data-type]) {
