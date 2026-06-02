@@ -3,7 +3,7 @@ import '@/js/browser';
 import {kBadFavs, pKeepAlive} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '@/js/dom-util';
-import {htmlToTemplate, tBody, template, templateCache} from '@/js/localization';
+import {tBody, template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
@@ -14,7 +14,6 @@ import {browserSidebar} from '@/js/util-webext';
 import './options-sync';
 import '@/css/onoffswitch.css';
 import './options.css';
-import shortcutsFF from './shortcuts-ff.html';
 
 /** @type {{[id: string]: {el:HTMLElement, not:string, op:string, opVal:string}[]}} */
 const showIf = {__proto__: null};
@@ -154,7 +153,7 @@ function customizeHotkeys() {
   const SKIP = ['Control', 'Alt', 'Shift', 'Meta', 'CapsLock', 'Tab', 'Escape', 'OS'];
   messageBox.show({
     title: t('shortcutsNote'),
-    contents: (templateCache.shortcutsFF ??= htmlToTemplate(shortcutsFF)).cloneNode(true),
+    contents: template.shortcutsFF.cloneNode(true),
     className: 'center-dialog pre-line',
     buttons: [t('confirmClose')],
     onshow(box) {

@@ -1,7 +1,7 @@
 import {kStyleIdPrefix, UCD} from '@/js/consts';
 import {$create, $toggleDataset, isSidebar} from '@/js/dom';
 import {setupLivePrefs, showSpinner} from '@/js/dom-util';
-import {breakWord, formatDate, htmlToTemplateCache, templateCache} from '@/js/localization';
+import {breakWord, formatDate, template} from '@/js/localization';
 import {onConnect} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
@@ -12,12 +12,10 @@ import {
 import {tabUrl, tabUrlSupported} from '.';
 import {configure, openURLandHide, styleFinder} from './events';
 import './search.css';
-import html from './search.html';
 
-htmlToTemplateCache(html);
-document.body.append(templateCache.searchUI);
+document.body.append(template.searchUI);
 
-const RESULT_TPL = templateCache.searchResult;
+const RESULT_TPL = template.searchResult;
 const RESULT_ID_PREFIX = RESULT_TPL.className + '-';
 const RESULT_SEL = '.' + RESULT_TPL.className;
 const INDEX_URL = URLS.usoaRaw[0] + 'search-index.json';
@@ -171,7 +169,7 @@ dom.nav = {};
 const navOnClick = {prev, next};
 for (const place of ['top', 'bottom']) {
   const nav = $(`.search-results-nav[data-type="${place}"]`);
-  nav.appendChild(templateCache.searchNav.cloneNode(true));
+  nav.appendChild(template.searchNav.cloneNode(true));
   dom.nav[place] = nav;
   for (const child of nav.$$('[data-type]')) {
     const type = child.dataset.type;
@@ -464,7 +462,7 @@ function renderActionButtons(entry) {
   if (notMatching !== entry.classList.contains('not-matching')) {
     entry.classList.toggle('not-matching');
     if (notMatching) {
-      entry.prepend(templateCache.searchResultNotMatching.cloneNode(true));
+      entry.prepend(template.searchResultNotMatching.cloneNode(true));
     } else {
       entry.firstElementChild.remove();
     }

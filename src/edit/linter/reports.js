@@ -1,8 +1,7 @@
-import {htmlToTemplate} from '@/js/localization';
+import {template} from '@/js/localization';
 import {clipString} from '@/js/util';
 import * as linterMan from '.';
 import editor from '../editor';
-import html from './reports.html';
 
 const tables = new Map();
 let tplReport, tplRow, rowSeverityIcon, rowSeverity, rowLine, rowCol, rowMessage;
@@ -66,7 +65,7 @@ function findNextSibling(cm) {
 
 function createTable(cm) {
   if (!tplReport) {
-    tplReport = htmlToTemplate(html);
+    tplReport = template.linterReport;
     tplRow = tplReport.$('tr');
     tplRow.remove();
   }

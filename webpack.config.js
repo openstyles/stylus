@@ -454,6 +454,7 @@ module.exports = [
           headTags.push(...bodyTags.splice(0, bodyTags.length - 1));
           if (MV3) headTags.unshift(GET_CLIENT_DATA_TAG);
           return {
+            __: VARS,
             compilation: compilation,
             webpackConfig: compilation.options,
             htmlWebpackPlugin: {tags, files, options},

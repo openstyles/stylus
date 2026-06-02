@@ -7,6 +7,14 @@
   <link href="css/icons.ttf" rel="preload" as="font" crossorigin="anonymous">
   <%= htmlWebpackPlugin.tags.headTags %>
 
+  <%= require('./edit/global-search.html').default %>
+  <%= require('./edit/sections-editor.html').default %>
+  <template data-id="appliesTo"><%= require('./edit/applies-to.html').default %></template>
+  <template data-id="keymapHelp"><%= require('./edit/keymap-help.html').default %></template>
+  <template data-id="editorSettings"><%= require('./edit/editor-settings.html').default %></template>
+  <template data-id="styleSettings"><%= require('./edit/style-settings.html').default %></template>
+  <template data-id="linterReport"><%= require('./edit/linter/report.html').default %></template>
+
   <template data-id="jumpToLine">
     <span i18n="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
   </template>

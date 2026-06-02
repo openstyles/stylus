@@ -4,7 +4,7 @@ import compareVersion from '@/js/cmpver';
 import {pFavicons, UCD} from '@/js/consts';
 import {$$remove, $create, $createLink, urlParams} from '@/js/dom';
 import {configDialog, messageBox, showSpinner} from '@/js/dom-util';
-import {htmlToTemplate, tBody} from '@/js/localization';
+import {tBody, template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleCodeEmpty} from '@/js/sections-util';
@@ -14,7 +14,6 @@ import {clipString, debounce, deepEqual, sessionStore, t, tryURL} from '@/js/uti
 import {closeCurrentTab} from '@/js/util-webext';
 import DirectDownloader from './direct-downloader';
 import PortDownloader from './port-downloader';
-import htmlStyleOpts from '../edit/style-settings.html';
 import '../css/target-site.css';
 import '../edit/settings.css';
 import './install-usercss.css';
@@ -84,7 +83,7 @@ setTimeout(() => !cm && showSpinner($id('header')), 200);
   }
 
   const hasFileAccessP = browser.extension.isAllowedFileSchemeAccess();
-  const elSettings = htmlToTemplate(htmlStyleOpts);
+  const elSettings = template.styleSettings;
   elSettings.$('#ss-update-url').closest('div').remove();
   elSettings.$('.buttons').remove();
   $('.settings').append(elSettings);

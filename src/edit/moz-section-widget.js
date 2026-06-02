@@ -1,19 +1,18 @@
 import colorMimicry from '@/js/color/color-mimicry';
 import {pFavicons} from '@/js/consts';
-import {$create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
-import {htmlToTemplate, templateCache} from '@/js/localization';
 import {onMessage} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {sleep0, t} from '@/js/util';
 import {CodeMirror} from '@/cm';
-import {C_CONTAINER, C_ITEM, C_LIST, C_TYPE, C_VALUE, iconize} from './applies-to';
+import {
+  C_CONTAINER, C_ITEM, C_LIST, C_TYPE, C_VALUE, iconize, tplAppliesTo, tplAppliesToItem,
+} from './applies-to';
 import editor from './editor';
 import MozSectionFinder from './moz-section-finder';
-import {htmlAppliesTo} from './util';
 
 export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
-  let TPL, EVENTS, CLICK_ROUTE;
+  let EVENTS, CLICK_ROUTE;
   const KEY = 'MozSectionWidget';
   const C_LABEL = 'label';
   /** @returns {MarkedFunc[]} */
@@ -35,22 +34,8 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
   };
 
   function init() {
-    const hint = {title: t('appliesHelp')};
     enabled = true;
-    TPL = {
-      container:
-        $create('div' + C_CONTAINER, [
-          $create(C_LABEL, hint, t('appliesLabel')),
-          $create('ul' + C_LIST),
-        ]),
-      listItem:
-        (templateCache.appliesTo ??= htmlToTemplate(htmlAppliesTo)).cloneNode(true),
-      appliesToEverything:
-        $create('li.applies-to-everything', t('appliesToEverything')),
-    };
-
-    TPL.listItem.$('[value=""]').remove();
-    Object.assign(TPL.listItem.$(C_TYPE), hint);
+    tplAppliesToItem.$(C_TYPE).title = t('appliesHelp');
 
     CLICK_ROUTE = {
       /**
@@ -319,7 +304,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
    * @returns {HTMLElement}
    */
   function renderContainer(sec, oldWidget) {
-    const container = oldWidget ? oldWidget.node : TPL.container.cloneNode(true);
+    const container = oldWidget ? oldWidget.node : tplAppliesTo.cloneNode(true);
     const elList = container.$(C_LIST);
     const {funcs} = sec;
     const oldItems = elList[KEY] || false;
@@ -343,7 +328,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       }
     }
     if (!funcs.length && (!oldItems || oldItems.length)) {
-      TPL.appliesToEverything.cloneNode(true);
+      // TPL.appliesToEverything.cloneNode(true);
     }
     setProp(sec, 'widgetFuncs', items);
     elList[KEY] = items;
@@ -369,7 +354,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       valueEnd = {line, ch: valuePos.ch + value.length},
       end = {line, ch: valueEnd.ch + Boolean(isQuoted) + 1},
     } = func;
-    const el = old.item?.[KEY] || TPL.listItem.cloneNode(true);
+    const el = old.item?.[KEY] || tplAppliesToItem.cloneNode(true);
     const elVal = el.$(C_VALUE);
     /** @namespace MarkedFunc */
     const res = el[KEY] = {

@@ -1,18 +1,19 @@
 import {kCodeMirror, kEditorSettings, pFavicons} from '@/js/consts';
 import {$toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
-import {templateCache, htmlToTemplate, template} from '@/js/localization';
+import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {FROM_CSS, TO_CSS} from '@/js/sections-util';
 import {debounce} from '@/js/util';
 import {CodeMirror} from '@/cm';
-import {C_CONTAINER, C_ITEM, C_LIST, C_TYPE, C_VALUE, iconize} from './applies-to';
+import {
+  C_ITEM, C_LIST, C_TYPE, C_VALUE, iconize, tplAppliesTo, tplAppliesToItem,
+} from './applies-to';
 import {initBeautifyButton} from './beautify';
 import cmFactory from './codemirror-factory';
 import editor from './editor';
 import * as linterMan from './linter';
-import {htmlEditorSettings} from './settings';
-import {helpPopup, htmlAppliesTo, trimCommentLabel} from './util';
+import {helpPopup, trimCommentLabel} from './util';
 
 const RX_META1 = /^!?\s*==userstyle==\s*$/i;
 
@@ -24,9 +25,9 @@ export default class EditorSection {
    */
   constructor(sectionData, genId, si) {
     const me = this; // for tocEntry.removed
-    const el = this.el = templateCache.section.cloneNode(true);
+    const el = this.el = template.section.cloneNode(true);
     const elLabel = this.elLabel = el.$('.code-label');
-    const elTargets = this.targetsEl = el.$(C_CONTAINER);
+    const elTargets = this.targetsEl = tplAppliesTo.cloneNode(true);
     // TODO: find another way other than `el[kCodeMirror]` for getAssociatedEditor
     const cm = this.cm = el[kCodeMirror] = cmFactory.create(wrapper => {
       const ws = wrapper.style;
@@ -35,6 +36,7 @@ export default class EditorSection {
         ? ws.height = si ? si.height : '100vh'
         : ws.height;
       el.style.setProperty('--cm-height', h);
+      elLabel.after(elTargets);
       elTargets[prefs.__values['editor.targetsFirst'] ? 'after' : 'before'](wrapper);
     }, {
       value: sectionData.code,
@@ -184,7 +186,7 @@ export default class EditorSection {
         if (elUC) {
           elUC = null;
         } else {
-          elUC = this.elUC = templateCache.usercssSection.cloneNode(true);
+          elUC = this.elUC = template.usercssSection.cloneNode(true);
           this.elLabelText.after(elUC);
         }
       } else if (elUC) {
@@ -214,8 +216,7 @@ export default class EditorSection {
         } else if (cls.contains('remove-applies-to')) {
           this.removeTarget(trg);
         } else if (!this.ati && (tmp = el.closest('label'))) {
-          const chk = (templateCache[kEditorSettings] ??= htmlToTemplate(htmlEditorSettings))
-            .$('#editor\\.targetsFirst');
+          const chk = template[kEditorSettings].$('#editor\\.targetsFirst');
           const chkLabel = chk.closest('label').cloneNode(true);
           const ati = this.ati = helpPopup.show(chkLabel, tmp.title, {}, 'ati');
           ati.onClose.add(() => delete this.ati);
@@ -301,9 +302,9 @@ class SectionTarget {
    */
   constructor(section, type = '', value = '') {
     this.id = section.genId();
-    this.el = (templateCache.appliesTo ??= htmlToTemplate(htmlAppliesTo)).cloneNode(true);
+    this.el = tplAppliesToItem.cloneNode(true);
     this.el.me = this;
-    this.el.dataset.type = type;
+    $toggleDataset(this.el, 'type', type);
     this.section = section;
     this.dirt = `section.${section.id}.apply.${this.id}`;
     this.selectEl = this.el.$(C_TYPE);
@@ -312,7 +313,6 @@ class SectionTarget {
     this.type = this.selectEl.value = type;
     this.value = this.valueEl.value = value;
     this.restore();
-    this.toggleAll();
   }
 
   remove() {
@@ -328,18 +328,13 @@ class SectionTarget {
     editor.dirty.add(`${this.dirt}.value`, this.value);
   }
 
-  toggleAll() {
-    $toggleDataset(this.section.targetsEl, 'all', !this.type);
-  }
-
   onSelectChange() {
     const sec = this.section;
     const val = this.selectEl.value;
     editor.dirty.modify(`${this.dirt}.type`, this.type, val);
     editor.toggleRegexp(this.valueEl, val);
-    this.el.dataset.type = val;
+    $toggleDataset(this.el, 'type', val);
     this.type = val;
-    this.toggleAll();
     sec.emitChange('apply');
     sec.updateTocEntry('apply');
     if (prefs.__values[pFavicons]) iconize(this.el, true);

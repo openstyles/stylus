@@ -1,12 +1,9 @@
 import {CodeMirror, extraKeys} from '@/cm';
 import {$create} from '@/js/dom';
-import {htmlToTemplate} from '@/js/localization';
+import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {clipString, stringAsRegExp, t} from '@/js/util';
 import {helpPopup} from './util';
-import html from './keymap-help.html';
-
-const TPL = htmlToTemplate(html);
 
 let inputs;
 let tableBody;
@@ -17,7 +14,7 @@ export function keymapHelp() {
   const keyMapSorted = Object.keys(keyMap)
     .map(key => ({key, cmd: keyMap[key]}))
     .sort((a, b) => (a.cmd < b.cmd || (a.cmd === b.cmd && a.key < b.key) ? -1 : 1));
-  const table = TPL.cloneNode(true);
+  const table = template.keymapHelp.cloneNode(true);
   const row = (tableBody = table.tBodies[0]).rows[0];
   const cellA = row.children[0];
   const cellB = row.children[1];

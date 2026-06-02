@@ -2,7 +2,7 @@ import {CodeMirror, THEMES} from '@/cm';
 import {kEditorSettings, kExclusions, kInclusions, kOverridden} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
-import {templateCache, htmlToTemplate, template} from '@/js/localization';
+import {templateCache, template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {debounce, t, tryURL} from '@/js/util';
@@ -10,25 +10,20 @@ import editor from './editor';
 import {loadingLazy} from './load-style';
 import {createHotkeyInput, helpPopup} from './util';
 import './settings.css';
-import htmlEditorSettings from './editor-settings.html';
-import htmlStyleOpts from './style-settings.html';
-
-export {htmlEditorSettings};
 
 // TODO: allow the user to customize which options are always shown
 // TODO: decide which options are shown by default
 // TODO: show all opts in a helpPopup or a dockable/movable panel
 
-for (const [id, init, tpl, html] of [
-  ['#options', EditorSettings, kEditorSettings, htmlEditorSettings],
-  ['#styleOpts', StyleSettings, 'styleSettings', htmlStyleOpts],
+for (const [id, init, tpl] of [
+  ['#options', EditorSettings, kEditorSettings],
+  ['#styleOpts', StyleSettings, 'styleSettings'],
 ]) {
   const el = template.body.$(id);
   const mo = new MutationObserver(() => {
     mo.disconnect();
     // Making templateCache reusable in $,$$ by replacing an empty document fragment
-    templateCache[tpl] = el.appendChild($create('main',
-      templateCache[tpl] ??= htmlToTemplate(html)));
+    templateCache[tpl] = el.appendChild($create('main', template[tpl]));
     init(el);
   });
   mo.observe(el, {attributes: true, attributeFilter: ['open']});

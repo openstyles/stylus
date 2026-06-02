@@ -7,6 +7,12 @@
   <link href="css/icons.ttf" rel="preload" as="font" crossorigin="anonymous">
   <%= htmlWebpackPlugin.tags.headTags %>
 
+  <% if (!__.B_CHROME) { %>
+  <template data-id="shortcutsFF">
+    <%= require('./options/shortcuts-ff.html').default %>
+  </template>
+  <% } %>
+
   <template data-id="sites">
     <input type="checkbox" id="$.sitesOnly" class="slider">
     <p i18n="optionsAdvancedSites">

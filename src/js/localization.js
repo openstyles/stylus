@@ -38,8 +38,6 @@ const intlCache = {};
 /** Adds soft hyphens every 10 characters to ensure the long words break before breaking the layout */
 export const breakWord = text => text.length <= 10 ? text
   : text.replace(RX_WORD_BREAK, '$&\u00AD');
-/** Only use for HTML in our source code, never for externally editable stuff like locales */
-export const parseHtml = str => new Range().createContextualFragment(str);
 export const tHTML = html => typeof html !== 'string'
   ? html
   : html.includes('<') // check for html tags
@@ -82,24 +80,6 @@ function createTemplate(el) {
   if (id) templateCache[id] = res;
   tElements(res);
   return res;
-}
-
-/** Only use for HTML in our source code, never for externally editable stuff like locales
- * @param {string} html
- * @return {HTMLElement|DocumentFragment}
- */
-export function htmlToTemplate(html) {
-  const frag = parseHtml(html);
-  const first = frag.firstChild;
-  const res = first.nextSibling ? frag : first;
-  tElements(res);
-  return res;
-}
-
-/** Only use for HTML in our source code, never for externally editable stuff like locales */
-export function htmlToTemplateCache(html) {
-  for (const el of parseHtml(html).$$('template[data-id]')) createTemplate(el);
-  return templateCache;
 }
 
 export function sanitizeHtml(str, safe) {

@@ -1,7 +1,7 @@
-import {htmlToTemplate} from '@/js/localization';
+import {$create} from '@/js/dom';
 import {ownRoot} from '@/js/urls';
+import {t} from '@/js/util';
 import {MF} from '@/js/util-webext';
-import htmlError from './dom-error.html';
 import '@/css/dom-error.css';
 
 export default showUnhandledError;
@@ -13,7 +13,17 @@ let elError, elEntry;
 function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params */) {
   err = err.reason || err; // for onunhandledrejection
   if (!elError) {
-    [elError, elEntry] = htmlToTemplate(htmlError).children;
+    elError = $create('#unhandledError', [
+      $create('a', {title: t('copy'), tabIndex: 0}, $create('i.i-copy')),
+      $create('a', {title: t('confirmClose'), tabIndex: 0}, $create('i.i-close')),
+    ]);
+    elEntry = $create('details', [
+      $create('summary', [
+        $tag('span'),
+        $create('a', {target: '_blank', rel: 'noopener', tabIndex: 0}, t('reportBug')),
+      ]),
+      $tag('pre'),
+    ]);
     const formatText = target => '```\n' +
       [].map.call((target?.closest('details') || elError).$$('span, pre'),
         (_, i) => _.textContent + (i % 2 ? '\n' : ''))
