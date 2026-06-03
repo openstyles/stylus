@@ -57,49 +57,26 @@ const BUILDERS = Object.assign(Object.create(null), {
   uso: {
     pre(source, vars) {
       const pool = Object.create(null);
-      return doReplace(source);
-
-      function doReplace(text) {
-        return text.replace(/(\/\*\[\[([\w-]+)]]\*\/)([0-9a-f]{2}(?=\W))?/gi, (_, cmt, name, alpha) => {
-          const key = alpha ? name + '[A]' : name;
-          let val = pool[key];
-          if (val === undefined) {
-            val = pool[key] = getValue(name, null, alpha);
-          }
-          return (val != null ? val : cmt) + (alpha || '');
-        });
-      }
-
-      function getValue(name, isUsoRgb, alpha) {
-        const v = vars[name];
-        if (!v) {
-          return name.endsWith('-rgb')
-            ? getValue(name.slice(0, -4), true)
-            : null;
-        }
-        let {value} = v;
-        switch (v.type) {
-          case 'color':
-            value = colorConverter.parse(value) || null;
-            if (value) {
-              /* #rrggbb - inline alpha is present; an opaque hsl/a; #rrggbb originally
-               * rgba(r, g, b, a) - transparency <1 is present (Chrome pre-66 compatibility)
-               * rgb(r, g, b) - if color is rgb/a with a=1, note: r/g/b will be rounded
-               * r, g, b - if the var has `-rgb` suffix per USO specification
-               * TODO: when minimum_chrome_version >= 66 try to keep `value` intact */
-              if (alpha) delete value.a;
-              const isRgb = isUsoRgb || value.type === 'rgb' || value.a != null && value.a !== 1;
-              const usoMode = isUsoRgb || !isRgb;
-              value = colorConverter.format(value, isRgb ? 'rgb' : 'hex', {usoMode});
-            }
-            return value;
-          case 'dropdown':
-          case 'select':
-            pool[name] = ''; // prevent infinite recursion
-            return doReplace(value);
+      const reCmt = /\/\*\[\[([\w-]+)]]\*\/([0-9a-f]{2}(?=\W)|)/gi;
+      const doReplace = text => text.replace(reCmt, (s, name, hexAlpha) => {
+        const key = hexAlpha ? name + '[A]' : name;
+        const val = key in pool ? pool[key] : pool[key] = getValue(name, hexAlpha);
+        return val ?? s;
+      });
+      const getValue = (name, hexAlpha) => {
+        let rgb;
+        let v = vars[name] || (rgb = name.endsWith('-rgb')) && vars[name.slice(0, -4)];
+        let {type, value} = v || {};
+        if (type === 'dropdown' || type === 'select') {
+          pool[name] = ''; // prevent infinite recursion
+          value = doReplace(value);
+        } else if (type === 'color' && (hexAlpha || rgb) && (v = colorConverter.parse(value))) {
+          if (hexAlpha) v.a = 1;
+          value = colorConverter.format(v, rgb ? 'rgb' : 'hex', {uso: hexAlpha || rgb}) + hexAlpha;
         }
         return value;
-      }
+      };
+      return doReplace(source);
     },
   },
 });

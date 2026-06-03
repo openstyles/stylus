@@ -24,15 +24,13 @@ const options = {
       }
     },
     color: state => {
-      const color = colorConverter.parse(state.value);
-      if (!color) {
+      if (!colorConverter.parse(state.value)) {
         throw new ParseError({
           code: 'invalidColor',
           args: [state.value],
           index: state.valueIndex,
         });
       }
-      state.value = colorConverter.format(color);
     },
   },
 };
