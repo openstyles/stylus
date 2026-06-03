@@ -2,6 +2,7 @@
  * WARNING!
  * Used in limited contexts such as the offscreen document.
  * Only for pure declarations with no side effects or marked with /*@__PURE__*/
+import {CHROME} from '@/js/ua';
 
 export const capitalize = s => s.slice(0, 1).toUpperCase() + s.slice(1);
 export const clamp = (value, min, max) => value < min ? min : value > max ? max : value;
@@ -222,6 +223,16 @@ export function fetchWebDAV(url, init = {}) {
       Authorization: `Basic ${btoa(`${this.username || ''}:${this.password || ''}`)}`,
     },
   });
+}
+
+export function paintCanvas(w, h, cb) {
+  // The check must be inlined, not reused as a variable, to enable elimination of dead code
+  const canvas = __.B_CHROME || __.B_ANY && CHROME
+    ? new OffscreenCanvas(w, h)
+    : Object.assign($tag('canvas'), {width: w, height: h});
+  const ctx = canvas.getContext('2d');
+  cb(ctx, canvas);
+  return ctx.getImageData(0, 0, w, h);
 }
 
 /** A simple polyfill in case DOM storage is disabled in the browser */

@@ -13,10 +13,9 @@ const DUMB_ATTRS = {title: DUMB};
 const CLOSE_POPUP_EVENT = 'close-colorpicker-popup';
 
 const {RX_COLOR, testAt} = colorConverter;
-const blankOutComments = s => ' '.repeat(s.length);
 // milliseconds to work on invisible colors per one run
 const TIME_BUDGET = 50;
-let ALLOWED_STYLES, RXS_FUNCS, RX_COMMENT, RX_DETECT, RX_DETECT_FUNC;
+let RXS_FUNCS, RX_COMMENT, RX_DETECT, RX_DETECT_FUNC;
 let RX_PARENS, RX_STYLE, RX_UNSUPPORTED;
 // on initial paint the view doesn't have a size yet
 // so we process the maximum number of lines that can fit in the window
@@ -73,7 +72,6 @@ class ColorSwatch {
       `;
     }
     if (!RX_DETECT) {
-      ALLOWED_STYLES = /^(?:atom|keyword|callee|comment|string)(?=\s|$)/;
       RXS_FUNCS = '(?:(?:rgb|hsl)a?|hwb|(?:ok)?l(?:ab|ch)|color(?:-mix)?|light-dark)';
       RX_COMMENT = /\/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$)/g;
       RX_DETECT = new RegExp(String.raw`(^|[\s(){}[\]:,/"=])(${
@@ -105,8 +103,8 @@ class ColorSwatch {
     colorizeAll(this);
   }
 
-  openPopup(color) {
-    if (this.popup) openPopupForCursor(this, color);
+  openPopup() {
+    if (this.popup) openPopupForCursor(this);
   }
 
   registerEvents() {
@@ -384,10 +382,7 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
     if (spanState === 'same')
       continue;
     if (isHex ? testAt(RX_COLOR.hex, 0, color)
-        : func
-          ? !(rxFunc = RX_COLOR[func.slice(0, 3)])
-            || testAt(rxFunc, 0, color.slice(func.length + 1, -1))
-          : colorConverter.NAMED_COLORS.has(color.toLowerCase())) {
+        : func || colorConverter.NAMED_COLORS.has(color.toLowerCase())) {
       if (!__.MV3 && (isHex || rxFunc) && RX_UNSUPPORTED?.test(color))
         color = colorConverter.format(colorConverter.parse(color), 'rgb');
       (spanState ? redeem : mark)(color, isHex || !func || rxFunc);
@@ -464,59 +459,58 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
 //#endregion
 //#region Popup
 
-function openPopupForCursor(state, defaultColor) {
+function openPopupForCursor(state) {
   const {line, ch} = state.cm.getCursor();
   const lineHandle = state.cm.getLineHandle(line);
-  const data = {
-    line, ch,
-    color: defaultColor,
-    isShortCut: true,
-  };
-
-  let found;
-  for (const {from, marker} of lineHandle.markedSpans || []) {
-    if (marker.className === SWATCH_CLS &&
-        from <= ch && ch < from + marker.color.length) {
-      found = {color: marker.color, ch: from};
-      break;
+  let distance = 1e9;
+  let marker, markerStart;
+  for (const {from, marker: m} of lineHandle.markedSpans || []) {
+    if (m.className === SWATCH_CLS) {
+      const gapL = from - ch;
+      const gapR = ch - from - m.color.length;
+      if (gapL <= 0 && gapR < 0) {
+        marker = m;
+        markerStart = from;
+        break;
+      } else if (gapL < distance || gapR < distance) {
+        marker = m;
+        markerStart = from;
+        distance = gapL < gapR ? gapL : gapR;
+      }
     }
   }
-  found = found || findNearestColor(lineHandle, ch);
-  doOpenPopup(state, Object.assign(data, found));
-  if (found) highlightColor(state, data);
+  doOpenPopup(state, line, markerStart ?? ch, marker);
 }
-
 
 function openPopupForSwatch(state, swatch) {
-  const cm = state.cm;
   const lineDiv = swatch.closest('div');
-  const {line: {markedSpans} = {}} = cm.display.renderedView.find(v => v.node === lineDiv) || {};
-  if (!markedSpans) return;
-
-  let swatchIndex = [...lineDiv.getElementsByClassName(SWATCH_CLS)].indexOf(swatch);
-  for (const {marker} of markedSpans.sort((a, b) => a.from - b.from)) {
-    if (marker.className === SWATCH_CLS && swatchIndex-- === 0) {
-      const data = Object.assign({color: marker.color}, marker.find().from);
-      highlightColor(state, data);
-      doOpenPopup(state, data);
-      break;
-    }
+  const {renderedView, viewFrom} = state.cm.display;
+  const line = renderedView.findIndex(rv => rv.node === lineDiv);
+  let v;
+  if (line >= 0 && (v = renderedView[line].line.markedSpans)
+  && (swatch = [].indexOf.call(lineDiv.getElementsByClassName(SWATCH_CLS), swatch)) >= 0
+  && (v = v.filter(ms => ms.marker.className === SWATCH_CLS)).length > swatch) {
+    v = v.sort((a, b) => a.from - b.from)[swatch];
+    doOpenPopup(state, viewFrom + line, v.from, v.marker);
   }
 }
 
-
-function doOpenPopup(state, data) {
-  const {left, bottom: top} = state.cm.charCoords(data, 'window');
-  state.popup.show(Object.assign(state.options.popup, data, {
+function doOpenPopup(state, line, ch, marker) {
+  const {cm} = state;
+  const data = Object.assign(state.options.popup, {line, ch});
+  const {left, bottom: top} = cm.charCoords(data, 'window');
+  const color = marker?.color || data.defaultColor;
+  state.popup.show(Object.assign(data, {
+    cm,
     top,
     left,
-    cm: state.cm,
-    color: data.color,
-    prevColor: data.color || '',
+    color: color || data.defaultColor,
+    prevColor: color || '',
     callback: popupOnChange,
     palette: makePalette(state),
     paletteCallback,
   }));
+  highlightColor(cm, line, ch, data);
 }
 
 
@@ -617,43 +611,7 @@ function updateMarkers(state) {
 }
 
 
-function findNearestColor({styles, text}, pos) {
-  let start, color, prevStart, prevColor, m;
-  RX_DETECT.lastIndex = Math.max(0, pos - 1000);
-
-  while ((m = RX_DETECT.exec(text))) {
-    start = m.index + m[1].length;
-    const token = m[2].toLowerCase();
-    const style = getStyleAtPos(styles, start + 1, 0);
-    const allowed = !style || ALLOWED_STYLES.test(style);
-    if (!allowed) {
-      color = '';
-    } else if (text[start + token.length] === '(') {
-      const tail = text.slice(start).replace(RX_COMMENT, blankOutComments);
-      color = tail.slice(0, tail.indexOf(')') + 1);
-      const type = color.slice(0, 3);
-      const value = color.slice(token.length + 1, -1);
-      color = testAt(RX_COLOR[type], 0, value) && color;
-    } else {
-      color = (token[0] === '#' || colorConverter.NAMED_COLORS.has(token)) && token;
-    }
-    if (!color) continue;
-    if (start >= pos) break;
-    prevStart = start;
-    prevColor = color;
-  }
-
-  if (prevColor && pos - (prevStart + prevColor.length) < start - pos) {
-    return {color: prevColor, ch: prevStart};
-  } else if (color) {
-    return {color, ch: start};
-  }
-
-}
-
-function highlightColor(state, data) {
-  const {line} = data;
-  const {cm} = state;
+function highlightColor(cm, line, ch, data) {
   const {viewFrom, viewTo} = cm.display;
   if (line < viewFrom || line > viewTo) {
     return;
@@ -685,7 +643,7 @@ function hitTest({button, target, offsetX, offsetY}) {
   if (button) return;
   /** @type {HTMLElement} */
   const swatch = target.closest('.' + SWATCH_CLS);
-  if (!swatch || swatch.title === DUMB)
+  if (!swatch)
     return;
   const {left, width, height} = getComputedStyle(swatch, '::before');
   const bounds = swatch.getBoundingClientRect();

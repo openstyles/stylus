@@ -1,5 +1,7 @@
+import {paintCanvas} from '@/js/util';
 import * as colorConverter from './color-converter';
 import colorMimicry from './color-mimicry';
+import {kHexUppercase} from './util';
 import './color-picker.css';
 
 export default function ColorPicker(cm) {
@@ -333,13 +335,13 @@ export default function ColorPicker(cm) {
     renderInputs();
   }
 
-  function setFromHexLettercaseElement() {
-    const isUpper = Boolean(options.hexUppercase);
+  function setFromHexLettercaseElement(event) {
+    const isUpper = !!options[kHexUppercase];
     $hexLettercase[isUpper].dataset.active = '';
     delete $hexLettercase[!isUpper].dataset.active;
     const value = $hexCode.value;
     $hexCode.value = isUpper ? value.toUpperCase() : value.toLowerCase();
-    setFromInputs();
+    if (event) setFromInputs();
   }
 
   function setFromInputs(event) {
@@ -403,7 +405,7 @@ export default function ColorPicker(cm) {
         part = constrain(0, ceiling, parseInt(part, 16) + dir * (affected ? 1 : 0));
         return (part + ceiling + 1).toString(16).slice(1);
       }).join('') + a;
-      newValue = options.hexUppercase ? newValue.toUpperCase() : newValue.toLowerCase();
+      newValue = options[kHexUppercase] ? newValue.toUpperCase() : newValue.toLowerCase();
     } else if (!alt) {
       value = parseFloat(el.value);
       const isHue = el.title === 'H';
@@ -444,8 +446,9 @@ export default function ColorPicker(cm) {
   //region State-to-DOM
 
   function setFromColor(color) {
-    color = typeof color === 'string' ? colorConverter.parse(color) : color;
-    color = color || colorConverter.parse('#f00');
+    if (typeof color === 'string')
+      color = colorConverter.parse(color) || computeColor(color);
+    color ||= colorConverter.parse('#f00');
     const newHSV = colorConverter.toHSV(color);
     if (Object.entries(newHSV).every(([k, v]) => v === HSV[k] || Math.abs(v - HSV[k]) < 1e-3)) {
       return;
@@ -486,7 +489,7 @@ export default function ColorPicker(cm) {
     const opacityX = $opacity.offsetWidth * (isNaN(HSV.a) ? 1 : HSV.a);
     $opacityKnob.style.left = (opacityX - 7.5) + 'px';
 
-    $sat.style.backgroundColor = color;
+    $sat.style.backgroundColor = colorConverter.format(color);
   }
 
   function renderInputs() {
@@ -566,9 +569,9 @@ export default function ColorPicker(cm) {
     }
   }
 
-  function onHexLettercaseClicked() {
-    options.hexUppercase = !options.hexUppercase;
-    setFromHexLettercaseElement();
+  function onHexLettercaseClicked(event) {
+    options[kHexUppercase] = !options[kHexUppercase];
+    setFromHexLettercaseElement(event);
   }
 
   function onSaturationMouseDown(event) {
@@ -739,6 +742,18 @@ export default function ColorPicker(cm) {
 
   function colorToString(color, type = currentFormat) {
     return colorConverter.format(color, type, options);
+  }
+
+  function computeColor(color) {
+    const el = $tag('div');
+    const [r, g, b, a] = paintCanvas(1, 1, ctx => {
+      el.style.cssText = `color:${color};position:absolute;opacity:0;`.replace(/;/g, '!important;');
+      $root.append(el);
+      ctx.fillStyle = getComputedStyle(el).color;
+      ctx.fillRect(0, 0, 1, 1);
+      el.remove();
+    }).data;
+    return {type: 'rgb', r, g, b, a: a / 255};
   }
 
   function alphaToString(a = HSV.a) {

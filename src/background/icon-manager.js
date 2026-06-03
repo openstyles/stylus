@@ -1,7 +1,7 @@
 import {kDisableAll, kSidebar, kStyleIds} from '@/js/consts';
 import {__values as __prefs, subscribe} from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
-import {debounce, NOP, t} from '@/js/util';
+import {debounce, NOP, paintCanvas, t} from '@/js/util';
 import {
   browserAction, browserSidebar, MF_ICON_EXT, MF_ICON_PATH, toggleListener,
 } from '@/js/util-webext';
@@ -175,13 +175,7 @@ async function loadImage(url) {
         onerror: reject,
       }));
   const {width: w, height: h} = img;
-  // The check must be inlined, not reused as a variable, to enable elimination of dead code
-  const canvas = __.B_CHROME || __.B_ANY && CHROME
-    ? new OffscreenCanvas(w, h)
-    : Object.assign($tag('canvas'), {width: w, height: h});
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(img, 0, 0, w, h);
-  const result = ctx.getImageData(0, 0, w, h);
+  const result = paintCanvas(w, h, ctx => ctx.drawImage(img, 0, 0, w, h));
   imageDataCache[url] = result;
   return result;
 }

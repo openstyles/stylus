@@ -1,14 +1,18 @@
 import {CodeMirror, extraKeys} from '@/cm';
 import * as prefs from '@/js/prefs';
 import '@/js/color/color-view';
+import {kHexUppercase} from '@/js/color/util';
 import {t} from '@/js/util';
 import cmFactory from './codemirror-factory';
 
 const {defaults, commands} = CodeMirror;
 const ECP = 'editor.colorpicker.';
 const CP = 'colorpicker';
+const kColor = 'color';
+const kHotkey = 'hotkey';
+const kMaxHeight = 'maxHeight';
 
-prefs.subscribe(ECP + 'hotkey', (id, hotkey) => {
+prefs.subscribe(ECP + kHotkey, (id, hotkey) => {
   commands[CP] = invokeColorpicker;
   for (const key in extraKeys) {
     if (extraKeys[key] === CP) {
@@ -22,7 +26,7 @@ prefs.subscribe(ECP + 'hotkey', (id, hotkey) => {
 }, true);
 
 prefs.subscribe(ECP.slice(0, -1), (id, enabled) => {
-  const keyName = prefs.__values[ECP + 'hotkey'];
+  const keyName = prefs.__values[ECP + kHotkey];
   defaults[CP] = enabled;
   if (enabled) {
     if (keyName) {
@@ -35,17 +39,20 @@ prefs.subscribe(ECP.slice(0, -1), (id, enabled) => {
         tooltipForSwitcher: t('colorpickerSwitchFormatTooltip'),
         paletteLine: t('numberedLine'),
         paletteHint: t('colorpickerPaletteHint'),
-        hexUppercase: prefs.__values[ECP + 'hexUppercase'],
-        embedderCallback: state => {
-          for (const k of ['hexUppercase', 'color'])
+        [kHexUppercase]: prefs.__values[ECP + kHexUppercase],
+        embedderCallback(state) {
+          for (const k of [kColor, kHexUppercase])
             if (state[k] !== prefs.__values[ECP + k])
               prefs.set(ECP + k, state[k]);
         },
-        get maxHeight() {
-          return prefs.__values[ECP + 'maxHeight'];
+        get [kMaxHeight]() {
+          return prefs.__values[ECP + kMaxHeight];
         },
-        set maxHeight(h) {
-          prefs.set(ECP + 'maxHeight', h);
+        set [kMaxHeight](h) {
+          prefs.set(ECP + kMaxHeight, h);
+        },
+        get defaultColor() {
+          return prefs.__values[ECP + kColor];
         },
       },
     };
@@ -56,5 +63,5 @@ prefs.subscribe(ECP.slice(0, -1), (id, enabled) => {
 }, true);
 
 function invokeColorpicker(cm) {
-  cm.state[CP].openPopup(prefs.__values[ECP + 'color']);
+  cm.state[CP].openPopup();
 }
