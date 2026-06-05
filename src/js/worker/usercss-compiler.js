@@ -4,7 +4,7 @@ import extractSections from './moz-parser';
 import {importScripts, loadParserlib, parserlib} from './util';
 
 let builderChain = Promise.resolve();
-let StylusRenderer, less;
+let StylusParser, StylusRenderer, less;
 
 const BUILDERS = Object.assign(Object.create(null), {
 
@@ -24,10 +24,22 @@ const BUILDERS = Object.assign(Object.create(null), {
   stylus: {
     pre(source, vars) {
       StylusRenderer ??= (importScripts('stylus-lang.js'), global.StylusRenderer);
+      StylusParser ??= (
+        (StylusParser = new StylusRenderer('')).render(),
+        StylusParser.parser.constructor
+      );
+      for (const key in vars) {
+        const val = vars[key].value;
+        try {
+          vars[key] = new StylusParser(val).peek().val;
+        } catch (err) {
+          err.message += '\n' + key + ' = ' + val;
+          throw err;
+        }
+      }
       return new Promise((resolve, reject) => {
-        const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
-        new StylusRenderer(varDef + source)
-          .render((err, output) => err ? reject(countVarLines(err, varDef)) : resolve(output));
+        new StylusRenderer(source, {globals: vars})
+          .render((err, output) => err ? reject(err) : resolve(output));
       });
     },
   },
@@ -45,12 +57,13 @@ const BUILDERS = Object.assign(Object.create(null), {
         importScripts('less.js');
         less = global.less;
       }
-      const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
-      try {
-        return (await less.render(varDefs + source, {math: 'parens-division'})).css;
-      } catch (err) {
-        throw countVarLines(err, varDefs);
-      }
+      const varDefs = {};
+      for (const key in vars)
+        varDefs['@' + key] = vars[key].value;
+      return (await less.render(source, {
+        math: 'parens-division',
+        modifyVars: varDefs,
+      })).css;
     },
   },
 
@@ -118,12 +131,6 @@ export default async function compileUsercss(preprocessor, code, vars) {
     res.log = log;
   }
   return res;
-}
-
-function countVarLines(err, str) {
-  // var's value may include \n inside
-  err._varLines = str.match(/^/gm).length;
-  return err;
 }
 
 /**
