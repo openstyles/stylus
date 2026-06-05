@@ -218,11 +218,13 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
    * @param {number} cutAt
    */
   function update(added, removed, cutAt = finder.sections.indexOf(added[0])) {
-    const isDelayed = added.isDelayed && (cm.startOperation(), true);
+    const {curOp} = cm;
+    const {isDelayed} = added;
     const toDelay = [];
     const t0 = performance.now();
     const elemsToIconize = prefs.__values[pFavicons] && [];
     let viewTo = editor.viewTo || cm.display.viewTo;
+    if (!curOp) cm.startOperation();
     for (const sec of added) {
       const i = removed.findIndex(isReusableWidget, sec);
       const old = removed[i];
@@ -255,7 +257,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     } else {
       removed.forEach(killWidget);
     }
-    if (isDelayed) cm.endOperation();
+    if (!curOp) cm.endOperation();
     if (elemsToIconize.length) iconize(elemsToIconize);
   }
 
