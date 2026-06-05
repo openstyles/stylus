@@ -40,12 +40,12 @@ const keywords = {
   valueKeywords: new Set(cssData.valueKeywords),
 };
 const rxColon = /(?:\s+|\/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$))*:/y;
-const rxDocFunc = /(?:url(?:-prefix)?|domain|regexp)\(\s*(['")])?/iy;
 const rxHexColor = /#[\da-f]{3}(?:[\da-f](?:[\da-f]{2}(?:[\da-f]{2})?)?)?/yi;
 const rxNumberDigit = /\d*(?:\.\d*)?(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxNumberDot = /\d+(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxNumberSign = /(?:\d+(?:\.\d*)?|\.?\d+)(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxSpace = /[\s\u00a0]+/y;
+const rxSpaceAndQuote = /([\s\u00a0]*)(['"]?)/y;
 const rxSpaceRParenEOL = /[\s\u00a0]*(?=\)|$)/y;
 const rxStringDoubleQ = /\s*(?:[^\\"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*/y;
 const rxStringSingleQ = /\s*(?:[^\\']+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*/y;
@@ -53,17 +53,19 @@ const rxUniAny = /[-\w\\\u00A1-\uFFFF]*/y;
 const rxUniVar = /-[-\w\\\u00A1-\uFFFF]*/y;
 const rxUniClass = /-?[_a-zA-Z\\\u00A1-\uFFFF][-\w\\\u00A1-\uFFFF]*/y;
 const rxUnquotedUrl = /\s*(?:[^()\s\\'"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*\s*/y;
-const rxUnquotedBadUrl = /(?:[^)\\]|\\[^)])+/y;
+const rxUnquotedBadUrl = /(?:[^)\\]|\\(?:[^)]|$))+/y;
 const states = {};
 /**
  * @param {CodeMirror.StringStream} stream
  * @param {RegExp} rx - must be sticky
  * @param {boolean} [consume]
- * @return {boolean}
+ * @return {?RegExpExecArray}
  */
 const stickyMatch = (stream, rx, consume = true) => {
   rx.lastIndex = stream.pos;
-  return rx.test(stream.string) && (consume && (stream.pos = rx.lastIndex), true);
+  rx = rx.exec(stream.string);
+  if (rx && consume) stream.pos += rx[0].length;
+  return rx;
 };
 
 let rxAtRules;
@@ -97,8 +99,6 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
     highlightNonStandardPropertyKeywords = config.highlightNonStandardPropertyKeywords !== false;
 
   let type, override;
-  let prevStream;
-  let prevCounter = 0;
 
   // Tokenizers
 
@@ -113,6 +113,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
     const c = str.charCodeAt(pos - 1);
     const hook = tokenHooks.get(c);
     if (hook) {
+      type = null;
       res = hook(stream, state);
       if (res === false) res = null;
     } else if (c === 64/* @ */ && stickyMatch(stream, /[-\w\\]+/y)) {
@@ -126,7 +127,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
       c === 34/* " */ ? res = tokenStringDouble ??= tokenString.bind(rxStringDoubleQ, c)
         : c === 39/* ' */ && (res = tokenStringSingle ??= tokenString.bind(rxStringSingleQ, c))) {
       state.tokenize = res;
-      return state.tokenize(stream, state);
+      return res(stream, state);
     } else if (c === 35/* # */) {
       stickyMatch(stream, rxUniAny);
       res = kAtom;
@@ -163,11 +164,9 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
         res -= pos - 1;
         if ((
           res === 6 ? /*domain*/c === 100 || c === 68 || /*regexp*/c === 114 || c === 82
-          : res === 3 /*url*/ || res === 10 /*url-prefix*/ && (c === 117 || c === 85)
-        ) && (
-          rxDocFunc.lastIndex = pos - 1,
-          (res = rxDocFunc.exec(str)) && !res[1]
-        )) state.tokenize = tokenParenthesized;
+          : (res === 3 /*url*/ || res === 10 /*url-prefix*/) && (c === 117 || c === 85)
+        ) && documentTypes.has(str.slice(pos - 1, pos + res - 1).toLowerCase()))
+          state.tokenize = tokenParenthesized;
         res = 'variable callee';
         type = kVariable;
       } else {
@@ -187,6 +186,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
    * @param {CodeMirror.CSS.State} state
    */
   function tokenString(quote, stream, state) {
+    state.space = false;
     type = !stickyMatch(stream, this) || this === rxUnquotedBadUrl ? kError : 'string';
     let tokenize;
     const {string: str, pos} = stream;
@@ -201,6 +201,8 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
         type = kError;
       }
     } else if (quote === 41) {
+      // non-escaped linebreak, the string is done, let's skip spaces
+      state.space = true;
       tokenize = tokenUrlEnd ??= tokenString.bind(rxSpaceRParenEOL, 41/* ) */);
     } else if (str.charCodeAt(pos - 1) !== 92/* \ */) {
       type = kError;
@@ -216,9 +218,25 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
    * @param {CodeMirror.CSS.State} state
    */
   function tokenParenthesized(stream, state) {
-    stream.pos++; // Must be '('
-    state.tokenize = tokenUrl ??= tokenString.bind(rxUnquotedUrl, 41/* ) */);
-    type = '(';
+    const spaceSkipped = state.space;
+    const pos = stream.pos += !spaceSkipped; // '('
+    let c = stream.string.charCodeAt(pos);
+    let res = null;
+    type = spaceSkipped ? res : '(';
+    if (spaceSkipped)
+      state.space = false;
+    if (c === 34/*"*/ || c === 39/*'*/) {
+      state.tokenize = null;
+      res = tokenBase(stream, state);
+    } else if (!spaceSkipped && c !== 41/*)*/ && (
+      (c = stickyMatch(stream, rxSpaceAndQuote, false))[1] ||
+      !c[2] && pos + c[0].length === stream.string.length
+    )) {
+      state.space = true;
+    } else {
+      state.tokenize = tokenUrl ??= tokenString.bind(rxUnquotedUrl, 41/* ) */);
+    }
+    return res;
   }
 
   // Context management
@@ -686,8 +704,8 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
      */
     token(stream, state) {
       const {tokenize} = state;
-      const {pos} = stream;
-      if (!tokenize && stream.eatSpace()) {
+      const trim = !tokenize || state.space;
+      if (trim && stream.eatSpace()) {
         override = null;
       } else {
         let style = (tokenize || tokenBase)(stream, state);
@@ -698,17 +716,6 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
         override = style;
         if (type !== kComment) {
           state.state = states[state.state](type, stream, state);
-        }
-      }
-      if (stream.pos === stream.start) { // TODO: remove after finding out the culprit
-        // CM calls token() 10 times before giving up
-        if (prevStream !== stream) {
-          prevStream = stream;
-          prevCounter = 0;
-        } else if (++prevCounter === 9) {
-          stream.pos = stream.string.length; // pacify CM by butchering this line
-          onerror(new Error( // invoking showUnhandledError()
-            `cm/css.js did not advance stream at ${pos}, ${override}, ${type}: ${stream.string}`));
         }
       }
       return override;
