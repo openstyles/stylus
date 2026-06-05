@@ -1,4 +1,5 @@
 import ColorPicker from '@/js/color/color-picker';
+import {SWATCH_CLS} from '@/js/color/util';
 import {UCD} from '@/js/consts';
 import {$create, $createLink, isSidebar} from '@/js/dom';
 import {important, messageBox, setupLivePrefs} from '@/js/dom-util';
@@ -242,7 +243,7 @@ export default async function configDialog(style, y) {
       switch (va.type) {
         case 'color':
           children = [
-            $create('.colorview-swatch.config-value', [
+            $create(`.${SWATCH_CLS}.config-value`, [
               va.input = $create('a.color-swatch', {
                 va,
                 tabIndex: 0,

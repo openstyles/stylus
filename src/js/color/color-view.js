@@ -1,22 +1,22 @@
 import {CodeMirror} from '@/cm';
-import {getStyleAtPos} from '@/cm/util';
-import * as colorConverter from '@/js/color/color-converter';
-import ColorPicker from '@/js/color/color-picker';
 import {CHROME, FIREFOX} from '@/js/ua';
+import * as colorConverter from './color-converter';
+import ColorPicker from './color-picker';
+import {CP, SWATCH_CLS, SWATCH_PROP} from './util';
 
 //#region Constants
 
-export const SWATCH_CLS = 'colorview-swatch';
-export const SWATCH_PROP = `--${SWATCH_CLS}`;
 const DUMB = 'Modern color support is not implemented yet...';
 const DUMB_ATTRS = {title: DUMB};
 const CLOSE_POPUP_EVENT = 'close-colorpicker-popup';
 
 const {RX_COLOR, testAt} = colorConverter;
-// milliseconds to work on invisible colors per one run
-const TIME_BUDGET = 50;
-let RXS_FUNCS, RX_COMMENT, RX_DETECT, RX_DETECT_FUNC;
-let RX_PARENS, RX_STYLE, RX_UNSUPPORTED;
+const jobsChanges = [];
+const jobsInvisible = [];
+const cmHighlightWorkers = new WeakMap();
+let timerChanges, timerInvisible;
+let generation = 0;
+let RXS_FUNCS, RX_COMMENT, RX_DETECT_FUNC, RX_PARENS, RX_STYLE, RX_UNSUPPORTED;
 // on initial paint the view doesn't have a size yet
 // so we process the maximum number of lines that can fit in the window
 let maxRenderChunkSize = Math.ceil(window.innerHeight / 14);
@@ -26,22 +26,27 @@ let maxRenderChunkSize = Math.ceil(window.innerHeight / 14);
 
 const CM_EVENTS = {
   changes(cm, info) {
-    colorizeChanges(cm.state.colorpicker, info);
+    const state = cm.state[CP];
+    if (info.length === 1 && info[0].origin === 'setValue') {
+      colorizeAll(state);
+    } else {
+      colorizeChanges(state, info);
+    }
   },
   update(cm) {
-    const textHeight = cm.display.cachedTextHeight;
-    const height = cm.display.lastWrapHeight;
-    if (!height || !textHeight) return;
-    maxRenderChunkSize = Math.max(20, Math.ceil(height / textHeight));
-    const state = cm.state.colorpicker;
+    const state = cm.state[CP];
+    const {cachedTextHeight, lastWrapHeight} = cm.display;
+    if (!lastWrapHeight || !cachedTextHeight)
+      return;
+    cm.off('update', CM_EVENTS.update);
+    maxRenderChunkSize = Math.max(20, Math.ceil(lastWrapHeight / cachedTextHeight));
     if (state.colorizeOnUpdate) {
       state.colorizeOnUpdate = false;
       colorizeAll(state);
     }
-    cm.off('update', CM_EVENTS.update);
   },
   mousedown(cm, event) {
-    const state = cm.state.colorpicker;
+    const state = cm.state[CP];
     const swatch = hitTest(event);
     dispatchEvent(new CustomEvent(CLOSE_POPUP_EVENT, {
       detail: swatch && state.popup,
@@ -54,30 +59,18 @@ const CM_EVENTS = {
 };
 
 //#endregion
-//#region ColorSwatch
+//#region ColorSwatcher
 
-class ColorSwatch {
+class ColorSwatcher {
   constructor(cm, options = {}) {
     this.cm = cm;
     this.options = options;
     this.markersToRemove = [];
     this.markersToRepaint = [];
     this.popup = ColorPicker(cm);
-    if (!this.popup) {
-      delete CM_EVENTS.mousedown;
-      document.head.appendChild($tag('style')).textContent = `
-        .colorview-swatch::before {
-          cursor: auto;
-        }
-      `;
-    }
-    if (!RX_DETECT) {
+    if (!RX_DETECT_FUNC) {
       RXS_FUNCS = '(?:(?:rgb|hsl)a?|hwb|(?:ok)?l(?:ab|ch)|color(?:-mix)?|light-dark)';
       RX_COMMENT = /\/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$)/g;
-      RX_DETECT = new RegExp(String.raw`(^|[\s(){}[\]:,/"=])(${
-        RX_COLOR.hex.source}|${
-        RXS_FUNCS}(?=\()|(?:${
-        [...colorConverter.NAMED_COLORS.keys()].join('|')})(?=[\s;(){}[\]/"!]|$))`, 'gi');
       RX_DETECT_FUNC = new RegExp(RXS_FUNCS + '\\(', 'iy');
       RX_PARENS = new RegExp('[()]|' + RX_COMMENT.source, 'g');
       RX_STYLE = /(?:^|\s)(?:atom|keyword|variable callee)(?:\s|$)/;
@@ -96,7 +89,14 @@ class ColorSwatch {
       }
     }
     this.colorize();
-    this.registerEvents();
+    for (const name in CM_EVENTS)
+      cm.on(name, CM_EVENTS[name]);
+    cm.state.highlight.set = (time, fn) => {
+      cmHighlightWorkers.set(cm, fn);
+      if (!jobsInvisible.includes(this))
+        jobsInvisible.push(this);
+      timerInvisible ||= setTimeout(colorizeInvisible, time);
+    };
   }
 
   colorize() {
@@ -106,27 +106,16 @@ class ColorSwatch {
   openPopup() {
     if (this.popup) openPopupForCursor(this);
   }
-
-  registerEvents() {
-    for (const name in CM_EVENTS) {
-      this.cm.on(name, CM_EVENTS[name]);
-    }
-  }
-
-  unregisterEvents() {
-    for (const name in CM_EVENTS) {
-      this.cm.off(name, CM_EVENTS[name]);
-    }
-  }
-
   destroy() {
-    this.unregisterEvents();
     const {cm} = this;
     const {curOp} = cm;
+    for (const name in CM_EVENTS)
+      cm.off(name, CM_EVENTS[name]);
+    delete cm.state.highlight.set;
     if (!curOp) cm.startOperation();
     cm.getAllMarks().forEach(m => m.className === SWATCH_CLS && m.clear());
     if (!curOp) cm.endOperation();
-    cm.state.colorpicker = null;
+    cm.state[CP] = null;
   }
 }
 
@@ -134,11 +123,11 @@ class ColorSwatch {
 //#region CodeMirror registration
 
 CodeMirror.defineOption('colorpicker', false, (cm, value, oldValue) => {
-  if (oldValue && oldValue !== CodeMirror.Init && cm.state.colorpicker) {
-    cm.state.colorpicker.destroy();
+  if (oldValue && oldValue !== CodeMirror.Init && cm.state[CP]) {
+    cm.state[CP].destroy();
   }
   if (value) {
-    cm.state.colorpicker = new ColorSwatch(cm, value);
+    cm.state[CP] = new ColorSwatcher(cm, value);
   }
 });
 
@@ -147,68 +136,74 @@ CodeMirror.defineOption('colorpicker', false, (cm, value, oldValue) => {
 
 function colorizeAll(state) {
   const {cm} = state;
+  const {curOp} = cm;
   const {viewFrom, viewTo} = cm.display;
   if (!viewTo) {
     state.colorizeOnUpdate = true;
     return;
   }
-  const {curOp} = cm;
   if (!curOp) cm.startOperation();
-
-  state.line = viewFrom;
   state.inComment = null;
-  state.now = performance.now();
-  state.stopAt = state.stopped = null;
-
-  cm.doc.iter(viewFrom, viewTo, lineHandle => colorizeLine(state, lineHandle));
-
+  state.cnt = 0;
+  state.stopAt = 0;
+  generation++;
+  let line = viewFrom;
+  cm.eachLine(viewFrom, viewTo, lh => colorizeLineViaStyles(state, line++, lh));
   updateMarkers(state);
   if (!curOp) cm.endOperation();
-
   if (viewFrom > 0 || viewTo < cm.doc.size) {
-    clearTimeout(state.colorizeTimer);
-    state.line = 0;
-    state.colorizeTimer = setTimeout(colorizeInvisible, 100, state, viewFrom, viewTo);
+    state.line = viewFrom ? 0 : line;
+    if (!jobsInvisible.includes(state))
+      jobsInvisible.push(state);
+    timerInvisible ||= cmHighlightWorkers.has(cm) && setTimeout(colorizeInvisible, 100);
   }
 }
 
-
-function colorizeInvisible(state, viewFrom, viewTo) {
-  const {cm} = state;
-  const {curOp} = cm;
-  if (!curOp) cm.startOperation();
-
-  state.now = performance.now();
-  state.stopAt = state.now + TIME_BUDGET;
-  state.stopped = null;
-
-  // before the visible range
-  cm.eachLine(state.line, viewFrom, lineHandle => colorizeLine(state, lineHandle));
-
-  // after the visible range
-  if (!state.stopped && viewTo < cm.doc.size) {
-    state.line = Math.max(viewTo, state.line);
-    cm.eachLine(state.line, cm.doc.size, lineHandle => colorizeLine(state, lineHandle));
+function colorizeInvisible() {
+  timerInvisible = 0;
+  const cmsStarted = [];
+  while (jobsInvisible.length) {
+    const state = jobsInvisible.shift();
+    const {cm} = state;
+    const {display, doc} = cm;
+    const {viewFrom, viewTo} = display;
+    const size = doc.size;
+    const hlw = cmHighlightWorkers.get(cm);
+    let {line} = state;
+    let stopped;
+    if (!cm.curOp) {
+      cmsStarted.push(cm);
+      cm.startOperation();
+    }
+    generation++;
+    state.stopAt = performance.now() + cm.options.workTime;
+    cm.eachLine(line--, size, lh => {
+      ++line;
+      if (line < viewFrom || line >= viewTo)
+        return (lh.styles || (stopped = hlw()))
+          && colorizeLineViaStyles(state, line, lh) && (stopped = true);
+    });
+    updateMarkers(state);
+    if (stopped || doc.highlightFrontier < size) {
+      state.line = line;
+      const i = jobsInvisible.indexOf(state);
+      if (i > 0) jobsInvisible.splice(i, 1);
+      if (i) jobsInvisible.unshift(state);
+      timerInvisible = hlw && setTimeout(colorizeInvisible);
+      break;
+    }
   }
-
-  updateMarkers(state);
-  if (!curOp) cm.endOperation();
-
-  if (state.stopped) {
-    state.colorizeTimer = setTimeout(colorizeInvisible, 0, state, viewFrom, viewTo);
-  }
+  for (const cm of cmsStarted)
+    cm.endOperation();
 }
 
 
 function colorizeChanges(state, changes) {
-  if (changes.length === 1 && changes[0].origin === 'setValue') {
-    colorizeAll(state);
-    return;
-  }
   const queue = [];
   const postponed = [];
-  const viewFrom = state.cm.display.viewFrom || 0;
-  const viewTo = state.cm.display.viewTo || viewFrom + maxRenderChunkSize;
+  const display = state.cm.display;
+  const viewFrom = display.viewFrom || 0;
+  const viewTo = display.viewTo || viewFrom + maxRenderChunkSize;
 
   for (let change of changes) {
     const {from} = change;
@@ -230,7 +225,10 @@ function colorizeChanges(state, changes) {
   }
 
   if (queue.length) colorizeChangesNow(state, queue);
-  if (postponed.length) setTimeout(colorizeChangesNow, 0, state, postponed, true);
+  if (postponed.length) {
+    jobsChanges.push(state, postponed);
+    timerChanges ||= setTimeout(colorizeChangesLater);
+  }
 }
 
 
@@ -239,20 +237,17 @@ function colorizeChangesNow(state, changes, canPostpone) {
   const {curOp} = cm;
   if (!curOp) cm.startOperation();
 
-  state.now = performance.now();
-  const stopAt = canPostpone && state.now + TIME_BUDGET;
-  let stopped = null;
-
+  state.stopAt = canPostpone && performance.now() + cm.options.workTime;
+  generation++;
+  let stopped;
   let change, changeFromLine;
   let changeToLine = -1;
   let queueIndex = -1;
 
   changes = changes.sort((a, b) => a.from.line - b.from.line || a.from.ch - b.from.ch);
-  const first = changes[0].from.line;
-  const last = CodeMirror.changeEnd(changes[changes.length - 1]).line;
-  let line = state.line = first;
-
-  cm.doc.iter(first, last + 1, lineHandle => {
+  let line = changes[0].from.line;
+  cm.eachLine(line--, CodeMirror.changeEnd(changes[changes.length - 1]).line + 1, lh => {
+    ++line;
     if (line > changeToLine) {
       change = changes[++queueIndex];
       if (!change) return true;
@@ -260,83 +255,42 @@ function colorizeChangesNow(state, changes, canPostpone) {
       changeToLine = CodeMirror.changeEnd(change).line;
     }
     if (changeFromLine <= line && line <= changeToLine) {
-      state.line = line;
-      if (!lineHandle.styles) state.cm.getTokenTypeAt({line, ch: 0});
-      colorizeLineViaStyles(state, lineHandle);
+      if (!lh.styles)
+        state.cm.getTokenTypeAt({line, ch: 0});
+      if (colorizeLineViaStyles(state, line, lh))
+        stopped = true;
     }
-    if (canPostpone && (state.now = performance.now()) > stopAt) {
-      stopped = true;
-      return true;
-    }
-    line++;
+    return stopped && canPostpone;
   });
 
   updateMarkers(state);
   if (!curOp) cm.endOperation();
 
   if (stopped) {
-    const stoppedInChange = line >= changeFromLine && line < changeToLine;
+    const stoppedInChange = line >= changeFromLine && line <= changeToLine;
     if (stoppedInChange) {
       changes.splice(0, queueIndex);
       changes[0] = Object.assign({}, changes[0], {from: {line}});
     } else {
       changes.splice(0, queueIndex + 1);
     }
-    state.colorizeTimer = setTimeout(colorizeChangesNow, 0, state, changes, true);
+    jobsChanges.push(state, changes);
+    timerChanges ||= setTimeout(colorizeChangesLater);
   }
+  return stopped;
 }
 
-
-function colorizeLine(state, lineHandle) {
-  if (state.stopAt && (state.now = performance.now()) > state.stopAt) {
-    state.stopped = true;
-    return true;
-  }
-  const {text, styles} = lineHandle;
-  const {cm} = state;
-
-  if (state.inComment === null && !styles) {
-    cm.getTokenTypeAt({line: state.line, ch: 0});
-    colorizeLineViaStyles(state, lineHandle);
-    return;
-  }
-
-  if (styles) {
-    colorizeLineViaStyles(state, lineHandle);
-    return;
-  }
-
-  let cmtStart = 0;
-  let cmtEnd = 0;
-  do {
-    if (state.inComment) {
-      cmtEnd = text.indexOf('*/', cmtStart);
-      if (cmtEnd < 0) break;
-      state.inComment = false;
-      cmtEnd += 2;
-    }
-    cmtStart = (text.indexOf('/*', cmtEnd) + 1 || text.length + 1) - 1;
-    const chunk = !cmtEnd && cmtStart === text.length ? text : text.slice(cmtEnd, cmtStart);
-
-    RX_DETECT.lastIndex = 0;
-    const m = RX_DETECT.exec(chunk);
-    if (m) {
-      cmtEnd += m.index + m[1].length;
-      cm.getTokenTypeAt({line: state.line, ch: 0});
-      const index = getStyleAtPos(lineHandle.styles, cmtEnd, 1);
-      colorizeLineViaStyles(state, lineHandle, Math.max(1, index || 0));
-      return;
-    }
-    state.inComment = cmtStart < text.length;
-  } while (state.inComment);
-  state.line++;
+function colorizeChangesLater() {
+  timerChanges = 0;
+  while (
+    !colorizeChangesNow(jobsChanges.shift(), jobsChanges.shift(), true) &&
+    jobsChanges.length
+  ) {/*NOP*/}
 }
 
-
-function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
+function colorizeLineViaStyles(state, line, lineHandle) {
   const {styles, text} = lineHandle;
   const stylesLen = styles.length;
-  const spanGeneration = state.now;
   // all comments may get blanked out in the loop
   const endsWithComment = text.endsWith('*/');
   let spanIndex = 0;
@@ -344,7 +298,7 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
   let {markedSpans} = lineHandle;
   let spansSorted = false;
   let spansZombies = markedSpans && markedSpans.length;
-  for (let i = styleIndex, j, rxFunc; i + 1 < stylesLen; i += 2) {
+  for (let i = 1, j, rxFunc; i + 1 < stylesLen; i += 2) {
     if (!(style = styles[i + 1]) ||
         !(style = style.split('overlay ', 1)[0].trim()) ||
         !RX_STYLE.test(style))
@@ -392,10 +346,13 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
   removeDeadSpans();
 
   state.inComment = style && style.includes('comment') && !endsWithComment;
-  state.line++;
+  if (state.stopAt
+  && (state.cnt += stylesLen) > 2 * 100 // only waste time on performance.now() every ~100 tokens
+  && (state.cnt = 0, performance.now() > state.stopAt)) {
+    return true;
+  }
 
   function mark(colorValue, pickable) {
-    const {line} = state;
     state.cm.markText({line, ch: start}, {line, ch: start + 1}, {
       className: SWATCH_CLS,
       css: SWATCH_PROP + ':' + colorValue,
@@ -420,7 +377,7 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
       }
       if (span.from === start && span.marker.className === SWATCH_CLS) {
         spansZombies--;
-        span.generation = spanGeneration;
+        span.generation = generation;
         const same = color === span.marker.color &&
           (func || /\W|^$/i.test(text.substr(start + color.length, 1)));
         if (same) return 'same';
@@ -435,7 +392,7 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
     state.markersToRemove.pop();
     state.markersToRepaint.push(span);
     span.to = start + len;
-    span.line = state.line;
+    span.line = line;
     span.index = spanIndex - 1;
     /** @type {CodeMirror.TextMarker} */
     const m = span.marker;
@@ -448,7 +405,7 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
   function removeDeadSpans() {
     if (!spansZombies) return;
     for (const m of markedSpans) {
-      if (m.generation !== spanGeneration &&
+      if (m.generation !== generation &&
           m.marker.className === SWATCH_CLS) {
         state.markersToRemove.push(m.marker);
       }

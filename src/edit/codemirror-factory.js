@@ -29,6 +29,7 @@ const cmFactory = {
     cm.display.lineDiv.on('mousewheel', plusMinusOnWheel.bind(cm), true);
     cm.lastActive = 0;
     cms.add(cm);
+    options.value = ''; // free up the unused source text
     return cm;
   },
 

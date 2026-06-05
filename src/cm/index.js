@@ -83,6 +83,7 @@ export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
     keyMap: prefs.__values['editor.keyMap'],
     extraKeys,
     maxHighlightLength: 100e3,
+    workTime: 50,
     undoDepth: 1000,
   };
 

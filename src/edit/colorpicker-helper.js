@@ -1,13 +1,12 @@
 import {CodeMirror, extraKeys} from '@/cm';
 import * as prefs from '@/js/prefs';
 import '@/js/color/color-view';
-import {kHexUppercase} from '@/js/color/util';
+import {CP, kHexUppercase} from '@/js/color/util';
 import {t} from '@/js/util';
 import cmFactory from './codemirror-factory';
 
 const {defaults, commands} = CodeMirror;
 const ECP = 'editor.colorpicker.';
-const CP = 'colorpicker';
 const kColor = 'color';
 const kHotkey = 'hotkey';
 const kMaxHeight = 'maxHeight';

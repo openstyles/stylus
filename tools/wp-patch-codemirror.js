@@ -8,6 +8,25 @@ const importCssData = {
   replace: 'import * as cssData from "@/cm/css-data";\n$&',
 };
 module.exports = [{
+  test: require.resolve('codemirror'),
+  loader: 'string-replace-loader',
+  options: {
+    multiple: [{
+      search: /(function startWorker[^<]+<) cm\.display\.viewTo\)/,
+      replace: '$1 cm.doc.size)',
+      strict: true,
+    }, {
+      search: /(?<top>function highlightWorker.+\s+)(?<head>[^(]+\()(?<chk>doc\.high[^5]+)500(?<neck>[\s\S]+?)(?<vis>if \(context\.line.+\s+)(?<chest>[\s\S]+?)(?<change>var ischange[\s\S]+?if \(ischange\).+\s+)(?<legs>[\s\S]+?)(?<stop>startWorker.+\s+return)(?<end>[\s\S]+?}\); })/,
+      replace: '$<top>var stopped;$<head>false && $<chk>1e9$<neck>' +
+        'if(1) {$<chest>$<vis>$<change>}$<legs>$<stop> stopped =$<end>\nreturn stopped;',
+      strict: true,
+    }, {
+      search: /(function resetModeState.+\s+)(cm\.doc\.iter[\s\S]+?)(startWorker)\((cm, 100)\)/,
+      replace: '$1!cm.options.value && $2setTimeout($3, 0, $4)',
+      strict: true,
+    }],
+  },
+}, {
   test: CM_PATH,
   loader: 'string-replace-loader',
   options: {

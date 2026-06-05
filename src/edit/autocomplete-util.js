@@ -1,5 +1,5 @@
 import {NAMED_COLORS} from '@/js/color/color-converter';
-import {SWATCH_CLS, SWATCH_PROP} from '@/js/color/color-view';
+import {SWATCH_CLS, SWATCH_PROP} from '@/js/color/util';
 import {kCssPropSuffix} from '@/js/consts';
 import {debounce} from '@/js/util';
 
