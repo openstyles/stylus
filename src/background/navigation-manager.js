@@ -18,19 +18,23 @@ webNavigation.onHistoryStateUpdated.addListener(onNavigation.bind(null, 'history
 webNavigation.onReferenceFragmentUpdated.addListener(onNavigation.bind(null, 'hash'));
 
 async function onNavigation(navType, data) {
-  if ((__.B_CHROME || __.B_ANY && CHROME) &&
-      data.timeStamp === prevData.timeStamp && deepEqual(data, prevData)) {
-    return; // Chrome bug: listener is called twice with identical data
+  const {url} = data;
+  if (!__.B_FIREFOX && (
+    url.startsWith('devtools:') ||
+    // https://crbug.com/40365717 listener is called twice with identical data
+    CHROME <= 143 && data.timeStamp === prevData.timeStamp && deepEqual(data, prevData)
+  )) {
+    return;
   }
   prevData = data;
   if (bgBusy) await bgBusy;
   const {tabId} = data;
   const td = tabCache[tabId];
   if (navType === kCommitted) {
-    if (data.url.startsWith(ownRoot))
-      (ownPagesCommitted[data.url] ??= []).push(tabId);
+    if (url.startsWith(ownRoot))
+      (ownPagesCommitted[url] ??= []).push(tabId);
   } else if (td) {
-    const {frameId: f, url} = data;
+    const {frameId: f} = data;
     const {documentId: d, frameType} = data;
     sendTab(tabId, {
       method: 'urlChanged',
