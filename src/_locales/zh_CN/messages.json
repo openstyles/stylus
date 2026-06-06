@@ -26,7 +26,7 @@
     "message": "域名"
   },
   "appliesHelp": {
-    "message": "使用「应用于」控件来控制 此章节代码应用于哪些URL"
+    "message": "使用「应用于」控件来控制此片段代码会应用于哪些 URL"
   },
   "appliesLabel": {
     "message": "应用于："
@@ -38,7 +38,7 @@
     "message": "对经过压缩的 CSS 无效"
   },
   "appliesRegexpOption": {
-    "message": "正则"
+    "message": "匹配此正则表达式的 URL"
   },
   "appliesRemove": {
     "message": "删除"
@@ -65,7 +65,7 @@
     "message": "备份"
   },
   "backupReminder": {
-    "message": "样式可能会因为断电，浏览器漏洞，个人错误而导致 <b>丢失</b>。<hr><b>备份您的资料：</b>在选项中配置「同步到云端」，或者在进行重大更改时手动单击「导出」按钮，最好使用专门的应用程序自动备份所有的数据"
+    "message": "样式可能会因为断电，浏览器漏洞，个人错误而导致<b>丢失</b>。<hr><b>备份您的数据：</b>在选项中配置「同步到云端」，或者在进行重大更改时手动点击「导出」按钮，再或者，更通用的办法，使用专门的备份工具自动备份设备上的所有数据。"
   },
   "checkAllUpdates": {
     "message": "全部检查更新"
@@ -83,28 +83,31 @@
     "message": "点击卸载"
   },
   "cm_arrowKeysTraverse": {
-    "message": "箭头键↑↓切换部分"
+    "message": "箭头键↑↓可切换片段"
   },
   "cm_autoCloseBrackets": {
-    "message": "括弧配对"
+    "message": "自动补全括号与引号"
   },
   "cm_autoCloseBracketsTooltip": {
-    "message": "在键入 () [] {} '' \"\" 时自动完成另一半配对"
+    "message": "在输入 () [] {} '' \"\" 时，自动补全后一半"
   },
   "cm_autocompleteOnTyping": {
-    "message": "键入时自动补全"
+    "message": "输入时提供代码补全"
   },
   "cm_colorpicker": {
-    "message": "CSS颜色器"
+    "message": "CSS 颜色选择器"
   },
   "cm_indentWithTabs": {
-    "message": "使用 Tab 智能缩进"
+    "message": "智能缩进时使用 Tab 而非空格"
   },
   "cm_keyMap": {
     "message": "键盘映射"
   },
   "cm_lineWrapping": {
     "message": "自动换行"
+  },
+  "cm_linter": {
+    "message": "CSS 检查器"
   },
   "cm_matchHighlight": {
     "message": "高亮"
@@ -113,16 +116,16 @@
     "message": "仅选择区域"
   },
   "cm_matchHighlightToken": {
-    "message": "光标处 token 字段"
+    "message": "光标处的 CSS 字段"
   },
   "cm_resizeGripHint": {
     "message": "双击以最大化或恢复高度"
   },
   "cm_selectByTokens": {
-    "message": "双击选中 token"
+    "message": "双击选中 CSS 字段"
   },
   "cm_selectByTokensTooltip": {
-    "message": "　双击token示例:   .foo-bar-2 0.32\n禁用：按\\w+常规语法 → 仅选择单词\n启用：按CSS语法 → 全选择。技巧↴\n💡Sublime键盘映射配合 Ctrl+D 来常规选择\\w+"
+    "message": "可被双击选中的 CSS 字段示例：.foo-bar-2  #aabbcc  0.32  !important\n禁用时：仅选中以符号分隔的单词（按 \\w+ 匹配）\n\n译注：启用时，Sublime 键盘映射下，可使用 Ctrl+D 临时恢复为选择单词。"
   },
   "cm_smartIndent": {
     "message": "智能缩进"
@@ -134,10 +137,10 @@
     "message": "主题"
   },
   "colorpickerPaletteHint": {
-    "message": "右击：循环跳转到所在行"
+    "message": "右键点击颜色：循环跳转到出现该颜色的行"
   },
   "colorpickerSwitchFormatTooltip": {
-    "message": "点击转换颜色格式:   HEX -> RGB -> HSL\nShift+单击 或 PgUp/PgDn  则反向转换"
+    "message": "点击转换颜色格式：HEX -> RGB -> HSL。\nShift+单击反向转换。\nPgUp/PgDn 键也可转换/反向转换。"
   },
   "colorpickerTooltip": {
     "message": "打开颜色选择器"
@@ -167,7 +170,7 @@
     "message": "删除"
   },
   "confirmDiscardChanges": {
-    "message": "确定要放弃修改吗?"
+    "message": "是否放弃修改?"
   },
   "confirmNo": {
     "message": "否"
@@ -238,13 +241,13 @@
     "message": "默认"
   },
   "deleteStyleConfirm": {
-    "message": "确定要删除此样式吗？"
+    "message": "您确定要删除此样式吗？"
   },
   "deleteStyleLabel": {
     "message": "删除"
   },
   "description": {
-    "message": "Stylus 用户样式管理器，自定义CSS来重构网页。Stylus 可轻松为网站样式进行编写或分享或安装他人样式。"
+    "message": "Stylus 用户样式管理器，自定义网页样式，重塑你的网页。Stylus 可轻松为众多热门网站安装主题和皮肤，并自由编写和修改更多样式。"
   },
   "disableAllStyles": {
     "message": "禁用所有样式"
@@ -285,16 +288,19 @@
     "message": "编辑"
   },
   "editTargetsFirst": {
-    "message": "在代码前显示目标"
+    "message": "将「应用于」显示在代码片段上方"
   },
   "editorSettings": {
     "message": "编辑器设置"
   },
   "emptyCode": {
-    "message": "这部分的 URL 是空的"
+    "message": "应用于此 URL 的样式片段是空的"
   },
   "enableStyleLabel": {
     "message": "启用"
+  },
+  "exclude": {
+    "message": "排除"
   },
   "exportCompatible": {
     "message": "导出（兼容模式）"
@@ -344,7 +350,7 @@
     "message": "点击从网上寻找新样式"
   },
   "general": {
-    "message": "一般"
+    "message": "通用"
   },
   "genericAdd": {
     "message": "添加"
@@ -395,10 +401,10 @@
     "message": "未知"
   },
   "gettingStyles": {
-    "message": "正在获取所有样式..."
+    "message": "正在获取所有样式…"
   },
   "headerResizerHint": {
-    "message": "仅在此类 编辑器/管理器/安装器 UI , 按住 Shift 可调整大小"
+    "message": "按住 Shift 可缩放此类界面，例如编辑器、管理器和安装器界面"
   },
   "helpAlt": {
     "message": "帮助"
@@ -407,7 +413,7 @@
     "message": "输入命令名称"
   },
   "helpKeyMapHotkey": {
-    "message": "按下热键"
+    "message": "按下快捷键"
   },
   "importAppendLabel": {
     "message": "追加导入"
@@ -439,6 +445,9 @@
   "importReportLegendInvalid": {
     "message": "忽略无效的代码"
   },
+  "importReportLegendOrphans": {
+    "message": "未包含在备份中的已安装样式"
+  },
   "importReportLegendUpdatedBoth": {
     "message": "已更新的所有信息和代码"
   },
@@ -462,6 +471,9 @@
   },
   "importStyles": {
     "message": "导入所有样式"
+  },
+  "include": {
+    "message": "包含"
   },
   "installButton": {
     "message": "安装样式"
@@ -496,7 +508,7 @@
     "message": "帮助"
   },
   "linkGetShareStyles": {
-    "message": "获取|分享 样式"
+    "message": "获取&分享样式"
   },
   "linkGetStyles": {
     "message": "获取样式"
@@ -524,7 +536,7 @@
     }
   },
   "linterConfigTooltip": {
-    "message": "点击以配置此 Linter"
+    "message": "点击以配置此检查器"
   },
   "linterIssues": {
     "message": "问题"
@@ -586,7 +598,7 @@
     "message": "只显示本地创建的样式"
   },
   "manageOnlyLocalTooltip": {
-    "message": "（此样式无法通过 userstyles.org 页面进行安装）"
+    "message": "（不是从 userstyles.org 页面安装的样式）"
   },
   "manageOnlyNonUsercss": {
     "message": "只显示非 UserCSS 样式"
@@ -607,10 +619,10 @@
     "message": "显示计数器角标"
   },
   "meta_invalidCheckboxDefault": {
-    "message": "无效 @var 复选框：赋值必须为 0 或 1 "
+    "message": "无效的 @var checkbox：值必须为 0 或 1 "
   },
   "meta_invalidColor": {
-    "message": "无效 @var 颜色：$color$不是颜色",
+    "message": "无效的 @var color：$color$不是有效的颜色",
     "placeholders": {
       "color": {
         "content": "$1"
@@ -618,10 +630,10 @@
     }
   },
   "meta_invalidNumber": {
-    "message": "需要一个数字"
+    "message": "应当是一个数字"
   },
   "meta_invalidRange": {
-    "message": "无效 @var $type$：必须是单个数字或数组",
+    "message": "无效的 @var $type$：必须是单个数字或数组",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -629,7 +641,7 @@
     }
   },
   "meta_invalidRangeDefault": {
-    "message": "无效 @var $type$：默认值为空",
+    "message": "无效的 @var $type$：默认值为 null",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -637,7 +649,7 @@
     }
   },
   "meta_invalidRangeMax": {
-    "message": "无效的 @var $type$: 默认值大于最大值",
+    "message": "无效的 @var $type$：默认值大于最大值",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -645,7 +657,7 @@
     }
   },
   "meta_invalidRangeMin": {
-    "message": "无效的 @var $type$: 默认值低于最小值",
+    "message": "无效的 @var $type$：默认值低于最小值",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -653,7 +665,7 @@
     }
   },
   "meta_invalidRangeMultipleUnits": {
-    "message": "无效 @var $type$：多个单位被定义",
+    "message": "无效的 @var $type$：多个单位被定义",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -661,7 +673,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "无效的 @var$type$：预设值不是一个数字或范围",
+    "message": "无效的 @var $type$：值的大小不是粒度（step）的整数倍",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -669,7 +681,7 @@
     }
   },
   "meta_invalidRangeTooManyValues": {
-    "message": "无效的 @var $type$: 数组中包含了过多项",
+    "message": "无效的 @var $type$：数组中包含的项目数量过多",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -677,7 +689,7 @@
     }
   },
   "meta_invalidRangeUnits": {
-    "message": "无效的 @var $type$: '$units$' 不是有效的单位",
+    "message": "无效的 @var $type$：'$units$' 不是有效的单位",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -688,7 +700,7 @@
     }
   },
   "meta_invalidRangeValue": {
-    "message": "无效的 @var $type$: 数组中的项必须为数字、字符 或 null",
+    "message": "无效的 @var $type$：数组中的项必须为数字、字符 或 null",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -696,31 +708,31 @@
     }
   },
   "meta_invalidSelect": {
-    "message": "无效的 @var 选择: 默认值必须是数组或对象"
+    "message": "无效的 @var select：默认值必须是数组或对象"
   },
   "meta_invalidSelectEmptyOptions": {
-    "message": "无效的 @var 选择: 列表项为空"
+    "message": "无效的 @var select：选项列表为空"
   },
   "meta_invalidSelectLabel": {
-    "message": "无效的 @var 选择: 项的标签为空"
+    "message": "无效的 @var select：选项的标签文本为空"
   },
   "meta_invalidSelectMultipleDefaults": {
-    "message": "无效的 @var 选择: 定义了多个默认项"
+    "message": "无效的 @var select：定义了多个默认选项"
   },
   "meta_invalidSelectNameDuplicated": {
-    "message": "无效的 @var 选择: 项的名称是重复的"
+    "message": "无效的 @var select：选项名称不应重复"
   },
   "meta_invalidSelectValue": {
-    "message": "无效的 @var 选择: 数组或对象内的值类型必须为字符"
+    "message": "无效的 @var select：数组/对象内的值必须为字符"
   },
   "meta_invalidSelectValueMismatch": {
-    "message": "无效的 @var 选择: 列表中不存在任何项"
+    "message": "无效的 @var select：选项列表中缺少值"
   },
   "meta_invalidString": {
-    "message": "需要一个带引号的字符串"
+    "message": "应当是一个带引号的字符串"
   },
   "meta_invalidURLProtocol": {
-    "message": "无效的 URL 协议，目前只允许 http 和 https : $protocol$",
+    "message": "无效的 URL 协议，目前只允许 http 和 https：$protocol$",
     "placeholders": {
       "protocol": {
         "content": "$1"
@@ -731,10 +743,10 @@
     "message": "无效的版本号"
   },
   "meta_invalidWord": {
-    "message": "需要一个单词"
+    "message": "应当是一个单词"
   },
   "meta_missingChar": {
-    "message": "需要字母：$chars$",
+    "message": "应当是字符：$chars$",
     "placeholders": {
       "chars": {
         "content": "$1"
@@ -742,7 +754,7 @@
     }
   },
   "meta_missingEOT": {
-    "message": "需要 EOT 数据"
+    "message": "应当是 EOT 数据"
   },
   "meta_missingMandatory": {
     "message": "缺少必要的元数据：$keys$",
@@ -753,7 +765,7 @@
     }
   },
   "meta_unknownJSONLiteral": {
-    "message": "无效 JSON：$literal$ 不是一个有效的 JSON 字面量（Literal）",
+    "message": "无效的 JSON：$literal$ 不是有效的 JSON 字面量（Literal）",
     "placeholders": {
       "literal": {
         "content": "$1"
@@ -769,7 +781,7 @@
     }
   },
   "meta_unknownMetaTypo": {
-    "message": "可能的 @$keyOk$ ?   未知元数据 @$keyErr$",
+    "message": "是指 @$keyOk$ 吗？未知元数据：@$keyErr$",
     "placeholders": {
       "keyErr": {
         "content": "$1"
@@ -788,7 +800,7 @@
     }
   },
   "meta_unknownVarType": {
-    "message": "未知的 @$varkey$ 类型: $vartype$",
+    "message": "未知的 @$varkey$ 类型：$vartype$",
     "placeholders": {
       "varkey": {
         "content": "$1"
@@ -801,11 +813,17 @@
   "newStyleAsUserCSS": {
     "message": "以 UserCSS 编写新样式"
   },
+  "newStyleAsUserCSSHint": {
+    "message": "如果当前样式处于新建状态（即刚刚创建且尚未编辑或保存），切换该选项也会更改编辑器中的当前样式。"
+  },
   "noStylesForSite": {
-    "message": "此网站没有样式。"
+    "message": "未为此网站安装任何样式。"
   },
   "numberedLine": {
     "message": "行："
+  },
+  "openAsPopupWindow": {
+    "message": "新窗口打开编辑器时，窗口不带工具栏与标签页"
   },
   "openManage": {
     "message": "管理样式"
@@ -816,11 +834,14 @@
   "optionCompactWidth": {
     "message": "紧凑型 UI 布局的最大窗口宽度（以像素为单位）"
   },
+  "optionConfigSidePanel": {
+    "message": "UserCSS 配置"
+  },
   "optionFOUC": {
-    "message": "样式应用的太晚了？"
+    "message": "样式应用得太晚了？"
   },
   "optionFOUCMV2": {
-    "message": "考虑启用 「$optInst$」。",
+    "message": "考虑启用「$optInst$」。",
     "placeholders": {
       "optInst": {
         "content": "$1"
@@ -828,7 +849,7 @@
     }
   },
   "optionFOUCMV3": {
-    "message": "考虑启用 「$optInst$」并增加 「$optCache$」。",
+    "message": "考虑启用「$optInst$」并增加「$optCache$」。",
     "placeholders": {
       "optInst": {
         "content": "$1"
@@ -848,7 +869,27 @@
     "message": "...即使浏览器处于不活跃状态"
   },
   "optionKeepAliveNote": {
-    "message": "如果您在一段时间未与浏览器交互后打开页面时遇到无样式内容  闪烁(FOUC)，请增加此值。\n\n-1 = ManifestV2 默认行为（无限制）。\n0 = ManifestV3 默认行为（半分钟）。\n\n缓存占用 30MB 或更多 RAM，但重建缓存可能需要更多时间并导致 FOUC，具体取决于网站、网络速度、样式数量、RAM 大小和 CPU 性能。"
+    "message": "如果您在一段时间内未与浏览器交互之后打开页面时，发现未应用样式的页面闪现（FOUC，flashing of unstyled content）的情况，请增加该值。\n\n-1 = ManifestV2 下的默认行为（无限制）。\n0 = ManifestV3 下的默认行为（半分钟）。\n\n缓存会占用 30MB 以上的内存，但重建缓存可能需要更多时间，并导致页面样式被延迟应用即 FOUC。具体严重程度取决于网站、网络速度、样式数量、内存大小和 CPU 性能。"
+  },
+  "optionSidePanelActions": {
+    "message": "在侧栏中打开"
+  },
+  "optionSidePanelActionsHint": {
+    "message": "在标准模式（即默认设置，未启用“$optPopup$”）下使用弹出窗口时，要在侧边栏中打开的、弹出窗口内的操作。\n\n您也可以在弹出窗口中右键单击或长按相应的按钮，以在侧栏中打开。",
+    "placeholders": {
+      "optPopup": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionSidePanelNumberHint": {
+    "message": "1..99：最小项目数量，\n0：总是在侧栏中打开，\n-1：总是在弹出窗口中打开。"
+  },
+  "optionSidePanelPopup": {
+    "message": "在侧栏中打开弹出框"
+  },
+  "optionTargetIcons": {
+    "message": "为样式目标网站下载和显示图标"
   },
   "optionTargetIconsNote": {
     "message": "Stylus 使用外部服务 $SRV$ 来获取图标",
@@ -857,6 +898,9 @@
         "content": "$1"
       }
     }
+  },
+  "optionTargetNum": {
+    "message": "目标网站显示数量限制"
   },
   "optionsAdvanced": {
     "message": "高级设置"
@@ -877,7 +921,7 @@
     "message": "通过 <html[stylus-iframe]> 确定 <iframe> 父页面"
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "给每个iframe框架的html注入window.top父域名的内联属性(值)\n即 html[stylus-iframe=\"hostname\"] \n\n用途: 确定或排除 iframe选择器以避免伤及无辜.\nhtml:not([stylus-iframe]) {...}\nhtml[stylus-iframe] 或 html[stylus-iframe$=\"twitter.com\"] h1 {...}\n\ngithub.com/openstyles/stylus/blob/master/content/apply.js#L270"
+    "message": "在每个 iframe 中为 html 元素设置 stylus-iframe 属性，暴露顶层网站的域名。\n\n可用于编写包含或排除特定网站上的 iframe 的 CSS，例如：\n\n/* 针对推特的 iframe 隐藏 h1 元素 */\nhtml[stylus-iframe$$=“twitter.com”] h1 { display:none }\n\nhtml:not([stylus-iframe]) { /* 不应用于 iframe 的样式 */ }\n\n译注：具体实现参考 https://github.com/openstyles/stylus/blob/bb26734a5424954b621b2580051ad3ff47567fe6/src/content/apply.js#L220"
   },
   "optionsAdvancedExposeStyleName": {
     "message": "暴露样式名称"
@@ -889,7 +933,13 @@
     "message": "启用 <CSP> 补丁以使样式资源生效"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "如果在带有严格<CSP>（<Content-Security-Policy>）的网站上无法加载样式中包含的图像或字体，请启用此补丁选项。 \n\n启用此补丁选项将会放宽<CSP>限制，从而允许加载基本样式内容。⚠此选项仅适用于了解潜在安全隐患的高级用户, 并自行承担负责监视其被允许的内容。请阅读有关基于CSS攻击的更多信息以做决定。\n\n另请注意，如果另一个已安装的扩展首先修改了网络响应，则不能保证此特定选项一定会生效。"
+    "message": "如果在带有严格 <CSP>（<Content-Security-Policy>）规则的网站上无法加载样式中包含的图像或字体，请启用此设置。启用此设置将放宽 <CSP> 限制，从而允许加载必要的样式内容。\n\n⚠此选项仅适用于了解潜在安全隐患的高级用户，并且用户需要自行承担监控被允许内容的责任。请阅读有关「基于 CSS 的攻击」的更多信息，以妥善决定。\n\n另请注意，如果另一个已安装的扩展首先修改了网络响应，则不能保证此选项一定会生效。"
+  },
+  "optionsAdvancedSites": {
+    "message": "…仅在匹配的网站上"
+  },
+  "optionsAdvancedSitesNote": {
+    "message": "<abc.com> 单个网站。\n<*.abc.com> 网站 + 子域名。\n<-m.abc.com> 使用 \"-\" 前缀排除网站。\n<*> 所有网站（用于将匹配改为排除）。\n<#abc.com> 因含有无效符号而被忽略（译注：可用作注释）。\n<*://abc.*/xyz> 简单的通配符匹配，也被称为 glob 模式匹配。\n<https://abc.com/xyz> 完整 URL。\n\n每项之间使用空格或换行符分隔。内容文本会在以下情况时自动保存：在输入框中按下 Ctrl-S 或 ⌘S，或点击输入框外部，或关闭选项窗口。"
   },
   "optionsAdvancedStyleViaASS": {
     "message": "‌利用<adoptedStyleSheets>绕过<CSP>的<style-src>"
@@ -898,7 +948,7 @@
     "message": "XHR 即时注入模式"
   },
   "optionsAdvancedStyleViaXhrNote": {
-    "message": "如果在网站加载时或浏览时常遇到一闪而过的样式闪烁晃眼，即未样式化内容闪烁（FOUC）,特别在深色主题下感知更明显，请启用此选项。\n　技术上的原因是浏览器内核为了提高页面加载速度，通常以无意义的尝试来延迟扩展的异步通信，这可能会导致样式慢了半拍才被应用。为避免这种情况并且Web扩展也没有提供样式同步的API接口。因此提供此选项来变相解决FOUC问题, 该功能利用「已弃用」的 XMLHttpRequest 这个同步API来获取扩展后台缓存的样式，因为其并非实际网络请求，因此它几乎没有任何副作用(样式请求在几毫秒内就完成了, 此时网页还在从服务器下载中)\n尽管如此但Chrome DevTools仍会在控制台中显示警告(右击警告>并将其隐藏，将不再显示警告)"
+    "message": "如果您在网站加载时或浏览时遇到未应用样式页面闪现（FOUC）的情况，请启用此选项。这种情况在打开页面时使用深色主题时尤为明显。\n\n此选项使用内部“已弃用”的同步 XMLHttpRequest 来获取扩展的本地后台缓存，不会产生联网请求，因此对性能的影响微乎其微。"
   },
   "optionsBadgeDisabled": {
     "message": "禁用所有样式时的背景颜色"
@@ -911,6 +961,9 @@
   },
   "optionsCustomizeIcon": {
     "message": "工具栏图标风格"
+  },
+  "optionsCustomizePopup": {
+    "message": "弹出框"
   },
   "optionsCustomizeSync": {
     "message": "同步到云端"
@@ -931,7 +984,7 @@
     "message": "浅色浏览器主题"
   },
   "optionsPopupWidth": {
-    "message": "Popup 弹框总宽度（px）"
+    "message": "px 弹出框宽度"
   },
   "optionsReset": {
     "message": "重置所有选项为默认值"
@@ -961,13 +1014,13 @@
     "message": "已连接"
   },
   "optionsSyncStatusConnecting": {
-    "message": "连接中..."
+    "message": "正在连接…"
   },
   "optionsSyncStatusDisconnected": {
     "message": "已断开连接"
   },
   "optionsSyncStatusDisconnecting": {
-    "message": "正在断开连接..."
+    "message": "正在断开连接…"
   },
   "optionsSyncStatusPull": {
     "message": "正在拉取样式 $loaded$ / $total$",
@@ -995,7 +1048,7 @@
     "message": "会话已过期，请重新登录。"
   },
   "optionsSyncStatusSyncing": {
-    "message": "同步中..."
+    "message": "正在同步…"
   },
   "optionsSyncSyncNow": {
     "message": "立即同步"
@@ -1005,6 +1058,17 @@
   },
   "optionsUpdateInterval": {
     "message": "每隔 N 小时 自动检测更新（0 为禁用）"
+  },
+  "optionsUrlInstaller": {
+    "message": "在任意网站上启用 UserCSS 样式安装器"
+  },
+  "optionsUrlInstallerNote": {
+    "message": "当满足以下条件时，允许从任何网站进行安装：\n1) URL 以 <.user.css>、<.user.less> 或 <.user.styl> 结尾，\n2) URL 指向样式文件的纯文本内容（通常被称为“raw”，原始文件），即不是指向 HTML 网页。\n\n禁用此选项可将样式的安装限制在专门的用户样式网站中：\n$LIST$。",
+    "placeholders": {
+      "LIST": {
+        "content": "$1"
+      }
+    }
   },
   "overwriteFileExport": {
     "message": "是否覆盖现有文件？"
@@ -1028,7 +1092,7 @@
     "message": "Stylus 未能成功解析 UserCSS："
   },
   "popupAutoResort": {
-    "message": "开启/关闭样式后，在弹窗中重新排序"
+    "message": "启用/禁用样式后，重新排序弹出框中的样式"
   },
   "popupBorders": {
     "message": "在两边增加白色边框"
@@ -1037,10 +1101,24 @@
     "message": "对于新 Chrome 中的暗色主题很有用，因为它不再绘制边框"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0> 开启/关闭第 N 个样式（0 就是 10）\n<A>-<Z> 开启/关闭相应英文首字母的首个样式\n附加 <Shift> 打开编辑器而不是开启/关闭\n<+> 启用列出的样式\n<–> 禁用列出的样式\n<*> 或 <`>（反引号）- 开启/关闭已启用的首个样式，当弹出菜单开启时不应用后来启用的样式，因此你可以在测试完成后恢复初始状态：简单地禁用所有样式，然后切换如 <–> <*>\n更多信息见 Wiki"
+    "message": "<1>-<9>，<0> 启用/禁用第 N 个样式（0 就是 10）\n<A>-<Z> 启用/禁用名称以对应英文首字母开头的首个样式\n附加 <Shift> 打开编辑器，而不是启用/禁用\n<+> 启用列出的样式\n<–> 禁用列出的所有样式\n<*> 或 <`>（反引号）- 启用/禁用页面刚加载时应用的样式；此快捷键不影响后续启用的样式，因此可以用它在折腾之后恢复初始状态：先禁用所有样式，再按此快捷键，即 <–> <*>\n\n更多信息见 Wiki"
+  },
+  "popupHotkeysInfoMenu": {
+    "message": "按住 <Enter>（或 <▤>）再按下数字键以打开对应序号样式的菜单。"
+  },
+  "popupHotkeysInfoSide": {
+    "message": "右键单击或长按操作按钮以在侧栏中打开。您可以在选项中更改默认行为 🞂$side$。",
+    "placeholders": {
+      "side": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupHotkeysInfoTab": {
+    "message": "按住 <Alt> 可仅为当前标签页启用/禁用样式。"
   },
   "popupHotkeysTooltip": {
-    "message": "查看 Popup 快捷键"
+    "message": "查看可用的快捷键"
   },
   "popupManageSiteStyles": {
     "message": "管理网站样式"
@@ -1054,6 +1132,9 @@
   "popupOpenEditInWindowTooltip": {
     "message": "可以通过将编辑器标签页拖出为单独窗口来启用，将被拖出的编辑器标签页拖入其他窗口即可禁用。"
   },
+  "popupSidePanelOpenHint": {
+    "message": "右键点击：在侧栏中打开"
+  },
   "popupStylesFirst": {
     "message": "样式列表置顶"
   },
@@ -1061,7 +1142,7 @@
     "message": "在当前网站生效的样式数量"
   },
   "preferScheme": {
-    "message": "深色／浅色模式偏好设置"
+    "message": "深色／浅色模式设置"
   },
   "preferSchemeAlways": {
     "message": "目前已忽略（始终应用样式），因为已停用全局深色／浅色模式。"
@@ -1111,11 +1192,14 @@
   "replaceWith": {
     "message": "替换为"
   },
+  "reportBug": {
+    "message": "反馈此 bug"
+  },
   "restoreTemplate": {
     "message": "恢复默认模板。\n\n（不会改变当前打开的编辑器页面）"
   },
   "saveAsTemplate": {
-    "message": "另存为模板"
+    "message": "保存为模板"
   },
   "saved": {
     "message": "已保存"
@@ -1132,6 +1216,9 @@
   "searchGlobalStylesHint": {
     "message": "如果名称包含搜索文字或当前网站\\n则结果包含应用于所有网站的样式"
   },
+  "searchLooseSpaces": {
+    "message": "空格符号匹配任意数量的空格"
+  },
   "searchNumberOfResults": {
     "message": "已找到"
   },
@@ -1139,7 +1226,7 @@
     "message": "在代码和应用中匹配的数量"
   },
   "searchRegexp": {
-    "message": "/regex/  用 / 包裹语法来正则搜索"
+    "message": "用 / 包裹正则语法，例如 /regex/，即可使用正则表达式匹配"
   },
   "searchResultInstallCount": {
     "message": "总安装次数"
@@ -1172,7 +1259,7 @@
     "message": "代码"
   },
   "searchStylesHelp": {
-    "message": "</> 或 <Ctrl-F> 以定位到搜索框；<Esc> 清空搜索框\n焦点在页面时, 也支持样式名的英文首字母索引。\n默认纯文本搜索，可按任何顺序搜索所有以空格分隔的术语。\n精确搜索：使用双引号包裹住想要搜索的内容，例如 <\"head ~ div\">\n正则表达式：包括斜杠和标记，例如 </body.*?\\ba\\b/i>\n搜索范围选择器中的 「匹配 URL」：查找适用于已指定 URL 的样式，例如 https://www.example.org/\n搜索范围选择器中的 「元数据」：含 样式名称、应用于、安装/更新URL、以及 UserCSS 中的整个元数据块（即==UserStyle==那些）但不包括代码里的注释内容。"
+    "message": "</> 或 <Ctrl-F> 键聚焦搜索框。\n默认纯文本搜索，可按任何顺序搜索所有以空格分隔的术语。\n精确搜索：使用双引号包裹住想要搜索的内容，例如 <\"head ~ div\">\n正则表达式：包括斜杠和标记，例如 </body.*?\\ba\\b/i>\n搜索范围选择器中的 「匹配 URL」：查找适用于已指定 URL 的样式，例如 https://www.example.org/\n搜索范围选择器中的 「元数据」：含 样式名称、应用于、安装/更新 URL，以及 UserCSS 中的整个元数据块（即 ==UserStyle== 那些）。"
   },
   "searchStylesMatchUrl": {
     "message": "URL"
@@ -1184,19 +1271,27 @@
     "message": "名称"
   },
   "sectionAdd": {
-    "message": "添加新章节"
+    "message": "添加新片段"
   },
   "sectionCode": {
     "message": "代码"
   },
   "sectionRemove": {
-    "message": "删除此部分"
+    "message": "删除此片段"
   },
   "sectionRestore": {
-    "message": "撤销删除"
+    "message": "撤销删除片段"
+  },
+  "sectionUserCSS": {
+    "message": "片段编辑器不支持 UserCSS 语法。\n你可以在新样式中使用 UserCSS：\n1. 点击编辑器右上角的「导出」按钮，复制导出内容，\n2. 在样式管理器或拓展弹出框中创建新样式，\n3. 启用“[x] $optUserCSS$”，\n4. 粘贴刚才复制的导出内容，覆盖默认模板中的空片段，\n5. 编写元数据，保存新样式，确认没有丢失数据，再删除旧样式。",
+    "placeholders": {
+      "optUserCSS": {
+        "content": "$1"
+      }
+    }
   },
   "sections": {
-    "message": "章节"
+    "message": "片段"
   },
   "settings": {
     "message": "设置"
@@ -1209,6 +1304,9 @@
   },
   "shortcutsNoteFF": {
     "message": "在 Firefox 66 及之后更新的版本中：\n1) 右键单击工具栏的的 Stylus 图标，选择「管理」\n（也可以通过主菜单或 Ctrl-Shift-A 打开 about:addons）；\n2) 在打开的页面点击右上角的齿轮图标；\n3) 选择「管理扩展快捷键」。\n\n您也可以在这自定义快捷键。"
+  },
+  "sitesNoteRe": {
+    "message": "</\\w+://(abc|def)\\.com/(?!xyz).*/> 正则表达式\n1) 正则必须完全匹配完整的 URL，以该正则为例，它用 <\\w://> 匹配 <https://>，用 <.*> 匹配域名后的路径。\n2) 不需要到处用 </> 转义。\n3) 不需要用 <^> 和 <$> 锚定正则匹配的起止位置，因为内部实现中已经用 <^(abc)$$> 锚定了。"
   },
   "sortDateNewestFirst": {
     "message": "最新的优先"
@@ -1231,6 +1329,14 @@
   "sortStylesHelpTitle": {
     "message": "自定义排序"
   },
+  "styleAssetsCSP": {
+    "message": "下列样式被网页的 CSP 规则屏蔽了，你可以启用“$CSP$”选项来加载样式：",
+    "placeholders": {
+      "CSP": {
+        "content": "$1"
+      }
+    }
+  },
   "styleBadRegexp": {
     "message": "正则表达式无效。"
   },
@@ -1238,7 +1344,7 @@
     "message": "格式化"
   },
   "styleBeautifyHint": {
-    "message": "提示: 你可以不显示此面板, 而是用右键“美化”按钮 或用下面定义的快捷键来美化."
+    "message": "提示：右键点击格式化按钮，或使用下面定义的快捷键，可以一键格式化，无需显示此面板"
   },
   "styleBeautifyIndentConditional": {
     "message": "缩进 @media、@supports"
@@ -1257,6 +1363,20 @@
   },
   "styleEnabledLabel": {
     "message": "启用"
+  },
+  "styleForceApplied": {
+    "message": "按照样式设置中的“$INC$”强制应用",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleForceAppliedTab": {
+    "message": "在样式菜单中强制应用于当前标签页"
+  },
+  "styleForceTab": {
+    "message": "仅当前标签页"
   },
   "styleFromMozillaFormatError": {
     "message": "导入 Mozilla 格式失败"
@@ -1277,7 +1397,7 @@
     "message": "下面列出的重要样式始终是最后注入的，因此它们可以覆盖任何新安装的样式。单击样式的标记以切换其重要性。"
   },
   "styleInstallFailed": {
-    "message": "安装用户样式失败!\n$error$",
+    "message": "用户样式安装失败！\n$error$",
     "placeholders": {
       "error": {
         "content": "$1"
@@ -1307,8 +1427,27 @@
   "styleName": {
     "message": "样式名称"
   },
+  "styleNotAppliedExcluded": {
+    "message": "按照样式设置中的“$EXC$”排除",
+    "placeholders": {
+      "EXC": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleNotAppliedExcludedTab": {
+    "message": "在样式菜单中排除了当前标签页"
+  },
+  "styleNotAppliedOverridden": {
+    "message": "按照样式设置，使用“$INC$”覆盖了样式自身的目标网站",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
+  },
   "styleNotAppliedRegexpProblemTooltip": {
-    "message": "正则表达式错误，样式无法正常运行"
+    "message": "由于 'regexp()' 中的正则表达式无效，导致样式无法应用"
   },
   "styleNotAppliedSchemeDark": {
     "message": "此样式仅在深色模式下应用"
@@ -1320,25 +1459,25 @@
     "message": "深色／浅色模式"
   },
   "styleRegexpInvalidExplanation": {
-    "message": "部分正则表达式无法生效。"
+    "message": "部分 'regexp()' 中的正则表达式无效。"
   },
   "styleRegexpPartialExplanation": {
-    "message": "这个样式有一部分正则表达式与 <a>CSS4 @document specification</a>完整的 URL 不匹配。这部分样式将被忽略，可能这个样式是基于 Stylish 编写的，请尝试在 Stylus 重新编写该样式。"
+    "message": "这个样式有一部分正则表达式与 <a>CSS4 @document 规范</a>所要求的完整 URL 不匹配。受影响的样式片段会被忽略，不会被应用到网页。\n\n该样式可能是在 Chrome 的 Stylish 拓展里创建的，该拓展自首个版本起针对 'regexp()' 规则的检查就有错误（已知问题）。"
   },
   "styleRegexpProblemTooltip": {
-    "message": "多个部分代码无法正常处理正则表达式"
+    "message": "由于 'regexp()' 中的正则表达式无效，多个片段的代码无法应用"
   },
   "styleRegexpTestFull": {
     "message": "匹配到标签页的正则"
   },
   "styleRegexpTestInvalid": {
-    "message": "忽略无效的正则表达式"
+    "message": "已跳过的无效正则表达式"
   },
   "styleRegexpTestNone": {
     "message": "没有匹配到标签页的正则"
   },
   "styleRegexpTestNote": {
-    "message": "注意： 在正则表达式中使用单个 \\ 进行转义，其将会根据 CSS 中引用字符串的自动转换为 \\\\。"
+    "message": "注意：正则表达式中只要使用单个 \\ 即可进行转义，其会根据 CSS 中的引用字符串被自动转换为 \\\\。"
   },
   "styleRegexpTestNoteStar": {
     "message": "💡Stylus正则不是部分匹配而是完整匹配（首尾会分别自动隐式加上 <^>和<$> ）\n　比如前缀匹配得在末尾添加 <.*> 　例如　<https?://(www\\.)?foo\\.com/(one|two).*>"
@@ -1355,8 +1494,29 @@
   "styleSettings": {
     "message": "样式设置"
   },
+  "styleSitesExclude": {
+    "message": "自定义排除网站"
+  },
+  "styleSitesInclude": {
+    "message": "自定义包含网站"
+  },
+  "styleSitesIncludeNote": {
+    "message": "仅在您的设备上启用此样式的网站。根据复选框是否被勾选，这些网站被追加到样式的定义中，或者直接替换样式的原始定义。\n\n此功能可用于不应被编辑的外部样式，以确保自动更新后仍应用于你指定的网站。但请注意，在有多个片段的样式中，您添加的网站会对所有片段启用，即使其中某些片段只适用于某些特定页面。"
+  },
+  "styleSitesIncludeOvr": {
+    "message": "覆盖样式本身指定的网站"
+  },
+  "styleSitesMatchingRules": {
+    "message": "你的自定义网站规则匹配当前 URL。\n\"+\" 前缀表示包含规则。\n\"-\" 前缀表示排除规则。"
+  },
+  "styleSitesPopupEdit": {
+    "message": "在编辑器的「样式设置」中编辑完整的自定义网站列表"
+  },
+  "styleSitesPopupHeading": {
+    "message": "访问以下网站时，包含（并<br>）或排除此样式："
+  },
   "styleToMozillaFormatHelp": {
-    "message": "　Mozilla格式的代码可提交给userstyles.org并与Firefox的经典Stylish一起用。\n💡剪贴板含有 “@-moz-document ....” 即可直接CtrlV粘贴到编辑器→会自动弹出导入对话框"
+    "message": "Mozilla 格式的样式代码可提交至 userstyles.org，并可在 Firefox 的经典版 Stylish 插件中使用\n\n译注：导入时，只要复制含有 “@-moz-document ....” 的样式代码后，即可直接粘贴到编辑器，会自动弹出导入对话框，便捷导入"
   },
   "styleToMozillaFormatTitle": {
     "message": "Mozilla 格式的样式"
@@ -1390,23 +1550,38 @@
   "syncStorageErrorSaving": {
     "message": "不能保存该值，请尝试减少文本数量。"
   },
+  "toggleCurrentTab": {
+    "message": "为当前标签页启用/禁用"
+  },
   "toggleStyle": {
     "message": "启用／禁用样式"
+  },
+  "toggleStylesHeading": {
+    "message": "启用／禁用样式"
+  },
+  "toggleStylesHint": {
+    "message": "启用/禁用页面加载时应用的样式，和 <✱> 或 <`> 快捷键一样"
+  },
+  "toggleStylesPerm": {
+    "message": "永久"
+  },
+  "toggleStylesTab": {
+    "message": "仅此标签页"
   },
   "undo": {
     "message": "撤销"
   },
   "undoGlobal": {
-    "message": "撤销 (全局)"
+    "message": "撤销（全局）"
   },
   "unreachableAMO": {
     "message": "Firefox 禁止访问该站点。"
   },
   "unreachableAMOHint": {
-    "message": "若要允许存取，打开 <about:config>，在列表上单击右键，点击新增，然后再点击 'Boolean'，粘贴 <privacy.resistFingerprinting.block_mozAddonManager> 并点击确定 -> <true> -> 确定，然后重新刷新 <addons.mozilla.org> 页面。"
+    "message": "若要允许访问，打开 <about:config>，在列表上单击右键，点击「新增」，然后再点击「布尔」，粘贴 <privacy.resistFingerprinting.block_mozAddonManager> 并点击确定 -> <true> -> 确定，最后重新加载 <addons.mozilla.org> 页面。"
   },
   "unreachableCSP": {
-    "message": "尝试在Stylus选项里启用 \"$optCSP$\"",
+    "message": "尝试在 Stylus 选项中启用“$optCSP$”。",
     "placeholders": {
       "optCSP": {
         "content": "$1"
@@ -1417,13 +1592,16 @@
     "message": "无法读取页面，请尝试刷新。"
   },
   "unreachableFileHint": {
-    "message": "Stylus 可改变 file:// 协议或无痕(或小号)的页面样式，需要先开启权限:\n在 chrome://extensions 找到 Stylus →点击详情，→打开「允许访问文件网址」\n打开「在无痕模式下启用」 则可在无痕页面或小号标签页工作。"
+    "message": "Stylus 可改变 file:// 协议或无痕的页面样式，需要先开启权限：\n在 chrome://extensions 找到 Stylus →点击详情，→打开「允许访问文件网址」。\n同时打开「在无痕模式下启用」则可在无痕页面或小号标签页工作。"
   },
   "unreachableMozSiteHint": {
-    "message": "在 Firefox 版本⩾60 , 需要在 <about:config> 里移除 <extensions.webextensions.restrictedDomains>"
+    "message": "在 Firefox 60 及更新版本中，您还需在 <about:config> 中移除 <extensions.webextensions.restrictedDomains> 包含的域名。"
   },
   "unreachableMozSiteHintOldFF": {
     "message": "Firefox ⩾59 才能配置为允许 WebExtensions 在受 <CSP> 保护的网站上（例如本站）添加样式元素。"
+  },
+  "unreachableOpera": {
+    "message": "Opera 用户：如果这是你的搜索页，请在 ⭕ 菜单 🞂 拓展 🞂 Stylus 中启用“[x] 允许访问搜索结果”"
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "没有找到更新。"
@@ -1432,7 +1610,7 @@
     "message": "如果你修改过一些样式，那它们可能被忽略更新，你可以单独检测这些样式强制升级，也可以 再次检测所有样式强制更新。"
   },
   "updateCheckFailBadResponseCode": {
-    "message": "更新失败: 服务器响应代码为 $code$。",
+    "message": "更新失败：服务器响应代码为 $code$。",
     "placeholders": {
       "code": {
         "content": "$1"
@@ -1440,7 +1618,7 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "更新失败: 无法访问服务器。"
+    "message": "更新失败：无法访问服务器。"
   },
   "updateCheckHistory": {
     "message": "检测升级的历史记录"
@@ -1467,13 +1645,13 @@
     "message": "请修改 @name 或 @namespace 的值以免覆盖现有样式。"
   },
   "usercssConfigIncomplete": {
-    "message": "在显示了配置对话框后，样式被修改或删除，这些变数将不会被保存，以免损坏元数据:"
+    "message": "在配置对话框显示之后，样式被修改或删除了。这些变量将不会被保存，以免损坏此样式的元数据："
   },
   "usercssEditorNamePlaceholder": {
     "message": "在代码中指定 @name 来设置名称"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "UserCSS新建模板→被替换为→当前代码 ❔"
+    "message": "是否将 UserCSS 样式的新建模板替换为当前代码？"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "在此插入代码..."
@@ -1482,7 +1660,7 @@
     "message": "当前样式版本比已安装样式版本旧。"
   },
   "webRequestBlockingMV3Note": {
-    "message": "需要webRequestBlocking权限，该权限可在Manifest V3中通过以下任一方法启用：\n\n 1) 先导出Stylus备份文件，为此扩展的ID \"$id$\" 设置$policyName$策略，重启浏览器并等待扩展安装完成后，在样式管理器中导入备份文件，可选将图标固定到工具栏。\n\n 2) 修改浏览器图标或启动器的命令行参数：添加一个空格和$cmd$",
+    "message": "需要 webRequestBlocking 权限，对于 Manifest V3，该权限可通过以下任一方法启用：\n\n 1) 先导出 Stylus 备份文件，为此扩展的 ID \"$id$\" 设置 $policyName$ 策略。再重启浏览器，等待扩展安装完成，最后在样式管理器中导入备份文件。期间可选择将拓展图标固定到工具栏。\n\n 2) 修改浏览器图标或启动器的命令行参数：添加一个空格和 $cmd$",
     "placeholders": {
       "policyName": {
         "content": "$1"
@@ -1499,6 +1677,6 @@
     "message": "新建样式给："
   },
   "writeStyleForURL": {
-    "message": "URL"
+    "message": "此 URL"
   }
 }
