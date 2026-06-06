@@ -68,31 +68,38 @@ export const bgMortalChanged = __.MV3 && new Set();
 let bgMortal;
 
 bgInit.push(async () => {
-  const [saved, tabs] = await Promise.all([
-    __.MV3 && (bgMortal = prefs.__values[pKeepAlive] >= 0)
-      && stateDB.getAll(IDBKeyRange.bound(0, 1e99)),
-    browser.tabs.query({}),
-  ]);
-  const savedById = __.MV3 && saved && new Map(saved.map(obj => [obj.id, obj]));
+  if (__.MV3)
+    bgMortal = prefs.__values[pKeepAlive] >= 0;
+  const numericKeys = __.MV3 && IDBKeyRange.bound(0, 1e99);
+  const [tabs, savedKeys, saved] =
+    /** @type {[ chrome.tabs.Tab[], number[], TabCacheEntry[] ]} */
+    await Promise.all([
+      browser.tabs.query({}),
+      __.MV3 && bgMortal && stateDB.getAllKeys(numericKeys),
+      __.MV3 && bgMortal && stateDB.getAll(numericKeys),
+    ]);
+  let changedUrls = '';
   let toPut;
   for (const {id, url} of tabs) {
-    let data;
-    if (!__.MV3 || !saved || !(data = savedById.get(id)) || data[kUrl]?.[0] !== url) {
+    let data, v;
+    if (!__.MV3
+    || !saved
+    || (v = savedKeys.indexOf(id)) < 0 || !(data = saved[v])
+    || (v = data[kUrl]?.[0]) !== url
+    || isNaN(data.id)
+    ) {
       data = {id, [kUrl]: {0: url}};
-      if (__.MV3 && saved)
+      if (__.MV3 && saved) {
         (toPut ??= {})[id] = data;
+        if (__.DEV && v !== url) changedUrls += `old ${id}: ${v} --> ${url}\n`;
+      }
     }
     tabCache[id] = data;
   }
   if (__.MV3) {
-    if (saved) {
-      let toDel;
-      for (const id of savedById.keys())
-        if (!tabCache[id])
-          (toDel ??= []).push(id);
-      if (toDel)
-        stateDB.deleteMany(toDel) // TODO: remove catch() when the reason is found
-          .catch(err => console.warn(err.message + ' Keys: ' + toDel));
+    if (bgMortal) {
+      if (__.DEV && changedUrls) console.log(changedUrls);
+      stateDB.deleteMany(savedKeys.filter(k => !tabCache[k]));
       if (toPut) putObject(toPut);
     }
     prefs.subscribe(pKeepAlive, (key, val) => {
@@ -100,7 +107,7 @@ bgInit.push(async () => {
       if (bgMortal !== val) {
         bgMortal = val;
         if (val) putObject(tabCache);
-        else stateDB.delete(IDBKeyRange.bound(0, 1e99));
+        else stateDB.delete(numericKeys);
         for (const fn of bgMortalChanged) fn(val);
       }
     });
