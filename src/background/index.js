@@ -32,6 +32,7 @@ import * as updateMan from './update-manager';
 import * as usercssMan from './usercss-manager';
 import * as usoApi from './uso-api';
 import * as uswApi from './usw-api';
+import {worker} from './util';
 
 Object.assign(API, /** @namespace API */ {
 
@@ -77,7 +78,7 @@ Object.assign(API, /** @namespace API */ {
 
   //#endregion
 
-}, (__.B_FIREFOX || __.B_ANY && FIREFOX) && initStyleViaApi());
+}, (__.B_FIREFOX || __.B_ANY && FIREFOX) && initStyleViaApi(), __.DEV && {worker});
 
 //#region Events
 
