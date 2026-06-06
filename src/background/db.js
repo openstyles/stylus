@@ -140,6 +140,9 @@ function useChromeStorage(err) {
 }
 
 async function dbExecIndexedDB(dbName, method, ...args) {
+  const many = method.endsWith('Many');
+  if (many && !args[0].length)
+    return [];
   const mode = method.startsWith('get') ? undefined : 'readwrite';
   const storeName = STORES[dbName];
   const store = (databases[dbName] ??= await open(dbName))
@@ -147,7 +150,7 @@ async function dbExecIndexedDB(dbName, method, ...args) {
     .objectStore(storeName);
   if (mode && dbName in MIRROR && (__.B_CHROME || this !== testDB))
     execMirror(...arguments);
-  return method.endsWith('Many')
+  return many
     ? storeMany(store, method.slice(0, -4), ...args)
     : new Promise((resolve, reject) => {
       /** @type {IDBRequest} */
