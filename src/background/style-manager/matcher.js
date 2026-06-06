@@ -60,6 +60,7 @@ function compile(text) {
  */
 export function matchOverrides(what, url) {
   if (+what) what = styleMap.get(what);
+  if (!what) return ''; // TODO: why user in #2125 interacted with a deleted style?
   url = {url};
   const inc = what[kInclusions]?.filter(urlMatchOverride, url).join('\n+');
   const exc = what[kExclusions]?.filter(urlMatchOverride, url).join('\n-');

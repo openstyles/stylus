@@ -78,7 +78,7 @@ export async function openMenu(entry) {
   const inc = style[kInclusions] || [];
   const exc = style[kExclusions] || [];
   const ovr = style[kTabOvr];
-  elMatched.textContent = style.matchedOvrs || await API.styles.matchOverrides(id, tabUrl);
+  elMatched.textContent = style.matchedOvrs ?? await API.styles.matchOverrides(id, tabUrl);
   let prevRule;
   for (const {el, elInc, elExc, rule} of ITEMS) {
     el.title = rule;

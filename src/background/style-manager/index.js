@@ -130,7 +130,7 @@ export function getByUrl(url, id, tabId, needsOvrs) {
       [kTabOvr]: tabOverrides?.[style.id] ?? null,
       [pPatchCsp]: tabCSP?.[style.id] || null,
       incOvr: !!(!matching && style[kOverridden] && ovr?.length),
-      matchedOvrs: needsOvrs ? matchOverrides(style, url) : '',
+      matchedOvrs: needsOvrs ? matchOverrides(style, url) : null,
     };
     const isIncluded = matching;
     let empty = true;
