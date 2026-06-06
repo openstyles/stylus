@@ -1,4 +1,5 @@
 import './browser';
+import {CHROME} from '@/js/ua';
 import {k_deepCopy} from './consts';
 import {ownRoot} from './urls';
 import {deepCopy} from './util';
@@ -20,6 +21,11 @@ export const browserSidebar = browserWindows && (__.MV3 ? chrome.sidePanel : bro
 export const onStorageChanged = chrome.storage.sync.onChanged || chrome.storage.onChanged;
 export const webNavigation = browser.webNavigation;
 
+export const closeCurrentTab = async () => {
+  if ((ownTab ??= await getOwnTab()))
+    return chrome.tabs.remove(ownTab.id);
+};
+
 export const getOwnTab = async () => (ownTab = await browser.tabs.getCurrent() || false);
 
 export const getActiveTab = async () =>
@@ -30,13 +36,18 @@ export const getActiveTab = async () =>
 
 export const ignoreChromeError = () => chrome.runtime.lastError;
 
+export const paintCanvas = (w, h, cb) => {
+  // The check must be inlined, not reused as a variable, to enable elimination of dead code
+  const canvas = __.B_CHROME || __.B_ANY && CHROME
+    ? new OffscreenCanvas(w, h)
+    : Object.assign($tag('canvas'), {width: w, height: h});
+  const ctx = canvas.getContext('2d');
+  cb(ctx, canvas);
+  return ctx.getImageData(0, 0, w, h);
+};
+
 export const toggleListener = (evt, add, ...args) => add
   ? evt.addListener(...args)
   : evt.removeListener(args[0]);
-
-export async function closeCurrentTab() {
-  if ((ownTab ??= await getOwnTab()))
-    return chrome.tabs.remove(ownTab.id);
-}
 
 global[k_deepCopy] = deepCopy; // used by other views for cloning into this JS realm

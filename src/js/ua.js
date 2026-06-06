@@ -1,3 +1,4 @@
+// TODO: find out why terser doesn't drop these vars in ./get-client-data.js
 const uad = navigator.userAgentData;
 const ua = uad || navigator.userAgent;
 const brands = uad ? /*@__PURE__*/ uad.brands.map(_ => `${_.brand}/${_.version}`).join(' ') : ua;

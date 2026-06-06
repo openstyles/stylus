@@ -1,4 +1,4 @@
-import {paintCanvas} from '@/js/util';
+import {paintCanvas} from '@/js/util-webext';
 import * as colorConverter from './color-converter';
 import colorMimicry from './color-mimicry';
 import {kHexUppercase} from './util';

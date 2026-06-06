@@ -1,9 +1,9 @@
 import {kDisableAll, kSidebar, kStyleIds} from '@/js/consts';
 import {__values as __prefs, subscribe} from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
-import {debounce, NOP, paintCanvas, t} from '@/js/util';
+import {debounce, NOP, t} from '@/js/util';
 import {
-  browserAction, browserSidebar, MF_ICON_EXT, MF_ICON_PATH, toggleListener,
+  browserAction, browserSidebar, MF_ICON_EXT, MF_ICON_PATH, paintCanvas, toggleListener,
 } from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgInit, onSchemeChange, onUnload} from './common';
