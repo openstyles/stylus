@@ -121,26 +121,36 @@ const addWrapper = (banner = INTRO + ';', footer = '}', test = /\.js$/) => [
 ];
 /** @return {TerserPlugin.BasePluginOptions &
  * TerserPlugin.DefinedDefaultMinimizerAndOptions<import('terser/tools/terser').MinifyOptions>} */
-const getTerserOptions = cm => ({
+const getTerserOptions = (cm, ovr) => ({
   [cm ? 'include' : 'exclude']: /node_modules|codemirror(?!-factory)|src[/\\]cm[/\\]css(-data)?\.js/,
   extractComments: false,
   terserOptions: {
+    ...ovr,
     ecma: MV3 ? 2024 : 2017,
     compress: {
+      builtins_ecma: MV3 ? 2024 : 2017,
+      builtins_pure: true,
       global_defs: Object.fromEntries(Object.entries(ALIASES.funcs).map(e => ['@' + e[0], e[1]])),
+      join_vars: false,
       lhs_constants: false,
       pure_getters: true,
       reduce_funcs: false,
       sequences: 0,
+      unsafe_arrows: true,
+      ...ovr?.compress,
     },
     output: {
       ascii_only: false,
+      beautify: !cm, // line numbers in bug reports + no delay in devtools to auto-prettify
+      indent_level: 2,
       comments: false,
       wrap_func_args: false,
+      ...ovr?.output,
     },
     mangle: !!cm || {
-      reserved: new Set(),
       keep_classnames: true,
+      keep_fnames: /^(?!(__)?webpack|onScriptComplete)/i,
+      ...ovr?.mangle,
     },
   },
 });
