@@ -27,7 +27,7 @@ function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params *
     const formatText = target => '```\n' +
       [].map.call((target?.closest('details') || elError).$$('span, pre'),
         (_, i) => _.textContent + (i % 2 ? '\n' : ''))
-        .join('\n') + '```\n\n- UA: ' +
+        .join('\n').trim() + '\n```\n\n- UA: ' +
       navigator.userAgent.replace(
         /\(KHTML.+?\) |(Mozilla|AppleWebKit|Gecko)\S+ | Safari\/537\.36/g, '') +
       `\n- Stylus: ${MF.version} (MV${__.MV3 ? 3 : 2})\n`;
@@ -74,7 +74,7 @@ function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params *
   } else {
     el = elEntry.cloneNode(true);
     elError.append(el);
-    el.$('pre').innerText = err.stack?.replace(msg, '') || '';
+    el.$('pre').textContent = err.stack?.replace(msg, '').replace(/^(?!\s)/gm, '  ') || '';
     el = el.$('span');
     el.innerText = msg;
   }
