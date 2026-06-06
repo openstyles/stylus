@@ -131,12 +131,12 @@ const getTerserOptions = (cm, ovr) => ({
       builtins_ecma: MV3 ? 2024 : 2017,
       builtins_pure: true,
       global_defs: Object.fromEntries(Object.entries(ALIASES.funcs).map(e => ['@' + e[0], e[1]])),
-      join_vars: false,
-      lhs_constants: false,
+      join_vars: cm,
+      lhs_constants: cm,
       pure_getters: true,
       reduce_funcs: false,
-      sequences: 0,
-      unsafe_arrows: true,
+      sequences: cm,
+      unsafe_arrows: !cm,
       ...ovr?.compress,
     },
     output: {
@@ -147,7 +147,7 @@ const getTerserOptions = (cm, ovr) => ({
       wrap_func_args: false,
       ...ovr?.output,
     },
-    mangle: !!cm || {
+    mangle: {
       keep_classnames: true,
       keep_fnames: /^(?!(__)?webpack|onScriptComplete)/i,
       ...ovr?.mangle,
