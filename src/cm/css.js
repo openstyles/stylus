@@ -112,11 +112,9 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
     const pos = ++stream.pos; // advance stream
     const c = str.charCodeAt(pos - 1);
     const hook = tokenHooks.get(c);
-    if (hook) {
-      type = null;
-      res = hook(stream, state);
-      if (res === false) res = null;
-    } else if (c === 64/* @ */ && stickyMatch(stream, /[-\w\\]+/y)) {
+    if (hook && (res = hook(stream, state)) !== false)
+      return res;
+    if (c === 64/* @ */ && stickyMatch(stream, /[-\w\\]+/y)) {
       res = 'def';
       type = stream.current().toLowerCase();
     } else if (c === 61/* = */
@@ -861,8 +859,9 @@ CodeMirror.defineMIME('text/x-less', {
       if (stickyMatch(stream, rxAtRules, false)) {
         return false;
       }
-      stickyMatch(stream, /[\w\\-]/y);
-      if (stickyMatch(stream, /\s*:/y, false)) {
+      stickyMatch(stream, /[-\w]+/y);
+      if (stream.string.charCodeAt(stream.pos) === 58/* : */
+      || stickyMatch(stream, /\s*:/y, false)) {
         return [kVariable2, kVariableDefinition];
       }
       return [kVariable2, kVariable];
