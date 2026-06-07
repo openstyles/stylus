@@ -6,6 +6,7 @@
 /* eslint-disable no-shadow,one-var,one-var-declaration-per-line,prefer-const */
 import CodeMirror from 'codemirror';
 import * as cssData from './css-data';
+import {rxUniBody} from './util';
 
 const kAllowNested = 'allowNested';
 const kAtom = 'atom';
@@ -18,7 +19,6 @@ const kKeyframes = 'keyframes';
 const kKeyword = 'keyword';
 const kLineComment = 'lineComment';
 const kMaybeProp = 'maybeprop';
-const kOperator = 'operator';
 const kProperty = 'property';
 const kRestrictedAtBlock = 'restricted_atBlock';
 const kRestrictedAtBlockBefore = 'restricted_atBlock_before';
@@ -40,33 +40,30 @@ const keywords = {
   valueKeywords: new Set(cssData.valueKeywords),
 };
 const rxColon = /(?:\s+|\/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$))*:/y;
+const rxDashLetter = /[-a-z\\]+/yi;
 const rxHexColor = /#[\da-f]{3}(?:[\da-f](?:[\da-f]{2}(?:[\da-f]{2})?)?)?/yi;
+const rxImportant = /\s*\w*/y;
 const rxNumberDigit = /\d*(?:\.\d*)?(?:e[-+]\d+)?(?:\w+|%)?/y;
 const rxNumberDot = /\d+(?:e[-+]\d+)?(?:\w+|%)?/y;
-const rxNumberSign = /(?:\d+(?:\.\d*)?|\.?\d+)(?:e[-+]\d+)?(?:\w+|%)?/y;
-const rxSpace = /[\s\u00a0]+/y;
-const rxSpaceAndQuote = /([\s\u00a0]*)(['"]?)/y;
-const rxSpaceRParenEOL = /[\s\u00a0]*(?=\)|$)/y;
+const rxSpace = /\s+/y;
+const rxSpaceAndQuote = /(\s*)(['"]?)/y;
+const rxSpaceColon = /\s*:(?:\s|$)/y;
+const rxSpaceRParenEOL = /\s*(?=\)|$)/y;
 const rxStringDoubleQ = /\s*(?:[^\\"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*/y;
 const rxStringSingleQ = /\s*(?:[^\\']+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*/y;
-const rxUniAny = /[-\w\\\u00A1-\uFFFF]*/y;
-const rxUniVar = /-[-\w\\\u00A1-\uFFFF]*/y;
-const rxUniClass = /-?[_a-zA-Z\\\u00A1-\uFFFF][-\w\\\u00A1-\uFFFF]*/y;
 const rxUnquotedUrl = /\s*(?:[^()\s\\'"]+|\\(?:[0-9a-fA-F]{1,6}\s?|.|$))*\s*/y;
 const rxUnquotedBadUrl = /(?:[^)\\]|\\(?:[^)]|$))+/y;
+const rxVar = /[-\w]+(\s*:|)/y;
 const states = {};
 /**
  * @param {CodeMirror.StringStream} stream
  * @param {RegExp} rx - must be sticky
  * @param {boolean} [consume]
- * @return {?RegExpExecArray}
+ * @return {boolean}
  */
-const stickyMatch = (stream, rx, consume = true) => {
-  rx.lastIndex = stream.pos;
-  rx = rx.exec(stream.string);
-  if (rx && consume) stream.pos += rx[0].length;
-  return rx;
-};
+const stickyMatch = (stream, rx, consume = true) =>
+  ((rx.lastIndex = stream.pos), rx.test(stream.string)) &&
+  (!consume || (stream.pos = rx.lastIndex));
 
 let rxAtRules;
 let tokenStringDouble, tokenStringSingle, tokenUrl, tokenUrlEnd, tokenBadUrl;
@@ -82,7 +79,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   if (!parserConfig.propertyKeywords) parserConfig = CodeMirror.resolveMode('text/css');
 
   const indentUnit = config.indentUnit,
-    tokenHooks = parserConfig[kTokenHooks],
+    tokenHooks = parserConfig[kTokenHooks] ??= new Map(),
     documentTypes = parserConfig.documentTypes || new Set(),
     mediaTypes = parserConfig.mediaTypes || new Set(),
     mediaFeatures = parserConfig.mediaFeatures || new Set(),
@@ -105,60 +102,88 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {CodeMirror.StringStream} stream
    * @param {CodeMirror.CSS.State} state
+   * @param {string} str
+   * @param {number} pos
    */
-  function tokenBase(stream, state) {
-    let res;
-    const str = stream.string;
-    const pos = ++stream.pos; // advance stream
-    const c = str.charCodeAt(pos - 1);
+  function tokenBase(stream, state, str, pos) {
+    let res = type = null;
+    let rx, rxPos;
+    const c = str.codePointAt(pos);
     const hook = tokenHooks.get(c);
-    if (hook && (res = hook(stream, state)) !== false)
+    stream.pos = ++pos;
+    if (hook && (res = hook(stream, state, str, pos)) !== false)
       return res;
-    if (c === 64/* @ */ && stickyMatch(stream, /[-\w\\]+/y)) {
-      res = 'def';
-      type = stream.current().toLowerCase();
-    } else if (c === 61/* = */
-    || (c === 126/* ~ */ || c === 124/* | */ || c === 42/* * */ || c === 36/* $ */)
-    && str.charCodeAt(pos) === 61/* = */ && stream.pos++) {
+    if (c === 64/* @ */) {
+      rxDashLetter.lastIndex = pos;
+      if (rxDashLetter.test(str)) {
+        type = stream.pos = rxDashLetter.lastIndex;
+        type = str.slice(pos - 1, type).toLowerCase();
+        res = 'def';
+      }
+    } else if (c === 61/* = */) {
       type = 'compare';
+    } else if (c === 126/* ~ */ || c === 124/* | */ || c === 42/* * */ || c === 36/* $ */) {
+      if (str.charCodeAt(pos) === 61/* = */) {
+        type = 'compare';
+        stream.pos++;
+      }
     } else if (
       c === 34/* " */ ? res = tokenStringDouble ??= tokenString.bind(rxStringDoubleQ, c)
         : c === 39/* ' */ && (res = tokenStringSingle ??= tokenString.bind(rxStringSingleQ, c))) {
       state.tokenize = res;
-      return res(stream, state);
+      return res(stream, state, str, pos);
     } else if (c === 35/* # */) {
-      stickyMatch(stream, rxUniAny);
+      rxPos = rxUniBody;
       res = kAtom;
       type = kHash;
     } else if (c === 33/* ! */) {
-      stickyMatch(stream, /\s*\w*/y);
+      rxPos = rxImportant;
       res = kKeyword;
       type = 'important';
-    } else if (c === 46/* . */ ? stickyMatch(stream, rxNumberDot)
-      : c === 43/* + */ || c === 45/* - */ ? stickyMatch(stream, rxNumberSign)
-      : c >= 48 && c <= 57 /* 0-9 */ && stickyMatch(stream, rxNumberDigit)) {
+    } else if ((rx =
+      c >= 48 && c <= 57 /* 0-9 */ ? rxNumberDigit :
+      c === 46/* . */ ? (rx = str.charCodeAt(pos)) >= 48 && rx <= 57/* 0-9 */ && rxNumberDot :
+      (c === 43/* + */ || c === 45/* - */) && (
+        (rx = str.charCodeAt(pos)) === 46/* . */ ? rxNumberDot
+          : rx >= 48 && rx <= 57/* 0-9 */ && rxNumberDigit
+      )) && (rx.lastIndex = pos, rxPos = rx.test(str))) {
       res = 'number';
       type = 'unit';
-    } else if (c === 45/* - */) {
-      if (stickyMatch(stream, rxUniVar)) {
-        res = kVariable2;
-        type = stickyMatch(stream, rxColon, false) ? kVariableDefinition : kVariable;
-      } else if (stickyMatch(stream, /\w+-/y)) {
-        res = type = 'meta';
-      } else {
-        type = null;
-      }
+    } else if (c === 45/* - */ && str.charCodeAt(pos) === 45 && str.charCodeAt(pos + 1) !== 45 &&
+      (rxUniBody.lastIndex = pos + 1, rxUniBody.test(str))
+    ) {
+      res = kVariable2;
+      type = stream.pos = rxUniBody.lastIndex;
+      type = str.charCodeAt(type) === 58/* : */ || (rxColon.lastIndex = type, rxColon.test(str))
+        ? kVariableDefinition
+        : kVariable;
+    } else if (c === 47/* / */ && (
+      (rx = str.charCodeAt(pos)) === 42/* * */ ? tokenCComment(stream, state, str, pos)
+        : lineComment && rx === 47/* / */ && (stream.pos = str.length)
+    )) {
+      type = res = kComment;
     } else if (c === 44/* , */ || c === 43/* + */ || c === 62/* > */ || c === 47/* / */) {
       type = 'select-op';
-    } else if (c === 46/* . */ && stickyMatch(stream, rxUniClass)) {
-      res = type = 'qualifier';
+    } else if (c === 46/* . */) {
+      // A class name can't start with "-" and a digit, so this token ".-<digit>" is invalid
+      if ((str.charCodeAt(pos) !== 45/* - */ ||
+          (rx = str.charCodeAt(pos + 1)) < 48 || rx > 57/* 0-9 */)
+      && ((rx = rxUniBody).lastIndex = pos, rxPos = rx.test(str))) {
+        res = type = 'qualifier';
+      }
     } else if (c === 58/* : */ || c === 59/* ; */ || c === 123/* { */ || c === 125/* } */
     || c === 91/* [ */ || c === 93/* ] */ || c === 40/* ( */ || c === 41/* ) */) {
-      type = String.fromCharCode(c);
+      type = str[pos - 1];
     } else if (c === 45/* - */ || c === 92/* \ */ || c >= 48 && c <= 57 /* 0-9 */ || c === 95/* _ */
-    || c >= 65 && c <= 90/* A-Z */ || c >= 97 && c <= 122/* a-z */ || c > 160/* Unicode */) {
-      stickyMatch(stream, rxUniAny);
-      if (str.charCodeAt(res = stream.pos) === 40/* ( */) {
+    || c >= 65 && c <= 90/* A-Z */ || c >= 97 && c <= 122/* a-z */
+    // https://drafts.csswg.org/css-syntax-3/#non-ascii-ident-code-point
+    || c === 0x00B7 || c >= 0x00C0 && c <= 0x1FFF && c !== 0x00D7 && c !== 0x00F7 && c !== 0x037E
+    || c === 0x200C || c === 0x200D || c === 0x203F || c === 0x2040
+    || c >= 0x2070 && c <= 0x218F || c >= 0x2C00 && c <= 0x2FEF || c >= 0x3001 && c <= 0xD7FF
+    || c >= 0xF900 && c <= 0xFDCF || c >= 0xFDF0 && c <= 0xFFFD || c >= 0x10000) {
+      rxUniBody.lastIndex = pos;
+      res = rxUniBody.test(str) ? stream.pos = rxUniBody.lastIndex : pos;
+      if (str.charCodeAt(res) === 40/* ( */) {
         res -= pos - 1;
         if ((
           res === 6 ? /*domain*/c === 100 || c === 68 || /*regexp*/c === 114 || c === 82
@@ -167,13 +192,15 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
           state.tokenize = tokenParenthesized;
         res = 'variable callee';
         type = kVariable;
+      } else if (c === 45/* - */) {
+        res = type = 'meta';
       } else {
         res = kProperty;
         type = kWord;
       }
-    } else {
-      type = null;
     }
+    if (rxPos === true || rxPos && (rxPos.lastIndex = pos, rx = rxPos).test(str))
+      stream.pos = rx.lastIndex;
     return res;
   }
 
@@ -182,16 +209,19 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
    * @param {number} quote - bound param
    * @param {CodeMirror.StringStream} stream
    * @param {CodeMirror.CSS.State} state
+   * @param {string} str
+   * @param {number} pos
    */
-  function tokenString(quote, stream, state) {
+  function tokenString(quote, stream, state, str, pos) {
     state.space = false;
-    type = !stickyMatch(stream, this) || this === rxUnquotedBadUrl ? kError : 'string';
+    this.lastIndex = pos;
+    type = !this.test(str) || this === rxUnquotedBadUrl ? kError : 'string';
+    stream.pos = pos = this.lastIndex;
     let tokenize;
-    const {string: str, pos} = stream;
     const next = str.charCodeAt(pos);
     if (next === quote) {
       if (quote !== 41/* ) */)
-        stream.pos++;
+        stream.pos = ++pos;
     } else if (next >= 0 /* not NaN */) {
       if (quote === 41) {
         tokenize = tokenBadUrl ??= tokenString.bind(rxUnquotedBadUrl, 41/* ) */);
@@ -214,21 +244,23 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {CodeMirror.StringStream} stream
    * @param {CodeMirror.CSS.State} state
+   * @param {string} str
+   * @param {number} pos
    */
-  function tokenParenthesized(stream, state) {
+  function tokenParenthesized(stream, state, str, pos) {
     const spaceSkipped = state.space;
-    const pos = stream.pos += !spaceSkipped; // '('
-    let c = stream.string.charCodeAt(pos);
+    if (!spaceSkipped) stream.pos = ++pos; // '('
+    let c = str.charCodeAt(pos);
     let res = null;
     type = spaceSkipped ? res : '(';
     if (spaceSkipped)
       state.space = false;
     if (c === 34/*"*/ || c === 39/*'*/) {
       state.tokenize = null;
-      res = tokenBase(stream, state);
+      res = tokenBase(stream, state, str, pos);
     } else if (!spaceSkipped && c !== 41/*)*/ && (
-      (c = stickyMatch(stream, rxSpaceAndQuote, false))[1] ||
-      !c[2] && pos + c[0].length === stream.string.length
+      (c = (rxSpaceAndQuote.lastIndex = pos, rxSpaceAndQuote.exec(str)))[1] ||
+      !c[2] && pos + c[0].length === str.length
     )) {
       state.space = true;
     } else {
@@ -376,7 +408,8 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
           override = highlightNonStandardPropertyKeywords ? 'string-2' : kProperty;
           type = kMaybeProp;
         } else if (allowNested) {
-          override = stickyMatch(stream, /\s*:(?:\s|$)/y, false) ? kProperty : 'tag';
+          rxSpaceColon.lastIndex = stream.pos;
+          override = rxSpaceColon.test(stream.string) ? kProperty : 'tag';
           type = kBlock;
         } else {
           override += ' ' + kError;
@@ -702,16 +735,22 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
      */
     token(stream, state) {
       const {tokenize} = state;
+      const str = stream.string;
       const trim = !tokenize || state.space;
-      if (trim && stream.eatSpace()) {
+      let {pos} = stream;
+      let res;
+      if (trim
+      && ((res = str.charCodeAt(pos)) === 9 || res === 32)
+      && (rxSpace.lastIndex = pos, rxSpace.test(str))
+      && (pos = stream.pos = rxSpace.lastIndex)) {
         override = null;
       } else {
-        let style = (tokenize || tokenBase)(stream, state);
-        if (style && typeof style === 'object') {
-          type = style[1];
-          style = style[0];
+        res = (tokenize || tokenBase)(stream, state, str, pos);
+        if (Array.isArray(res)) {
+          type = res[1];
+          res = res[0];
         }
-        override = style;
+        override = res;
         if (type !== kComment) {
           state.state = states[state.state](type, stream, state);
         }
@@ -765,49 +804,19 @@ CodeMirror.registerHelper('hintWords', 'css', [
 /**
  * @param {CodeMirror.StringStream} stream
  * @param {CodeMirror.CSS.State} state
+ * @param {string} str
+ * @param {number} pos
  */
-function hookLineComment(stream, state) {
-  const c = stream.string.charCodeAt(stream.pos);
-  switch (c) {
-    case 47/* / */:
-      stream.skipToEnd();
-      return [kComment, kComment];
-    case 42/* * */:
-      stream.pos++;
-      state.tokenize = tokenCComment;
-      return tokenCComment(stream, state);
-    default:
-      return [kOperator, kOperator];
-  }
-}
-
-/**
- * @param {CodeMirror.StringStream} stream
- * @param {CodeMirror.CSS.State} state
- */
-function tokenCComment(stream, state) {
-  const str = stream.string;
-  const i = str.indexOf('*/', stream.pos);
-  stream.pos = i < 0 ? str.length : (state.tokenize = null, i + 2);
+function tokenCComment(stream, state, str, pos) {
+  const i = str.indexOf('*/', ++pos);
+  state.tokenize = i < 0 ? tokenCComment : null;
+  stream.pos = i < 0 ? str.length : i + 2;
   return [kComment, kComment];
 }
 
 CodeMirror.defineMIME('text/css', {
   ...keywords,
   [kAllowNested]: true,
-  [kTokenHooks]: new Map([
-    /**
-     * @param {CodeMirror.StringStream} stream
-     * @param {CodeMirror.CSS.State} state
-     */
-    [47/* / */, (stream, state) => {
-      if (stream.string.charCodeAt(stream.pos) !== 42/* * */)
-        return false;
-      stream.pos++;
-      state.tokenize = tokenCComment;
-      return tokenCComment(stream, state);
-    }],
-  ]),
   name: 'css',
 });
 
@@ -816,7 +825,6 @@ CodeMirror.defineMIME('text/x-scss', {
   [kAllowNested]: true,
   [kLineComment]: '//',
   [kTokenHooks]: new Map([
-    [47/* / */, hookLineComment],
     [58/* : */, stream => {
       if (stickyMatch(stream, /\s*\{/y, false)) {
         return [null, null];
@@ -847,24 +855,22 @@ CodeMirror.defineMIME('text/x-less', {
   [kAllowNested]: true,
   [kLineComment]: '//',
   [kTokenHooks]: new Map([
-    [47/* / */, hookLineComment],
     /** @param {CodeMirror.StringStream} stream */
-    [64/* @ */, stream => {
-      if (stream.string.charCodeAt(stream.pos) === 123/* { */) {
-        stream.pos++;
+    [64/* @ */, (stream, state, str, pos) => {
+      if (str.charCodeAt(pos) === 123/* { */) {
+        stream.pos = ++pos;
         return [null, kInterpolation];
       }
       rxAtRules ??= new RegExp(
         String.raw`(?:-(?:moz|ms|o|webkit)-)?(?:${cssData.atRules.join('|')})(?![-\w\\])`, 'iy');
-      if (stickyMatch(stream, rxAtRules, false)) {
+      rxAtRules.lastIndex = pos;
+      let m;
+      if (rxAtRules.test(stream) || !(rxVar.lastIndex = pos, m = rxVar.exec(str)))
         return false;
-      }
-      stickyMatch(stream, /[-\w]+/y);
-      if (stream.string.charCodeAt(stream.pos) === 58/* : */
-      || stickyMatch(stream, /\s*:/y, false)) {
-        return [kVariable2, kVariableDefinition];
-      }
-      return [kVariable2, kVariable];
+      stream.pos = rxVar.lastIndex - m[1].length;
+      return m[1]
+        ? [kVariable2, kVariableDefinition]
+        : [kVariable2, kVariable];
     }],
     [38/* & */, () => [kAtom, kAtom]],
   ]),
@@ -875,19 +881,6 @@ CodeMirror.defineMIME('text/x-less', {
 CodeMirror.defineMIME('text/x-gss', {
   ...keywords,
   supportsAtComponent: true,
-  [kTokenHooks]: new Map([
-    /**
-     * @param {CodeMirror.StringStream} stream
-     * @param {CodeMirror.CSS.State} state
-     */
-    [47/* / */, (stream, state) => {
-      if (stream.string.charCodeAt(stream.pos) !== 42/* * */)
-        return false;
-      stream.pos++;
-      state.tokenize = tokenCComment;
-      return tokenCComment(stream, state);
-    }],
-  ]),
   name: 'css',
   helperType: 'gss',
 });

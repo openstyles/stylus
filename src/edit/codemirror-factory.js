@@ -1,5 +1,5 @@
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
-import {getStyleAtPos} from '@/cm/util';
+import {getStyleAtPos, rxUniBody} from '@/cm/util';
 import {kCodeMirror} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {styleJSONseemsValid, styleToCss} from '@/js/sections-util';
@@ -287,25 +287,31 @@ function configureMouseFn(cm, repeat) {
     {};
 }
 
+/** @type {RegExp} */
+let rxNonIdent1, rxNonIdentMany, rxQualifier, rxWord, rxWordDashed, rxsrcUniBody;
+
 function selectTokenOnDoubleclick(cm, {ch, line}) {
   const {styles, text} = cm.getLineHandle(line);
-  const rxWord = /[-\w\u00A1-\uFFFF]*/y;
-  let b = (rxWord.lastIndex = ch) + rxWord.exec(text)[0].length;
+  const getB = () => (rxUniBody.lastIndex = ch) + rxUniBody.exec(text)[0].length;
   let [style, i] = ch ? getStyleAtPos(styles, ch) : [styles[2], 2];
   let a = ch;
+  let b, rx;
+  rxsrcUniBody ??= rxUniBody.source;
   while (style && !(style = style.split('overlay ', 1)[0].trim()) && i > 2)
     style = styles[(i -= 2) + 1];
-  if (!style || style && /comment|string|uso-variable/.test(style)) {
-    let rx = /[\w\u00A1-\uFFFF]/y;
+  if (!style || style && (rx = /^(?:comment|string|(uso-variable))/.exec(style))) {
+    rx = rx?.[1] // uso var can have "-", otherwise make a dashless copy of rxUniBody
+      ? rxWordDashed ??= RegExp(rxsrcUniBody.slice(0, -1), 'yu')
+      : rxWord ??= RegExp('[' + rxsrcUniBody.slice(2, -1), 'yu');
     while (a && (rx.lastIndex = a - 1, rx.test(text)))
       --a;
     // if not at a word, let's select the non-word span
-    for (let retry = 0; a === ch && b === ch && retry < 2; ++retry) {
+    for (let retry = 0; a === ch && (b ??= getB()) === ch && retry < 2; ++retry) {
       // pass #2: if at a space, select the entire space span
-      rx = retry ? /\s/y : /[^\s\w\u00A1-\uFFFF]/y;
+      rx = retry ? /\s/y : rxNonIdent1 ??= RegExp(`[^${rxsrcUniBody.slice(2, -2)}\\s]`, 'yu');
       while (a && (rx.lastIndex = a - 1, rx.test(text)))
         --a;
-      rx = retry ? /\s*/y : /[^\s\w\u00A1-\uFFFF]*/y;
+      rx = retry ? /\s*/y : rxNonIdentMany ??= RegExp(rxNonIdent1.source + '*', 'yu');
       rx.lastIndex = ch;
       b += rx.exec(text)[0].length;
     }
@@ -313,18 +319,20 @@ function selectTokenOnDoubleclick(cm, {ch, line}) {
     if (a && /[#@]/.test(text[a - 1]))
       --a;
   } else {
-    // include %
-    const whole = style === 'number' || style === 'keyword';
-    if (whole)
-      b = styles[i];
+    // re-combine if split by overlays
     while ((i -= 2) > 1 && (styles[i + 1] || '').startsWith(style)) {/**/}
     a = i > 0 ? styles[i] : 0;
-    // CodeMirror joins .foo.bar in one token for presentation, let's split it
-    if (!whole)
-      a += text.slice(a, b).search(/[@#.]?[-\w\u00A1-\uFFFF]*%?$/);
+    if (/^(?:qualifier|builtin)/.test(style)) {
+      b = getB();
+      // split a single style span for .foo.bar or #a#b
+      a += text.slice(a, b).search(rxQualifier ??= RegExp(`[#.]?${rxsrcUniBody}%?$`, 'u'));
+    } else {
+      // select the entire style span
+      b = styles[i];
+    }
     // include : or :: for a pseudo if not a property declaration
     if (a && !styles[i + 1] && text[a - 1] === ':' && /callee|variable-3/.test(style)
-    && !/prop/.test(styles[i - 1]))
+    && !/^prop/.test(styles[i - 1]))
       a -= text[a - 2] === ':' ? 2 : 1;
   }
   return {

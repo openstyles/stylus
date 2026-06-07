@@ -42,7 +42,6 @@ const cssMime = CodeMirror.mimeModes['text/css'];
 const docFuncs = addSuffix(cssMime.documentTypes, '(');
 const docFuncsStr = '\n' + docFuncs.join('\n');
 const {tokenHooks} = cssMime;
-const originalCommentHook = tokenHooks.get(47/* / */);
 const originalHelper = CodeMirror.hint.css || (() => ({list: []}));
 
 const AOT_ID = 'autocompleteOnTyping';
@@ -301,18 +300,26 @@ function getMediaKeys([k, v]) {
     k.startsWith('media') && Object.keys(v);
 }
 
-function tokenizeUsoVariables(stream) {
-  const token = originalCommentHook.apply(this, arguments);
-  if (token[1] === 'comment') {
-    const {string, start, pos} = stream;
-    if (testAt(/\/\*\[\[/y, start, string) &&
-        testAt(/]]\*\//y, pos - 4, string)) {
-      const vars = editor.style[UCD]?.vars;
-      token[0] =
-        vars && hasOwn(vars, string.slice(start + 4, pos - 4).replace(/-rgb$/, ''))
-          ? USO_VALID_VAR
-          : USO_INVALID_VAR;
-    }
+/**
+ * @param {CodeMirror.StringStream} stream
+ * @param {CodeMirror.CSS.State} state
+ * @param {string} str
+ * @param {number} pos
+ */
+function tokenizeUsoVariables(stream, state, str, pos) {
+  let res;
+  if (str.charCodeAt(pos) === 42/* * */
+  && str.charCodeAt(pos + 1) === 91/* [ */
+  && str.charCodeAt(pos + 2) === 91/* [ */
+  && (pos = str.indexOf(']]*/', pos)) > 0) {
+    res = editor.style[UCD]?.vars;
+    res = res && hasOwn(res, str.slice(stream.start + 4, pos).replace(/-rgb$/, ''))
+      ? USO_VALID_VAR
+      : USO_INVALID_VAR;
+    res = [res, 'comment'];
+    stream.pos = pos + 4;
+  } else {
+    res = false;
   }
-  return token;
+  return res;
 }
