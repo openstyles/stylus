@@ -188,21 +188,20 @@ function collectStylelintResults(messages, {mode}) {
    * And even if we did, it'd be wrong to hide potential bugs in stylus-lang like #1460 */
   const isLess = mode === 'text/x-less';
   const slashCommentAllowed = isLess || mode === 'stylus';
+  const rxLessVars = isLess && /^Unknown at-rule "@[-\w]+:"|^Cannot parse property .+@[-\w]/i;
   const res = [];
   for (const m of messages) {
     const {rule} = m;
     const msg = m.text.replace(/^Unexpected\s+/, '').replace(` (${rule})`, '');
-    if (slashCommentAllowed && msg.includes('"//"') ||
-        isLess && /^unknown at-rule "@[-\w]+:"/.test(msg) /* LESS variables */) {
+    if (slashCommentAllowed && msg.includes('"//"') || isLess && rxLessVars.test(msg)) {
       continue;
     }
     const {line: L, column: C} = m;
-    const isImport = msg === 'at-rule "@import"';
+    const isImport = msg.includes('at-rule "@import"');
     res.push({
       from: {line: L - 1, ch: C - 1},
       to: {line: (m.endLine || L) - 1, ch: (m.endColumn || C) - 1},
-      message: isImport ? '@import prevents parallel downloads and may be blocked by CSP.'
-        : msg[0].toUpperCase() + msg.slice(1),
+      message: isImport ? '@import prevents parallel downloads and may be blocked by CSP.' : msg,
       severity: isImport ? 'warning' : m.severity,
       rule: isImport ? '' : rule,
     });
