@@ -305,8 +305,9 @@ function selectTokenOnDoubleclick(cm, {ch, line}) {
       : rxWord ??= RegExp('[' + rxsrcUniBody.slice(2, -1), 'yu');
     while (a && (rx.lastIndex = a - 1, rx.test(text)))
       --a;
+    b = getB();
     // if not at a word, let's select the non-word span
-    for (let retry = 0; a === ch && (b ??= getB()) === ch && retry < 2; ++retry) {
+    for (let retry = 0; a === ch && b === ch && retry < 2; ++retry) {
       // pass #2: if at a space, select the entire space span
       rx = retry ? /\s/y : rxNonIdent1 ??= RegExp(`[^${rxsrcUniBody.slice(2, -2)}\\s]`, 'yu');
       while (a && (rx.lastIndex = a - 1, rx.test(text)))
@@ -319,17 +320,14 @@ function selectTokenOnDoubleclick(cm, {ch, line}) {
     if (a && /[#@]/.test(text[a - 1]))
       --a;
   } else {
-    // re-combine if split by overlays
+    // .foo.bar or #a#b will be split later below, otherwise select the entire style span
+    if (!/^(?:qualifier|builtin)/.test(style))
+      b = styles[i];
+    // recombine to the left if split by overlays
     while ((i -= 2) > 1 && (styles[i + 1] || '').startsWith(style)) {/**/}
     a = i > 0 ? styles[i] : 0;
-    if (/^(?:qualifier|builtin)/.test(style)) {
-      b = getB();
-      // split a single style span for .foo.bar or #a#b
-      a += text.slice(a, b).search(rxQualifier ??= RegExp(`[#.]?${rxsrcUniBody}%?$`, 'u'));
-    } else {
-      // select the entire style span
-      b = styles[i];
-    }
+    if (!b)
+      a += text.slice(a, b = getB()).search(rxQualifier ??= RegExp(`[#.]?${rxsrcUniBody}%?$`, 'u'));
     // include : or :: for a pseudo if not a property declaration
     if (a && !styles[i + 1] && text[a - 1] === ':' && /callee|variable-3/.test(style)
     && !/^prop/.test(styles[i - 1]))
