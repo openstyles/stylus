@@ -52,6 +52,8 @@ export const IMPORT_THROTTLE = 100; //ms
 export const BIT_DARK = 1;
 export const BIT_SYS_DARK = 2;
 
+export const mimeLESS = 'text/x-less';
+
 //#region prefs
 export const pDisableAll = 'disableAll';
 export const pEditorTheme = 'editor.theme';

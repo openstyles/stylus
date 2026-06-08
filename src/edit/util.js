@@ -185,7 +185,7 @@ export function createHotkeyInput(prefId, {buttons = true, onDone}) {
  * @param {string | true} title
  * @param {AppendableElementGuts} html
  * @param {CodeMirror.EditorConfiguration} [options]
- * @return {HelpPopupElement & {codebox: CodeMirror.Editor}}
+ * @return {HelpPopupElement & {codebox: CM}}
  */
 export function showCodeMirrorPopup(title, html, options) {
   const popup = helpPopup.show(title, html, {className: 'big'});

@@ -1,3 +1,4 @@
+import {mimeLESS} from '@/js/consts';
 import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {WINDOWS} from '@/js/ua';
@@ -33,6 +34,7 @@ import 'codemirror/mode/stylus/stylus';
 import '@/vendor-overwrites/codemirror-addon/match-highlighter.js';
 import './css';
 import {THEME_KEY} from './themes';
+import {kLineComment} from './util';
 import './index.css';
 
 export const CodeMirror = CM; // workaround for webpack's `codemirror_default()` import
@@ -140,17 +142,19 @@ export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
     }
   }
 
+  /** @namespace CM */
   Object.assign(CodeMirror.prototype, {
     /**
      * @param {'less' | 'stylus' | ?} [pp] - any value besides `less` or `stylus` sets `css` mode
      * @param {boolean} [force]
      */
     setPreprocessor(pp, force) {
-      const name = pp === 'less' ? 'text/x-less' : pp === 'stylus' ? pp : 'css';
+      const name = pp === 'less' ? mimeLESS : pp === 'stylus' ? pp : 'css';
       const m = this.doc.mode;
-      if (force || (m.helperType ? m.helperType !== pp : m.name !== name)) {
+      const {helperType} = m;
+      if (force || (helperType ? helperType !== pp : m.name !== name)) {
         this.setOption('mode', name);
-        this.doc.mode.lineComment = ''; // stylelint chokes on line comments a lot
+        m[kLineComment] = ''; // stylelint chokes on line comments a lot
       }
     },
     /** Superfast GC-friendly check that runs until the first non-space line */

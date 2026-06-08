@@ -60,7 +60,7 @@ CodeMirror.registerHelper('hint', 'css', helper);
 CodeMirror.registerHelper('hint', 'stylus', helper);
 tokenHooks.set(47/* / */, tokenizeUsoVariables);
 
-/** @param {CodeMirror.Editor} cm */
+/** @param {CM} cm */
 async function helper(cm) {
   const pos = cm.getCursor();
   const {line, ch} = pos;

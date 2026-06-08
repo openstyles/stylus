@@ -859,8 +859,7 @@ export default function ColorPicker(cm) {
 
   function guessTheme() {
     const el = options.guessBrightness ||
-      cm && ((cm.display.renderedView || [])[0] || {}).text ||
-      cm && cm.display.lineDiv;
+      cm && (cm.display.renderedView?.[0]?.text || cm.display.lineDiv);
     const bgLuma = colorMimicry(el, {bg: 'backgroundColor'}).bgLuma;
     return bgLuma < .5 ? 'dark' : 'light';
   }

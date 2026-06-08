@@ -24,6 +24,8 @@ declare var __: {
   ZIP: boolean,
 }
 
+//#region Style
+
 declare interface StyleObj {
   enabled: boolean;
   id: number;
@@ -61,20 +63,6 @@ declare interface StyleSection {
   urlPrefixes?: string[];
   domains?: string[];
   regexps?: string[];
-}
-
-type TabCache = {[tabId:string]: TabCacheEntry};
-
-declare interface TabCacheEntry {
-  id: number;
-  url: {[frameId: string]: string};
-  incognito?: boolean;
-  nonce?: {[frameId: string]: string};
-  styleIds?: {
-    url: string;
-    styleIds: { [frameId: string]: number[] };
-  };
-  tabOvr?: {[styleId: string]: boolean},
 }
 
 declare namespace Injection {
@@ -200,6 +188,23 @@ declare interface USWorldData {
   username?: string;
 }
 
+//#endregion
+//#region Util
+
+type TabCache = {[tabId:string]: TabCacheEntry};
+
+declare interface TabCacheEntry {
+  id: number;
+  url: {[frameId: string]: string};
+  incognito?: boolean;
+  nonce?: {[frameId: string]: string};
+  styleIds?: {
+    url: string;
+    styleIds: { [frameId: string]: number[] };
+  };
+  tabOvr?: {[styleId: string]: boolean},
+}
+
 declare interface RemotePortEvent extends MessageEvent {
   _transfer?: Transferable[];
 }
@@ -214,6 +219,9 @@ declare interface StyleEntryElement<T=StyleObj> extends HTMLElement {
   styleId: number;
   styleMeta: T;
 }
+
+//#endregion
+//#region DOM globals
 
 declare var $: typeof document.querySelector;
 declare var $$: typeof document.querySelectorAll;
@@ -240,6 +248,9 @@ interface EventTarget {
   on: typeof EventTarget.prototype.addEventListener;
   off: typeof EventTarget.prototype.removeEventListener;
 }
+
+//#endregion
+//#region Util
 
 /** https://stackoverflow.com/a/57386444 */
 type OmitMatchingProps<T,M> = Omit<T,{
@@ -270,3 +281,5 @@ type AppendableChildren = Iterable<AppendableChild>;
 type AppendableElementGuts = AppendableChild | AppendableChildren
   | {on: {[key in keyof GlobalEventHandlersEventMap]: EventListenerOrEventListenerObject | Function}};
 type ElementTags = keyof HTMLElementTagNameMap;
+
+//#endregion

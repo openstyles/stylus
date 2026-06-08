@@ -24,7 +24,7 @@ export class Completion {
   }
 
   /**
-   * @param {CodeMirror.Editor} cm
+   * @param {CM} cm
    * @param {CompletionData} data
    * @param {Completion} completion
    */

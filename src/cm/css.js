@@ -6,7 +6,7 @@
 /* eslint-disable no-shadow,one-var,one-var-declaration-per-line,prefer-const */
 import CodeMirror from 'codemirror';
 import * as cssData from './css-data';
-import {rxUniBody} from './util';
+import {kLineComment, rxUniBody} from './util';
 
 const kAllowNested = 'allowNested';
 const kAtom = 'atom';
@@ -17,7 +17,6 @@ const kHash = 'hash';
 const kInterpolation = 'interpolation';
 const kKeyframes = 'keyframes';
 const kKeyword = 'keyword';
-const kLineComment = 'lineComment';
 const kMaybeProp = 'maybeprop';
 const kProperty = 'property';
 const kRestrictedAtBlock = 'restricted_atBlock';
@@ -75,11 +74,13 @@ CodeMirror.StringStream.prototype.eatSpace = function () {
 };
 
 CodeMirror.defineMode('css', (config, parserConfig) => {
-  const inline = parserConfig.inline;
-  if (!parserConfig.propertyKeywords) parserConfig = CodeMirror.resolveMode('text/css');
-
-  const indentUnit = config.indentUnit,
-    tokenHooks = parserConfig[kTokenHooks] ??= new Map(),
+  if (!parserConfig.propertyKeywords)
+    parserConfig = CodeMirror.resolveMode('text/css');
+  const {
+    inline,
+    [kTokenHooks]: tokenHooks,
+  } = parserConfig;
+  const {indentUnit} = config,
     documentTypes = parserConfig.documentTypes || new Set(),
     mediaTypes = parserConfig.mediaTypes || new Set(),
     mediaFeatures = parserConfig.mediaFeatures || new Set(),
@@ -101,7 +102,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
 
   /**
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    * @param {string} str
    * @param {number} pos
    */
@@ -208,7 +209,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
    * @this {RegExp}
    * @param {number} quote - bound param
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    * @param {string} str
    * @param {number} pos
    */
@@ -243,7 +244,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
 
   /**
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    * @param {string} str
    * @param {number} pos
    */
@@ -280,7 +281,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    * @param {boolean} [indent=true]
    */
   function pushContext(state, stream, type, indent) {
@@ -289,7 +290,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
     return type;
   }
 
-  /** @param {CodeMirror.CSS.State} state */
+  /** @param {CM.CSSState} state */
   function popContext(state) {
     if (state.context.prev) {
       state.context = state.context.prev;
@@ -300,7 +301,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   function pass(type, stream, state) {
     return states[state.context.type](type, stream, state);
@@ -309,7 +310,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    * @param {number} [n=1]
    */
   function popAndPass(type, stream, state, n) {
@@ -336,7 +337,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.top = (type, stream, state) => {
     switch (type) {
@@ -395,7 +396,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states[kBlock] = (type, stream, state) => {
     switch (type) {
@@ -433,7 +434,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states[kMaybeProp] = (type, stream, state) =>
     type === ':'
@@ -443,7 +444,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.prop = (type, stream, state) => {
     switch (type) {
@@ -473,7 +474,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.propBlock = (type, stream, state) => {
     switch (type) {
@@ -489,7 +490,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.parens = (type, stream, state) => {
     switch (type) {
@@ -512,7 +513,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.pseudo = (type, stream, state) => {
     switch (type) {
@@ -528,7 +529,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.documentTypes = (type, stream, state) => {
     if (type === kWord && documentTypes.has(stream.current().toLowerCase())) {
@@ -542,7 +543,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.atBlock = (type, stream, state) => {
     switch (type) {
@@ -584,7 +585,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.atComponentBlock = (type, stream, state) => {
     switch (type) {
@@ -603,7 +604,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.atBlock_parens = (type, stream, state) => {
     switch (type) {
@@ -619,7 +620,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states[kRestrictedAtBlockBefore] = (type, stream, state) => {
     switch (type) {
@@ -638,7 +639,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states[kRestrictedAtBlock] = (type, stream, state) => {
     switch (type) {
@@ -660,7 +661,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.keyframes = (type, stream, state) => {
     switch (type) {
@@ -676,7 +677,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.at = (type, stream, state) => {
     switch (type) {
@@ -698,7 +699,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   /**
    * @param {string} type
    * @param {CodeMirror.StringStream} stream
-   * @param {CodeMirror.CSS.State} state
+   * @param {CM.CSSState} state
    */
   states.interpolation = (type, stream, state) => {
     switch (type) {
@@ -721,9 +722,10 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
   };
 
   return {
-    /** @namespace CodeMirror.CSS.State */
+    /** @return {CM.CSSState} */
     startState: base => ({
       tokenize: null,
+      space: false,
       state: inline ? kBlock : 'top',
       stateArg: null,
       context: new Context(inline ? kBlock : 'top', base || 0, null),
@@ -731,7 +733,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
 
     /**
      * @param {CodeMirror.StringStream} stream
-     * @param {CodeMirror.CSS.State} state
+     * @param {CM.CSSState} state
      */
     token(stream, state) {
       const {tokenize} = state;
@@ -803,7 +805,7 @@ CodeMirror.registerHelper('hintWords', 'css', [
 
 /**
  * @param {CodeMirror.StringStream} stream
- * @param {CodeMirror.CSS.State} state
+ * @param {CM.CSSState} state
  * @param {string} str
  * @param {number} pos
  */
@@ -817,6 +819,7 @@ function tokenCComment(stream, state, str, pos) {
 CodeMirror.defineMIME('text/css', {
   ...keywords,
   [kAllowNested]: true,
+  [kTokenHooks]: new Map(),
   name: 'css',
 });
 
@@ -880,6 +883,7 @@ CodeMirror.defineMIME('text/x-less', {
 
 CodeMirror.defineMIME('text/x-gss', {
   ...keywords,
+  [kTokenHooks]: new Map(),
   supportsAtComponent: true,
   name: 'css',
   helperType: 'gss',

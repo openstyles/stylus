@@ -1,4 +1,4 @@
-import {kCssPropSuffix} from '@/js/consts';
+import {kCssPropSuffix, mimeLESS} from '@/js/consts';
 import {metaLint} from './meta-parser';
 import {CSSLint, loadCSSLint, loadParserlib, loadStylelint, parserlib, stylelint} from './util';
 
@@ -186,7 +186,7 @@ function collectStylelintResults(messages, {mode}) {
   /* We hide nonfatal "//" warnings since we lint with sugarss without applying @preprocessor.
    * We can't easily pre-remove "//"  comments which may be inside strings, comments, url(), etc.
    * And even if we did, it'd be wrong to hide potential bugs in stylus-lang like #1460 */
-  const isLess = mode === 'text/x-less';
+  const isLess = mode === mimeLESS;
   const slashCommentAllowed = isLess || mode === 'stylus';
   const rxLessVars = isLess && /^Unknown at-rule "@[-\w]+:"|^Cannot parse property .+@[-\w]/i;
   const res = [];

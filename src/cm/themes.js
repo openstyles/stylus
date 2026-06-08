@@ -2,13 +2,13 @@ import {pEditorTheme} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {fetchText} from '@/js/util';
 
+let EL;
 /** @type {{ [name: string]: string }} */
 export const THEMES = __.THEMES;
 export const THEME_KEY = pEditorTheme;
 const DEFAULT = prefs.__defaults[THEME_KEY];
-let EL;
 
-export async function loadCmTheme(name = prefs.__values[THEME_KEY], text) {
+export const loadCmTheme = async (name = prefs.__values[THEME_KEY], text) => {
   let css;
   if (name === DEFAULT) {
     css = '';
@@ -25,4 +25,4 @@ export async function loadCmTheme(name = prefs.__values[THEME_KEY], text) {
     }
   }
   if (EL) EL.textContent = css;
-}
+};
