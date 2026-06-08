@@ -2,7 +2,7 @@ import '@/js/dom-init';
 import {tBody} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import CompactHeader, {toggleSticky} from './compact-header';
-import editor from './editor';
+import editor, {scrollInfo} from './editor';
 import EditorHeader from './editor-header';
 import * as linterMan from './linter';
 import {loading} from './load-style';
@@ -21,7 +21,7 @@ tBody();
 
 (async () => {
   if (loading) await loading;
-  if (editor.scrollInfo.sticky) toggleSticky(true);
+  if (scrollInfo.sticky) toggleSticky(true);
   const uc = editor.isUsercss;
   EditorHeader();
   USWIntegration();

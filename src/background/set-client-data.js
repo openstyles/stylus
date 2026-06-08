@@ -25,7 +25,7 @@ const PROVIDERS = {
     v = /** @namespace StylusClientData */ {
       style,
       isUsercss,
-      scrollInfo: style && (__.MV3 ? stateDB.get(siKey) : dataHub.get(siKey)),
+      si: style && (__.MV3 ? stateDB.get(siKey) : dataHub.get(siKey)),
       state: chromeLocal.getValue(kEditorState),
       template: isUsercss && loadTemplate(style),
       theme: v = prefs.__values[pEditorTheme],

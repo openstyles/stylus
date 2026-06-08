@@ -4,7 +4,7 @@ import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {FROM_CSS} from '@/js/sections-util';
 import {clipString, sessionStore, tryURL} from '@/js/util';
-import editor from './editor';
+import editor, {scrollInfo} from './editor';
 
 if (location.hash) { // redirected from devtools -> "open in a new tab"
   history.replaceState(history.state, '', location.href.split('#')[0]);
@@ -19,9 +19,10 @@ export const loading = __.MV3 && swController
 export const loadingLazy = import(/* webpackChunkName: "edit-lazy" */'./load-lazy-ui');
 
 /** @param {StylusClientData} clientData */
-function loadStyle({style, theme, themeText, ...props}) {
+function loadStyle({style, si, theme, themeText, ...props}) {
   Object.assign(editor, props);
   Object.assign(editor.style, style || makeNewStyleObj());
+  Object.assign(scrollInfo, si);
   editor.updateClass();
   editor.updateTitle(false);
   sessionStore.justEditedStyleId = id || '';

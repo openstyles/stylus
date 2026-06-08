@@ -8,7 +8,7 @@ import * as prefs from '@/js/prefs';
 import {styleSectionsEqual, styleToCss} from '@/js/sections-util';
 import {clipString, RX_META, sleep0, t} from '@/js/util';
 import {iconize} from './applies-to';
-import editor from './editor';
+import editor, {scrollInfo} from './editor';
 import * as linterMan from './linter';
 import EditorSection from './sections-editor-section';
 import {helpPopup, rerouteHotkeys, showCodeMirrorPopup, worker} from './util';
@@ -499,7 +499,7 @@ export default function SectionsEditor() {
     focusOn = 0,
     replace = false,
     keepDirty = false,
-    si = editor.scrollInfo,
+    si = scrollInfo,
   } = {}) {
     Object.assign(editor, /** @namespace Editor */ {loading: true});
     if (replace) {
@@ -507,7 +507,7 @@ export default function SectionsEditor() {
       sections.length = 0;
       container.textContent = '';
     }
-    if (si && si.cms && si.cms.length === src.length) {
+    if (si.cms && si.cms.length === src.length) {
       si.scrollY2 = si.scrollY + window.innerHeight;
       container.style.height = si.scrollY2 + 'px';
       scrollTo(0, si.scrollY);

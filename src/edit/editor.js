@@ -13,6 +13,8 @@ const regexps = new Set();
 /** @type {Partial<StyleObj>} */
 const style = {};
 const toc = [];
+/** @type {EditorScrollInfoContainer} */
+export const scrollInfo = {};
 toc.cls = 'current';
 
 let wasDirty = false;
@@ -35,12 +37,10 @@ const editor = self.editor = {
     less: 'https://lesscss.org/less-preview/',
   },
   regexps,
-  /** @type {EditorScrollInfoContainer} */
-  scrollInfo: {},
   style,
   toc,
 
-  applyScrollInfo(cm, si = editor.scrollInfo.cms?.[0]) {
+  applyScrollInfo(cm, si = scrollInfo.cms?.[0]) {
     if (si && si.sel) try {
       const bmOpts = {sublimeBookmark: true, clearWhenEmpty: false}; // copied from sublime.js
       const bms = [];
@@ -55,7 +55,7 @@ const editor = self.editor = {
 
   cancel: () => location.assign('/manage.html' + (isWindowed ? '?' + kPopup : '')),
 
-  makeScrollInfo() {
+  makeScrollInfo: function () {
     return /** @namespace EditorScrollInfoContainer */ {
       sticky,
       scrollY: window.scrollY,
