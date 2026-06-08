@@ -22,15 +22,17 @@ tBody();
 (async () => {
   if (loading) await loading;
   if (editor.scrollInfo.sticky) toggleSticky(true);
+  const uc = editor.isUsercss;
   EditorHeader();
   USWIntegration();
   // TODO: load respective js on demand?
-  (editor.isUsercss ? SourceEditor : SectionsEditor)();
+  $rootCL.add(uc ? 'usercss' : 'sectioned');
+  (uc ? SourceEditor : SectionsEditor)();
   editor.dirty.onChange(editor.updateDirty);
   prefs.subscribe('editor.linter', () => linterMan.run());
   CompactHeader();
   // enabling after init to prevent flash of validation failure on an empty name
-  $id('name').required = !editor.isUsercss;
+  $id('name').required = !uc;
   $id('save-button').onclick = editor.save;
   $id('cancel-button').onclick = editor.cancel;
   // $id('testRE').hidden = !editor.style.sections.some(({regexps: r}) => r && r.length);

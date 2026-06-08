@@ -1,11 +1,12 @@
+import {kLineComment} from '@/cm/util';
 import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
-import {UCD} from '@/js/consts';
+import {mimeLESS, UCD} from '@/js/consts';
 import {$$remove, $create, $createLink, $isTextInput} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleToCss} from '@/js/sections-util';
-import {makeUserCssFindFilter, NOP, RX_META, t} from '@/js/util';
+import {makeUserCssFindFilter, NOP, reuseStyleVars, RX_META, t} from '@/js/util';
 import {CodeMirror} from '@/cm';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';
@@ -16,15 +17,6 @@ import {worker} from './util';
 
 export default function SourceEditor() {
   const {style, /** @type DirtyReporter */dirty} = editor;
-  const DEFAULT_TEMPLATE = `
-    /* ==UserStyle==
-    @name           ${''/* a trick to preserve the trailing spaces */}
-    @namespace      github.com/openstyles/stylus
-    @version        1.0.0
-    @description    A new userstyle
-    @author         Me
-    ==/UserStyle== */
-  `.replace(/^\s+/gm, '');
   let savedGeneration;
   let prevMode = NaN;
   let /** @type {Promise} */ pendingMeta;
@@ -34,12 +26,14 @@ export default function SourceEditor() {
   $$remove('.sectioned-only');
   $id('header').on('wheel', headerOnScroll);
   $id('sections').textContent = '';
-  $id('sections').appendChild($create('.single-editor'));
   $id('save-button').on('split-btn', saveTemplate);
 
   const cmpPos = CodeMirror.cmpPos;
-  const cm = cmFactory.create($('.single-editor'), {
-    value: style.id ? style.sourceCode : setupNewStyle(editor.template),
+  const [DEFAULT_TEMPLATE, TEMPLATE, TEMPLATE_DATA] = editor.template;
+  const pp0 = (style[UCD] || TEMPLATE_DATA).preprocessor;
+  const cm = cmFactory.create($('#sections').appendChild($create('.single-editor')), {
+    mode: pp0 === 'less' ? mimeLESS : pp0 === 'stylus' ? pp0 : 'css',
+    value: style.id ? style.sourceCode : setupNewStyle(TEMPLATE),
     finishInit(me) {
       const si = editor.applyScrollInfo(me) || {};
       editor.viewTo = si.viewTo;
@@ -51,15 +45,8 @@ export default function SourceEditor() {
     ? {...style, sourceCode: cm.getValue(), sections: undefined, [UCD]: undefined}
     : cm.getValue();
   const metaCompiler = createMetaCompiler(meta => {
-    const {vars} = style[UCD] || {};
-    if (vars) {
-      let v;
-      for (const [key, val] of Object.entries(meta.vars || {})) {
-        if ((v = vars[key]) && v.type === val.type && (v = v.value) != null) {
-          val.value = v; // TODO: check min/max? reuse assignVars?
-        }
-      }
-    }
+    const {vars} = meta;
+    if (vars) reuseStyleVars(vars, style);
     style[UCD] = meta;
     style.name = meta.name;
     style.url = meta.homepageURL || style.installationUrl;
@@ -189,14 +176,14 @@ export default function SourceEditor() {
     return name;
   }
 
-  function setupNewStyle(tpl) {
+  function setupNewStyle(code) {
     const comment = `/* ${t('usercssReplaceTemplateSectionBody')} */`;
     const sec0 = style.sections[0];
     sec0.code = ' '.repeat(prefs.__values['editor.tabSize']) + comment;
     if (Object.keys(sec0).length === 1) { // the only key is 'code'
       sec0.domains = ['example.com'];
     }
-    return (style.sourceCode = (tpl || DEFAULT_TEMPLATE)
+    return (style.sourceCode = code
       .replace(/(@name)(?:([\t\x20]+).*|\n)/, (_, k, space) => `${k}${space || ' '}${style.name}`)
       .replace(/\s*@-moz-document[^{]*{([^}]*)}\s*$/g, // stripping dummy sections
         (s, body) => body.trim() === comment ? '\n\n' : s)
@@ -212,7 +199,8 @@ export default function SourceEditor() {
     $id('enabled').checked = style.enabled;
     $id('url').href = style.url;
     editor.updateName();
-    cm.setPreprocessor(style[UCD]?.preprocessor);
+    // stylelint chokes on line comments a lot
+    cm.setPreprocessor(style[UCD]?.preprocessor)[kLineComment] = '';
   }
 
   async function replaceStyle(newStyle, draft) {

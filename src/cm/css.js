@@ -160,7 +160,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
         : kVariable;
     } else if (c === 47/* / */ && (
       (rx = str.charCodeAt(pos)) === 42/* * */ ? tokenCComment(stream, state, str, pos)
-        : lineComment && rx === 47/* / */ && (stream.pos = str.length)
+        : lineComment != null && rx === 47/* / */ && (stream.pos = str.length)
     )) {
       type = res = kComment;
     } else if (c === 44/* , */ || c === 43/* + */ || c === 62/* > */ || c === 47/* / */) {

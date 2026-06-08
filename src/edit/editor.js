@@ -19,6 +19,8 @@ let wasDirty = false;
 
 /**
  * @type Editor
+ * @prop {UsercssTemplate} template
+ * @prop {{find: string, replace: string, icase: boolean}} state
  * @namespace Editor
  */
 const editor = self.editor = {

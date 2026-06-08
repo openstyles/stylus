@@ -12,22 +12,22 @@ import makePopupData from './popup-data';
 import {nondefaults} from './prefs-api';
 import * as styleMan from './style-manager';
 import * as syncMan from './sync-manager';
-import * as usercssTemplate from './usercss-template';
+import {loadTemplate} from './usercss-template';
 
 const CM_THEMES_TEXT = {};
 const PROVIDERS = {
   edit(url) {
     const id = +url.searchParams.get('id');
     const style = styleMan.get(id);
-    const isUC = style ? UCD in style : prefs.__values.newStyleAsUsercss;
+    const isUsercss = style ? UCD in style : prefs.__values.newStyleAsUsercss;
     const siKey = kEditorScrollInfo + id;
     let v;
     v = /** @namespace StylusClientData */ {
       style,
-      isUC,
-      si: style && (__.MV3 ? stateDB.get(siKey) : dataHub.get(siKey)),
+      isUsercss,
+      scrollInfo: style && (__.MV3 ? stateDB.get(siKey) : dataHub.get(siKey)),
       state: chromeLocal.getValue(kEditorState),
-      template: !style && isUC && (usercssTemplate.value || usercssTemplate.load()),
+      template: isUsercss && loadTemplate(style),
       theme: v = prefs.__values[pEditorTheme],
       themeText: v !== prefs.__defaults[pEditorTheme] && (
         CM_THEMES_TEXT[v = `${__.CM_PATH}${v}.css`] ??= fetchText(v).catch(NOP)

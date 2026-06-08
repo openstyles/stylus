@@ -34,7 +34,6 @@ import 'codemirror/mode/stylus/stylus';
 import '@/vendor-overwrites/codemirror-addon/match-highlighter.js';
 import './css';
 import {THEME_KEY} from './themes';
-import {kLineComment} from './util';
 import './index.css';
 
 export const CodeMirror = CM; // workaround for webpack's `codemirror_default()` import
@@ -154,8 +153,8 @@ export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
       const {helperType} = m;
       if (force || (helperType ? helperType !== pp : m.name !== name)) {
         this.setOption('mode', name);
-        m[kLineComment] = ''; // stylelint chokes on line comments a lot
       }
+      return m;
     },
     /** Superfast GC-friendly check that runs until the first non-space line */
     isBlank() {

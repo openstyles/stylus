@@ -18,18 +18,12 @@ export const loading = __.MV3 && swController
 
 export const loadingLazy = import(/* webpackChunkName: "edit-lazy" */'./load-lazy-ui');
 
-/** @param {StylusClientData} _ */
-function loadStyle({style = makeNewStyleObj(), isUC, si, state, template, theme, themeText}) {
-  Object.assign(editor.style, style);
-  Object.assign(editor, /** @namespace Editor */ {
-    template,
-    isUsercss: isUC,
-    scrollInfo: si || {},
-    state,
-  });
+/** @param {StylusClientData} clientData */
+function loadStyle({style, theme, themeText, ...props}) {
+  Object.assign(editor, props);
+  Object.assign(editor.style, style || makeNewStyleObj());
   editor.updateClass();
   editor.updateTitle(false);
-  $rootCL.add(isUC ? 'usercss' : 'sectioned');
   sessionStore.justEditedStyleId = id || '';
   // no such style so let's clear the invalid URL parameters
   if (id === null) {
