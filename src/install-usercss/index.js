@@ -91,7 +91,7 @@ setTimeout(() => !cm && showSpinner($id('header')), 200);
   let error, sourceCode;
   try {
     sourceCode = await firstGet;
-    ({dup, style} = await API.usercss.build({sourceCode, checkDup: true, metaOnly: true}));
+    ({dup, style} = await API.usercss.build(sourceCode, {dup: true, metaOnly: true}));
     sectionsPromise = API.usercss.buildCode(style);
   } catch (e) {
     error = e;

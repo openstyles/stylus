@@ -1,5 +1,6 @@
 import * as colorConverter from '@/js/color/color-converter';
 import {styleCodeEmpty} from '../sections-util';
+import {nullifyInvalidVars} from './meta-parser';
 import extractSections from './moz-parser';
 import {importScripts, loadParserlib, parserlib} from './util';
 
@@ -109,6 +110,7 @@ export default async function compileUsercss(preprocessor, code, vars) {
   }
   if (vars) {
     simplifyUsercssVars(vars);
+    nullifyInvalidVars(vars);
   } else {
     vars = {};
   }

@@ -1,6 +1,6 @@
 import {UCD} from '@/js/consts';
 import * as URLS from '@/js/urls';
-import {fetchText, RX_META} from '@/js/util';
+import {fetchText} from '@/js/util';
 import download from './download';
 import * as styleMan from './style-manager';
 import * as usercssMan from './usercss-manager';
@@ -13,18 +13,10 @@ export function deleteStyle(usoId) {
   return style ? styleMan.remove(style.id) : false;
 }
 
-/** UserCSS metadata may be embedded in the original USO style so let's use its updateURL */
-export function getEmbeddedMeta(code) {
-  const isRaw = arguments[0];
-  const m = code.includes('@updateURL')
-    && (isRaw ? code : code.replace(RX_META, '')).match(RX_META);
-  return m && usercssMan.buildMeta({sourceCode: m[0]}).catch(() => null);
-}
-
 export async function getUpdatability(usoId, asObject) {
   const md5Url = getMd5Url(usoId);
   const md5 = await fetchText(md5Url);
-  const dup = await findStyle(usoId, md5Url);
+  const dup = findStyle(usoId, md5Url);
   // see STATE_EVENTS in hook-uso.js
   const state = !dup ? 0 : dup[UCD] || dup.originalMd5 === md5 ? 2 : 1;
   return asObject
@@ -50,16 +42,15 @@ export function pingback(usoId, delay) {
  */
 export async function toUsercss(usoId, varsUrl, css, dup, md5, md5Url) {
   let v;
-  if (!dup) dup = false; // "polyfilling" for dup?.prop
-  const {updateUrl = URLS.makeUpdateUrl('usoa', usoId)} = dup;
+  const updateUrl = dup?.updateUrl || URLS.makeUpdateUrl('usoa', usoId);
   const jobs = [
     !dup && getUpdatability(usoId, true).then(res => ({dup, md5, md5Url} = res)),
     !css && download(updateUrl).then(res => (css = res)),
   ].filter(Boolean);
   if (jobs[0]) await Promise.all(jobs);
   const varMap = {};
-  const {style} = await usercssMan.build({sourceCode: css, metaOnly: true});
-  const vars = (v = varsUrl || dup.updateUrl) && useVars(style, v, varMap);
+  const style = await usercssMan.buildMeta({}, css);
+  const vars = (v = varsUrl || dup?.updateUrl) && useVars(style, v, varMap);
   if (dup) {
     return style;
   }

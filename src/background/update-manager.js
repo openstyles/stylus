@@ -4,14 +4,14 @@ import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleSectionsEqual} from '@/js/sections-util';
 import {chromeLocal} from '@/js/storage-util';
 import {extractUsoaId, isCdnUrl, isLocalhost, rxGF, usoApi} from '@/js/urls';
-import {debounce, deepMerge, getHost, NOP, sleep} from '@/js/util';
+import {debounce, deepMerge, getHost, NOP, RX_META, sleep} from '@/js/util';
 import {bgBusy} from './common';
 import {db} from './db';
 import download from './download';
 import * as styleMan from './style-manager';
 import {styleMap} from './style-manager/util';
 import * as usercssMan from './usercss-manager';
-import {getEmbeddedMeta, toUsercss} from './uso-api';
+import {toUsercss} from './uso-api';
 
 const STATES = /** @namespace UpdaterStates */ {
   UPDATED: 'updated',
@@ -171,14 +171,22 @@ export async function checkStyle(opts) {
     return json;
   }
 
+  /**
+   * @param [css] - USO style's code
+   * @return {Promise<StyleObj>}
+   */
   async function updateUsercss(css) {
     let oldVer = ucd.version;
     let oldEtag = style.etag;
-    let m = (css || extractUsoaId(updateUrl)) &&
-      await getEmbeddedMeta(css || style.sourceCode);
-    if (m && m.updateUrl) {
+    let m;
+    // UserCSS metadata may be embedded in the original USO style so let's use its updateURL
+    if ((css || extractUsoaId(updateUrl))
+    && (m = css || style.sourceCode.replace(RX_META, '')).includes('@updateURL')
+    && (m = m.match(RX_META))
+    && (m = await usercssMan.buildMeta(null, m[0]).catch(NOP))
+    && m.updateUrl) {
       updateUrl = m.updateUrl;
-      oldVer = m[UCD].version || '0';
+      oldVer = m.version || '0';
       oldEtag = '';
     } else if (css) {
       return;
@@ -193,7 +201,7 @@ export async function checkStyle(opts) {
     }
     // TODO: when sourceCode is > 100kB use http range request(s) for version check
     const {headers: {etag}, response} = await tryDownload(updateUrl, RH_ETAG);
-    const json = await usercssMan.buildMeta({sourceCode: response, etag, updateUrl});
+    const json = await usercssMan.buildMeta({etag, updateUrl}, response);
     const delta = compareVersion(json[UCD].version, oldVer);
     let err;
     if (!delta && !ignoreDigest) {

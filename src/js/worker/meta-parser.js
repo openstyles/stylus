@@ -52,5 +52,4 @@ export const nullifyInvalidVars = vars => {
       }
     }
   }
-  return vars;
 };

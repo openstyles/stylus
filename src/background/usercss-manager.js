@@ -1,7 +1,7 @@
 import {UCD} from '@/js/consts';
-import {deepCopy, makeUserCssFindFilter, RX_META, t} from '@/js/util';
-import download from './download';
+import {deepCopy, makeUserCssFindFilter, reuseStyleVars, RX_META, t} from '@/js/util';
 import * as styleMan from './style-manager';
+import {styleMap} from './style-manager/util';
 import {worker} from './util';
 
 export * from './usercss-install-helper';
@@ -14,50 +14,32 @@ const GLOBAL_META = Object.entries({
   name: null,
 });
 
-/** `src` is a style or vars */
-async function assign(style, src) {
-  const meta = style[UCD];
-  const meta2 = src[UCD];
-  const {vars} = meta;
-  const oldVars = meta2 ? meta2.vars : src;
-  if (vars && oldVars) {
-    // The type of var might be changed during the update. Set value to null if the value is invalid.
-    for (const [key, v] of Object.entries(vars)) {
-      const old = oldVars[key] && oldVars[key].value;
-      if (old != null) v.value = old;
-    }
-    meta.vars = await worker.nullifyInvalidVars(vars);
-  }
-}
-
-export async function build({
-  styleId,
-  sourceCode,
-  vars,
-  checkDup,
-  metaOnly,
-  assignVars,
-  initialUrl,
-}) {
+/**
+ * @param {string} sourceCode
+ * @param {{id?: number, dup?: boolean, metaOnly?: boolean, vars?: boolean}} [opts]
+ * @return {Promise<{style: StyleObj|UsercssData, dup: StyleObj|void, log: *}>}
+ */
+export async function build(sourceCode, {id, dup, metaOnly, vars} = {}) {
   // downloading here while install-usercss page is loading to avoid the wait
-  if (initialUrl) sourceCode = await download(initialUrl);
-  const style = await buildMeta({sourceCode});
-  const dup = (checkDup || assignVars) &&
-    find(styleId ? {id: styleId} : style);
+  const style = await buildMeta({}, sourceCode);
+  dup = (dup || vars) && (id ? styleMap.get(id) : find(style));
   let log;
   if (!metaOnly) {
-    if (vars || assignVars) {
-      await assign(style, vars || dup);
-    }
-    await buildCode(style);
+    await buildCode(style, vars && dup);
     log = style.log; // extracting the non-enumerable prop, otherwise it won't survive messaging
   }
   return {style, dup, log};
 }
 
-export async function buildCode(style) {
+/**
+ * @param {StyleObj} style
+ * @param {StyleObj | boolean} [oldStyleWithVars]
+ * @return {Promise<*>}
+ */
+export async function buildCode(style, oldStyleWithVars) {
   const {sourceCode: code, [UCD]: {vars, preprocessor}} = style;
-  const {sections, errors, log} = await worker.compileUsercss(preprocessor, code, vars);
+  const {sections, errors, log} = await worker.compileUsercss(preprocessor, code,
+    vars && reuseStyleVars(vars, oldStyleWithVars));
   const recoverable = errors.every(e => e.recoverable);
   if (!sections.length || !recoverable) {
     throw !recoverable ? errors : 'Style does not contain any actual CSS to apply.';
@@ -68,31 +50,35 @@ export async function buildCode(style) {
   return style;
 }
 
-export async function buildMeta(style) {
-  if (style[UCD]) {
+/**
+ * @param {StyleObj} [style] - when falsy, bare UsercssData is returned
+ * @param {string} [sourceCode]
+ * @return {Promise<StyleObj | UsercssData>} a shallow copy of `style`
+ */
+export async function buildMeta(style, sourceCode) {
+  if (!sourceCode && style && style[UCD])
     return style;
-  }
-  // remember normalized sourceCode
-  const code = style.sourceCode = style.sourceCode.replace(/\r\n?/g, '\n');
-  style = Object.assign({
-    enabled: true,
-    sections: [],
-  }, style);
+  const code = (sourceCode || style?.sourceCode).replace(/\r\n?/g, '\n');
   const match = code.match(RX_META);
-  if (!match) {
-    return Promise.reject(new Error('Could not find metadata.'));
-  }
+  if (!match)
+    throw new Error('Could not find metadata.');
   try {
     const {metadata} = await worker.metaParse(match[0]);
-    style[UCD] = metadata;
+    const res = !style ? metadata : {
+      enabled: true,
+      sections: [],
+      ...style,
+      sourceCode: code,
+      [UCD]: metadata,
+    };
     // https://github.com/openstyles/stylus/issues/560#issuecomment-440561196
     for (const [key, globalKey] of GLOBAL_META) {
       const val = metadata[key];
       if (val !== undefined) {
-        style[globalKey || key] = val;
+        res[globalKey || key] = val;
       }
     }
-    return style;
+    return res;
   } catch (err) {
     if (err.code) {
       const args = err.code === 'missingMandatory' || err.code === 'missingChar'
@@ -102,7 +88,7 @@ export async function buildMeta(style) {
       if (msg) err.message = msg;
       err.index += match.index;
     }
-    return Promise.reject(err);
+    throw err;
   }
 }
 
@@ -142,13 +128,10 @@ export async function install(style, opts) {
 }
 
 export async function parse(style, {dup, vars} = {}) {
-  style = await buildMeta(style);
+  if (!style[UCD])
+    style = await buildMeta(style);
   // preserve style.vars during update
-  if (dup || (dup = find(style))) {
-    style.id = dup.id;
-  }
-  if (vars || (vars = dup)) {
-    await assign(style, vars);
-  }
-  return buildCode(style);
+  style.id ??= (dup ??= find(style)) && dup.id;
+  vars ??= dup;
+  return buildCode(style, vars);
 }

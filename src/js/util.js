@@ -1,3 +1,5 @@
+import {UCD} from '@/js/consts';
+
 /**
  * WARNING!
  * Used in limited contexts such as the offscreen document.
@@ -133,6 +135,15 @@ export function mapObj(obj, fn, keys) {
 
 export function notIncludedInArray(val) {
   return !this.includes(val);
+}
+
+export function reuseStyleVars(vars, src) {
+  let old;
+  if (vars && src && (src = src[UCD].vars))
+    for (const key in vars)
+      if ((old = src[key]) && (old = old.value) != null)
+        vars[key].value = old;
+  return vars;
 }
 
 export function tryRegExp(regexp, flags) {
