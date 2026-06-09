@@ -5,34 +5,13 @@ import {styleJSONseemsValid} from '@/js/sections-util';
 import {NOP} from '@/js/util';
 import {ignoreChromeError} from '@/js/util-webext';
 import * as colorScheme from '../color-scheme';
-import {bgBusy, bgInit, onSchemeChange} from '../common';
+import {bgInit, onSchemeChange} from '../common';
 import {db, draftsDB, execMirror, prefsDB} from '../db';
 import './init';
 import {fixKnownProblems} from './fixer';
 import {broadcastStyleUpdated, setOrderImpl, storeInMap, styleMap, stylePreviewMap} from './util';
 
-bgInit.push(async () => {
-  __.DEBUGLOG('styleMan init...');
-  let mirrored, validated;
-  let [orderFromDb, styles] = await Promise.all([
-    prefsDB.get(kInjectionOrder),
-    db.getAll(),
-  ]);
-  if (!orderFromDb)
-    orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder).catch(console.error);
-  validated = styles.filter(styleJSONseemsValid);
-  if ((!validated.length || validated.length < styles.length)
-  && (mirrored = await execMirror(DB, 'getAll').catch(console.error))) {
-    styles = validated;
-    validated = new Set(validated.map(s => s.id));
-    for (const s of mirrored)
-      if (s && !validated.has(s.id))
-        styles.push(s);
-  }
-  initStyleMap(styles, mirrored);
-  setOrderImpl(orderFromDb, {store: false});
-  __.DEBUGLOG('styleMan init done');
-});
+bgInit.push(initStyleMap);
 
 onSchemeChange.add(() => {
   for (const style of styleMap.values()) {
@@ -69,35 +48,40 @@ if (__.MV3) {
   };
 }
 
-async function initStyleMap(styles, mirrored) {
-  let fix, fixed, lost, i, style, len;
-  for (i = 0, len = 0, style; i < styles.length; i++) {
-    style = styles[i];
-    if (+style.id > 0
-    && typeof style._id === 'string'
-    && styleJSONseemsValid(style)) {
+async function initStyleMap() {
+  __.DEBUGLOG('styleMan init...');
+  let fixed, lost, mirrored, needsRebuild;
+  let [orderFromDb, styles] = await Promise.all([
+    prefsDB.get(kInjectionOrder),
+    db.getAll(),
+  ]);
+  if (!orderFromDb)
+    orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder).catch(console.error);
+  if (!styles.length)
+    styles = (mirrored = await execMirror(DB, 'getAll').catch(console.error)) || styles;
+  for (let i = 0, fix; i < styles.length; i++) {
+    const style = styles[i];
+    if (+style.id > 0 && typeof style._id === 'string' && styleJSONseemsValid(style)) {
       storeInMap(style);
-      if (mirrored) {
-        if (i > len) styles[len] = style;
-        len++;
-      }
     } else {
       try { fix = fixKnownProblems(style, true); } catch {}
-      if (fix) (fixed ??= new Map()).set(style.id, fix);
-      else (lost ??= []).push(style);
+      if (styleJSONseemsValid(fix)) {
+        (fixed ??= []).push(fix);
+        needsRebuild ||= fix.then;
+      } else {
+        (lost ??= []).push(style);
+      }
     }
   }
-  styles.length = len;
   if (lost)
     console.error(`Skipped ${lost.length} unrecoverable styles:`, lost);
   if (fixed) {
-    fixed = (await Promise.all([...fixed.values(), bgBusy])).filter(styleJSONseemsValid);
+    if (needsRebuild)
+      fixed = await Promise.all(fixed);
+    fixed.forEach(storeInMap);
     console[mirrored ? 'log' : 'warn']('Fixed styles:', fixed);
-    if (mirrored) {
-      styles.push(...fixed);
-      fixed.forEach(storeInMap);
-    }
+    setTimeout(db.putMany, 1000, fixed);
   }
-  if (styles.length)
-    setTimeout(db.putMany, 100, styles);
+  setOrderImpl(orderFromDb, {store: false});
+  __.DEBUGLOG('styleMan init done');
 }
