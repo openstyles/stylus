@@ -5,7 +5,7 @@ import extractSections from './moz-parser';
 import {importScripts, loadParserlib, parserlib} from './util';
 
 let builderChain = Promise.resolve();
-let StylusParser, StylusRenderer, less;
+let StylusEvaluator, StylusParser, StylusRenderer, less;
 
 const BUILDERS = Object.assign(Object.create(null), {
 
@@ -25,14 +25,19 @@ const BUILDERS = Object.assign(Object.create(null), {
   stylus: {
     pre(source, vars) {
       StylusRenderer ??= (importScripts('stylus-lang.js'), global.StylusRenderer);
-      StylusParser ??= (
-        (StylusParser = new StylusRenderer('')).render(),
-        StylusParser.parser.constructor
-      );
+      if (!StylusParser) {
+        const r = new StylusRenderer('');
+        r.render();
+        StylusEvaluator = r.options.Evaluator;
+        StylusParser = r.parser.constructor;
+      }
       for (const key in vars) {
-        const val = vars[key].value;
+        let val = vars[key].value;
         try {
-          vars[key] = new StylusParser(val).peek().val;
+          val = new StylusParser(`(${val})`).parse();
+          val = new StylusEvaluator(val).evaluate();
+          do val = val.nodes[0]; while (val.nodeName === 'expression' && val.nodes.length);
+          vars[key] = val;
         } catch (err) {
           err.message += '\n' + key + ' = ' + val;
           throw err;
