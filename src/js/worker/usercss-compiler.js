@@ -109,8 +109,8 @@ export default async function compileUsercss(preprocessor, code, vars) {
     if (preprocessor != null) console.warn(`Unknown preprocessor "${preprocessor}"`);
   }
   if (vars) {
-    simplifyUsercssVars(vars);
     nullifyInvalidVars(vars);
+    simplifyUsercssVars(vars);
   } else {
     vars = {};
   }
