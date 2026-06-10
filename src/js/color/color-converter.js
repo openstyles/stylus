@@ -174,9 +174,9 @@ function parseFunc(type, val) {
   if (rgb) {
     return {
       type,
-      r: (n1 = mathRound(pct ? n1 * 2.55 : n1)) < 0 ? 0 : n1 > 255 ? 255 : 0,
-      g: (n2 = mathRound(pct ? n2 * 2.55 : n2)) < 0 ? 0 : n2 > 255 ? 255 : 0,
-      b: (n3 = mathRound(pct ? n3 * 2.55 : n3)) < 0 ? 0 : n3 > 255 ? 255 : 0,
+      r: (n1 = mathRound(pct ? n1 * 2.55 : n1)) < 0 ? 0 : n1 > 255 ? 255 : n1,
+      g: (n2 = mathRound(pct ? n2 * 2.55 : n2)) < 0 ? 0 : n2 > 255 ? 255 : n2,
+      b: (n3 = mathRound(pct ? n3 * 2.55 : n3)) < 0 ? 0 : n3 > 255 ? 255 : n3,
       a,
     };
   }
