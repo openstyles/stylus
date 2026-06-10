@@ -25,11 +25,7 @@ const parseTemplate = async (str = DEFAULT) => (value = [
   await buildMeta(null, str).catch(NOP) || false,
 ]);
 
-export const loadTemplate = style => (
-  value ??= style
-    ? getLZValue(key).then(parseTemplate)
-    : [DEFAULT]
-);
+export const loadTemplate = () => (value ??= getLZValue(key).then(parseTemplate));
 
 onStorageChanged.addListener(changes => {
   if (changes[key])

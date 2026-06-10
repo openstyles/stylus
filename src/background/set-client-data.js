@@ -27,7 +27,7 @@ const PROVIDERS = {
       isUsercss,
       si: style && (__.MV3 ? stateDB.get(siKey) : dataHub.get(siKey)),
       state: chromeLocal.getValue(kEditorState),
-      template: isUsercss && loadTemplate(style),
+      template: isUsercss && loadTemplate(),
       theme: v = prefs.__values[pEditorTheme],
       themeText: v !== prefs.__defaults[pEditorTheme] && (
         CM_THEMES_TEXT[v = `${__.CM_PATH}${v}.css`] ??= fetchText(v).catch(NOP)
