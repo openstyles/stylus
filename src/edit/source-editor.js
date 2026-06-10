@@ -30,7 +30,7 @@ export default function SourceEditor() {
 
   const cmpPos = CodeMirror.cmpPos;
   const [DEFAULT_TEMPLATE, TEMPLATE, TEMPLATE_DATA] = editor.template;
-  const pp0 = (style[UCD] || TEMPLATE_DATA)?.preprocessor;
+  const pp0 = (style[UCD] ||= TEMPLATE_DATA).preprocessor;
   const cm = cmFactory.create($('#sections').appendChild($create('.single-editor')), {
     mode: pp0 === 'less' ? mimeLESS : pp0 === 'stylus' ? pp0 : 'css',
     value: style.id ? style.sourceCode : setupNewStyle(TEMPLATE || DEFAULT_TEMPLATE),
