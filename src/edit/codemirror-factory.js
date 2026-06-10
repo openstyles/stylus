@@ -22,14 +22,18 @@ const cmFactory = {
   /**
    * @param {HTMLElement | ((host: HTMLElement) => void)} place
    * @param {CodeMirror.EditorConfiguration} [options]
+   * @param {(CM) => any} [finishInit]
    * @return {CM}
    */
-  create(place, options) {
+  create(place, options, finishInit) {
+    if (finishInit)
+      (options ??= {}).finishInit = finishInit;
     const cm = CodeMirror(place, options);
     cm.display.lineDiv.on('mousewheel', plusMinusOnWheel.bind(cm), true);
     cm.lastActive = 0;
+    // Re-allow resetModeState (see wp-patch-codemirror.js) and free up memory
+    cm.options.value = '';
     cms.add(cm);
-    options.value = ''; // free up the unused source text
     return cm;
   },
 

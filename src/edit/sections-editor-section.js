@@ -40,10 +40,7 @@ export default class EditorSection {
       elTargets[prefs.__values['editor.targetsFirst'] ? 'after' : 'before'](wrapper);
     }, {
       value: sectionData.code,
-      finishInit(_) {
-        editor.applyScrollInfo(_, si);
-      },
-    });
+    }, _ => editor.applyScrollInfo(_, si));
     this.elLabelText = elLabel.lastChild;
     cm.el = el;
     cm.editorSection = this;

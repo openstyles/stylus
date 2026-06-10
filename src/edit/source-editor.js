@@ -34,12 +34,11 @@ export default function SourceEditor() {
   const cm = cmFactory.create($('#sections').appendChild($create('.single-editor')), {
     mode: pp0 === 'less' ? mimeLESS : pp0 === 'stylus' ? pp0 : 'css',
     value: style.id ? style.sourceCode : setupNewStyle(TEMPLATE || DEFAULT_TEMPLATE),
-    finishInit(me) {
-      const si = editor.applyScrollInfo(me) || {};
-      editor.viewTo = si.viewTo;
-      Object.assign(me.curOp, si.scroll);
-      editor.viewTo = 0;
-    },
+  }, me => {
+    const si = editor.applyScrollInfo(me) || {};
+    editor.viewTo = si.viewTo;
+    Object.assign(me.curOp, si.scroll);
+    editor.viewTo = 0;
   });
   const getStyleValue = asObject => asObject
     ? {...style, sourceCode: cm.getValue(), sections: undefined, [UCD]: undefined}
