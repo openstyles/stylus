@@ -1,7 +1,7 @@
 import {kLineComment} from '@/cm/util';
 import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
 import {mimeLESS, UCD} from '@/js/consts';
-import {$$remove, $create, $createLink, $isTextInput} from '@/js/dom';
+import {$create, $createLink, $isTextInput} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
@@ -24,9 +24,7 @@ export default function SourceEditor() {
   let prevSel;
   let updateTocFocusPending;
 
-  $$remove('.sectioned-only');
   $id('header').on('wheel', headerOnScroll);
-  $id('sections').textContent = '';
   $id('save-button').on('split-btn', saveTemplate);
 
   const cmpPos = CodeMirror.cmpPos;
