@@ -73,7 +73,7 @@ async function importFromFile(file) {
     } else {
       el.style.display = 'none';
       el.type = 'file';
-      el.accept = kAppJson + (MOBILE ? ',text/plain'/*for GDrive-like apps*/ : '');
+      el.accept = kAppJson + (MOBILE ? ',text/plain,.json'/*for GDrive-like apps*/ : '');
       el.acceptCharset = 'utf-8';
       document.body.appendChild(el);
       el.initialValue = el.value;
