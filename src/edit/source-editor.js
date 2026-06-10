@@ -18,6 +18,7 @@ import {worker} from './util';
 
 export default function SourceEditor() {
   const {style, /** @type DirtyReporter */dirty} = editor;
+  let lintingEnabled;
   let savedGeneration;
   let prevMode = NaN;
   let /** @type {Promise} */ pendingMeta;
@@ -48,7 +49,6 @@ export default function SourceEditor() {
     style[UCD] = meta;
     style.name = meta.name;
     style.url = meta.homepageURL || style.installationUrl;
-    pendingMeta = null;
     updateMeta();
   });
   const kToc = 'editor.toc.expanded';
@@ -124,7 +124,7 @@ export default function SourceEditor() {
   cm.on('changes', (_, changes) => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
     livePreview();
-    pendingMeta = metaCompiler(changes);
+    if (!lintingEnabled) metaCompiler(changes);
   });
   cm.on('optionChange', (_cm, option) => {
     if (option !== 'mode') return;
@@ -144,7 +144,8 @@ export default function SourceEditor() {
     if (log) for (const args of log) console.log(...args);
   }
 
-  function updateLinterSwitch() {
+  function updateLinterSwitch(key, val) {
+    lintingEnabled = val;
     const el = $id('editor.linter');
     if (!el) return;
     el.value = getCurrentLinter();
@@ -315,62 +316,112 @@ export default function SourceEditor() {
   }
 
   function createMetaCompiler(onUpdated) {
-    let meta, iFrom, iTo, min, max;
-    let prevRes, busy, done;
+    let meta, done, iFrom, iTo, lineTo, chTo;
+    let prevRes = [];
+    const [rxMetaStart, rxMetaEnd] = RX_META.source.split(/(?=\(\?:)/).map(s => RegExp(s, 'yi'));
+    /** @param {CodeMirror.EditorChange} change */
+    const isAfterMeta = ({from}) => (from.line - lineTo || from.ch - chTo) >= 0;
     linterMan.register(run);
     return run;
 
-    async function run(text, options, cm2) {
-      if (cm2 && cm2 !== cm) return;
-      if (busy) return busy;
-      if (meta && !cm2) {
-        for (const change of /**@type{CodeMirror.EditorChange[]}*/text) {
-          const a = change.from;
-          const b = CodeMirror.changeEnd(change);
-          if (cmpPos(a, min) < 0 ? ((min = a), cmpPos(b, min) >= 0) : cmpPos(a, max) <= 0) {
-            if (cmpPos(b, max) > 0) max = b;
-            text = '';
+    async function run(text, linterOptions, linterCM) {
+      if (pendingMeta || (linterCM ? linterCM !== cm : text.every(isAfterMeta)))
+        return;
+      let iFromNew = 0;
+      let iToNew = 0;
+      if (!linterCM) {
+        text = '';
+        let line = -1;
+        let inComment, inMeta;
+        cm.eachLine(({text: str}) => {
+          line++;
+          let i = -15; // minimal length of meta start
+          let j, m;
+          while (true) {
+            if (!inComment) {
+              inComment = (i = str.indexOf('/*', i)) >= 0;
+              if (!inComment)
+                break;
+              rxMetaStart.lastIndex = i;
+              inMeta = rxMetaStart.test(str);
+              if (inMeta) iFromNew += i;
+            }
+            inComment = (j = str.indexOf('*/', i + 2)) < 0;
+            if (inComment) {
+              if (inMeta) {
+                if (text) text += '\n';
+                text += str;
+              }
+              break;
+            }
+            j += 2;
+            inMeta &&= j - i >= 31 &&
+              ((str.indexOf('==/', i + 15) + 1 || j) < j) &&
+              (rxMetaEnd.lastIndex = i + 15, m = rxMetaEnd.exec(str)) &&
+              (m.index + m[0].length === j);
+            if (inMeta) {
+              if (text) text += '\n';
+              text += str.slice(i < 0 ? 0 : i, j);
+              lineTo = line;
+              chTo = j;
+              iToNew += j;
+              return true;
+            }
+            i = j;
           }
-        }
-        // Exit if all changes are outside the metadata range
-        if (text) return;
-        /* Get the entire text because the current meta's ending may have been removed,
-           while another existing ending may be outside the changed range. */
-        text = cm.getValue();
+          i = str.length + 1;
+          iToNew += i;
+          if (!inMeta) iFromNew += i;
+        });
+      } else if (
+        (!meta
+          || text.charCodeAt(iFrom) !== meta.charCodeAt(iFrom)
+          || text.charCodeAt(iTo) !== meta.charCodeAt(iTo)
+          || text.slice(iFrom, iTo) !== meta
+        ) && (text = text.match(RX_META))
+      ) {
+        iFromNew = text.index;
+        text = text[0];
+        iToNew = iFromNew + text.length;
       }
-      // Comparing even if there are changes as the user may have typed the same text over
-      if (meta
-        && text.charCodeAt(iFrom) === meta.charCodeAt(iFrom)
-        && text.charCodeAt(iTo) === meta.charCodeAt(iTo)
-        && text.slice(iFrom, iTo + 1) === meta) {
-        return prevRes;
-      }
-      const match = text.match(RX_META);
-      if (!match) {
+      if (!text) {
         return [];
       }
-      busy = new Promise(cb => (done = cb));
-      const {metadata, errors} = await worker.metalint(match[0]);
+      if (text === meta) {
+        if (iFromNew !== iFrom) {
+          for (const r of prevRes) {
+            r.from = r.to = cm.posFromIndex(r.i - iFrom + iFromNew);
+            r.i = iFromNew;
+          }
+        }
+        iFrom = iFromNew;
+        iTo = iToNew;
+        return prevRes;
+      }
+      pendingMeta = new Promise(cb => (done = cb));
+      const {metadata, errors} = await worker.metalint(text);
       if (errors.every(err => err.code === 'unknownMeta')) {
         onUpdated(metadata);
       }
-      meta = match[0];
-      iFrom = match.index; min = cm.posFromIndex(iFrom);
-      iTo = iFrom + meta.length - 1; max = cm.posFromIndex(iTo);
-      for (let i = 0; i < errors.length; i++) {
-        const {code, index, args, message} = errors[i];
+      meta = text;
+      iFrom = iFromNew;
+      iTo = iToNew;
+      prevRes = errors.map(({code, index, args, message}) => {
         const isUnknownMeta = code === 'unknownMeta';
         const typo = isUnknownMeta && args[1] ? 'Typo' : ''; // args[1] may be present but undefined
-        errors[i] = {
-          from: cm.posFromIndex((index || 0) + i),
-          to: cm.posFromIndex((index || 0) + i),
+        const i = (index || 0) + iFromNew;
+        const pos = cm.posFromIndex(i);
+        return {
+          i,
+          from: pos,
+          to: pos,
           message: code && t(`meta_${code}${typo}`, args, false) || message,
           severity: isUnknownMeta ? 'warning' : 'error',
           rule: code,
         };
-      }
-      prevRes = errors;
+      });
       done(prevRes);
+      pendingMeta = null;
       return prevRes;
     }
   }
