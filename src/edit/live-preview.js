@@ -1,16 +1,17 @@
-import {UCD} from '@/js/consts';
+import {pLivePreview, UCD} from '@/js/consts';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
+import {debounce} from '@/js/util';
 import editor from './editor';
 
-const ID = 'editor.livePreview';
 let errPos;
-let el;
+/** @type {HTMLElement} */
+let elErr;
 let data;
 let port;
 let enabled;
 
-prefs.subscribe(ID, (key, value, init) => {
+prefs.subscribe(pLivePreview, (key, value, init) => {
   enabled = value;
   if (init) return;
   if (!value) {
@@ -18,31 +19,23 @@ prefs.subscribe(ID, (key, value, init) => {
       port.disconnect();
       port = null;
     }
-  } else if (data && data.id && (data.enabled || editor.dirty.has('enabled'))) {
-    createPreviewer();
-    updatePreviewer(data);
+  } else {
+    livePreviewNow();
   }
 }, true);
 
-editor.livePreview = newData => {
-  if (!port) {
-    if (!enabled
-      || !newData.id // not saved
-      || !newData.enabled && data && !data.enabled // disabled both before and now
-      || !editor.dirty.isDirty()) {
-      return;
-    }
-    createPreviewer();
-  }
-  data = newData;
-  updatePreviewer(data);
-};
+export function livePreview() {
+  debounce(livePreviewNow, prefs.__values[pLivePreview + '.delay'] * 1000);
+}
 
-function createPreviewer() {
-  port = chrome.runtime.connect({name: 'livePreview:' + editor.style.id});
-  port.onDisconnect.addListener(() => (port = null));
-  el = $id('preview-errors');
-  el.onclick = showError;
+export function livePreviewNow() {
+  if (!enabled
+  || !editor.style.id // not saved
+  || !editor.style.enabled && data && !data.enabled // disabled both before and now
+  || !port && !editor.dirty.isDirty() // not modified since the style was saved and thus applied
+  ) return;
+  data = editor.getValue(true);
+  updatePreviewer();
 }
 
 function showError() {
@@ -53,14 +46,21 @@ function showError() {
   }
 }
 
-async function updatePreviewer(newData) {
+async function updatePreviewer() {
+  if (!port) {
+    port = chrome.runtime.connect({name: 'livePreview:' + editor.style.id});
+    port.onDisconnect.addListener(() => (port = null));
+    elErr = $id('preview-errors');
+    elErr.onclick = showError;
+  }
   try {
-    await API.styles.preview(newData);
-    el.hidden = true;
+    const res = await API.styles.preview(data);
+    elErr.hidden = true;
+    livePreview._then?.(res);
   } catch (err) {
     if (typeof err === 'string')
       err = new Error(err);
-    const ucd = newData[UCD];
+    const ucd = data[UCD];
     const pp = ucd && ucd.preprocessor;
     const shift = err._varLines + 1 || 0;
     errPos = pp && (err.line ??= err.lineno) && err.column
@@ -81,9 +81,9 @@ async function updatePreviewer(newData) {
       err = errPos[3];
       errPos = {line: errPos[1] - shift, ch: errPos[2] - 1};
     }
-    el.title =
-      el.firstChild.textContent = (errPos ? `${errPos.line + 1}:${errPos.ch + 1} ` : '') + err;
-    el.lastChild.hidden = !(el.lastChild.href = editor.ppDemo[pp]);
-    el.hidden = false;
+    elErr.title =
+      elErr.firstChild.textContent = (errPos ? `${errPos.line + 1}:${errPos.ch + 1} ` : '') + err;
+    elErr.lastChild.hidden = !(elErr.lastChild.href = editor.ppDemo[pp]);
+    elErr.hidden = false;
   }
 }

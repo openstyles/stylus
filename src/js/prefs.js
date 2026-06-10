@@ -1,8 +1,8 @@
 /** Don't use this file in content script context! */
 import {
   k_busy, kBadFavs, pDisableAll, pEditorTheme, pExposeIframes, pFavicons, pFaviconsGray,
-  pManageNewUi, pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr,
-  pSync, pUrlInstaller,
+  pLivePreview, pManageNewUi, pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pStyleViaASS,
+  pStyleViaXhr, pSync, pUrlInstaller,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {swController} from './msg-init'; // also installs API handler for own pages
@@ -129,8 +129,8 @@ const defaults = {
   'editor.arrowKeysTraverse': true,
   'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
   'editor.autosaveDraft': 10, // seconds
-  'editor.livePreview': true,
-  'editor.livePreview.delay': .2, // seconds (Chrome devtools uses 200ms)
+  [pLivePreview]: true,
+  [pLivePreview + '.delay']: .2, // seconds (Chrome devtools uses 200ms)
   'editor.targetsFirst': true,
 
   // show CSS colors as clickable colored rectangles

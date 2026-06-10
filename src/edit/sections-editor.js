@@ -10,6 +10,7 @@ import {clipString, RX_META, sleep0, t} from '@/js/util';
 import {iconize} from './applies-to';
 import editor, {scrollInfo} from './editor';
 import * as linterMan from './linter';
+import {livePreview} from './live-preview';
 import EditorSection from './sections-editor-section';
 import {helpPopup, rerouteHotkeys, showCodeMirrorPopup, worker} from './util';
 
@@ -19,7 +20,6 @@ export default function SectionsEditor() {
   /** @type {EditorSection[]} */
   const sections = [];
   const xo = new IntersectionObserver(refreshOnViewListener, {rootMargin: '100%'});
-  const updateLivePreview = editor.livePreviewLazy.bind(null, updateLivePreviewNow);
   let INC_ID = 0; // an increment id that is used by various object to track the order
   let sectionOrder = '';
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
@@ -52,7 +52,6 @@ export default function SectionsEditor() {
 
     closestVisible,
     importOnPaste,
-    updateLivePreview,
     updateMeta,
 
     getCurrentLinter: () => prefs.__values['editor.linter'],
@@ -120,7 +119,7 @@ export default function SectionsEditor() {
         });
       }
       editor.useSavedStyle(newStyle);
-      updateLivePreview();
+      livePreview();
     },
 
     async saveImpl() {
@@ -491,10 +490,6 @@ export default function SectionsEditor() {
     editor.updateName();
   }
 
-  function updateLivePreviewNow() {
-    editor.livePreview(getModel());
-  }
-
   async function initSections(src, {
     focusOn = 0,
     replace = false,
@@ -570,8 +565,8 @@ export default function SectionsEditor() {
     }
     dirty.remove(section, section);
     updateSectionOrder();
-    section.off(updateLivePreview);
-    updateLivePreview();
+    section.off(livePreview);
+    livePreview();
   }
 
   /** @param {EditorSection} section */
@@ -579,8 +574,8 @@ export default function SectionsEditor() {
     section.elDel.remove();
     section.restore();
     updateSectionOrder();
-    section.onChange(updateLivePreview);
-    updateLivePreview();
+    section.onChange(livePreview);
+    livePreview();
   }
 
   /**
@@ -613,8 +608,8 @@ export default function SectionsEditor() {
       handleKeydownSetup(cm, true);
     }
     updateSectionOrder();
-    updateLivePreview();
-    section.onChange(updateLivePreview);
+    livePreview();
+    section.onChange(livePreview);
   }
 
   /** @param {EditorSection} section */

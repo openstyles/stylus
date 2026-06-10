@@ -62,6 +62,7 @@ export const pKeepAlive = 'keepAlive';
 export const pManageNewUi = 'manage.newUI';
 export const pFavicons = 'manage.newUI.favicons';
 export const pFaviconsGray = 'manage.newUI.faviconsGray';
+export const pLivePreview = 'editor.livePreview';
 export const pManageNewUiTargets = 'manage.newUI.targets';
 export const pOpenEditInWindow = 'openEditInWindow';
 export const pPatchCsp = 'patchCsp';

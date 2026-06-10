@@ -11,6 +11,7 @@ import {CodeMirror} from '@/cm';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';
 import * as linterMan from './linter';
+import {livePreview, livePreviewNow} from './live-preview';
 import MozSectionFinder from './moz-section-finder';
 import MozSectionWidget from './moz-section-widget';
 import {worker} from './util';
@@ -58,6 +59,7 @@ export default function SourceEditor() {
   const sectionWidget = MozSectionWidget(cm, sectionFinder);
   const mozSections = editor.sections = sectionFinder.sections;
   prevSel = cm.doc.sel;
+  livePreview._then = showLog;
   prefs.subscribe([kToc, kWidget], (k, val) => {
     sectionFinder.onOff(updateToc, prefs.__values[kToc] || prefs.__values[kWidget]);
     // TODO: detect global sections
@@ -73,7 +75,6 @@ export default function SourceEditor() {
   Object.assign(editor, {
     replaceStyle,
     updateLinterSwitch,
-    updateLivePreview,
     updateMeta,
     closestVisible: () => cm,
     getCurrentLinter,
@@ -124,7 +125,7 @@ export default function SourceEditor() {
   savedGeneration = cm.changeGeneration();
   cm.on('changes', (_, changes) => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
-    editor.livePreviewLazy(updateLivePreview);
+    livePreview();
     pendingMeta = metaCompiler(changes);
   });
   cm.on('optionChange', (_cm, option) => {
@@ -143,13 +144,6 @@ export default function SourceEditor() {
   /** Shows the console.log output from the background worker stored in `log` property */
   function showLog(log) {
     if (log) for (const args of log) console.log(...args);
-  }
-
-  function updateLivePreview() {
-    if (!style.id) {
-      return;
-    }
-    showLog(editor.livePreview(Object.assign({}, style, {sourceCode: cm.getValue()})));
   }
 
   function updateLinterSwitch() {
@@ -210,7 +204,7 @@ export default function SourceEditor() {
       editor.useSavedStyle(newStyle);
       dirty.clear('sourceGeneration');
       dirty.clear('enabled');
-      updateLivePreview();
+      livePreviewNow();
       return;
     }
 
@@ -229,7 +223,7 @@ export default function SourceEditor() {
       }
       if (sameCode) {
         // the code is same but the environment is changed
-        updateLivePreview();
+        livePreviewNow();
       }
       if (!draft) {
         dirty.clear();

@@ -2,6 +2,7 @@ import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {closeCurrentTab} from '@/js/util-webext';
 import editor from './editor';
+import {livePreview} from './live-preview';
 
 let replacing, replaceQueue;
 
@@ -34,10 +35,10 @@ function handleExternalUpdate(style, reason, editorId) {
   if (reason === 'toggle') {
     if (editor.dirty.isDirty()) {
       editor.toggleStyle(style.enabled);
-      // updateLivePreview is called by toggleStyle
+      // live preview is invoked by toggleStyle
     } else {
       Object.assign(editor.style, style);
-      editor.updateLivePreview();
+      livePreview();
     }
     editor.updateMeta();
     return;
@@ -60,7 +61,7 @@ async function onReplaced() {
     delete style.name;
     delete style.enabled;
     Object.assign(editor.style, style);
-    editor.updateLivePreview();
+    livePreview();
   } else {
     await editor.replaceStyle(style);
   }

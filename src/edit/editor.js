@@ -1,10 +1,10 @@
 import {kPopup} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {template} from '@/js/localization';
-import * as prefs from '@/js/prefs';
-import {clipString, debounce, deepEqual, mapObj, sessionStore, t} from '@/js/util';
+import {clipString, deepEqual, mapObj, sessionStore, t} from '@/js/util';
 import {sticky} from './compact-header';
 import DirtyReporter from './dirty-reporter';
+import {livePreview} from './live-preview';
 import {isWindowed} from './windowed-mode';
 
 const dirty = DirtyReporter();
@@ -28,7 +28,6 @@ let wasDirty = false;
 const editor = self.editor = {
   dirty,
   isUsercss: false,
-  livePreviewLazy: cb => debounce(cb, prefs.__values['editor.livePreview.delay'] * 1000),
   msg: false,
   /** @type {'customName'|'name'} */
   nameTarget: 'name',
@@ -117,7 +116,7 @@ const editor = self.editor = {
   updateEnabledness(enabled) {
     dirty.modify('enabled', style.enabled, enabled);
     style.enabled = enabled;
-    editor.updateLivePreview();
+    livePreview();
   },
 
   updateName(isUserInput) {
