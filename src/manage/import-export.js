@@ -51,13 +51,17 @@ Object.assign(document.body, {
   },
 });
 
-async function collectSettings(clonePrefs) {
+async function collectSettings() {
   const [order, lz] = await Promise.all([
     API.styles.getOrder(),
     chromeSync.getLZValues(),
   ]);
+  const prefsObj = deepCopy(prefs.__values);
+  for (const key in prefsObj)
+    if (!hasOwn(prefs.__defaults, key))
+      delete prefsObj[key];
   return {
-    [prefs.STORAGE_KEY]: clonePrefs ? deepCopy(prefs.__values) : prefs.__values,
+    [prefs.STORAGE_KEY]: prefsObj,
     order,
     ...lz,
   };
@@ -121,7 +125,7 @@ async function importFromString(jsonString) {
     .map(style => style.customName && [style.customName.trim(), style])
     .filter(Boolean));
   const oldStylesByName = new Map(oldStyles.map(style => [style.name.trim(), style]));
-  const {order: oldOrder, [prefs.STORAGE_KEY]: oldPrefs, ...oldLZ} = await collectSettings(true);
+  const {order: oldOrder, [prefs.STORAGE_KEY]: oldPrefs, ...oldLZ} = await collectSettings();
   const items = [];
   const GROUP = 30;
   const INFO = Symbol('info'); // for private props that shouldn't be transferred into API
