@@ -29,6 +29,14 @@ const patchCodeMirror = makePatchOptions([
     ['for (var name in keywords)', 'for (var name of keywords)'],
   ],
 
+  ['codemirror/addon/dialog/dialog',
+    ['.innerHTML', '.textContent'],
+  ],
+
+  ['codemirror/addon/lint/lint',
+    ["typeof ann.messageHTML != 'undefined'", '0'],
+  ],
+
   ['codemirror/mode/stylus/stylus',
     importCssData,
     [/(var (documentTypes|mediaTypes|mediaFeatures|propertyKeywords|nonStandardPropertyKeywords|fontProperties|colorKeywords|valueKeywords)_ =) \[[^\]]+]/g,
