@@ -191,7 +191,9 @@ hookFunc(ConcatenatedModule, 'codeGeneration', (fn, me, args) => {
       }
       if (typeof child === 'string' && child.startsWith('\n// NAMESPACE OBJECT: ')) {
         const mod = modsByPath[child.match(/: (.+)/)[1]];
-        const modExp = mod[SYM];
+        const modExp = mod?.[SYM];
+        if (!modExp)
+          continue;
         for (const dep of mod.dependencies)
           if (dep.getStarReexports?.(me.compilation.moduleGraph)?.exports.size)
             Object.assign(modExp, me.compilation.moduleGraph.getModule(dep)[SYM]);

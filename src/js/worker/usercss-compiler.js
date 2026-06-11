@@ -52,17 +52,7 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   less: {
     async pre(source, vars) {
-      if (!less) {
-        global.document = {currentScript: {}};
-        global.window = global;
-        global.less = {
-          logLevel: 0,
-          useFileCache: false,
-          onReady: false,
-        };
-        importScripts('less.js');
-        less = global.less;
-      }
+      less ||= (importScripts('less.js'), global.less);
       const varDefs = {};
       for (const key in vars)
         varDefs['@' + key] = vars[key].value;

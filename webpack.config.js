@@ -13,6 +13,7 @@ const InlineConstantExportsPlugin = require('@automattic/webpack-inline-constant
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const {RawEnvPlugin} = require('./tools/wp-raw-patch-plugin');
 const patchCodemirror = require('./tools/wp-patch-codemirror');
+const patchLESS = require('./tools/wp-patch-less');
 const {
   escapeForRe, nukeHtmlSpaces, transESM2var, transSourceMap,
   BUILD, CM_PACKAGE_PATH, DEV, FLAVOR, MANIFEST, MV3, ROOT, TARGET, ZIP,
@@ -121,8 +122,8 @@ const addWrapper = (banner = INTRO + ';', footer = '}', test = /\.js$/) => [
 ];
 /** @return {TerserPlugin.BasePluginOptions &
  * TerserPlugin.DefinedDefaultMinimizerAndOptions<import('terser/tools/terser').MinifyOptions>} */
-const getTerserOptions = (cm, ovr) => ({
-  [cm ? 'include' : 'exclude']: /node_modules|codemirror(?!-factory)|src[/\\]cm[/\\]css(-data)?\.js/,
+const getTerserOptions = (isOwn, ovr) => ({
+  [isOwn ? 'exclude' : 'include']: /^(less|codemirror)/,
   extractComments: false,
   terserOptions: {
     ...ovr,
@@ -130,18 +131,19 @@ const getTerserOptions = (cm, ovr) => ({
     compress: {
       builtins_ecma: MV3 ? 2024 : 2017,
       builtins_pure: true,
-      global_defs: Object.fromEntries(Object.entries(ALIASES.funcs).map(e => ['@' + e[0], e[1]])),
-      join_vars: cm,
-      lhs_constants: cm,
+      global_defs: isOwn &&
+        Object.fromEntries(Object.entries(ALIASES.funcs).map(e => ['@' + e[0], e[1]])),
+      join_vars: !isOwn,
+      lhs_constants: !isOwn,
       pure_getters: true,
       reduce_funcs: false,
-      sequences: cm,
-      unsafe_arrows: !cm,
+      sequences: !isOwn,
+      unsafe_arrows: isOwn,
       ...ovr?.compress,
     },
     output: {
       ascii_only: false,
-      beautify: !cm, // line numbers in bug reports + no delay in devtools to auto-prettify
+      beautify: isOwn, // line numbers in bug reports + no delay in devtools to auto-prettify
       indent_level: 2,
       comments: false,
       wrap_func_args: false,
@@ -159,7 +161,7 @@ const tersers = {};
 /**
  * @return {import('webpack/types').Configuration}
  */
-const getBaseConfig = () => ({
+const getBaseConfig = ({vars} = {}) => ({
   mode: DEV ? 'development' : 'production',
   devtool: DEV && 'inline-source-map',
   output: {
@@ -229,6 +231,7 @@ const getBaseConfig = () => ({
         test: require.resolve('lz-string-unsafe'),
       },
       ...patchCodemirror,
+      ...patchLESS,
     ].filter(Boolean),
   },
   optimization: {
@@ -236,6 +239,8 @@ const getBaseConfig = () => ({
     chunkIds: false,
     mangleExports: false,
     minimizer: DEV ? [] : [
+      (tersers.own ??= new TerserPlugin(getTerserOptions(true))),
+      (tersers.vendor ??= new TerserPlugin(getTerserOptions())),
       new CssMinimizerPlugin({
         minimizerOptions: {
           preset: ['default', {
@@ -262,10 +267,10 @@ const getBaseConfig = () => ({
   },
   plugins: [
     // new webpack.debug.ProfilingPlugin({outputPath: DST + '.profile.json'}),
-    new RawEnvPlugin(VARS, RAW_VARS),
+    vars && new RawEnvPlugin(...vars),
     new webpack.ids.NamedChunkIdsPlugin({context: SRC + JS}),
     new InlineConstantExportsPlugin([/[/\\]consts\.js$/]),
-  ],
+  ].filter(Boolean),
   stats: {
     // optimizationBailout: true,
   },
@@ -287,9 +292,10 @@ function getChunkFileName({chunk}) {
 /**
  * @param {import('webpack/types').Configuration} ovr
  * @param {import('webpack/types').Configuration} [base]
+ * @param {{} | [{}, {}]} [vars]
  * @return {import('webpack/types').Configuration}
  */
-function mergeCfg(ovr, base) {
+function mergeCfg(ovr, base, vars) {
   if (!ovr) {
     return base;
   }
@@ -315,9 +321,9 @@ function mergeCfg(ovr, base) {
         })
       );
     }
-    base = getBaseConfig();
-    if (!DEV && !ovr.optimization?.minimizer)
-      base.optimization.minimizer.push(tersers.own ??= new TerserPlugin(getTerserOptions()));
+    if (/@\//.test(Object.values(ovr.entry)))
+      vars = [{...VARS, ...vars}, {...RAW_VARS}];
+    base = getBaseConfig({vars});
   } else {
     base = {...base};
   }
@@ -331,7 +337,7 @@ function mergeCfg(ovr, base) {
   return base;
 }
 
-function makeLibrary(entry, name, extras) {
+function makeLibrary(entry, name, vars) {
   let cfg = mergeCfg({
     entry,
     output: {
@@ -345,9 +351,9 @@ function makeLibrary(entry, name, extras) {
     plugins: name
       ? addWrapper()
       : addWrapper(INTRO + '; (()=>{', '})()}'),
-  });
+  }, undefined, vars);
   if (!name) cfg = mergeCfg(OUTPUT_MODULE, cfg);
-  return extras ? mergeCfg(extras, cfg) : cfg;
+  return cfg;
 }
 
 function makeContentScript(name) {
@@ -410,10 +416,6 @@ module.exports = [
       chunkFilename: getChunkFileName.bind([JS, '.js']),
     },
     optimization: {
-      minimizer: DEV ? [] : [
-        tersers.cm ??= new TerserPlugin(getTerserOptions(true)),
-        tersers.own ??= new TerserPlugin(getTerserOptions()),
-      ],
       runtimeChunk: {
         name: 'common',
       },
@@ -487,7 +489,6 @@ module.exports = [
             ['csslint-mod/dist/csslint.js', 'csslint.js', true],
             ['csslint-mod/dist/parserlib.js', 'parserlib.js', true],
             ['stylelint-bundle', 'stylelint.js'],
-            ['less/dist/less.min.js', 'less.js'],
             ['stylus-lang-bundle/dist/stylus-renderer.min.js', 'stylus-lang.js'],
           ].map(([npm, to, babelize]) => ({
             from: require.resolve(npm),
@@ -545,9 +546,8 @@ module.exports = [
   makeContentScript('apply.js'),
   makeContentScript('hook-uso.js'),
   MV3 && makeContentScript('hook-uso-page-mv3.js'),
-  makeLibrary('@/js/worker', undefined, {
-    plugins: [new RawEnvPlugin({ENTRY: 'worker'})],
-  }),
+  makeLibrary('@/js/worker', undefined, {ENTRY: 'worker'}),
+  makeLibrary({less: 'less/lib/less-browser/bootstrap'}, 'less'),
 ].filter(Boolean);
 
 module.exports.parallelism = 2;
