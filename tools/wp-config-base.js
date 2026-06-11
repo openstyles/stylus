@@ -138,7 +138,7 @@ const getBaseConfig = ({vars} = {}) => ({
       'javascript/auto': {node: false},
       'javascript/esm': {node: false},
     },
-    rules: moduleRules,
+    rules: [...moduleRules],
   },
   optimization: {
     concatenateModules: true, // makes DEV code run faster

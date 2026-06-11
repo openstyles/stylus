@@ -20,13 +20,15 @@ const MANIFEST_OVR = `manifest-${FLAVOR}.json`;
 const RX_HTML_WS = /^\s+|(?<=[>"',.]|&nbsp;)[ \t]*[\r\n]\s*|\s+(?=>|<\/)|<!--.*?-->|\s+$/gs;
 const nukeHtmlSpaces = str => str.replace(RX_HTML_WS, '');
 
-const makePatchOptions = (file, ...rules) => ({
+const makePatchOptions = entries => entries.map(([what, ...rules]) => ({
+  ...`${what}` === '[object Object]'
+    ? what
+    : {test: require.resolve(what)},
   loader: 'string-replace-loader',
-  test: require.resolve(file),
   options: {
     multiple: rules.map(r => ({search: r[0], replace: r[1], strict: true})),
   },
-});
+}));
 
 function anyPathSep(str) {
   return str.replace(/[\\/]/g, /[\\/]/.source);

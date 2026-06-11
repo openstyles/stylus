@@ -9,7 +9,7 @@ const INDEX = require.resolve(LIB + 'less/index.js');
 const PKG = INDEX.replace(/[/\\]lib[/\\]less.+$/, '/package.json');
 const {version} = JSON.parse(fs.readFileSync(PKG, 'utf8'));
 
-module.exports = [
+module.exports = makePatchOptions([
   [INDEX,
     [/import parseVersion.+/, ''],
     [/const v = parseVersion.+/, ''],
@@ -41,4 +41,4 @@ module.exports = [
   [LIB + 'less/parse-tree.js',
     [/if \(options\.sourceMap/, 'if (0'],
   ],
-].map(v => makePatchOptions(...v));
+]);
