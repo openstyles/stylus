@@ -8,11 +8,11 @@
   "dependencies": {
     "@eight04/draggable-list": "^0.3.0",
     "codemirror": "5.65.20",
-    "csslint-mod": "github:openstyles/csslint-mod#semver:v1.0.10",
+    "csslint-mod": "github:openstyles/csslint-mod#semver:v1.0.11",
     "db-to-cloud": "^0.8.1",
     "less": "^4.6.4",
     "lz-string-unsafe": "1.4.4-fork-1",
-    "stylelint-bundle": "17.11.0",
+    "stylelint-bundle": "17.13.0",
     "stylus-lang-bundle": "^0.64.0",
     "usercss-meta": "^0.12.0",
     "webext-launch-web-auth-flow": "^0.1.2"

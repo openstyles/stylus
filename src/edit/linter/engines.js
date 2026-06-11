@@ -18,9 +18,10 @@ const ENGINES = {
     getConfig: config => ({
       rules: Object.assign({}, DEFAULTS.stylelint.rules, config && config.rules),
     }),
-    lint: (code, config, mode) => worker.stylelint({code, config, mode}),
+    lint: worker.stylelint,
   },
 };
+let uniqId;
 
 linterMan.register(async (text, _options, cm) => {
   const linter = prefs.__values['editor.linter'];
@@ -30,7 +31,7 @@ linterMan.register(async (text, _options, cm) => {
     for (const [name, engine] of currentFirst) {
       if (engine.validMode(mode)) {
         const cfg = configs.get(name) || await getConfig(name);
-        return ENGINES[name].lint(text, cfg, mode);
+        return ENGINES[name].lint(text, cfg, mode, editor.style.id || (uniqId ??= Math.random()));
       }
     }
   }

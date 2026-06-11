@@ -30,8 +30,8 @@ importers:
         specifier: 5.65.20
         version: 5.65.20
       csslint-mod:
-        specifier: github:openstyles/csslint-mod#semver:v1.0.10
-        version: https://codeload.github.com/openstyles/csslint-mod/tar.gz/c33341d5f1d7701ce0f5e9ae1edd8bc88e952945
+        specifier: github:openstyles/csslint-mod#semver:v1.0.11
+        version: https://codeload.github.com/openstyles/csslint-mod/tar.gz/b82baf02f6b3ebc357816274aaf5682bbab75305
       db-to-cloud:
         specifier: ^0.8.1
         version: 0.8.1
@@ -42,8 +42,8 @@ importers:
         specifier: 1.4.4-fork-1
         version: 1.4.4-fork-1
       stylelint-bundle:
-        specifier: 17.11.0
-        version: 17.11.0(postcss@8.5.14)
+        specifier: 17.13.0
+        version: 17.13.0(postcss@8.5.14)
       stylus-lang-bundle:
         specifier: ^0.64.0
         version: 0.64.0
@@ -694,8 +694,8 @@ packages:
     resolution: {integrity: sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A==}
     engines: {node: '>=6.9.0'}
 
-  '@cacheable/memory@2.0.8':
-    resolution: {integrity: sha512-FvEb29x5wVwu/Kf93IWwsOOEuhHh6dYCJF3vcKLzXc0KXIW181AOzv6ceT4ZpBHDvAfG60eqb+ekmrnLHIy+jw==}
+  '@cacheable/memory@2.0.9':
+    resolution: {integrity: sha512-HdMx6DoGywB30vacDbBsITbIX4pgFqj1zsrV58jZBUw3klzkNoXhj7qOqAgledhxG7YZI5rBSJg7Zp8/VG0DuA==}
 
   '@cacheable/utils@2.4.1':
     resolution: {integrity: sha512-eiFgzCbIneyMlLOmNG4g9xzF7Hv3Mga4LjxjcSC/ues6VYq2+gUbQI8JqNuw/ZM8tJIeIaBGpswAsqV2V7ApgA==}
@@ -747,8 +747,8 @@ packages:
     peerDependencies:
       '@csstools/css-tokenizer': ^4.0.0
 
-  '@csstools/css-syntax-patches-for-csstree@1.1.4':
-    resolution: {integrity: sha512-wgsqt92b7C7tQhIdPNxj0n9zuUbQlvAuI1exyzeNrOKOi62SD7ren8zqszmpVREjAOqg8cD2FqYhQfAuKjk4sw==}
+  '@csstools/css-syntax-patches-for-csstree@1.1.5':
+    resolution: {integrity: sha512-oNjBvzLq2GPZtJphCjLqXow/cHySHSgtxvKZb7OqSZ/xHgw6NWNhfad+6AB9cLeVm6eA9d/qMll3JdEHjy6M+A==}
     peerDependencies:
       css-tree: ^3.2.1
     peerDependenciesMeta:
@@ -1635,9 +1635,9 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
-  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/c33341d5f1d7701ce0f5e9ae1edd8bc88e952945:
-    resolution: {gitHosted: true, integrity: sha512-NSRRHekU60Ud7UrKR4fpgQYczIlN0/uZ50HH7pA1T4yavZXXbdx0C/BR6bimbRu9V00ZlAmSwbJLjizah+HqZg==, tarball: https://codeload.github.com/openstyles/csslint-mod/tar.gz/c33341d5f1d7701ce0f5e9ae1edd8bc88e952945}
-    version: 1.0.10
+  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/b82baf02f6b3ebc357816274aaf5682bbab75305:
+    resolution: {gitHosted: true, integrity: sha512-OviA/43Lq9OEMAkyNWLGPmHRPEz0C9La34miKixYhkjErLMcgjuRNAQrWQ0fwrWpgAUdGesoLorZ1xT6HMV8RQ==, tarball: https://codeload.github.com/openstyles/csslint-mod/tar.gz/b82baf02f6b3ebc357816274aaf5682bbab75305}
+    version: 1.0.11
 
   cssnano-preset-default@7.0.17:
     resolution: {integrity: sha512-11qO63A+czwguQFJCaTdICvbaxn0pJzz/XghLlv+OT7WyToDxAMR0Xb3/26/l0y0hQJywwNbj/SLSQlGBHE1OA==}
@@ -2118,10 +2118,6 @@ packages:
 
   is-plain-object@2.0.4:
     resolution: {integrity: sha512-h5PpgXkWitc38BBMYawTYMWJHFZJVnBquFE57xFpjB8pJFiF6gZ+bU+WyI/yqXiFR5mdLsgYNaPe8uao6Uv9Og==}
-    engines: {node: '>=0.10.0'}
-
-  is-plain-object@5.0.0:
-    resolution: {integrity: sha512-VRSzKkbMm5jMDoKLbltAkFQ5Qr7VDiTFGXxYFXXowVj387GeGNOCsOH6Msy00SGZ3Fp84b1Naa1psqgcCIEP5Q==}
     engines: {node: '>=0.10.0'}
 
   is-what@4.1.16:
@@ -2607,6 +2603,12 @@ packages:
     peerDependencies:
       postcss: '>=8.5.10'
 
+  postcss-less@6.0.0:
+    resolution: {integrity: sha512-FPX16mQLyEjLzEuuJtxA8X3ejDLNGGEG503d2YGZR5Ask1SpDN8KmZUMpzCvyalWRywAn1n1VOA5dcqfCLo5rg==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      postcss: '>=8.5.10'
+
   postcss-loader@8.2.1:
     resolution: {integrity: sha512-k98jtRzthjj3f76MYTs9JTpRqV1RaaMhEU0Lpw9OTmQZQdppg4B30VZ74BojuBHt3F4KyubHJoXCMUeM8Bqeow==}
     engines: {node: '>= 18.12.0'}
@@ -2851,6 +2853,10 @@ packages:
     resolution: {integrity: sha512-SoSL4+OSEtR99LHFZQiJLkT59C5B1amGO1NzTwj7TT1qCUgUO6hxOvzkOYxD+vMrXBM3XJIKzokoERdqQq/Zmg==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postcss@8.5.15:
+    resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
+    engines: {node: ^10 || ^12 || >=14}
+
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -3051,12 +3057,12 @@ packages:
     peerDependencies:
       postcss: ^8.5.13
 
-  stylelint-bundle@17.11.0:
-    resolution: {integrity: sha512-MJK3y/1Wk8ddd1k76rSiRStAYQGniUnElWS7CynjeGmC9Ug1GQMMbQolzFBON/cGbVB775DkvKNlPlUp3PJsUQ==}
+  stylelint-bundle@17.13.0:
+    resolution: {integrity: sha512-0OEi1TpithTK6J4sCH07UpMR2HlrHpr4cpd3vwyhO8OkBuHTe+YhX29wPKmTbrqcxd8HrzTX2fymGiTnOrCblA==}
     engines: {node: '>= 20.0.0'}
 
-  stylelint@17.11.0:
-    resolution: {integrity: sha512-/3czzmbF9XdGWvReDF3Ex4R23Ajolo7j8RB2bFNEqk6Ht356nlpVV+G5bG2Qt8AW1ofJzXztBRDnAtd7cgowWA==}
+  stylelint@17.13.0:
+    resolution: {integrity: sha512-G1WYzMerp7ihOaIe9VJCHLt12MoAD2QLf1AFerYP37+BCRBUK5UCpq8e/mN+zCIaJPKQcaxhE4WlPmqdiOx/gw==}
     engines: {node: '>=20.19.0'}
     hasBin: true
 
@@ -4030,7 +4036,7 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
-  '@cacheable/memory@2.0.8':
+  '@cacheable/memory@2.0.9':
     dependencies:
       '@cacheable/utils': 2.4.1
       '@keyv/bigmap': 1.3.1(keyv@5.6.0)
@@ -4076,7 +4082,7 @@ snapshots:
     dependencies:
       '@csstools/css-tokenizer': 4.0.0
 
-  '@csstools/css-syntax-patches-for-csstree@1.1.4(css-tree@3.2.1)':
+  '@csstools/css-syntax-patches-for-csstree@1.1.5(css-tree@3.2.1)':
     optionalDependencies:
       css-tree: 3.2.1
 
@@ -4808,7 +4814,7 @@ snapshots:
 
   cacheable@2.3.5:
     dependencies:
-      '@cacheable/memory': 2.0.8
+      '@cacheable/memory': 2.0.9
       '@cacheable/utils': 2.4.1
       hookified: 1.15.1
       keyv: 5.6.0
@@ -4984,7 +4990,7 @@ snapshots:
 
   cssesc@3.0.0: {}
 
-  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/c33341d5f1d7701ce0f5e9ae1edd8bc88e952945: {}
+  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/b82baf02f6b3ebc357816274aaf5682bbab75305: {}
 
   cssnano-preset-default@7.0.17(postcss@8.5.14):
     dependencies:
@@ -5477,8 +5483,6 @@ snapshots:
     dependencies:
       isobject: 3.0.1
 
-  is-plain-object@5.0.0: {}
-
   is-what@4.1.16: {}
 
   isarray@1.0.0: {}
@@ -5935,6 +5939,10 @@ snapshots:
       '@csstools/utilities': 2.0.0(postcss@8.5.14)
       postcss: 8.5.14
 
+  postcss-less@6.0.0(postcss@8.5.14):
+    dependencies:
+      postcss: 8.5.14
+
   postcss-loader@8.2.1(postcss@8.5.14)(webpack@5.107.2):
     dependencies:
       cosmiconfig: 9.0.1
@@ -6189,9 +6197,9 @@ snapshots:
     dependencies:
       postcss: 8.5.14
 
-  postcss-safe-parser@7.0.1(postcss@8.5.14):
+  postcss-safe-parser@7.0.1(postcss@8.5.15):
     dependencies:
-      postcss: 8.5.14
+      postcss: 8.5.15
 
   postcss-selector-not@8.0.1(postcss@8.5.14):
     dependencies:
@@ -6221,6 +6229,12 @@ snapshots:
   postcss-value-parser@4.2.0: {}
 
   postcss@8.5.14:
+    dependencies:
+      nanoid: 3.3.12
+      picocolors: 1.1.1
+      source-map-js: 1.2.1
+
+  postcss@8.5.15:
     dependencies:
       nanoid: 3.3.12
       picocolors: 1.1.1
@@ -6418,20 +6432,21 @@ snapshots:
       postcss: 8.5.14
       postcss-selector-parser: 7.1.1
 
-  stylelint-bundle@17.11.0(postcss@8.5.14):
+  stylelint-bundle@17.13.0(postcss@8.5.14):
     dependencies:
-      stylelint: 17.11.0
+      postcss-less: 6.0.0(postcss@8.5.14)
+      stylelint: 17.13.0
       sugarss: 5.0.1(postcss@8.5.14)
     transitivePeerDependencies:
       - postcss
       - supports-color
       - typescript
 
-  stylelint@17.11.0:
+  stylelint@17.13.0:
     dependencies:
       '@csstools/css-calc': 3.2.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
-      '@csstools/css-syntax-patches-for-csstree': 1.1.4(css-tree@3.2.1)
+      '@csstools/css-syntax-patches-for-csstree': 1.1.5(css-tree@3.2.1)
       '@csstools/css-tokenizer': 4.0.0
       '@csstools/media-query-list-parser': 5.0.0(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
       '@csstools/selector-resolve-nested': 4.0.0(postcss-selector-parser@7.1.1)
@@ -6450,14 +6465,13 @@ snapshots:
       html-tags: 5.1.0
       ignore: 7.0.5
       import-meta-resolve: 4.2.0
-      is-plain-object: 5.0.0
       mathml-tag-names: 4.0.0
       meow: 14.1.0
       micromatch: 4.0.8
       normalize-path: 3.0.0
       picocolors: 1.1.1
-      postcss: 8.5.14
-      postcss-safe-parser: 7.0.1(postcss@8.5.14)
+      postcss: 8.5.15
+      postcss-safe-parser: 7.0.1(postcss@8.5.15)
       postcss-selector-parser: 7.1.1
       postcss-value-parser: 4.2.0
       string-width: 8.2.1

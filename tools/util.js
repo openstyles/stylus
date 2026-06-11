@@ -66,7 +66,8 @@ function transESM2var(buf, from) {
   const i = code.lastIndexOf('\nexport');
   const j = code.indexOf('\n', i + 1);
   const name = Object.assign(/{\s*(\w+)/g, {lastIndex: i}).exec(code)[1];
-  const varFn = `var ${name} = (() => {${code.slice(0, i)}\nreturn ${name};})();${code.slice(j)}`;
+  const varFn = `'use strict'; var ${name} = (() => {${code.slice(0, i)}\nreturn ${name};})();` +
+    code.slice(j);
   if (MV3) return varFn;
   const res = babel.transformSync(varFn, {
     compact: !DEV,

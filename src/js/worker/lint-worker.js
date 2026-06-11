@@ -2,7 +2,7 @@ import {kCssPropSuffix, mimeLESS} from '@/js/consts';
 import {metaLint} from './meta-parser';
 import {CSSLint, loadCSSLint, loadParserlib, loadStylelint, parserlib, stylelint} from './util';
 
-let sugarss = null;
+const sugarss = {};
 
 /** @namespace WorkerAPI */
 export default {
@@ -100,11 +100,14 @@ export default {
     return result;
   },
 
-  async stylelint(opts) {
-    if (!stylelint) loadStylelint();
-    // Stylus-lang allows a trailing ";" but sugarss doesn't, so we monkeypatch it
-    stylelint.SugarSSParser.prototype.checkSemicolon = ovrCheckSemicolon;
-    const cfgRules = opts.config.rules;
+  async stylelint(code, config, mode, styleId) {
+    if (!stylelint) {
+      loadStylelint();
+      // Stylus-lang allows a trailing ";" but sugarss doesn't, so we monkeypatch it
+      stylelint.syntax.sugarss.Parser.prototype.checkSemicolon = ovrCheckSemicolon;
+    }
+    const isLess = mode === mimeLESS;
+    const cfgRules = config.rules;
     const kAtRuleDisallowedList = 'at-rule-disallowed-list';
     let atRules = cfgRules[kAtRuleDisallowedList];
     for (const r in cfgRules)
@@ -115,18 +118,22 @@ export default {
     for (let pass = 2; --pass >= 0;) {
       /* We try sugarss (for indented stylus-lang), then css mode, switching them on failure,
        * so that the succeeding syntax will be used next time first. */
-      if (opts.mode === 'stylus') {
-        sugarss ??= !opts.code.includes('{');
-        opts.config.customSyntax = sugarss ? 'sugarss' : '';
-      }
-      const res = (await stylelint.lint(opts)).results[0];
-      const errors = res.parseErrors.concat(res.warnings);
-      if (sugarss && pass && errors[0] &&
+      const res = await stylelint.lint({
+        code, config, mode,
+        customSyntax:
+          mode === 'stylus'
+            ? (sugarss[styleId] ??= !code.includes('{')) && stylelint.syntax.sugarss
+            : isLess && stylelint.syntax.less,
+      });
+      const {results: [{parseErrors: errors, _postcssResult: {messages}}]} = res;
+      if (sugarss[styleId] && pass && errors[0] &&
           errors[0].text === 'Unnecessary curly bracket (CssSyntaxError)') {
-        sugarss = !sugarss;
+        sugarss[styleId] = !sugarss[styleId];
         continue;
       }
-      return collectStylelintResults(errors, opts);
+      messages.push(...errors);
+      collectStylelintResults(messages, code, mode, isLess);
+      return messages;
     }
   },
 };
@@ -182,31 +189,41 @@ const ruleRetriever = {
   },
 };
 
-function collectStylelintResults(messages, {mode}) {
+function collectStylelintResults(messages, code, mode, isLess) {
   /* We hide nonfatal "//" warnings since we lint with sugarss without applying @preprocessor.
    * We can't easily pre-remove "//"  comments which may be inside strings, comments, url(), etc.
    * And even if we did, it'd be wrong to hide potential bugs in stylus-lang like #1460 */
-  const isLess = mode === mimeLESS;
   const slashCommentAllowed = isLess || mode === 'stylus';
-  const rxLessVars = isLess && /^Unknown at-rule "@[-\w]+:"|^Cannot parse property .+@[-\w]/i;
-  const res = [];
-  for (const m of messages) {
+  const rxLessVars = isLess && /^Cannot parse property .+@[-\w]/i;
+  let len = 0;
+  for (let i = 0; i < messages.length; i++) {
+    const m = messages[i];
     const {rule} = m;
+    const {start: {offset: ofs1} = {}, end: {offset: ofs2} = {}} = m;
     const msg = m.text.replace(/^Unexpected\s+/, '').replace(` (${rule})`, '');
-    if (slashCommentAllowed && msg.includes('"//"') || isLess && rxLessVars.test(msg)) {
-      continue;
-    }
+    if (
+      slashCommentAllowed && msg.includes('"//"') ||
+      isLess && rxLessVars.test(msg) ||
+      (mode === 'css' &&
+        rule === 'declaration-property-value-no-unknown' &&
+        msg.startsWith('Unknown value')
+      ) && (
+        msg.includes('/*[[') ||
+        code.slice(code.lastIndexOf(msg.split('"').slice(-2, -1)[0], ofs1), ofs2).includes('/*[[')
+      )
+    ) continue;
     const {line: L, column: C} = m;
     const isImport = msg.includes('at-rule "@import"');
-    res.push({
-      from: {line: L - 1, ch: C - 1},
-      to: {line: (m.endLine || L) - 1, ch: (m.endColumn || C) - 1},
+    /** @namespace LintAnnotation */
+    messages[len++] = {
       message: isImport ? '@import prevents parallel downloads and may be blocked by CSP.' : msg,
-      severity: isImport ? 'warning' : m.severity,
+      from: {line: L - 1, ch: C - 1, offset: ofs1},
+      to: {line: (m.endLine || L) - 1, ch: (m.endColumn || C) - 1, offset: ofs2},
       rule: isImport ? '' : rule,
-    });
+      severity: isImport ? 'warning' : m.severity,
+    };
   }
-  return res;
+  messages.length = len;
 }
 
 function ovrCheckSemicolon(tt) {
