@@ -1,34 +1,24 @@
 'use strict';
 
 const fs = require('fs');
-const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackProcessingPlugin = require('html-webpack-processing-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const InlineConstantExportsPlugin = require('@automattic/webpack-inline-constant-exports-plugin');
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const {RawEnvPlugin} = require('./tools/wp-raw-patch-plugin');
-const patchCodemirror = require('./tools/wp-patch-codemirror');
-const patchLESS = require('./tools/wp-patch-less');
 const {
-  escapeForRe, nukeHtmlSpaces, transESM2var, transSourceMap,
-  BUILD, CM_PACKAGE_PATH, DEV, FLAVOR, MANIFEST, MV3, ROOT, TARGET, ZIP,
+  nukeHtmlSpaces, transESM2var, transSourceMap, BUILD, DEV, FLAVOR, MANIFEST, MV3, SRC,
 } = require('./tools/util');
+const augment = require('./tools/wp-config-base');
+const {
+  CSS, JS, SHIM, OUTPUT_MODULE, SEP_ESC, SRC_ESC, THEME_NAMES, THEME_PATH, CM_PATH, DST, ALIASES,
+  VARS,
+} = require('./tools/wp-config-vars');
 
 global.localStorage = {}; // workaround for node 25 and HtmlWebpackPlugin's `...global`
 
 const {DEBUG, GITHUB_ACTIONS, PUBLISH} = process.env;
-const SRC = ROOT + 'src/';
-const DST = `${ROOT}dist${GITHUB_ACTIONS ? '' : `-${TARGET}`}/`;
-const CSS = 'css/';
-const JS = 'js/';
-const SHIM = ROOT + 'tools/shim/';
-const SEP_ESC = escapeForRe(path.sep);
-const SRC_ESC = escapeForRe(SRC.replaceAll('/', path.sep));
 const PAGE_BG = MV3 ? 'background/sw' : 'background';
 const OFFSCREEN = 'offscreen';
 const PAGES = [
@@ -40,7 +30,6 @@ const PAGES = [
   'sidepanel',
   !MV3 && PAGE_BG,
 ].filter(Boolean);
-const FS_CACHE = !DEV && !GITHUB_ACTIONS && +process.env.FS_CACHE;
 const GET_CLIENT_DATA = 'get-client-data';
 const GET_CLIENT_DATA_TAG = {
   toString: () => `<script src="${JS}${GET_CLIENT_DATA}.js"></script>`,
@@ -52,65 +41,6 @@ const RESOLVE_VIA_SHIM = {
   ],
 };
 const MAX_CHUNKNAME_LEN = 24; // in Windows, path+name is limited to 260 chars
-const CM_PATH = CSS + 'cm-themes/';
-const THEME_PATH = CM_PACKAGE_PATH.replaceAll('\\', '/') + '/theme';
-const THEME_NAMES = Object.fromEntries(fs.readdirSync(THEME_PATH)
-  .sort()
-  .map(f => (f = f.match(/([^/\\.]+)\.css$/i)?.[1]) && [f, ''])
-  .filter(Boolean));
-/** Getting rid of the unused webpack machinery */
-const OUTPUT_MODULE = {
-  output: {
-    module: true,
-    library: {type: 'modern-module'},
-  },
-  experiments: {outputModule: true},
-};
-const ALIASES = {
-  funcs: {
-    $: 'document.querySelector',
-    $$: 'document.querySelectorAll',
-    $id: 'document.getElementById',
-    $tag: 'document.createElement',
-  },
-  vars: {
-    document: 'global.document',
-    $root: 'document.documentElement',
-    $rootCL: '$root.classList',
-  },
-};
-const MIRROR_PREFIX = 'http://_/';
-const VARS = {
-  API: 'API', // hiding the global from IDE
-  B: BUILD,
-  B_ANY: BUILD !== 'chrome' && BUILD !== 'firefox',
-  B_CHROME: BUILD === 'chrome',
-  B_FIREFOX: BUILD === 'firefox',
-  CLIENT_DATA: 'clientData', // hiding the global from IDE
-  CM_PATH,
-  DEV,
-  ENTRY: false,
-  IS_BG: false,
-  JS,
-  MIRROR_PREFIX,
-  MIRROR_PREFIX_LEN: MIRROR_PREFIX.length,
-  MV3,
-  PAGE_BG: PAGE_BG.split('/').pop(),
-  ZIP: !!ZIP,
-};
-const DEBUG_MODE = {
-  GENERAL: 1,
-  PORT: 2,
-  LIFE: 4,
-};
-const RAW_VARS = {
-  DEBUG: DEBUG || '0',
-  DEBUGLOG: (DEBUG ? '' : 'null&&') + 'console.log',
-  DEBUGPORT: (+DEBUG & DEBUG_MODE.PORT ? '' : 'null&&') + 'console.log',
-  DEBUGTRACE: (DEBUG ? '' : 'null&&') + 'console.trace',
-  DEBUGWARN: (DEBUG ? '' : 'null&&') + 'console.warn',
-  KEEP_ALIVE: '1&&',
-};
 const INTRO = '"use strict"; { const global = self, window = global';
 const INTRO_ALIASES = [
   ...Object.entries(ALIASES.vars).map(([k, v]) => `${k}=${v}`),
@@ -120,161 +50,6 @@ const addWrapper = (banner = INTRO + ';', footer = '}', test = /\.js$/) => [
   new webpack.BannerPlugin({raw: true, test, banner}),
   new webpack.BannerPlugin({raw: true, test, banner: footer, footer: true}),
 ];
-/** @return {TerserPlugin.BasePluginOptions &
- * TerserPlugin.DefinedDefaultMinimizerAndOptions<import('terser/tools/terser').MinifyOptions>} */
-const getTerserOptions = (isOwn, ovr) => ({
-  [isOwn ? 'exclude' : 'include']: /^(less|codemirror)/,
-  extractComments: false,
-  terserOptions: {
-    ...ovr,
-    ecma: MV3 ? 2024 : 2017,
-    compress: {
-      builtins_ecma: MV3 ? 2024 : 2017,
-      builtins_pure: true,
-      global_defs: isOwn &&
-        Object.fromEntries(Object.entries(ALIASES.funcs).map(e => ['@' + e[0], e[1]])),
-      join_vars: !isOwn,
-      lhs_constants: !isOwn,
-      pure_getters: true,
-      reduce_funcs: false,
-      sequences: !isOwn,
-      unsafe_arrows: isOwn,
-      ...ovr?.compress,
-    },
-    output: {
-      ascii_only: false,
-      beautify: isOwn, // line numbers in bug reports + no delay in devtools to auto-prettify
-      indent_level: 2,
-      comments: false,
-      wrap_func_args: false,
-      ...ovr?.output,
-    },
-    mangle: {
-      keep_classnames: true,
-      keep_fnames: /^(?!(__)?webpack|onScriptComplete)/i,
-      ...ovr?.mangle,
-    },
-  },
-});
-const tersers = {};
-
-/**
- * @return {import('webpack/types').Configuration}
- */
-const getBaseConfig = ({vars} = {}) => ({
-  mode: DEV ? 'development' : 'production',
-  devtool: DEV && 'inline-source-map',
-  output: {
-    path: DST,
-    filename: '[name].js',
-    publicPath: '/',
-    assetModuleFilename: m => m.filename.split('src/')[1] || m,
-    cssFilename: CSS + '[name][ext]',
-    cssChunkFilename: CSS + '[name][ext]',
-  },
-  cache: !FS_CACHE || {
-    type: 'filesystem',
-    buildDependencies: {
-      config: [__filename],
-      codemirror: ['codemirror'],
-    },
-    compression: 'gzip',
-  },
-  // infrastructureLogging: {debug: /webpack\.cache/},
-  module: {
-    parser: {
-      'javascript/auto': {node: false},
-      'javascript/esm': {node: false},
-    },
-    rules: [
-      // calc plugin for clamp() is broken: https://github.com/postcss/postcss-calc/issues/123
-      ...((skip = 'js/dlg/config-dialog.css', use = [
-        MiniCssExtractPlugin.loader,
-        {loader: 'css-loader', options: {importLoaders: 1}},
-      ]) => [{
-        test: (skip = path.resolve(SRC + skip)),
-        use: [...use, 'postcss-loader'],
-      }, {
-        test: /\.css$/,
-        exclude: [skip],
-        use: [...use, {loader: 'postcss-loader', options: {postcssOptions: mergeCfg({plugins: [
-          'postcss-calc',
-        ]}, require('./postcss.config'))}}],
-      }])(), {
-        test: /\.(png|svg|jpe?g|gif|ttf)$/i,
-        type: 'asset/resource',
-      }, !MV3 && {
-        test: /\.m?js(\?.*)?$/,
-        exclude: [CM_PACKAGE_PATH], // speedup: excluding known ES5 or ES6 libraries
-        loader: 'babel-loader',
-        options: {root: ROOT},
-        resolve: {fullySpecified: false},
-      }, {
-        loader: 'html-loader',
-        test: new RegExp(SRC_ESC + String.raw`.*[/\\].*\.html$`),
-        options: {
-          sources: false, // false = keep the source as-is
-          minimize: false, // false = use our preprocessor
-          preprocessor: nukeHtmlSpaces,
-        },
-      }, {
-        loader: './tools/wp-cjs-to-esm-loader.js',
-        test: new RegExp(`/node_modules/(${[
-          '@eight04/',
-          'db-to-cloud',
-          '.*?universal-base64',
-          'usercss-meta',
-          'webext-launch-web-auth-flow',
-        ].join('|')})`.replaceAll('/', SEP_ESC)),
-      }, {
-        loader: './tools/wp-lzstring-loader.js',
-        test: require.resolve('lz-string-unsafe'),
-      },
-      ...patchCodemirror,
-      ...patchLESS,
-    ].filter(Boolean),
-  },
-  optimization: {
-    concatenateModules: true, // makes DEV code run faster
-    chunkIds: false,
-    mangleExports: false,
-    minimizer: DEV ? [] : [
-      (tersers.own ??= new TerserPlugin(getTerserOptions(true))),
-      (tersers.vendor ??= new TerserPlugin(getTerserOptions())),
-      new CssMinimizerPlugin({
-        minimizerOptions: {
-          preset: ['default', {
-            calc: false, // breaks clamp()
-            minifyParams: false, // breaks our @media for dark and new-ui
-          }],
-        },
-      }),
-    ].filter(Boolean),
-  },
-  resolve: {
-    alias: {
-      '@': SRC,
-    },
-    fallback: {
-      'fs': SHIM + 'null.js',
-      'path': SHIM + 'path.js',
-      'url': SHIM + 'url.js',
-    },
-  },
-  performance: {
-    maxAssetSize: 1e6,
-    maxEntrypointSize: 1e6,
-  },
-  plugins: [
-    // new webpack.debug.ProfilingPlugin({outputPath: DST + '.profile.json'}),
-    vars && new RawEnvPlugin(...vars),
-    new webpack.ids.NamedChunkIdsPlugin({context: SRC + JS}),
-    new InlineConstantExportsPlugin([/[/\\]consts\.js$/]),
-  ].filter(Boolean),
-  stats: {
-    // optimizationBailout: true,
-  },
-});
 
 function getChunkFileName({chunk}) {
   let res = (chunk.name || chunk.id)
@@ -289,56 +64,8 @@ function getChunkFileName({chunk}) {
   return res;
 }
 
-/**
- * @param {import('webpack/types').Configuration} ovr
- * @param {import('webpack/types').Configuration} [base]
- * @param {{} | [{}, {}]} [vars]
- * @return {import('webpack/types').Configuration}
- */
-function mergeCfg(ovr, base, vars) {
-  if (!ovr) {
-    return base;
-  }
-  if (!base) {
-    let {entry} = ovr;
-    if (typeof entry === 'string' ? entry = [entry] : Array.isArray(entry)) {
-      ovr.entry = Object.fromEntries(entry.map(e => [path.basename(e, '.js'), e]));
-    }
-    entry = Object.keys(ovr.entry);
-    if (FS_CACHE) {
-      ovr.cache = {
-        ...ovr.cache,
-        // Differentiating by MV2/MV3 because targeted browsers are different in babel and postcss
-        name: [MV3 ? 'mv3' : 'mv2', ...entry].join('-'),
-      };
-    }
-    if (+process.env.REPORT) {
-      (ovr.plugins || (ovr.plugins = [])).push(
-        new BundleAnalyzerPlugin({
-          analyzerMode: 'static',
-          openAnalyzer: false,
-          reportFilename: DST + (entry.length > 1 ? '' : '.' + entry[0]) + '.report.html',
-        })
-      );
-    }
-    if (/@\//.test(Object.values(ovr.entry)))
-      vars = [{...VARS, ...vars}, {...RAW_VARS}];
-    base = getBaseConfig({vars});
-  } else {
-    base = {...base};
-  }
-  for (const k in ovr) {
-    const o = ovr[k];
-    const b = base[k];
-    base[k] = o && typeof o === 'object' && b && typeof b === 'object'
-      ? Array.isArray(o) && Array.isArray(b) ? [...b, ...o] : mergeCfg(o, b)
-      : o;
-  }
-  return base;
-}
-
 function makeLibrary(entry, name, vars) {
-  let cfg = mergeCfg({
+  let cfg = augment({
     entry,
     output: {
       path: DST + JS,
@@ -352,7 +79,7 @@ function makeLibrary(entry, name, vars) {
       ? addWrapper()
       : addWrapper(INTRO + '; (()=>{', '})()}'),
   }, undefined, vars);
-  if (!name) cfg = mergeCfg(OUTPUT_MODULE, cfg);
+  if (!name) cfg = augment(OUTPUT_MODULE, cfg);
   return cfg;
 }
 
@@ -361,7 +88,7 @@ function makeContentScript(name) {
   const intro = `if (self["${name}"]!==1) { self["${name}"]=1; const global = this, ${
     INTRO_ALIASES
   }; (() => { "use strict"; `;
-  return mergeCfg(OUTPUT_MODULE, mergeCfg({
+  return augment(OUTPUT_MODULE, augment({
     entry: '@/content/' + name,
     output: {path: DST + JS},
     plugins: addWrapper(intro, '})()}'),
@@ -409,7 +136,7 @@ function makeManifest(files) {
 
 module.exports = [
 
-  mergeCfg({
+  augment({
     entry: Object.fromEntries(PAGES.map(p => [p, `@/${p}`])),
     output: {
       filename: JS + '[name].js',
@@ -503,7 +230,7 @@ module.exports = [
     resolve: RESOLVE_VIA_SHIM,
   }),
 
-  MV3 && mergeCfg({
+  MV3 && augment({
     entry: `@/${PAGE_BG}`,
     plugins: [
       new RawEnvPlugin({
@@ -517,7 +244,7 @@ module.exports = [
     resolve: RESOLVE_VIA_SHIM,
   }),
 
-  MV3 && mergeCfg({
+  MV3 && augment({
     entry: `@/${OFFSCREEN}`,
     output: {
       filename: JS + '[name].js',
@@ -536,7 +263,7 @@ module.exports = [
     resolve: RESOLVE_VIA_SHIM,
   }),
 
-  MV3 && mergeCfg(OUTPUT_MODULE, mergeCfg({
+  MV3 && augment(OUTPUT_MODULE, augment({
     entry: '@/js/' + GET_CLIENT_DATA,
     output: {path: DST + JS},
   })),
