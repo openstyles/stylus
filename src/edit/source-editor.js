@@ -1,4 +1,4 @@
-import {kLineComment} from '@/cm/util';
+import {CodeMirror} from '@/cm';
 import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
 import {mimeLESS, UCD} from '@/js/consts';
 import {$create, $createLink, $isTextInput} from '@/js/dom';
@@ -6,22 +6,20 @@ import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleToCss} from '@/js/sections-util';
-import {makeUserCssFindFilter, NOP, reuseStyleVars, RX_META, t} from '@/js/util';
-import {CodeMirror} from '@/cm';
+import {makeUserCssFindFilter, NOP, reuseStyleVars, t} from '@/js/util';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';
 import * as linterMan from './linter';
 import {livePreview, livePreviewNow} from './live-preview';
 import MozSectionFinder from './moz-section-finder';
 import MozSectionWidget from './moz-section-widget';
-import {worker} from './util';
+import {initMetaCompiler, metaCompiler, pendingMeta} from './source-editor-meta';
 
 export default function SourceEditor() {
   const {style, /** @type DirtyReporter */dirty} = editor;
   let lintingEnabled;
   let savedGeneration;
   let prevMode = NaN;
-  let /** @type {Promise} */ pendingMeta;
   let prevSel;
   let updateTocFocusPending;
 
@@ -43,14 +41,6 @@ export default function SourceEditor() {
   const getStyleValue = asObject => asObject
     ? {...style, sourceCode: cm.getValue(), sections: undefined, [UCD]: undefined}
     : cm.getValue();
-  const metaCompiler = createMetaCompiler(meta => {
-    const {vars} = meta;
-    if (vars) reuseStyleVars(vars, style);
-    style[UCD] = meta;
-    style.name = meta.name;
-    style.url = meta.homepageURL || style.installationUrl;
-    updateMeta();
-  });
   const kToc = 'editor.toc.expanded';
   const kWidget = 'editor.appliesToLineWidget';
   const sectionFinder = MozSectionFinder(cm);
@@ -65,6 +55,15 @@ export default function SourceEditor() {
     if (k === kWidget) sectionWidget.toggle(val);
     if (k === kToc) cm[val ? 'on' : 'off']('cursorActivity', onCursorActivity);
   }, true);
+  initMetaCompiler(cm, meta => {
+    const {vars} = meta;
+    if (vars) reuseStyleVars(vars, style);
+    style[UCD] = meta;
+    style.name = meta.name;
+    style.url = meta.homepageURL || style.installationUrl;
+    updateMeta();
+  });
+  linterMan.register(metaCompiler);
   updateMeta();
   // Subsribing outside of finishInit() because it uses `cm` that's still not initialized
   prefs.subscribe('editor.linter', updateLinterSwitch, true);
@@ -191,8 +190,7 @@ export default function SourceEditor() {
     $id('enabled').checked = style.enabled;
     $id('url').href = style.url;
     editor.updateName();
-    // stylelint chokes on line comments a lot
-    cm.setPreprocessor(style[UCD]?.preprocessor)[kLineComment] = '';
+    cm.setPreprocessor(style[UCD]?.preprocessor);
   }
 
   async function replaceStyle(newStyle, draft) {
@@ -208,6 +206,7 @@ export default function SourceEditor() {
     }
 
     if (draft || await messageBox.confirm(t('styleUpdateDiscardChanges'))) {
+      newStyle[UCD] ||= await metaCompiler(newStyle.sourceCode, {}, cm, /*force=*/true);
       editor.useSavedStyle(newStyle);
       if (!sameCode) {
         const si0 = draft && draft.si.cms[0];
@@ -313,117 +312,6 @@ export default function SourceEditor() {
     if (!mode) return '';
     return (mode.name || mode || '') +
            (mode.helperType || '');
-  }
-
-  function createMetaCompiler(onUpdated) {
-    let meta, done, iFrom, iTo, lineTo, chTo;
-    let prevRes = [];
-    const [rxMetaStart, rxMetaEnd] = RX_META.source.split(/(?=\(\?:)/).map(s => RegExp(s, 'yi'));
-    /** @param {CodeMirror.EditorChange} change */
-    const isAfterMeta = ({from}) => (from.line - lineTo || from.ch - chTo) >= 0;
-    linterMan.register(run);
-    return run;
-
-    async function run(text, linterOptions, linterCM) {
-      if (pendingMeta || (linterCM ? linterCM !== cm : text.every(isAfterMeta)))
-        return;
-      let iFromNew = 0;
-      let iToNew = 0;
-      if (!linterCM) {
-        text = '';
-        let line = -1;
-        let inComment, inMeta;
-        cm.eachLine(({text: str}) => {
-          line++;
-          let i = -15; // minimal length of meta start
-          let j, m;
-          while (true) {
-            if (!inComment) {
-              inComment = (i = str.indexOf('/*', i)) >= 0;
-              if (!inComment)
-                break;
-              rxMetaStart.lastIndex = i;
-              inMeta = rxMetaStart.test(str);
-              if (inMeta) iFromNew += i;
-            }
-            inComment = (j = str.indexOf('*/', i + 2)) < 0;
-            if (inComment) {
-              if (inMeta) {
-                if (text) text += '\n';
-                text += str;
-              }
-              break;
-            }
-            j += 2;
-            inMeta &&= j - i >= 31 &&
-              ((str.indexOf('==/', i + 15) + 1 || j) < j) &&
-              (rxMetaEnd.lastIndex = i + 15, m = rxMetaEnd.exec(str)) &&
-              (m.index + m[0].length === j);
-            if (inMeta) {
-              if (text) text += '\n';
-              text += str.slice(i < 0 ? 0 : i, j);
-              lineTo = line;
-              chTo = j;
-              iToNew += j;
-              return true;
-            }
-            i = j;
-          }
-          i = str.length + 1;
-          iToNew += i;
-          if (!inMeta) iFromNew += i;
-        });
-      } else if (
-        (!meta
-          || text.charCodeAt(iFrom) !== meta.charCodeAt(iFrom)
-          || text.charCodeAt(iTo) !== meta.charCodeAt(iTo)
-          || text.slice(iFrom, iTo) !== meta
-        ) && (text = text.match(RX_META))
-      ) {
-        iFromNew = text.index;
-        text = text[0];
-        iToNew = iFromNew + text.length;
-      }
-      if (!text) {
-        return [];
-      }
-      if (text === meta) {
-        if (iFromNew !== iFrom) {
-          for (const r of prevRes) {
-            r.from = r.to = cm.posFromIndex(r.i - iFrom + iFromNew);
-            r.i = iFromNew;
-          }
-        }
-        iFrom = iFromNew;
-        iTo = iToNew;
-        return prevRes;
-      }
-      pendingMeta = new Promise(cb => (done = cb));
-      const {metadata, errors} = await worker.metalint(text);
-      if (errors.every(err => err.code === 'unknownMeta')) {
-        onUpdated(metadata);
-      }
-      meta = text;
-      iFrom = iFromNew;
-      iTo = iToNew;
-      prevRes = errors.map(({code, index, args, message}) => {
-        const isUnknownMeta = code === 'unknownMeta';
-        const typo = isUnknownMeta && args[1] ? 'Typo' : ''; // args[1] may be present but undefined
-        const i = (index || 0) + iFromNew;
-        const pos = cm.posFromIndex(i);
-        return {
-          i,
-          from: pos,
-          to: pos,
-          message: code && t(`meta_${code}${typo}`, args, false) || message,
-          severity: isUnknownMeta ? 'warning' : 'error',
-          rule: code,
-        };
-      });
-      done(prevRes);
-      pendingMeta = null;
-      return prevRes;
-    }
   }
 
   function onCursorActivity() {

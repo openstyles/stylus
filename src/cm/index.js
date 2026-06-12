@@ -154,7 +154,6 @@ export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
       if (force || (helperType ? helperType !== pp : m.name !== name)) {
         this.setOption('mode', name);
       }
-      return m;
     },
     /** Superfast GC-friendly check that runs until the first non-space line */
     isBlank() {
