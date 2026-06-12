@@ -2,10 +2,9 @@ import * as colorConverter from '@/js/color/color-converter';
 import {styleCodeEmpty} from '../sections-util';
 import {nullifyInvalidVars} from './meta-parser';
 import extractSections from './moz-parser';
-import {importScripts, loadParserlib, loadStylusLang, parserlib, stylusLang} from './util';
+import {compileLess, compileStylus, loadParserlib, parserlib} from './util';
 
 let builderChain = Promise.resolve();
-let less;
 
 const BUILDERS = Object.assign(Object.create(null), {
 
@@ -23,37 +22,15 @@ const BUILDERS = Object.assign(Object.create(null), {
   },
 
   stylus: {
-    pre(source, vars) {
-      if (!stylusLang) loadStylusLang();
-      for (const key in vars) {
-        let val = vars[key].value;
-        try {
-          val = new stylusLang.Parser(`(${val})`).parse();
-          val = new stylusLang.Evaluator(val).evaluate();
-          do val = val.nodes[0]; while (val.nodeName === 'expression' && val.nodes.length);
-          vars[key] = val;
-        } catch (err) {
-          err.message += '\n' + key + ' = ' + val;
-          throw err;
-        }
-      }
-      return new Promise((resolve, reject) => {
-        stylusLang(source, {globals: vars})
-          .render((err, output) => err ? reject(err) : resolve(output));
-      });
-    },
+    pre: compileStylus,
   },
 
   less: {
     async pre(source, vars) {
-      less ||= (importScripts('less.js'), global.less);
       const varDefs = {};
       for (const key in vars)
         varDefs['@' + key] = vars[key].value;
-      return (await less.render(source, {
-        math: 'parens-division',
-        modifyVars: varDefs,
-      })).css;
+      return (await compileLess(source, varDefs)).css;
     },
   },
 
