@@ -4,8 +4,9 @@ const fs = require('fs');
 const {makePatchOptions} = require('./util');
 
 const LIB = 'less/lib/';
+const LIB_LESS = 'less/lib/less/';
 const BROWSER = LIB + 'less-browser/';
-const INDEX = require.resolve(LIB + 'less/index.js');
+const INDEX = require.resolve(LIB_LESS + 'index.js');
 const PKG = INDEX.replace(/[/\\]lib[/\\]less.+$/, '/package.json');
 const {version} = JSON.parse(fs.readFileSync(PKG, 'utf8'));
 
@@ -33,12 +34,25 @@ module.exports = makePatchOptions([
     /\badd: error,\s+remove: removeError\b/,
     'add: errorConsole, remove: removeErrorConsole',
   ]],
-  [LIB + 'less/parse.js',
+  [LIB_LESS + 'import-manager.js',
+    [/, pluginLoader = .+/, ''],
+    [/importOptions\.isPlugin/g, '0'],
+  ],
+  [LIB_LESS + 'parse.js',
     [/import PluginManager.+/, ''],
-    [/const pluginManager = .+\s+options.pluginManager = .+/, ''],
+    [/(?<=const pluginManager = ).+/, '{less: this};'],
     ['if (options.plugins', 'if (0'],
   ],
-  [LIB + 'less/parse-tree.js',
-    [/if \(options\.sourceMap/, 'if (0'],
+  [LIB_LESS + 'parse-tree.js',
+    [/if \(options\.(sourceMap|pluginManager)/g, 'if (0'],
+  ],
+  [LIB_LESS + 'transform-tree.js',
+    [/if \(options\.pluginManager/g, 'if (0'],
+  ],
+  [LIB_LESS + 'environment/environment.js',
+    [/if \(options\.pluginManager/g, 'if (0'],
+  ],
+  [LIB_LESS + 'parser/parser.js',
+    [/if \(context\.pluginManager/, 'if (0'],
   ],
 ]);
