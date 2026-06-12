@@ -169,7 +169,7 @@ function colorizeInvisible() {
     const {viewFrom, viewTo} = display;
     const size = doc.size;
     const hlw = cmHighlightWorkers.get(cm);
-    let {line} = state;
+    let line = state.line || 0;
     let stopped;
     if (!cm.curOp) {
       cmsStarted.push(cm);
@@ -179,7 +179,7 @@ function colorizeInvisible() {
     state.stopAt = performance.now() + cm.options.workTime;
     cm.eachLine(line--, size, lh => {
       ++line;
-      if (line < viewFrom || line >= viewTo)
+      if (line < viewFrom || line >= viewTo || line > doc.highlightFrontier)
         return (lh.styles || (stopped = hlw()))
           && colorizeLineViaStyles(state, line, lh) && (stopped = true);
     });
