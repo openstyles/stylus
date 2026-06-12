@@ -14,26 +14,20 @@ let enabled;
 prefs.subscribe(pLivePreview, (key, value, init) => {
   enabled = value;
   if (init) return;
-  if (!value) {
-    if (port) {
-      port.disconnect();
-      port = null;
-    }
-  } else {
-    livePreviewNow();
-  }
+  if (value) livePreview();
+  else port &&= port.disconnect();
 }, true);
 
-export function livePreview() {
-  debounce(livePreviewNow, prefs.__values[pLivePreview + '.delay'] * 1000);
-}
-
-export function livePreviewNow() {
+export default function livePreview(now) {
   if (!enabled
   || !editor.style.id // not saved
-  || !editor.style.enabled && data && !data.enabled // disabled both before and now
+  || !editor.style.enabled && (!data || !data.enabled) // disabled both before and now
   || !port && !editor.dirty.isDirty() // not modified since the style was saved and thus applied
   ) return;
+  if (!now) {
+    debounce(livePreview, prefs.__values[pLivePreview + '.delay'] * 1000);
+    return;
+  }
   data = editor.getValue(true);
   updatePreviewer();
 }

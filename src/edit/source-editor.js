@@ -10,7 +10,7 @@ import {makeUserCssFindFilter, NOP, reuseStyleVars, t} from '@/js/util';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';
 import * as linterMan from './linter';
-import {livePreview, livePreviewNow} from './live-preview';
+import livePreview from './live-preview';
 import MozSectionFinder from './moz-section-finder';
 import MozSectionWidget from './moz-section-widget';
 import {initMetaCompiler, metaCompiler, pendingMeta} from './source-editor-meta';
@@ -201,7 +201,7 @@ export default function SourceEditor() {
       editor.useSavedStyle(newStyle);
       dirty.clear('sourceGeneration');
       dirty.clear('enabled');
-      livePreviewNow();
+      livePreview(true);
       return;
     }
 
@@ -221,7 +221,7 @@ export default function SourceEditor() {
       }
       if (sameCode) {
         // the code is same but the environment is changed
-        livePreviewNow();
+        livePreview(true);
       }
       if (!draft) {
         dirty.clear();

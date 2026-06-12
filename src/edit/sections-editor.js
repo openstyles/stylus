@@ -10,7 +10,7 @@ import {clipString, RX_META, sleep0, t} from '@/js/util';
 import {iconize} from './applies-to';
 import editor, {scrollInfo} from './editor';
 import * as linterMan from './linter';
-import {livePreview} from './live-preview';
+import livePreview from './live-preview';
 import EditorSection from './sections-editor-section';
 import {helpPopup, rerouteHotkeys, showCodeMirrorPopup, worker} from './util';
 
@@ -565,7 +565,6 @@ export default function SectionsEditor() {
     }
     dirty.remove(section, section);
     updateSectionOrder();
-    section.off(livePreview);
     livePreview();
   }
 
@@ -574,7 +573,6 @@ export default function SectionsEditor() {
     section.elDel.remove();
     section.restore();
     updateSectionOrder();
-    section.onChange(livePreview);
     livePreview();
   }
 
@@ -609,7 +607,6 @@ export default function SectionsEditor() {
     }
     updateSectionOrder();
     livePreview();
-    section.onChange(livePreview);
   }
 
   /** @param {EditorSection} section */

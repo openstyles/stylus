@@ -4,7 +4,7 @@ import {template} from '@/js/localization';
 import {clipString, deepEqual, mapObj, sessionStore, t} from '@/js/util';
 import {sticky} from './compact-header';
 import DirtyReporter from './dirty-reporter';
-import {livePreview} from './live-preview';
+import livePreview from './live-preview';
 import {isWindowed} from './windowed-mode';
 
 const dirty = DirtyReporter();

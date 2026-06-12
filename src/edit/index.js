@@ -11,7 +11,6 @@ import './settings';
 import SectionsEditor from './sections-editor';
 import SourceEditor from './source-editor';
 import './colorpicker-helper';
-import './live-preview';
 import USWIntegration from './usw-integration';
 import './windowed-mode';
 import './edit.css';

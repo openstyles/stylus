@@ -2,7 +2,7 @@ import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {closeCurrentTab} from '@/js/util-webext';
 import editor from './editor';
-import {livePreview} from './live-preview';
+import livePreview from './live-preview';
 
 let replacing, replaceQueue;
 

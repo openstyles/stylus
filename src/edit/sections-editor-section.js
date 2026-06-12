@@ -1,3 +1,4 @@
+import {CodeMirror} from '@/cm';
 import {kCodeMirror, kEditorSettings, pFavicons} from '@/js/consts';
 import {$toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
@@ -5,7 +6,6 @@ import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {FROM_CSS, TO_CSS} from '@/js/sections-util';
 import {debounce} from '@/js/util';
-import {CodeMirror} from '@/cm';
 import {
   C_ITEM, C_LIST, C_TYPE, C_VALUE, iconize, tplAppliesTo, tplAppliesToItem,
 } from './applies-to';
@@ -13,6 +13,7 @@ import {initBeautifyButton} from './beautify';
 import cmFactory from './codemirror-factory';
 import editor from './editor';
 import * as linterMan from './linter';
+import livePreview from './live-preview';
 import {helpPopup, trimCommentLabel} from './util';
 
 const RX_META1 = /^!?\s*==userstyle==\s*$/i;
@@ -48,7 +49,6 @@ export default class EditorSection {
     cm.setSize = EditorSection.onSetSize;
     this.genId = genId;
     this.id = genId();
-    this.changeListeners = new Set();
     this.changeGeneration = cm.changeGeneration();
     this.removed = false;
     this.tocEntry = {
@@ -106,20 +106,6 @@ export default class EditorSection {
     this.removed = false;
     this.targets.forEach(_ => _.restore());
     this.cm.refresh();
-  }
-
-  onChange(fn) {
-    this.changeListeners.add(fn);
-  }
-
-  emitChange(origin) {
-    for (const fn of this.changeListeners) {
-      fn.call(this, origin);
-    }
-  }
-
-  off(fn) {
-    this.changeListeners.delete(fn);
   }
 
   updateTocEntry(origin, sec = this) {
@@ -246,7 +232,7 @@ export default class EditorSection {
     }
     if (base) requestAnimationFrame(() => this.shrinkBy1());
     this.el.style.setProperty('--targets', targets.length);
-    this.emitChange('apply');
+    livePreview();
     return res;
   }
 
@@ -261,7 +247,7 @@ export default class EditorSection {
     target.el.remove();
     if (!targets.length) this.addTarget();
     this.el.style.setProperty('--targets', targets.length);
-    this.emitChange('apply');
+    livePreview();
   }
 
   shrinkBy1() {
@@ -280,8 +266,8 @@ export default class EditorSection {
     const sec = /** @type {EditorSection} */ cm.editorSection;
     editor.dirty.modify(`section.${sec.id}.code`, sec.changeGeneration, cur);
     sec.changeGeneration = cur;
-    sec.emitChange('code');
     sec.updateTocEntryLazy();
+    livePreview();
   }
 
   static onSetSize(w, h) {
@@ -332,18 +318,18 @@ class SectionTarget {
     editor.toggleRegexp(this.valueEl, val);
     $toggleDataset(this.el, 'type', val);
     this.type = val;
-    sec.emitChange('apply');
     sec.updateTocEntry('apply');
     if (prefs.__values[pFavicons]) iconize(this.el, true);
+    livePreview();
   }
 
   onValueChange() {
     const val = this.valueEl.value;
     editor.dirty.modify(`${this.dirt}.value`, this.value, val);
     this.value = val;
-    this.section.emitChange('apply');
     this.section.updateTocEntry('apply');
     if (prefs.__values[pFavicons]) iconize(this.el, true);
+    livePreview();
   }
 }
 
