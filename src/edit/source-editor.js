@@ -249,23 +249,22 @@ export default function SourceEditor() {
   }
 
   function showSaveError(err, errStyle) {
-    const shift = (err._varLines - 1) || 0;
     err = Array.isArray(err) ? err : [err];
     const text = err.map(e => e.message || e).join('\n');
     const points = err.map(e =>
       e.index >= 0 && cm.posFromIndex(e.index) || // usercss meta parser
-      e.offset >= 0 && {line: e.line - 1, ch: e.col - 1} // csslint code parser
+      e.offset >= 0 && {line: e.line - 1, ch: (e.col || e.column) - 1} // csslint code parser
     ).filter(Boolean);
     const pp = errStyle[UCD]?.preprocessor;
     const ppUrl = editor.ppDemo[pp];
-    cm.setSelections(points.map(p => ({anchor: p, head: p})));
+    if (points[0]) cm.operation(() => {
+      cm.jumpToPos(points[0]);
+      cm.setSelections(points.map(p => ({anchor: p, head: p})));
+    });
     messageBox.show({
       title: t('genericError'),
       className: 'center pre danger',
-      contents: $create('pre',
-        pp === 'stylus' && shift
-          ? text.replace(/^.+\n/, '').replace(/^(\s*)(\d+)/gm, (s, a, b) => a + (b - shift))
-          : text),
+      contents: $create('pre', text),
       buttons: [
         t('confirmClose'),
         ppUrl && $createLink({className: 'icon', href: ppUrl}, [
