@@ -1,4 +1,4 @@
-import {kAtRuleNoUnknown, kDeclarationPropertyValueNoUnknown} from '@/edit/linter/defaults';
+import {kAtRuleNoUnknown, kDeclValue, kGradientDir} from '@/edit/linter/defaults';
 import {kCssPropSuffix} from '@/js/consts';
 import {metaLint} from './meta-parser';
 import {load, loadParserlib, loadStylusLang, parserlib, stylusLang} from './util';
@@ -7,10 +7,8 @@ let CSSLint, stylelint;
 
 const loadCSSLint = () => (parserlib || loadParserlib()) && load('csslint.js', 'CSSLint');
 const loadStylelint = () => load('stylelint.js', 'stylelint');
-const rxMessageParts = /^[^"]+"(.*)"[^"]+"([^"]+)"$/;
-const rxVarsLess = /@[-\w]+/;
 const rxVarsLessDecl = /"@[-\w]+:"/;
-const rxVarsStylus = /(?:^|[^-$\w])[$\w][-$\w]*(?=[^-$\w]|$)/;
+const rxVendorPrefix = /(?:^|[^-\w])-(?:moz|webkit|o|ms)-\w/;
 
 /** @namespace WorkerAPI */
 const LintWorkerAPI = {
@@ -108,7 +106,7 @@ const LintWorkerAPI = {
     return result;
   },
 
-  async stylelint(code, config, mode, vars) {
+  async stylelint(code, config, mode) {
     if (!stylelint) {
       global.stylus = new Proxy({}, {
         get: (_, key) => (stylusLang || loadStylusLang())[key],
@@ -123,7 +121,7 @@ const LintWorkerAPI = {
     });
     const messages = res._postcssResult?.messages || res.warnings;
     messages.push(...res.parseErrors);
-    collectStylelintResults(messages, code, mode, vars);
+    collectStylelintResults(messages, code, mode);
     return messages;
   },
 };
@@ -179,22 +177,32 @@ const ruleRetriever = {
   },
 };
 
-const collectStylelintResults = (messages, code, mode, vars) => {
-  let v, rxVars;
+function getRawValue(code, n, end) {
+  let res = code.slice(n.source.start.offset + n.prop.length + n.raws.between.length, end);
+  if (!res.trim() && (res = n.parent.nodes, n = res[res.indexOf(n) + 1]) && n.type === 'comment')
+    res = '/*' + n.text;
+  return res;
+}
+
+const collectStylelintResults = (messages, code, mode) => {
+  let v;
   let len = 0;
   for (let i = 0; i < messages.length; i++) {
     const m = messages[i];
     const {rule} = m;
     const {start: {offset: a} = {}, end: {offset: b} = {}} = m;
     const msg = m.text.replace(/^Unexpected\s+/, '').replace(` (${rule})`, '');
-    if (rule === kAtRuleNoUnknown) {
-      if (mode === 'less' && rxVarsLessDecl.test(msg))
-        continue;
-    } else if (
-      rule === kDeclarationPropertyValueNoUnknown &&
-      (v = rxMessageParts.exec(msg)) &&
-      (v = v[1] || code.slice(v[2].length + (code.lastIndexOf(v[2], a) + 1 || a), b)) &&
-      (vars ? rxVars ??= RegExp(vars) : mode === 'less' ? rxVarsLess : rxVarsStylus).test(msg)
+    if (
+      mode === 'less' &&
+        rule === kAtRuleNoUnknown && rxVarsLessDecl.test(msg) ||
+      mode === 'stylus' &&
+        /^Invalid selector "[&/]|^Cannot parse selector[^']+'\/'/.test(msg) ||
+      (rule === kDeclValue || rule === kGradientDir) && (
+        rxVendorPrefix.test(m) ||
+        rule === kDeclValue && mode === 'css' && (v = m.node) &&
+        (v = v.value.trim() || getRawValue(code, v, b)) &&
+        v.includes('/*[[')
+      )
     ) continue;
     const {line: L, column: C} = m;
     const isImport = msg.includes('at-rule "@import"');

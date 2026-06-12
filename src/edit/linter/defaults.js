@@ -1,7 +1,18 @@
 const WARNING = {severity: 'warning'};
 const ENABLED_AS_WARNING = [true, WARNING];
+export const jsonAnyRuleDefault = '[true,{"severity":"warning"}]';
+export const jsonAtRuleNoUnknownOld = '[true,{"ignoreAtRules":["extend","extends","css","block"],"severity":"warning"}]'; // eslint-disable-line max-len
 export const kAtRuleNoUnknown = 'at-rule-no-unknown';
-export const kDeclarationPropertyValueNoUnknown = 'declaration-property-value-no-unknown';
+export const kDeclValue = 'declaration-property-value-no-unknown';
+export const kGradientDir = 'function-linear-gradient-no-nonstandard-direction';
+const kNoInvalidPositionDeclaration = 'no-invalid-position-declaration';
+const kPropertyNoUnknown = 'property-no-unknown';
+export const ppBadRules = [
+  [kAtRuleNoUnknown, '', jsonAtRuleNoUnknownOld],
+  [kDeclValue],
+  [kNoInvalidPositionDeclaration, 'stylus'],
+  [kPropertyNoUnknown, 'stylus'],
+];
 export const DEFAULTS = {
   stylelint: {
     // WARNING! onConfigSave() expects these rules to be arrays and enabled.
@@ -16,16 +27,16 @@ export const DEFAULTS = {
         ...WARNING,
       }],
       'declaration-block-no-shorthand-property-overrides': ENABLED_AS_WARNING,
-      [kDeclarationPropertyValueNoUnknown]: ENABLED_AS_WARNING,
+      [kDeclValue]: ENABLED_AS_WARNING,
       'font-family-no-duplicate-names': ENABLED_AS_WARNING,
       'function-calc-no-unspaced-operator': ENABLED_AS_WARNING,
-      'function-linear-gradient-no-nonstandard-direction': ENABLED_AS_WARNING,
+      [kGradientDir]: ENABLED_AS_WARNING,
       'keyframe-declaration-no-important': ENABLED_AS_WARNING,
       'media-feature-name-no-unknown': ENABLED_AS_WARNING,
       'nesting-selector-no-missing-scoping-root': ENABLED_AS_WARNING,
       'no-invalid-double-slash-comments': ENABLED_AS_WARNING,
-      'no-invalid-position-declaration': ENABLED_AS_WARNING,
-      'property-no-unknown': ENABLED_AS_WARNING,
+      [kNoInvalidPositionDeclaration]: ENABLED_AS_WARNING,
+      [kPropertyNoUnknown]: ENABLED_AS_WARNING,
       'selector-no-invalid': ENABLED_AS_WARNING,
       'selector-pseudo-class-no-unknown': ENABLED_AS_WARNING,
       'selector-pseudo-element-no-unknown': ENABLED_AS_WARNING,

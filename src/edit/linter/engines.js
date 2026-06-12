@@ -1,19 +1,14 @@
 import {getLZValue, LZ_KEY} from '@/js/chrome-sync';
-import {mimeLESS, UCD} from '@/js/consts';
+import {mimeLESS} from '@/js/consts';
 import * as prefs from '@/js/prefs';
-import {notIncludedInArray} from '@/js/util';
 import {onStorageChanged} from '@/js/util-webext';
 import * as linterMan from '.';
 import editor from '../editor';
 import {worker} from '../util';
-import {DEFAULTS, kAtRuleNoUnknown} from './defaults';
+import {DEFAULTS, jsonAnyRuleDefault, ppBadRules} from './defaults';
 
 const configs = new Map();
-const kIgnoreAtRules = 'ignoreAtRules';
-const ignoreAtRulesLess = ['detached-ruleset'];
-const ignoreAtRulesStylus = ['block', 'css', 'else', 'extend', 'for', 'if', 'require', 'unless'];
-const ignoreAtRulesLessLength = ignoreAtRulesLess.length;
-const ignoreAtRulesStylusLength = ignoreAtRulesStylus.length;
+const kAtRuleDisallowedList = 'at-rule-disallowed-list';
 
 const ENGINES = {
   csslint: {
@@ -28,28 +23,23 @@ const ENGINES = {
     }),
     lint: (code, config, mode) => {
       const cfgRules = config.rules;
-      const isLess = mode === mimeLESS && (mode = 'less');
-      const isStylus = mode === 'stylus';
-      const kAtRuleDisallowedList = 'at-rule-disallowed-list';
-      const ucd = editor.style[UCD];
-      let vars;
+      const isLess = mode === mimeLESS;
+      let ovr;
       let v = cfgRules[kAtRuleDisallowedList];
       if (!Array.isArray(v))
         v = cfgRules[kAtRuleDisallowedList] = [];
       v.push('import');
-      if ((vars = ucd?.vars) && (vars = Object.keys(vars).join('|')))
-        vars = mode === 'css' ? String.raw`/\*\[\[(${vars})\]\]\*/`
-          : `${isLess ? '@' : '(^|[^-\\w])'}(${vars})(?=[^-\\w])`;
-      if ((isStylus || isLess) && Array.isArray(v = cfgRules[kAtRuleNoUnknown]) && v[0]) {
-        v = cfgRules[kAtRuleNoUnknown] = [...v];
-        v = v[1] = {...v[1]};
-        const userIgnores = v[kIgnoreAtRules];
-        v = v[kIgnoreAtRules] = isLess ? ignoreAtRulesLess : ignoreAtRulesStylus;
-        v.length = isLess ? ignoreAtRulesLessLength : ignoreAtRulesStylusLength;
-        if (Array.isArray(userIgnores))
-          v.push(...userIgnores.filter(notIncludedInArray, v));
+      // Silencing a useless check for LESS and Stylus where vars/funcs are represented as at-rules
+      if (mode !== 'css') {
+        for (const [key, modeForKey, altDefault] of ppBadRules) {
+          if ((!modeForKey || modeForKey === mode) && (v = cfgRules[key]) && v[0] && (
+            (v = JSON.stringify(v)) === jsonAnyRuleDefault ||
+            altDefault && v === altDefault
+          )) (ovr ||= {})[key] = null;
+        }
+        if (ovr) config.rules = {...cfgRules, ...ovr};
       }
-      return worker.stylelint(code, config, mode, vars);
+      return worker.stylelint(code, config, isLess ? 'less' : mode);
     },
   },
 };
