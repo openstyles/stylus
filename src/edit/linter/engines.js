@@ -1,12 +1,20 @@
 import {getLZValue, LZ_KEY} from '@/js/chrome-sync';
+import {mimeLESS, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
+import {notIncludedInArray} from '@/js/util';
 import {onStorageChanged} from '@/js/util-webext';
 import * as linterMan from '.';
 import editor from '../editor';
 import {worker} from '../util';
-import {DEFAULTS} from './defaults';
+import {DEFAULTS, kAtRuleNoUnknown} from './defaults';
 
 const configs = new Map();
+const kIgnoreAtRules = 'ignoreAtRules';
+const ignoreAtRulesLess = ['detached-ruleset'];
+const ignoreAtRulesStylus = ['block', 'css', 'else', 'extend', 'for', 'if', 'require', 'unless'];
+const ignoreAtRulesLessLength = ignoreAtRulesLess.length;
+const ignoreAtRulesStylusLength = ignoreAtRulesStylus.length;
+
 const ENGINES = {
   csslint: {
     validMode: mode => mode === 'css',
@@ -18,10 +26,33 @@ const ENGINES = {
     getConfig: config => ({
       rules: Object.assign({}, DEFAULTS.stylelint.rules, config && config.rules),
     }),
-    lint: worker.stylelint,
+    lint: (code, config, mode) => {
+      const cfgRules = config.rules;
+      const isLess = mode === mimeLESS && (mode = 'less');
+      const isStylus = mode === 'stylus';
+      const kAtRuleDisallowedList = 'at-rule-disallowed-list';
+      const ucd = editor.style[UCD];
+      let vars;
+      let v = cfgRules[kAtRuleDisallowedList];
+      if (!Array.isArray(v))
+        v = cfgRules[kAtRuleDisallowedList] = [];
+      v.push('import');
+      if ((vars = ucd?.vars) && (vars = Object.keys(vars).join('|')))
+        vars = mode === 'css' ? String.raw`/\*\[\[(${vars})\]\]\*/`
+          : `${isLess ? '@' : '(^|[^-\\w])'}(${vars})(?=[^-\\w])`;
+      if ((isStylus || isLess) && Array.isArray(v = cfgRules[kAtRuleNoUnknown]) && v[0]) {
+        v = cfgRules[kAtRuleNoUnknown] = [...v];
+        v = v[1] = {...v[1]};
+        const userIgnores = v[kIgnoreAtRules];
+        v = v[kIgnoreAtRules] = isLess ? ignoreAtRulesLess : ignoreAtRulesStylus;
+        v.length = isLess ? ignoreAtRulesLessLength : ignoreAtRulesStylusLength;
+        if (Array.isArray(userIgnores))
+          v.push(...userIgnores.filter(notIncludedInArray, v));
+      }
+      return worker.stylelint(code, config, mode, vars);
+    },
   },
 };
-let uniqId;
 
 linterMan.register(async (text, _options, cm) => {
   const linter = prefs.__values['editor.linter'];
@@ -31,7 +62,7 @@ linterMan.register(async (text, _options, cm) => {
     for (const [name, engine] of currentFirst) {
       if (engine.validMode(mode)) {
         const cfg = configs.get(name) || await getConfig(name);
-        return ENGINES[name].lint(text, cfg, mode, editor.style.id || (uniqId ??= Math.random()));
+        return ENGINES[name].lint(text, cfg, mode);
       }
     }
   }

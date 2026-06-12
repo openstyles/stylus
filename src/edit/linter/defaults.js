@@ -1,15 +1,14 @@
 const WARNING = {severity: 'warning'};
 const ENABLED_AS_WARNING = [true, WARNING];
+export const kAtRuleNoUnknown = 'at-rule-no-unknown';
+export const kDeclarationPropertyValueNoUnknown = 'declaration-property-value-no-unknown';
 export const DEFAULTS = {
   stylelint: {
     // WARNING! onConfigSave() expects these rules to be arrays and enabled.
     rules: {
       'at-rule-descriptor-no-unknown': ENABLED_AS_WARNING,
       'at-rule-descriptor-value-no-unknown': ENABLED_AS_WARNING,
-      'at-rule-no-unknown': [true, {
-        'ignoreAtRules': ['extend', 'extends', 'css', 'block'],
-        ...WARNING,
-      }],
+      [kAtRuleNoUnknown]: ENABLED_AS_WARNING,
       'block-no-empty': ENABLED_AS_WARNING,
       'color-no-invalid-hex': ENABLED_AS_WARNING,
       'declaration-block-no-duplicate-properties': [true, {
@@ -17,7 +16,7 @@ export const DEFAULTS = {
         ...WARNING,
       }],
       'declaration-block-no-shorthand-property-overrides': ENABLED_AS_WARNING,
-      'declaration-property-value-no-unknown': ENABLED_AS_WARNING,
+      [kDeclarationPropertyValueNoUnknown]: ENABLED_AS_WARNING,
       'font-family-no-duplicate-names': ENABLED_AS_WARNING,
       'function-calc-no-unspaced-operator': ENABLED_AS_WARNING,
       'function-linear-gradient-no-nonstandard-direction': ENABLED_AS_WARNING,

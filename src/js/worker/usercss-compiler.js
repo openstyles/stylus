@@ -2,10 +2,10 @@ import * as colorConverter from '@/js/color/color-converter';
 import {styleCodeEmpty} from '../sections-util';
 import {nullifyInvalidVars} from './meta-parser';
 import extractSections from './moz-parser';
-import {importScripts, loadParserlib, parserlib} from './util';
+import {importScripts, loadParserlib, loadStylusLang, parserlib, stylusLang} from './util';
 
 let builderChain = Promise.resolve();
-let StylusEvaluator, StylusParser, StylusRenderer, less;
+let less;
 
 const BUILDERS = Object.assign(Object.create(null), {
 
@@ -24,18 +24,12 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   stylus: {
     pre(source, vars) {
-      StylusRenderer ??= (importScripts('stylus-lang.js'), global.StylusRenderer);
-      if (!StylusParser) {
-        const r = new StylusRenderer('');
-        r.render();
-        StylusEvaluator = r.options.Evaluator;
-        StylusParser = r.parser.constructor;
-      }
+      if (!stylusLang) loadStylusLang();
       for (const key in vars) {
         let val = vars[key].value;
         try {
-          val = new StylusParser(`(${val})`).parse();
-          val = new StylusEvaluator(val).evaluate();
+          val = new stylusLang.Parser(`(${val})`).parse();
+          val = new stylusLang.Evaluator(val).evaluate();
           do val = val.nodes[0]; while (val.nodeName === 'expression' && val.nodes.length);
           vars[key] = val;
         } catch (err) {
@@ -44,7 +38,7 @@ const BUILDERS = Object.assign(Object.create(null), {
         }
       }
       return new Promise((resolve, reject) => {
-        new StylusRenderer(source, {globals: vars})
+        stylusLang(source, {globals: vars})
           .render((err, output) => err ? reject(err) : resolve(output));
       });
     },

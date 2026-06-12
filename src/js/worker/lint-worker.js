@@ -1,14 +1,22 @@
-import {kCssPropSuffix, mimeLESS} from '@/js/consts';
+import {kAtRuleNoUnknown, kDeclarationPropertyValueNoUnknown} from '@/edit/linter/defaults';
+import {kCssPropSuffix} from '@/js/consts';
 import {metaLint} from './meta-parser';
-import {CSSLint, loadCSSLint, loadParserlib, loadStylelint, parserlib, stylelint} from './util';
+import {load, loadParserlib, loadStylusLang, parserlib, stylusLang} from './util';
 
-const sugarss = {};
+let CSSLint, stylelint;
+
+const loadCSSLint = () => (parserlib || loadParserlib()) && load('csslint.js', 'CSSLint');
+const loadStylelint = () => load('stylelint.js', 'stylelint');
+const rxMessageParts = /^[^"]+"(.*)"[^"]+"([^"]+)"$/;
+const rxVarsLess = /@[-\w]+/;
+const rxVarsLessDecl = /"@[-\w]+:"/;
+const rxVarsStylus = /(?:^|[^-$\w])[$\w][-$\w]*(?=[^-$\w]|$)/;
 
 /** @namespace WorkerAPI */
-export default {
+const LintWorkerAPI = {
 
   csslint(code, config) {
-    if (!CSSLint) loadCSSLint();
+    CSSLint ||= loadCSSLint();
     config.import = 1;
     const results = CSSLint.verify(code, config).messages;
     let len = 0;
@@ -100,48 +108,30 @@ export default {
     return result;
   },
 
-  async stylelint(code, config, mode, styleId) {
+  async stylelint(code, config, mode, vars) {
     if (!stylelint) {
-      loadStylelint();
-      // Stylus-lang allows a trailing ";" but sugarss doesn't, so we monkeypatch it
-      stylelint.syntax.sugarss.Parser.prototype.checkSemicolon = ovrCheckSemicolon;
-    }
-    const isLess = mode === mimeLESS;
-    const cfgRules = config.rules;
-    const kAtRuleDisallowedList = 'at-rule-disallowed-list';
-    let atRules = cfgRules[kAtRuleDisallowedList];
-    for (const r in cfgRules)
-      if (!stylelint.rules[r]) delete cfgRules[r];
-    if (!Array.isArray(atRules))
-      atRules = cfgRules[kAtRuleDisallowedList] = [];
-    atRules.push('import');
-    for (let pass = 2; --pass >= 0;) {
-      /* We try sugarss (for indented stylus-lang), then css mode, switching them on failure,
-       * so that the succeeding syntax will be used next time first. */
-      const res = await stylelint.lint({
-        code, config, mode,
-        customSyntax:
-          mode === 'stylus'
-            ? (sugarss[styleId] ??= !code.includes('{')) && stylelint.syntax.sugarss
-            : isLess && stylelint.syntax.less,
+      global.stylus = new Proxy({}, {
+        get: (_, key) => (stylusLang || loadStylusLang())[key],
       });
-      const {results: [{parseErrors: errors, _postcssResult: {messages}}]} = res;
-      if (sugarss[styleId] && pass && errors[0] &&
-          errors[0].text === 'Unnecessary curly bracket (CssSyntaxError)') {
-        sugarss[styleId] = !sugarss[styleId];
-        continue;
-      }
-      messages.push(...errors);
-      collectStylelintResults(messages, code, mode, isLess);
-      return messages;
+      stylelint = loadStylelint();
     }
+    for (const r in config.rules)
+      if (!stylelint.rules[r]) delete config.rules[r];
+    const {results: [res]} = await stylelint.lint({
+      code, config,
+      customSyntax: stylelint.syntax[mode],
+    });
+    const messages = res._postcssResult?.messages || res.warnings;
+    messages.push(...res.parseErrors);
+    collectStylelintResults(messages, code, mode, vars);
+    return messages;
   },
 };
 
 const ruleRetriever = {
 
   csslint() {
-    if (!CSSLint) loadCSSLint();
+    CSSLint ||= loadCSSLint();
     return CSSLint.getRuleList().map(rule => {
       const output = {};
       for (const [key, value] of Object.entries(rule)) {
@@ -154,7 +144,7 @@ const ruleRetriever = {
   },
 
   stylelint() {
-    if (!stylelint) loadStylelint();
+    stylelint ||= loadStylelint();
     const options = {};
     const rxPossible = /\bpossible:("[^"]*?"|\[[^\]]*?]|\{[^}]*?})/g;
     const rxString = /"([-\w\s]{3,}?)"/g;
@@ -189,43 +179,35 @@ const ruleRetriever = {
   },
 };
 
-function collectStylelintResults(messages, code, mode, isLess) {
-  /* We hide nonfatal "//" warnings since we lint with sugarss without applying @preprocessor.
-   * We can't easily pre-remove "//"  comments which may be inside strings, comments, url(), etc.
-   * And even if we did, it'd be wrong to hide potential bugs in stylus-lang like #1460 */
-  const slashCommentAllowed = isLess || mode === 'stylus';
-  const rxLessVars = isLess && /^Cannot parse property .+@[-\w]/i;
+const collectStylelintResults = (messages, code, mode, vars) => {
+  let v, rxVars;
   let len = 0;
   for (let i = 0; i < messages.length; i++) {
     const m = messages[i];
     const {rule} = m;
-    const {start: {offset: ofs1} = {}, end: {offset: ofs2} = {}} = m;
+    const {start: {offset: a} = {}, end: {offset: b} = {}} = m;
     const msg = m.text.replace(/^Unexpected\s+/, '').replace(` (${rule})`, '');
-    if (
-      slashCommentAllowed && msg.includes('"//"') ||
-      isLess && rxLessVars.test(msg) ||
-      (mode === 'css' &&
-        rule === 'declaration-property-value-no-unknown' &&
-        msg.startsWith('Unknown value')
-      ) && (
-        msg.includes('/*[[') ||
-        code.slice(code.lastIndexOf(msg.split('"').slice(-2, -1)[0], ofs1), ofs2).includes('/*[[')
-      )
+    if (rule === kAtRuleNoUnknown) {
+      if (mode === 'less' && rxVarsLessDecl.test(msg))
+        continue;
+    } else if (
+      rule === kDeclarationPropertyValueNoUnknown &&
+      (v = rxMessageParts.exec(msg)) &&
+      (v = v[1] || code.slice(v[2].length + (code.lastIndexOf(v[2], a) + 1 || a), b)) &&
+      (vars ? rxVars ??= RegExp(vars) : mode === 'less' ? rxVarsLess : rxVarsStylus).test(msg)
     ) continue;
     const {line: L, column: C} = m;
     const isImport = msg.includes('at-rule "@import"');
     /** @namespace LintAnnotation */
     messages[len++] = {
       message: isImport ? '@import prevents parallel downloads and may be blocked by CSP.' : msg,
-      from: {line: L - 1, ch: C - 1, offset: ofs1},
-      to: {line: (m.endLine || L) - 1, ch: (m.endColumn || C) - 1, offset: ofs2},
+      from: {line: L - 1, ch: C - 1, offset: a},
+      to: {line: (m.endLine || L) - 1, ch: (m.endColumn || C) - 1, offset: b},
       rule: isImport ? '' : rule,
       severity: isImport ? 'warning' : m.severity,
     };
   }
   messages.length = len;
-}
+};
 
-function ovrCheckSemicolon(tt) {
-  while (tt.length && tt[tt.length - 1][0] === ';') tt.pop();
-}
+export default LintWorkerAPI;
