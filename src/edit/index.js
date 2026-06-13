@@ -1,6 +1,5 @@
 import '@/js/dom-init';
 import {pEditorLinter} from '@/js/consts';
-import {tBody} from '@/js/localization';
 import {subscribe} from '@/js/prefs';
 import CompactHeader, {toggleSticky} from './compact-header';
 import editor, {scrollInfo} from './editor';
@@ -17,8 +16,6 @@ import USWIntegration from './usw-integration';
 import './windowed-mode';
 import './edit.css';
 import '@/css/target-site.css';
-
-tBody();
 
 (async () => {
   if (loading) await loading;

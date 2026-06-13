@@ -44,8 +44,6 @@ export const tHTML = html => typeof html !== 'string'
     ? sanitizeHtml(html)
     : document.createTextNode(breakWord(html));
 
-let onBodyListeners = [];
-
 function tElements(elems) {
   for (const el of !elems.$$ ? elems
     : !elems.tagName ? elems.$$(SELECTOR)
@@ -159,18 +157,8 @@ export function formatRelativeDate(date, style) {
   return '';
 }
 
-export function tBody(fn) {
-  if (!fn) {
-    tElements(document);
-    const tpl = template.body;
-    if (tpl && tpl !== document.body) {
-      (template.body = document.body).append(tpl);
-    }
-    for (fn of onBodyListeners) fn();
-    onBodyListeners = undefined;
-  } else if (onBodyListeners) {
-    onBodyListeners.push(fn);
-  } else {
-    fn();
-  }
+export function tBody() {
+  tElements(document);
+  const tpl = template.body;
+  (template.body = document.body).append(tpl);
 }

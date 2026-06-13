@@ -1,15 +1,12 @@
 import {kStyleIdPrefix, kTabOvrToggle, kTabOvr} from '@/js/consts';
 import {$createLink, $isTextInput} from '@/js/dom';
 import {moveFocus} from '@/js/dom-util';
-import {tBody} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {CHROME, MAC} from '@/js/ua';
 import {t} from '@/js/util';
 import {openEditor, openStyleFinder, styleFinder} from '@/popup/events';
 import {tabId} from '.';
 import {btnDel, closeMenu, menu, openMenu} from './menu';
-
-tBody();
 
 const entries = document.getElementsByClassName('entry');
 const MENU_KEYS = {

@@ -20,7 +20,7 @@ for (const [id, init, tpl] of [
   ['#options', EditorSettings, kEditorSettings],
   ['#styleOpts', StyleSettings, 'styleSettings'],
 ]) {
-  const el = template.body.$(id);
+  const el = $(id);
   const onPref = (key, val) => {
     if (!val) return;
     prefs.unsubscribe(key, onPref);

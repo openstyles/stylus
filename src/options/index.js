@@ -3,7 +3,7 @@ import '@/js/browser';
 import {kBadFavs, pKeepAlive} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '@/js/dom-util';
-import {tBody, template} from '@/js/localization';
+import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
@@ -18,7 +18,6 @@ import './options.css';
 /** @type {{[id: string]: {el:HTMLElement, not:string, op:string, opVal:string}[]}} */
 const showIf = {__proto__: null};
 
-tBody();
 $$('input[min], input[max]').forEach(enforceInputRange);
 if (location.hash === '#sync-styles') {
   $('.cloud-name').focus();

@@ -1,10 +1,8 @@
 import {k_size, UCD} from '@/js/consts';
 import {cssFieldSizing} from '@/js/dom';
-import {formatDate, formatRelativeDate, tBody} from '@/js/localization';
+import {formatDate, formatRelativeDate} from '@/js/localization';
 import {debounce, NOP, t} from '@/js/util';
 import * as UI from './ui';
-
-tBody();
 
 export {UI};
 export const installed = $('#installed');

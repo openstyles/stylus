@@ -1,11 +1,10 @@
 import {$create} from '@/js/dom';
 import {mqCompact} from '@/js/dom-init';
 import {important} from '@/js/dom-util';
-import {template} from '@/js/localization';
 import {t} from '@/js/util';
 import editor from './editor';
 
-const h = template.body.$('#header');
+const h = $('#header');
 export const toggleSticky = val => h.classList.toggle('sticky', val);
 export let sticky;
 

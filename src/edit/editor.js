@@ -1,6 +1,5 @@
 import {kPopup} from '@/js/consts';
 import {$create} from '@/js/dom';
-import {template} from '@/js/localization';
 import {clipString, deepEqual, mapObj, sessionStore, t} from '@/js/util';
 import {sticky} from './compact-header';
 import DirtyReporter from './dirty-reporter';
@@ -99,7 +98,7 @@ const editor = self.editor = {
 
   updateClass() {
     $rootCL.toggle('is-new-style', !editor.style.id);
-    template.body.$('h1').textContent = editor.style.id
+    $('h1').textContent = editor.style.id
       ? t('editStyleHeading')
       : t('addStyleTitle');
   },

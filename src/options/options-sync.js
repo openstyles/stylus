@@ -1,6 +1,5 @@
 import {pSync} from '@/js/consts';
 import {$create, $toggleDataset} from '@/js/dom';
-import {template} from '@/js/localization';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {swController} from '@/js/msg-init';
@@ -10,7 +9,7 @@ import {t} from '@/js/util';
 
 (async () => {
   let {sync: status, syncOpts} = __.MV3 && swController ? clientData : await clientData;
-  const elSync = template.body.$('.sync-options');
+  const elSync = $('.sync-options');
   const elCloud = elSync.$('.cloud-name');
   const elToggle = elSync.$('.connect');
   const elSyncNow = elSync.$('.sync-now');

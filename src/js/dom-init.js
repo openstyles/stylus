@@ -2,6 +2,7 @@ import {kSidebar, pFavicons, pFaviconsGray} from '@/js/consts';
 import {isTab} from '@/js/msg-api';
 import {$toggleClasses, header, isSidebar, isTouch} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
+import {tBody} from './localization';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
 import './dom-error';
@@ -72,3 +73,4 @@ if (prefs.knownKeys.includes(
 })();
 
 window.on('load', () => import('./dom-on-load'), {once: true});
+tBody();
