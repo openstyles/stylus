@@ -196,7 +196,7 @@ const collectStylelintResults = (messages, code, mode) => {
       mode === 'less' &&
         rule === kAtRuleNoUnknown && rxVarsLessDecl.test(msg) ||
       mode === 'stylus' &&
-        /^Invalid selector "[&/]|^Cannot parse selector[^']+'\/'/.test(msg) ||
+        /^Invalid selector "[^"]*[&/~^]|^Cannot parse selector[^']+'\/'/.test(msg) ||
       (rule === kDeclValue || rule === kGradientDir) && (
         rxVendorPrefix.test(m) ||
         rule === kDeclValue && mode === 'css' && (v = m.node) &&
