@@ -31,25 +31,23 @@ const BUILDERS = {
     pre(source, vars, log, warn) {
       if (!stylusLang)
         loadStylusLang();
-      if (vars) for (const key in vars) {
-        let val = vars[key].value;
-        try {
-          val = new stylusLang.Parser(`(${val})`).parse();
-          val = new stylusLang.Evaluator(val).evaluate();
-          do val = val.nodes[0]; while (val.nodeName === 'expression' && val.nodes.length);
-          vars[key] = val;
-        } catch (err) {
-          err.message += '\n' + key + ' = ' + val;
-          throw err;
-        }
+      /** Adding to the source text because `globals` needs a Node, but Evaluator fails on url()
+       * Using a random separator to clean up leftovers (note that {} is re-formatted by stylus) */
+      let sep;
+      if (vars) {
+        source = Object.entries(vars).map(e => `${e[0]}=${e[1].value};\n`).join('') +
+          (sep = '.a' + Math.random().toString(36).slice(2)) + '{x:0}\n' +
+          source;
       }
-      return stylusLang(source, {
-        globals: vars,
+      source = stylusLang(source, {
         functions: {
           p: node => log.push(node.val || node) && stylusLang.nodes.null,
           warn: node => warn.push(node.val || node) && stylusLang.nodes.null,
         },
       }).render();
+      if (vars && ~(sep = source.indexOf(sep)))
+        source = source.slice(source.indexOf('}', sep) + 2/*}\n*/);
+      return source;
     },
   },
 
