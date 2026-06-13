@@ -1,8 +1,10 @@
 import {CodeMirror} from '@/cm';
+import {getPreprocessorMode} from '@/cm/util';
 import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
-import {mimeLESS, UCD} from '@/js/consts';
+import {kEditorSettings, pEditorLinter, UCD} from '@/js/consts';
 import {$create, $createLink, $isTextInput} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
+import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleToCss} from '@/js/sections-util';
@@ -10,15 +12,20 @@ import {makeUserCssFindFilter, NOP, reuseStyleVars, t} from '@/js/util';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';
 import * as linterMan from './linter';
+import {curLinter, overrideCurLinter} from './linter/engines';
+import {linters, onLinterPref} from './linter/store';
 import livePreview from './live-preview';
 import MozSectionFinder from './moz-section-finder';
 import MozSectionWidget from './moz-section-widget';
 import {initMetaCompiler, metaCompiler, pendingMeta} from './source-editor-meta';
 
 export default function SourceEditor() {
-  const {style, /** @type DirtyReporter */dirty} = editor;
+  const style = editor.style;
+  const dirty = editor.dirty;
   let lintingEnabled;
   let savedGeneration;
+  /** @type {UsercssData['preprocessor']} */
+  let preprocessor;
   let prevMode = NaN;
   let prevSel;
   let updateTocFocusPending;
@@ -28,10 +35,10 @@ export default function SourceEditor() {
 
   const cmpPos = CodeMirror.cmpPos;
   const [DEFAULT_TEMPLATE, TEMPLATE, TEMPLATE_DATA] = editor.template;
-  const pp0 = (style[UCD] ||= TEMPLATE_DATA).preprocessor;
+  const initialCode = style.id ? style.sourceCode : setupNewStyle(TEMPLATE || DEFAULT_TEMPLATE);
   const cm = cmFactory.create($('#sections').appendChild($create('.single-editor')), {
-    mode: pp0 === 'less' ? mimeLESS : pp0 === 'stylus' ? pp0 : 'css',
-    value: style.id ? style.sourceCode : setupNewStyle(TEMPLATE || DEFAULT_TEMPLATE),
+    mode: getPreprocessorMode(preprocessor = (style[UCD] ||= TEMPLATE_DATA).preprocessor),
+    value: initialCode,
   }, me => {
     const si = editor.applyScrollInfo(me) || {};
     editor.viewTo = si.viewTo;
@@ -63,18 +70,16 @@ export default function SourceEditor() {
     style.url = meta.homepageURL || style.installationUrl;
     updateMeta();
   });
-  linterMan.register(metaCompiler);
-  updateMeta();
-  // Subsribing outside of finishInit() because it uses `cm` that's still not initialized
-  prefs.subscribe('editor.linter', updateLinterSwitch, true);
+  updateMeta(/*init=*/true);
+  linters.add(metaCompiler);
+  onLinterPref.add(updateLinterSwitch);
 
   /** @namespace Editor */
   Object.assign(editor, {
+    loading: false,
     replaceStyle,
-    updateLinterSwitch,
     updateMeta,
     closestVisible: () => cm,
-    getCurrentLinter,
     getEditors: () => [cm],
     getEditorTitle: () => '',
     getValue: getStyleValue,
@@ -125,15 +130,7 @@ export default function SourceEditor() {
     livePreview();
     if (!lintingEnabled) metaCompiler(changes);
   });
-  cm.on('optionChange', (_cm, option) => {
-    if (option !== 'mode') return;
-    const mode = getModeName();
-    if (mode === prevMode) return;
-    prevMode = mode;
-    linterMan.run();
-    updateLinterSwitch();
-  });
-  setTimeout(linterMan.enableForEditor, 0, cm);
+  setTimeout(linterMan.enableForEditor, 0, cm, initialCode, /*force=*/true);
   if (!$isTextInput()) {
     cm.focus();
   }
@@ -144,27 +141,15 @@ export default function SourceEditor() {
   }
 
   function updateLinterSwitch(key, val) {
-    lintingEnabled = val;
-    const el = $id('editor.linter');
-    if (!el) return;
-    el.value = getCurrentLinter();
-    const cssLintOption = el.$('[value="csslint"]');
-    const mode = getModeName();
-    if (mode !== 'css') {
-      cssLintOption.disabled = true;
-      cssLintOption.title = t('linterCSSLintIncompatible', mode);
-    } else {
-      cssLintOption.disabled = false;
-      cssLintOption.title = '';
-    }
-  }
-
-  function getCurrentLinter() {
-    const name = prefs.__values['editor.linter'];
-    if (cm.getOption('mode') !== 'css' && name === 'csslint') {
-      return 'stylelint';
-    }
-    return name;
+    if (key) lintingEnabled = val;
+    const select = template[kEditorSettings].$(`[id="${pEditorLinter}"]`);
+    const option = select.$('[value="csslint"]');
+    const fancyMode = getPreprocessorMode(preprocessor);
+    const ovr = curLinter && fancyMode && 'stylelint';
+    option.disabled = fancyMode;
+    option.title = fancyMode ? t('linterCSSLintIncompatible', fancyMode) : '';
+    select.value = ovr || curLinter;
+    if (ovr) overrideCurLinter(ovr);
   }
 
   function setupNewStyle(code) {
@@ -184,13 +169,21 @@ export default function SourceEditor() {
     );
   }
 
-  function updateMeta() {
-    const name = style.customName || style.name;
-    $id('name').value = name;
+  function updateMeta(init) {
+    $id('name').value = style.customName || style.name;
     $id('enabled').checked = style.enabled;
     $id('url').href = style.url;
     editor.updateName();
-    cm.setPreprocessor(style[UCD]?.preprocessor);
+    const meta = style[UCD];
+    const mode = cm.setPreprocessor(meta);
+    if (mode !== prevMode) {
+      preprocessor = meta.preprocessor;
+      prevMode = mode;
+      if (!init) {
+        updateLinterSwitch();
+        linterMan.run();
+      }
+    }
   }
 
   async function replaceStyle(newStyle, draft) {
@@ -304,13 +297,6 @@ export default function SourceEditor() {
       deltaMode === 2 || shiftKey ? Math.sign(deltaY) * cm.display.scroller.clientHeight :
       // WheelEvent.DOM_DELTA_PIXEL
       deltaY;
-  }
-
-  function getModeName() {
-    const mode = cm.doc.mode;
-    if (!mode) return '';
-    return (mode.name || mode || '') +
-           (mode.helperType || '');
   }
 
   function onCursorActivity() {

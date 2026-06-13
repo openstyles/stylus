@@ -28,6 +28,7 @@ let wasDirty = false;
 const editor = self.editor = {
   dirty,
   isUsercss: false,
+  loading: true,
   msg: false,
   /** @type {'customName'|'name'} */
   nameTarget: 'name',

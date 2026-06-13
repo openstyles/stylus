@@ -1,12 +1,12 @@
 import {template} from '@/js/localization';
 import {clipString} from '@/js/util';
-import * as linterMan from '.';
 import editor from '../editor';
+import {lintingUpdatedListeners, unhookListeners} from './store';
 
 const tables = new Map();
 let tplReport, tplRow, rowSeverityIcon, rowSeverity, rowLine, rowCol, rowMessage;
 
-linterMan.onLintingUpdated((annotationsNotSorted, annotations, cm) => {
+lintingUpdatedListeners.add((annotationsNotSorted, annotations, cm) => {
   let table = tables.get(cm);
   if (!table) {
     table = createTable(cm);
@@ -20,7 +20,7 @@ linterMan.onLintingUpdated((annotationsNotSorted, annotations, cm) => {
   updateCount();
 });
 
-linterMan.onUnhook(cm => {
+unhookListeners.add(cm => {
   const table = tables.get(cm);
   if (table) {
     table.element.remove();

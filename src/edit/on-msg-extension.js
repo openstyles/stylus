@@ -40,7 +40,7 @@ function handleExternalUpdate(style, reason, editorId) {
       Object.assign(editor.style, style);
       livePreview();
     }
-    editor.updateMeta();
+    editor.updateMeta?.();
     return;
   }
   (replaceQueue ??= []).push([style, reason]);

@@ -1,8 +1,8 @@
 /** Don't use this file in content script context! */
 import {
-  k_busy, kBadFavs, pDisableAll, pEditorTheme, pExposeIframes, pFavicons, pFaviconsGray,
-  pLivePreview, pManageNewUi, pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pStyleViaASS,
-  pStyleViaXhr, pSync, pUrlInstaller,
+  k_busy, kBadFavs, pDisableAll, pEditorLinter, pEditorTheme, pExposeIframes, pFavicons,
+  pFaviconsGray, pLintReportDelay, pLivePreview, pManageNewUi, pManageNewUiTargets,
+  pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr, pSync, pUrlInstaller,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {swController} from './msg-init'; // also installs API handler for own pages
@@ -115,9 +115,8 @@ const defaults = {
     space_around_cmp: false,
   },
   'editor.beautify.hotkey': '',
-  'editor.lintDelay': 300,        // lint gutter marker update delay, ms
-  'editor.linter': 'csslint',     // 'csslint' or 'stylelint' or ''
-  'editor.lintReportDelay': 500,  // lint report update delay, ms
+  [pEditorLinter]: 'csslint',     // 'csslint' or 'stylelint' or ''
+  [pLintReportDelay]: 500,  // lint report update delay, ms
   'editor.matchHighlight': 'token', // token = token/word under cursor even if nothing is selected
                                     // selection = only when something is selected
                                     // '' (empty string) = disabled

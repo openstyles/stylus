@@ -1,5 +1,4 @@
-import {kAtRuleNoUnknown, kDeclValue, kGradientDir} from '@/edit/linter/defaults';
-import {kCssPropSuffix} from '@/js/consts';
+import {kAtRuleNoUnknown, kCssPropSuffix, kDeclValue, kGradientDir} from '@/js/consts';
 import {metaLint} from './meta-parser';
 import {load, loadParserlib, loadStylusLang, parserlib, stylusLang} from './util';
 

@@ -1,15 +1,24 @@
+import {pLintReportDelay} from '@/js/consts';
+import {__values} from '@/js/prefs';
 import {cms, linters, lintingUpdatedListeners, unhookListeners} from './store';
 import './engines';
 
-export * from './defaults';
 export * from './reports';
 
 export function disableForEditor(cm) {
-  cm.setOption('lint', false);
+  setCmLintOption(cm, false);
   cms.delete(cm);
   for (const cb of unhookListeners) {
     cb(cm);
   }
+}
+
+function setCmLintOption(cm, fn) {
+  cm.setOption('lint', fn && {
+    delay: __values[pLintReportDelay],
+    getAnnotations: fn,
+    onUpdateLinting,
+  });
 }
 
 /**
@@ -17,27 +26,16 @@ export function disableForEditor(cm) {
  * @param {string} [code] - to be used to avoid slowdowns when creating a lot of cms.
  * Enables lint option only if there are problems, thus avoiding a _very_ costly layout
  * update when lint gutter is added to a lot of editors simultaneously.
+ * @param {boolean} [force] - set the option anyway e.g. in single editor mode
  */
-export function enableForEditor(cm, code) {
+export function enableForEditor(cm, code, force) {
   if (cms.has(cm)) return;
   cms.set(cm, null);
   if (code) {
-    enableOnProblems(cm, code);
+    enableOnProblems(cm, code, force);
   } else {
-    cm.setOption('lint', {getAnnotations, onUpdateLinting});
+    setCmLintOption(cm, getAnnotations);
   }
-}
-
-export function onLintingUpdated(fn) {
-  lintingUpdatedListeners.push(fn);
-}
-
-export function onUnhook(fn) {
-  unhookListeners.push(fn);
-}
-
-export function register(fn) {
-  linters.push(fn);
 }
 
 export function run() {
@@ -46,19 +44,19 @@ export function run() {
   }
 }
 
-async function enableOnProblems(cm, code) {
+async function enableOnProblems(cm, code, force) {
   const results = await getAnnotations(code, {}, cm);
-  if (results.length || cm.display.renderedView) {
+  if (force || results.length || cm.display.renderedView) {
     cms.set(cm, results);
-    cm.setOption('lint', {getAnnotations: getCachedAnnotations, onUpdateLinting});
+    setCmLintOption(cm, getCachedAnnotations);
   } else {
     cms.delete(cm);
   }
 }
 
-async function getAnnotations(...args) {
-  const results = await Promise.all(linters.map(fn => fn(...args)));
-  return [].concat(...results.filter(Boolean));
+function getAnnotations(code, options, cm) {
+  const jobs = Array.from(linters, fn => fn(code, options, cm)).filter(Boolean);
+  return !jobs.length ? jobs : Promise.all(jobs).then(results => results.filter(Boolean).flat());
 }
 
 function getCachedAnnotations(code, opt, cm) {

@@ -201,7 +201,7 @@ function updateMeta(newStyle) {
   const dupData = dup && dup[UCD];
   const versionTest = dup && compareVersion(data.version, dupData.version);
 
-  cm.setPreprocessor(data.preprocessor);
+  cm.setPreprocessor(data);
 
   const installButtonLabel = t(
     installed ? 'installButtonInstalled' :

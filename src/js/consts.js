@@ -52,16 +52,24 @@ export const IMPORT_THROTTLE = 100; //ms
 export const BIT_DARK = 1;
 export const BIT_SYS_DARK = 2;
 
+//#region CSS
+export const kAtRuleNoUnknown = 'at-rule-no-unknown';
+export const kDeclValue = 'declaration-property-value-no-unknown';
+export const kGradientDir = 'function-linear-gradient-no-nonstandard-direction';
+export const kRulesOvr = 'rules:';
 export const mimeLESS = 'text/x-less';
+//#endregion
 
 //#region prefs
 export const pDisableAll = 'disableAll';
+export const pEditorLinter = 'editor.linter';
 export const pEditorTheme = 'editor.theme';
 export const pExposeIframes = 'exposeIframes';
 export const pKeepAlive = 'keepAlive';
 export const pManageNewUi = 'manage.newUI';
 export const pFavicons = 'manage.newUI.favicons';
 export const pFaviconsGray = 'manage.newUI.faviconsGray';
+export const pLintReportDelay = 'editor.lintReportDelay';
 export const pLivePreview = 'editor.livePreview';
 export const pManageNewUiTargets = 'manage.newUI.targets';
 export const pOpenEditInWindow = 'openEditInWindow';

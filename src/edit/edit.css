@@ -174,7 +174,7 @@ i {
   }
 }
 a.icon {
-  margin-left: .2rem;
+  margin-left: .5rem;
 }
 /* collapsibles */
 #details-wrapper {
@@ -646,7 +646,7 @@ a.icon {
   .title {
     font-weight: bold;
     background-color: rgba(128, 128, 128, .15);
-    padding: var(--pad-y2) var(--pad-x);
+    padding: var(--pad-y2) calc(20px + var(--pad-x)) var(--pad-y2) var(--pad-x);
   }
   .contents {
     max-height: calc(var(--100dvh) - var(--top) - 4rem);
@@ -710,7 +710,8 @@ a.icon {
   }
   .rules {
     padding: 0 15px;
-    li {
+    margin-top: 0;
+    li:nth-child(n + 2) {
       padding-top: $pad05;
     }
     p {
@@ -724,6 +725,9 @@ a.icon {
   overflow-x: hidden;
   > summary h2 {
     display: inline-flex;
+    > :not(:hover) {
+      color: var(--fg);
+    }
   }
   table {
     border-spacing: 0;

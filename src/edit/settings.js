@@ -2,12 +2,13 @@ import {CodeMirror, THEMES} from '@/cm';
 import {kEditorSettings, kExclusions, kInclusions, kOverridden} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
-import {templateCache, template} from '@/js/localization';
+import {template, templateCache} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {debounce, t, tryURL} from '@/js/util';
 import editor from './editor';
-import {loadingLazy} from './load-style';
+import {keymapHelp} from './keymap-help';
+import {showLintConfig} from './linter/dialogs';
 import {createHotkeyInput, helpPopup} from './util';
 import './settings.css';
 
@@ -20,13 +21,14 @@ for (const [id, init, tpl] of [
   ['#styleOpts', StyleSettings, 'styleSettings'],
 ]) {
   const el = template.body.$(id);
-  const mo = new MutationObserver(() => {
-    mo.disconnect();
+  const onPref = (key, val) => {
+    if (!val) return;
+    prefs.unsubscribe(key, onPref);
     // Making templateCache reusable in $,$$ by replacing an empty document fragment
     templateCache[tpl] = el.appendChild($create('main', template[tpl]));
     init(el);
-  });
-  mo.observe(el, {attributes: true, attributeFilter: ['open']});
+  };
+  prefs.subscribe(el.dataset.pref, onPref, true);
 }
 
 function StyleSettings(ui) {
@@ -164,7 +166,7 @@ function EditorSettings(ui) {
       }
     }
     const el = bin.appendChild($create('option', {value}, name));
-    if (value === prefs.defaults['editor.keyMap']) {
+    if (value === prefs.__defaults['editor.keyMap']) {
       el.dataset.default = '';
       el.title = t('defaultTheme');
     }
@@ -189,9 +191,6 @@ function EditorSettings(ui) {
   };
 
   setupLivePrefs(ui);
-  prefs.subscribe('editor.linter', editor.updateLinterSwitch, true);
-  loadingLazy.then(lazy => {
-    ui.$('#keyMap-help').onclick = lazy.keymapHelp;
-    ui.$('#linter-settings').onclick = lazy.showLintConfig;
-  });
+  ui.$('#keyMap-help').onclick = keymapHelp;
+  ui.$('#linter-settings').onclick = showLintConfig;
 }

@@ -1,4 +1,4 @@
-import {mimeLESS} from '@/js/consts';
+import {pEditorLinter} from '@/js/consts';
 import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {WINDOWS} from '@/js/ua';
@@ -34,6 +34,7 @@ import 'codemirror/mode/stylus/stylus';
 import '@/vendor-overwrites/codemirror-addon/match-highlighter.js';
 import './css';
 import {THEME_KEY} from './themes';
+import {getPreprocessorMode} from './util';
 import './index.css';
 
 export const CodeMirror = CM; // workaround for webpack's `codemirror_default()` import
@@ -72,13 +73,12 @@ export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
     lineWrapping: prefs.__values['editor.lineWrapping'],
     foldGutter: true,
     gutters: [
-      ...(prefs.__values['editor.linter'] ? ['CodeMirror-lint-markers'] : []),
+      ...prefs.__values[pEditorLinter] ? ['CodeMirror-lint-markers'] : [],
       'CodeMirror-linenumbers',
       'CodeMirror-foldgutter',
     ],
     matchBrackets: true,
     hintOptions: {},
-    lintReportDelay: prefs.__values['editor.lintReportDelay'],
     styleActiveLine: {nonEmpty: true},
     theme: prefs.__values[THEME_KEY],
     keyMap: prefs.__values['editor.keyMap'],
@@ -144,16 +144,18 @@ export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
   /** @namespace CM */
   Object.assign(CodeMirror.prototype, {
     /**
-     * @param {'less' | 'stylus' | ?} [pp] - any value besides `less` or `stylus` sets `css` mode
+     * @param {UsercssData} meta
      * @param {boolean} [force]
      */
-    setPreprocessor(pp, force) {
-      const name = pp === 'less' ? mimeLESS : pp === 'stylus' ? pp : 'css';
+    setPreprocessor(meta, force) {
+      const pp = meta.preprocessor;
+      const name = getPreprocessorMode(pp);
       const m = this.doc.mode;
       const {helperType} = m;
       if (force || (helperType ? helperType !== pp : m.name !== name)) {
         this.setOption('mode', name);
       }
+      return name;
     },
     /** Superfast GC-friendly check that runs until the first non-space line */
     isBlank() {

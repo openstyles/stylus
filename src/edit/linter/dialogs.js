@@ -1,44 +1,44 @@
 import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
 import {kAppJson} from '@/js/consts';
-import {$create, $createLink} from '@/js/dom';
+import {$create, $createFragment, $createLink} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {t, tryJSONparse} from '@/js/util';
 import editor from '../editor';
 import {helpPopup, showCodeMirrorPopup, worker} from '../util';
 import {DEFAULTS} from './defaults';
+import {curLinter} from './engines';
 import {getIssues} from './reports';
 
 /** @type {{csslint:{}, stylelint:{}}} */
 const RULES = {};
 const KNOWN_RULES = {};
 const defaultConfig = {};
+const linterTitles = ['CSSLint', 'Stylelint'];
 
 let cmDlg;
 let knownRules;
 let isStylelint;
-let linter;
 let popup;
 
 export async function showLintConfig() {
-  linter = await getLinter();
-  if (!linter) {
+  if (!curLinter)
     return;
-  }
+  RULES[curLinter] ||= await worker.getRules(curLinter);
   await import(/* webpackChunkName: "jsonlint" */'@/cm/jsonlint-bundle');
-  isStylelint = linter === 'stylelint';
-  const config = await getLZValue(LZ_KEY[linter]);
-  const defaults = DEFAULTS[linter];
-  const title = t('linterConfigPopupTitle', isStylelint ? 'Stylelint' : 'CSSLint');
+  isStylelint = curLinter === 'stylelint';
+  const config = await getLZValue(LZ_KEY[curLinter]);
+  const defaults = DEFAULTS[curLinter];
+  const title = t('linterConfigPopupTitle', linterTitles[+isStylelint]);
   const activeRules = new Set(getActiveRules());
-  knownRules = KNOWN_RULES[linter] || (
-    KNOWN_RULES[linter] = new Set((
+  knownRules = KNOWN_RULES[curLinter] || (
+    KNOWN_RULES[curLinter] = new Set((
       isStylelint
-        ? Object.keys(RULES[linter])
-        : RULES[linter].map(r => r.id)
+        ? Object.keys(RULES[curLinter])
+        : RULES[curLinter].map(r => r.id)
     ).sort()));
   for (const cfg of [
     config,
-    !defaultConfig[linter] && defaults,
+    !defaultConfig[curLinter] && defaults,
   ].filter(Boolean).map(getConfigRules)) {
     const missingRules = new Set(knownRules);
     for (const id in cfg) {
@@ -54,13 +54,13 @@ export async function showLintConfig() {
       for (const id of missingRules)
         cfg[id] = 0;
   }
-  defaultConfig[linter] = stringifyConfig(defaults);
+  defaultConfig[curLinter] = stringifyConfig(defaults);
   popup = showCodeMirrorPopup(title, null, {
     extraKeys: {'Ctrl-Enter': onConfigSave},
     hintOptions: {hint},
     lint: true,
     mode: kAppJson,
-    value: config ? stringifyConfig(config) : defaultConfig[linter],
+    value: config ? stringifyConfig(config) : defaultConfig[curLinter],
   });
   popup._contents.appendChild(
     $create('div', [
@@ -70,7 +70,7 @@ export async function showLintConfig() {
             ? 'https://stylelint.io/user-guide/rules/'
             : 'https://github.com/CSSLint/csslint/wiki/Rules-by-ID',
           t('linterRulesLink')),
-        linter === 'csslint' ? ' ' + t('linterCSSLintSettings') : '',
+        !isStylelint ? ' ' + t('linterCSSLintSettings') : '',
       ]),
       $create('.buttons', [
         $create('button.save', {onclick: onConfigSave, title: 'Ctrl-Enter'},
@@ -101,13 +101,13 @@ export async function showLintConfig() {
 }
 
 export async function showLintHelp() {
-  const target = await getLinter();
-  const baseUrl = target === 'stylelint'
-    ? 'https://stylelint.io/user-guide/rules/'
-    : '';
-  let headerLink, makeItem;
-  if (target === 'csslint') {
-    headerLink = $createLink('https://github.com/CSSLint/csslint/wiki/Rules', 'CSSLint');
+  if (!curLinter)
+    return;
+  RULES[curLinter] ||= await worker.getRules(curLinter);
+  isStylelint = curLinter === 'stylelint';
+  let baseUrl, makeItem;
+  if (!isStylelint) {
+    baseUrl = 'https://github.com/CSSLint/csslint/wiki/Rules';
     makeItem = ruleID => {
       for (const rule of RULES.csslint) {
         if (rule.id === ruleID) {
@@ -120,15 +120,19 @@ export async function showLintHelp() {
       }
     };
   } else {
-    headerLink = $createLink(baseUrl, 'stylelint');
+    baseUrl = 'https://stylelint.io/user-guide/rules/';
     makeItem = rule =>
       $create('li',
         rule === 'CssSyntaxError' ? rule : $createLink(baseUrl + rule, rule));
   }
   const header = t('linterIssuesHelp', '\x01').split('\x01');
-  helpPopup.show(t('linterIssues'),
+  helpPopup.show(
+    $createFragment([
+      header[0],
+      $createLink(baseUrl, linterTitles[+isStylelint]),
+      header[1],
+    ]),
     $create('div', [
-      header[0], headerLink, header[1],
       $create('ul.rules', getActiveRules().map(makeItem)),
       $create('button', {onclick: showLintConfig}, t('configureStyle')),
     ]));
@@ -148,16 +152,8 @@ function getLexicalDepth(lexicalState) {
   return depth;
 }
 
-async function getLinter() {
-  const val = editor.getCurrentLinter();
-  if (val && !RULES[val]) {
-    RULES[val] = await worker.getRules(val);
-  }
-  return val;
-}
-
 function hint(cm) {
-  const rules = RULES[linter];
+  const rules = RULES[curLinter];
   let ruleIds, options;
   if (isStylelint) {
     ruleIds = Object.keys(rules);
@@ -213,7 +209,7 @@ function onConfigClose() {
 
 function onConfigReset(event) {
   event.preventDefault();
-  cmDlg.setValue(defaultConfig[linter]);
+  cmDlg.setValue(defaultConfig[curLinter]);
   cmDlg.focus();
   updateConfigButtons();
 }
@@ -224,19 +220,19 @@ async function onConfigSave(event) {
   }
   const json = tryJSONparse(cmDlg.getValue());
   if (!json) {
-    showLinterErrorMessage(linter, t('linterJSONError'));
+    showLinterErrorMessage(curLinter, t('linterJSONError'));
     cmDlg.focus();
     return;
   }
   const cfg = getConfigRules(json);
-  const defaults = getConfigRules(DEFAULTS[linter]);
+  const defaults = getConfigRules(DEFAULTS[curLinter]);
   // Explicitly disabling rules enabled in our defaults but not present in the user config
   // & removing disabled rules disabled in our defaults to reduce the size of config in sync storage
   for (const id in defaults) {
     if (!(id in cfg)) cfg[id] = isStylelint ? false : 0;
     else if (!cfg[id] && !defaults[id]) delete cfg[id];
   }
-  setLZValue(LZ_KEY[linter], json);
+  setLZValue(LZ_KEY[curLinter], json);
   cmDlg.markClean();
   cmDlg.focus();
   updateConfigButtons();
@@ -248,7 +244,7 @@ function getConfigRules(c) {
 
 function stringifyConfig(config) {
   return JSON.stringify(config, null, 2)
-    .replace(/,\n\s+{\n\s+("severity":\s"\w+")\n\s+}/g, ', {$1}');
+    .replace(/\[\s*(\w+)\s*,\s*{\s*("severity":\s*"\w+")\s*}\s*]/g, '[$1, {$2}]');
 }
 
 async function showLinterErrorMessage(title, contents) {
@@ -263,6 +259,6 @@ async function showLinterErrorMessage(title, contents) {
 
 function updateConfigButtons() {
   popup.$('.save').disabled = cmDlg.isClean();
-  popup.$('.reset').disabled = cmDlg.getValue() === defaultConfig[linter];
+  popup.$('.reset').disabled = cmDlg.getValue() === defaultConfig[curLinter];
   popup.$('.cancel').textContent = t(cmDlg.isClean() ? 'confirmClose' : 'confirmCancel');
 }

@@ -1,20 +1,22 @@
+import {kAtRuleNoUnknown, kDeclValue, kGradientDir, kRulesOvr} from '@/js/consts';
+
 const WARNING = {severity: 'warning'};
 const ENABLED_AS_WARNING = [true, WARNING];
-export const jsonAnyRuleDefault = '[true,{"severity":"warning"}]';
-export const jsonAtRuleNoUnknownOld = '[true,{"ignoreAtRules":["extend","extends","css","block"],"severity":"warning"}]'; // eslint-disable-line max-len
-export const kAtRuleNoUnknown = 'at-rule-no-unknown';
-export const kDeclValue = 'declaration-property-value-no-unknown';
-export const kGradientDir = 'function-linear-gradient-no-nonstandard-direction';
 const kNoInvalidPositionDeclaration = 'no-invalid-position-declaration';
 const kPropertyNoUnknown = 'property-no-unknown';
-export const ppBadRules = [
-  [kAtRuleNoUnknown, '', jsonAtRuleNoUnknownOld],
-  [kDeclValue],
-  [kNoInvalidPositionDeclaration, 'stylus'],
-  [kPropertyNoUnknown, 'stylus'],
-];
 export const DEFAULTS = {
   stylelint: {
+    // Silencing useless checks for LESS and Stylus where vars/funcs are seen by postcss as at-rules
+    [kRulesOvr + 'less']: {
+      [kAtRuleNoUnknown]: null,
+      [kDeclValue]: null,
+    },
+    [kRulesOvr + 'stylus']: {
+      [kAtRuleNoUnknown]: null,
+      [kDeclValue]: null,
+      [kNoInvalidPositionDeclaration]: null,
+      [kPropertyNoUnknown]: null,
+    },
     // WARNING! onConfigSave() expects these rules to be arrays and enabled.
     rules: {
       'at-rule-descriptor-no-unknown': ENABLED_AS_WARNING,

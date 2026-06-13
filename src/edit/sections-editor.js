@@ -54,8 +54,6 @@ export default function SectionsEditor() {
     importOnPaste,
     updateMeta,
 
-    getCurrentLinter: () => prefs.__values['editor.linter'],
-
     getEditors() {
       return sections.filter(s => !s.removed).map(s => s.cm);
     },
@@ -496,7 +494,6 @@ export default function SectionsEditor() {
     keepDirty = false,
     si = scrollInfo,
   } = {}) {
-    Object.assign(editor, /** @namespace Editor */ {loading: true});
     if (replace) {
       sections.forEach(s => s.remove());
       sections.length = 0;

@@ -1,65 +1,49 @@
 import {getLZValue, LZ_KEY} from '@/js/chrome-sync';
-import {mimeLESS} from '@/js/consts';
-import * as prefs from '@/js/prefs';
+import {kRulesOvr, mimeLESS} from '@/js/consts';
 import {onStorageChanged} from '@/js/util-webext';
 import * as linterMan from '.';
 import editor from '../editor';
 import {worker} from '../util';
-import {DEFAULTS, jsonAnyRuleDefault, ppBadRules} from './defaults';
+import {DEFAULTS} from './defaults';
+import {linters, onLinterPref} from './store';
 
-const configs = new Map();
+export let curLinter = '';
+export const overrideCurLinter = val => { curLinter = val; };
+
 const kAtRuleDisallowedList = 'at-rule-disallowed-list';
-
-const ENGINES = {
-  csslint: {
-    validMode: mode => mode === 'css',
-    getConfig: config => Object.assign({}, DEFAULTS.csslint, config),
-    lint: (code, config) => worker.csslint(code, {...config, doc: !editor.isUsercss}),
-  },
-  stylelint: {
-    validMode: () => true,
-    getConfig: config => ({
-      rules: Object.assign({}, DEFAULTS.stylelint.rules, config && config.rules),
-    }),
-    lint: (code, config, mode) => {
-      const cfgRules = config.rules;
-      const isLess = mode === mimeLESS;
-      let ovr;
-      let v = cfgRules[kAtRuleDisallowedList];
-      if (!Array.isArray(v))
-        v = cfgRules[kAtRuleDisallowedList] = [];
-      v.push('import');
-      // Silencing a useless check for LESS and Stylus where vars/funcs are represented as at-rules
-      if (mode !== 'css') {
-        for (const [key, modeForKey, altDefault] of ppBadRules) {
-          if ((!modeForKey || modeForKey === mode) && (v = cfgRules[key]) && v[0] && (
-            (v = JSON.stringify(v)) === jsonAnyRuleDefault ||
-            altDefault && v === altDefault
-          )) (ovr ||= {})[key] = null;
-        }
-        if (ovr) config.rules = {...cfgRules, ...ovr};
-      }
-      return worker.stylelint(code, config, isLess ? 'less' : mode);
-    },
+const configs = new Map();
+const configHandlers = {
+  __proto__: null,
+  csslint: config => ({
+    ...config,
+    doc: !editor.isUsercss,
+  }),
+  stylelint: (config, mode) => {
+    const rules = {...config.rules};
+    const ats = rules[kAtRuleDisallowedList];
+    rules[kAtRuleDisallowedList] = ['import', ...Array.isArray(ats) ? ats : []];
+    Object.assign(rules, config[kRulesOvr + mode]);
+    return {rules};
   },
 };
 
-linterMan.register(async (text, _options, cm) => {
-  const linter = prefs.__values['editor.linter'];
-  if (linter) {
-    const {mode} = cm.options;
-    const currentFirst = Object.entries(ENGINES).sort(([a]) => a === linter ? -1 : 1);
-    for (const [name, engine] of currentFirst) {
-      if (engine.validMode(mode)) {
-        const cfg = configs.get(name) || await getConfig(name);
-        return ENGINES[name].lint(text, cfg, mode);
-      }
-    }
-  }
-});
+const runLinter = async (text, _options, cm) => {
+  const mode = cm.options.mode.replace(mimeLESS, 'less');
+  const cfgBase = configs.get(curLinter) || await getConfig(curLinter);
+  const cfg = configHandlers[curLinter](cfgBase, mode);
+  return worker[curLinter](text, cfg, mode);
+};
+
+export const linterPrefSubscriber = (key, val, init) => {
+  curLinter = !val ? '' : configHandlers[val] ? val : 'stylelint';
+  linters[curLinter ? 'add' : 'delete'](runLinter);
+  for (const fn of onLinterPref)
+    fn(key, val, init);
+  linterMan.run();
+};
 
 onStorageChanged.addListener(changes => {
-  for (const name of Object.keys(ENGINES)) {
+  for (const name of Object.keys(configHandlers)) {
     if (LZ_KEY[name] in changes) {
       getConfig(name).then(linterMan.run);
     }
@@ -68,7 +52,7 @@ onStorageChanged.addListener(changes => {
 
 async function getConfig(name) {
   const rawCfg = await getLZValue(LZ_KEY[name]);
-  const cfg = ENGINES[name].getConfig(rawCfg);
+  const cfg = {...DEFAULTS[name], ...rawCfg};
   configs.set(name, cfg);
   return cfg;
 }

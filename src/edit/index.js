@@ -1,10 +1,12 @@
 import '@/js/dom-init';
+import {pEditorLinter} from '@/js/consts';
 import {tBody} from '@/js/localization';
-import * as prefs from '@/js/prefs';
+import {subscribe} from '@/js/prefs';
 import CompactHeader, {toggleSticky} from './compact-header';
 import editor, {scrollInfo} from './editor';
 import EditorHeader from './editor-header';
-import * as linterMan from './linter';
+import {showLintConfig, showLintHelp} from './linter/dialogs';
+import {linterPrefSubscriber} from './linter/engines';
 import {loading} from './load-style';
 import './on-msg-extension';
 import './settings';
@@ -26,14 +28,18 @@ tBody();
   USWIntegration();
   // TODO: load respective js on demand?
   $rootCL.add(uc ? 'usercss' : 'sectioned');
+
   (uc ? SourceEditor : SectionsEditor)();
+
   editor.dirty.onChange(editor.updateDirty);
-  prefs.subscribe('editor.linter', () => linterMan.run());
+  subscribe(pEditorLinter, linterPrefSubscriber, true);
   CompactHeader();
   // enabling after init to prevent flash of validation failure on an empty name
   $id('name').required = !uc;
   $id('save-button').onclick = editor.save;
   $id('cancel-button').onclick = editor.cancel;
+  $('#lint-help').onclick = showLintHelp;
+  $('#lint .config').onclick = showLintConfig;
   // $id('testRE').hidden = !editor.style.sections.some(({regexps: r}) => r && r.length);
   const elSec = $id('sections-list');
   const elToc = $id('toc');
