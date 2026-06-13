@@ -26,7 +26,7 @@ window.on('keydown', keepFocusRingOnTabbing, {passive: true});
 window.on('keypress', clickDummyLinkOnEnter);
 window.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
 window.on('click', splitMenu);
-window.on('click', showTooltipNote, true);
+window.on('click', onClickCapture, true);
 window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
 onMessage.set(request => {
   if (request.method === 'editDeleteText') {
@@ -210,12 +210,22 @@ function suppressFocusRingOnClick({target}) {
   setLastHocus(closestFocusable(target), true);
 }
 
-function showTooltipNote(event) {
-  const note = event.target.closest('[data-cmd=note]');
-  if (!note)
-    return;
-  event.preventDefault();
-  event.stopPropagation();
+/** @param {MouseEvent|KeyboardEvent} event */
+function onClickCapture(event) {
+  let note, el;
+  if ((el = event.target.closest('a')) && (
+    (note = el.dataset.cmd === 'note') ||
+    el.closest('summary')
+  )) {
+    event.preventDefault();
+    if (note) {
+      event.stopPropagation();
+      showTooltipNote(note);
+    }
+  }
+}
+
+function showTooltipNote(note) {
   if (noteBoxes.has(note)) {
     noteBoxes.get(note).close();
     noteBoxes.delete(note);
