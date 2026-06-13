@@ -22,7 +22,6 @@ import {initMetaCompiler, metaCompiler, pendingMeta} from './source-editor-meta'
 export default function SourceEditor() {
   const style = editor.style;
   const dirty = editor.dirty;
-  let lintingEnabled;
   let savedGeneration;
   /** @type {UsercssData['preprocessor']} */
   let preprocessor;
@@ -128,7 +127,7 @@ export default function SourceEditor() {
   cm.on('changes', (_, changes) => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
     livePreview();
-    if (!lintingEnabled) metaCompiler(changes);
+    metaCompiler(changes);
   });
   setTimeout(linterMan.enableForEditor, 0, cm, initialCode, /*force=*/true);
   if (!$isTextInput()) {
@@ -140,8 +139,7 @@ export default function SourceEditor() {
     if (warn) for (const v of warn) console.warn(v);
   }
 
-  function updateLinterSwitch(key, val) {
-    if (key) lintingEnabled = val;
+  function updateLinterSwitch() {
     const select = template[kEditorSettings].$(`[id="${pEditorLinter}"]`);
     const option = select.$('[value="csslint"]');
     const fancyMode = getPreprocessorMode(preprocessor);

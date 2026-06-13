@@ -6,10 +6,13 @@ let /**@type{CM}*/cm;
 let onUpdated;
 let prevRes = [];
 let prevMetadata;
-let meta, done, iFrom, iTo, lineTo, chTo;
+let meta, done, iFrom, lineTo, chTo;
 const [rxMetaStart, rxMetaEnd] = RX_META.source.split(/(?=\(\?:)/).map(s => RegExp(s, 'yi'));
 /** @param {CodeMirror.EditorChange} change */
-const isAfterMeta = ({from}) => (from.line - lineTo || from.ch - chTo) >= 0;
+const isAfterMeta = ({from, removed}) => (
+  from.line - lineTo - removed.length ||
+  from.ch - chTo
+) >= 0;
 
 export const initMetaCompiler = (codemirror, cb) => {
   cm = codemirror;
@@ -18,10 +21,9 @@ export const initMetaCompiler = (codemirror, cb) => {
 };
 
 export const metaCompiler = async (text, linterOptions, linterCM, force) => {
-  if (!force && (pendingMeta || (linterCM ? linterCM !== cm : text.every(isAfterMeta))))
+  if (!force && (pendingMeta || (linterCM ? linterCM !== cm : meta && text.every(isAfterMeta))))
     return;
   let iFromNew = 0;
-  let iToNew = 0;
   if (!linterCM && !force) {
     text = '';
     let line = -1;
@@ -57,25 +59,18 @@ export const metaCompiler = async (text, linterOptions, linterCM, force) => {
           text += str.slice(i < 0 ? 0 : i, j);
           lineTo = line;
           chTo = j;
-          iToNew += j;
           return true;
         }
         i = j;
       }
       i = str.length + 1;
-      iToNew += i;
       if (!inMeta) iFromNew += i;
     });
   } else if (
-    (!meta
-      || text.charCodeAt(iFrom) !== meta.charCodeAt(iFrom)
-      || text.charCodeAt(iTo) !== meta.charCodeAt(iTo)
-      || text.slice(iFrom, iTo) !== meta
-    ) && (text = text.match(RX_META))
+    (text = text.match(RX_META))
   ) {
     iFromNew = text.index;
     text = text[0];
-    iToNew = iFromNew + text.length;
   }
   if (!text) {
     return [];
@@ -89,35 +84,33 @@ export const metaCompiler = async (text, linterOptions, linterCM, force) => {
         r.i = iFromNew;
       }
     }
-    iFrom = iFromNew;
-    iTo = iToNew;
-    return prevRes;
+  } else {
+    pendingMeta = new Promise(cb => (done = cb));
+    const {metadata, errors} = await worker.metalint(text);
+    pendingMeta = null;
+    if (force)
+      return metadata;
+    if (errors.every(err => err.code === 'unknownMeta')) {
+      onUpdated(metadata);
+    }
+    meta = text;
+    prevRes = errors.map(({code, index, args, message}) => {
+      const isUnknownMeta = code === 'unknownMeta';
+      const typo = isUnknownMeta && args[1] ? 'Typo' : ''; // args[1] may be present but undefined
+      const i = (index || 0) + iFromNew;
+      const pos = cm.posFromIndex(i);
+      return {
+        i,
+        from: pos,
+        to: pos,
+        message: code && t(`meta_${code}${typo}`, args, false) || message,
+        severity: isUnknownMeta ? 'warning' : 'error',
+        rule: code,
+      };
+    });
+    done(prevRes);
   }
-  pendingMeta = new Promise(cb => (done = cb));
-  const {metadata, errors} = await worker.metalint(text);
-  pendingMeta = null;
-  if (force)
-    return metadata;
-  if (errors.every(err => err.code === 'unknownMeta')) {
-    onUpdated(metadata);
-  }
-  meta = text;
   iFrom = iFromNew;
-  iTo = iToNew;
-  prevRes = errors.map(({code, index, args, message}) => {
-    const isUnknownMeta = code === 'unknownMeta';
-    const typo = isUnknownMeta && args[1] ? 'Typo' : ''; // args[1] may be present but undefined
-    const i = (index || 0) + iFromNew;
-    const pos = cm.posFromIndex(i);
-    return {
-      i,
-      from: pos,
-      to: pos,
-      message: code && t(`meta_${code}${typo}`, args, false) || message,
-      severity: isUnknownMeta ? 'warning' : 'error',
-      rule: code,
-    };
-  });
-  done(prevRes);
+  ({line: lineTo, ch: chTo} = cm.posFromIndex(iFromNew + text.length));
   return prevRes;
 };
