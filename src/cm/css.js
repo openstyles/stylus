@@ -159,7 +159,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
         ? kVariableDefinition
         : kVariable;
     } else if (c === 47/* / */ && (
-      (rx = str.charCodeAt(pos)) === 42/* * */ ? tokenCComment(stream, state, str, pos)
+      (rx = str.charCodeAt(pos)) === 42/* * */ ? tokenCComment(stream, state, str, pos + 1)
         : lineComment != null && rx === 47/* / */ && (stream.pos = str.length)
     )) {
       type = res = kComment;
@@ -810,7 +810,7 @@ CodeMirror.registerHelper('hintWords', 'css', [
  * @param {number} pos
  */
 function tokenCComment(stream, state, str, pos) {
-  const i = str.indexOf('*/', ++pos);
+  const i = str.indexOf('*/', pos);
   state.tokenize = i < 0 ? tokenCComment : null;
   stream.pos = i < 0 ? str.length : i + 2;
   return [kComment, kComment];
