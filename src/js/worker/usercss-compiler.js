@@ -2,35 +2,70 @@ import * as colorConverter from '@/js/color/color-converter';
 import {styleCodeEmpty} from '../sections-util';
 import {nullifyInvalidVars} from './meta-parser';
 import extractSections from './moz-parser';
-import {compileLess, compileStylus, loadParserlib, parserlib} from './util';
+import {less, loadLess, loadParserlib, loadStylusLang, parserlib, stylusLang} from './util';
 
 let builderChain = Promise.resolve();
 
-const BUILDERS = Object.assign(Object.create(null), {
+const addRootVars = (sections, vars) => {
+  vars = `:root {\n${
+    Object.keys(vars).map(k =>
+      `  --${k}: ${vars[k].value};\n`
+    ).join('')
+  }}\n`;
+  for (const section of sections) {
+    if (!styleCodeEmpty(section)) {
+      spliceCssAfterGlobals(section, vars, styleCodeEmpty.lastIndex);
+    }
+  }
+};
+const DEFAULT_BUILDER = {
+  post: addRootVars,
+};
+const BUILDERS = {
+  __proto__: null,
 
-  default: {
-    post(sections, vars) {
-      let varDef = Object.keys(vars).map(k => `  --${k}: ${vars[k].value};\n`).join('');
-      if (!varDef) return;
-      varDef = ':root {\n' + varDef + '}\n';
-      for (const section of sections) {
-        if (!styleCodeEmpty(section)) {
-          spliceCssAfterGlobals(section, varDef, styleCodeEmpty.lastIndex);
-        }
-      }
-    },
-  },
+  default: DEFAULT_BUILDER,
 
   stylus: {
-    pre: compileStylus,
+    log: true,
+    pre(source, vars, log, warn) {
+      if (!stylusLang)
+        loadStylusLang();
+      if (vars) for (const key in vars) {
+        let val = vars[key].value;
+        try {
+          val = new stylusLang.Parser(`(${val})`).parse();
+          val = new stylusLang.Evaluator(val).evaluate();
+          do val = val.nodes[0]; while (val.nodeName === 'expression' && val.nodes.length);
+          vars[key] = val;
+        } catch (err) {
+          err.message += '\n' + key + ' = ' + val;
+          throw err;
+        }
+      }
+      return stylusLang(source, {
+        globals: vars,
+        functions: {
+          p: node => log.push(node.val || node) && stylusLang.nodes.null,
+          warn: node => warn.push(node.val || node) && stylusLang.nodes.null,
+        },
+      }).render();
+    },
   },
 
   less: {
     async pre(source, vars) {
-      const varDefs = {};
-      for (const key in vars)
-        varDefs['@' + key] = vars[key].value;
-      return (await compileLess(source, varDefs)).css;
+      let varDefs;
+      if (vars) {
+        varDefs = {};
+        for (const key in vars)
+          varDefs['@' + key] = vars[key].value;
+      }
+      const res = await (less || loadLess()).render(source, {
+        math: 'parens-division',
+        modifyVars: varDefs,
+      });
+      return res.css;
     },
   },
 
@@ -56,10 +91,10 @@ const BUILDERS = Object.assign(Object.create(null), {
         }
         return value;
       };
-      return doReplace(source);
+      return vars ? doReplace(source) : source;
     },
   },
-});
+};
 
 /**
  * @param {string} preprocessor
@@ -69,34 +104,30 @@ const BUILDERS = Object.assign(Object.create(null), {
  * @returns {Promise<{sections, errors}>}
  */
 export default async function compileUsercss(preprocessor, code, vars) {
-  let builder = BUILDERS[preprocessor];
-  if (!builder) {
-    builder = BUILDERS.default;
-    if (preprocessor != null) console.warn(`Unknown preprocessor "${preprocessor}"`);
-  }
+  const builder = BUILDERS[preprocessor] || (
+    preprocessor == null || console.warn(`Unknown preprocessor "${preprocessor}"`),
+    DEFAULT_BUILDER
+  );
   if (vars) {
     nullifyInvalidVars(vars);
     simplifyUsercssVars(vars);
-  } else {
-    vars = {};
   }
-  const log = [];
-  if (builder.pre) {
+  const {pre} = builder;
+  const log = builder.log && [];
+  const warn = log && [];
+  if (pre) {
     // another compileUsercss may(?) become active while this one is awaited so let's chain
     builderChain = builderChain.catch(() => {}).then(async () => {
-      const logFn = console.log;
-      console.log = (...args) => log.push(args);
-      code = await builder.pre(code, vars);
-      console.log = logFn;
+      code = await pre(code, vars, log, warn);
     });
     await builderChain;
   }
   const res = extractSections({code});
-  if (builder.post) {
-    builder.post(res.sections, vars);
-  }
-  if (log.length) {
+  if (builder === DEFAULT_BUILDER && vars)
+    addRootVars(res.sections, vars);
+  if (log) {
     res.log = log;
+    res.warn = warn;
   }
   return res;
 }

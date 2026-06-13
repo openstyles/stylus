@@ -107,12 +107,13 @@ const LintWorkerAPI = {
   },
 
   async stylelint(code, config, mode) {
-    if (!stylelint) {
-      global.stylus = new Proxy({}, {
+    if (!stylusLang) {
+      if (mode === 'stylus') loadStylusLang();
+      else global.stylus = new Proxy({}, {
         get: (_, key) => (stylusLang || loadStylusLang())[key],
       });
-      stylelint = loadStylelint();
     }
+    stylelint ||= loadStylelint();
     for (const r in config.rules)
       if (!stylelint.rules[r]) delete config.rules[r];
     const {results: [res]} = await stylelint.lint({

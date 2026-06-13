@@ -108,7 +108,7 @@ export default function SourceEditor() {
             .filter(Boolean)
             .join('\n\n');
           if (badRe) messageBox.alert(badRe, 'danger pre', t('styleBadRegexp'));
-          showLog(res.log);
+          showLog(res);
           // Awaiting inside `try` so that exceptions go to our `catch`
           await replaceStyle(savedStyle);
         }
@@ -138,9 +138,9 @@ export default function SourceEditor() {
     cm.focus();
   }
 
-  /** Shows the console.log output from the background worker stored in `log` property */
-  function showLog(log) {
-    if (log) for (const args of log) console.log(...args);
+  function showLog({log, warn}) {
+    if (log) for (const v of log) console.log(v);
+    if (warn) for (const v of warn) console.warn(v);
   }
 
   function updateLinterSwitch(key, val) {
