@@ -3,7 +3,7 @@ import {formatRelativeDate} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleToCss} from '@/js/sections-util';
-import {clamp, debounce, t} from '@/js/util';
+import {clamp, debounce, NOP, t} from '@/js/util';
 import editor from './editor';
 import {helpPopup, showCodeMirrorPopup} from './util';
 
@@ -33,18 +33,20 @@ async function maybeRestore() {
   const value = draft.isUsercss ? style.sourceCode : styleToCss(style);
   const info = t('draftTitle', formatRelativeDate(draft.date));
   const popup = showCodeMirrorPopup(info, '', {value, readOnly: true});
+  const buttons = [t('confirmYes'), t('confirmNo')].map((btn, i) =>
+    $create('button', {onclick: i ? onNo : onYes}, btn));
   popup.className += ' danger';
   popup.onClose.add(onNo);
   popup._contents.append(
     $create('p', t('draftAction')),
-    $create('.buttons', [t('confirmYes'), t('confirmNo')].map((btn, i) =>
-      $create('button', {onclick: i ? onNo : onYes}, btn)))
+    $create('.buttons', buttons)
   );
   if (await new Promise(r => (resolve = r))) {
     style.id = editor.style.id;
+    buttons.forEach(b => (b.disabled = true));
     await editor.replaceStyle(style, draft);
   } else {
-    API.draftsDB.delete(makeId()).catch(() => {});
+    API.draftsDB.delete(makeId()).catch(NOP);
   }
   helpPopup.close();
 }
