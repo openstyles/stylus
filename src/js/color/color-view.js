@@ -184,7 +184,7 @@ function colorizeInvisible() {
           && colorizeLineViaStyles(state, line, lh) && (stopped = true);
     });
     updateMarkers(state);
-    if (stopped || doc.highlightFrontier < size) {
+    if (stopped) {
       state.line = line;
       const i = jobsInvisible.indexOf(state);
       if (i > 0) jobsInvisible.splice(i, 1);
