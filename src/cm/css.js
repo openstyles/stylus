@@ -258,7 +258,7 @@ CodeMirror.defineMode('css', (config, parserConfig) => {
       state.space = false;
     if (c === 34/*"*/ || c === 39/*'*/) {
       state.tokenize = null;
-      res = tokenBase(stream, state, str, pos);
+      if (spaceSkipped) res = tokenBase(stream, state, str, pos);
     } else if (!spaceSkipped && c !== 41/*)*/ && (
       (c = (rxSpaceAndQuote.lastIndex = pos, rxSpaceAndQuote.exec(str)))[1] ||
       !c[2] && pos + c[0].length === str.length
