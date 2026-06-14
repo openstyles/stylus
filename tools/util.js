@@ -23,7 +23,7 @@ const nukeHtmlSpaces = str => str.replace(RX_HTML_WS, '');
 const makePatchOptions = entries => entries.map(([what, ...rules]) => ({
   ...`${what}` === '[object Object]'
     ? what
-    : {test: require.resolve(what)},
+    : {test: what.test ? what : require.resolve(what)},
   loader: 'string-replace-loader',
   options: {
     multiple: rules.map(r => ({search: r[0], replace: r[1], strict: true})),
@@ -53,16 +53,8 @@ function getBrowserlist() {
     .filter(Boolean);
 }
 
-function transBabel(buf, from) {
-  const res = babel.transformSync(transSourceMap(buf, from), {
-    minified: !DEV,
-    sourceMaps: DEV && 'inline',
-  });
-  return res.code;
-}
-
 function transESM2var(buf, from) {
-  const code = transSourceMap(buf, from).replace(/^import.+/, '');
+  const code = transSourceMap(buf, from, transESM2var).replace(/^import.+/, '');
   const i = code.lastIndexOf('\nexport');
   const j = code.indexOf('\n', i + 1);
   const name = Object.assign(/{\s*(\w+)/g, {lastIndex: i}).exec(code)[1];
@@ -77,11 +69,11 @@ function transESM2var(buf, from) {
   return res.code;
 }
 
-function transSourceMap(buf, from) {
+function transSourceMap(buf, from, mode) {
   const str = buf.toString();
   const map = from + '.map';
   const res = str.replace(/(\r?\n\/\/# sourceMappingURL=).+/,
-    !DEV || !fs.existsSync(map) ? '' :
+    mode !== transESM2var || !DEV || !fs.existsSync(map) ? '' :
       '$1data:application/json;charset=utf-8;base64,' +
       fs.readFileSync(map).toString('base64'));
   return res;
@@ -104,7 +96,6 @@ module.exports = {
   getBrowserlist,
   makePatchOptions,
   nukeHtmlSpaces,
-  transBabel,
   transESM2var,
   transSourceMap,
 };

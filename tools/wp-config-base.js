@@ -36,6 +36,7 @@ const skipClampUse = [
   MiniCssExtractPlugin.loader,
   {loader: 'css-loader', options: {importLoaders: 1}},
 ];
+/** @type {import('webpack/types').ModuleOptions['rules']} */
 const moduleRules = [
   ...skipClamp.flatMap(skip => [{
     test: (skip = path.resolve(SRC + skip)),
@@ -77,10 +78,8 @@ const moduleRules = [
   ...patchLESS,
 ].filter(Boolean);
 
-/** @return {TerserPlugin.BasePluginOptions &
- * TerserPlugin.DefinedDefaultMinimizerAndOptions<import('terser/tools/terser').MinifyOptions>} */
 const [terserOwn, terserVendor] = [true, false].map(isOwn => new TerserPlugin({
-  [isOwn ? 'exclude' : 'include']: /^less|codemirror/,
+  [isOwn ? 'exclude' : 'include']: /^less|codemirror|csslint|parserlib|beautify|jsonlint|webdav/,
   extractComments: false,
   terserOptions: {
     ecma: MV3 ? 2024 : 2017,
@@ -100,7 +99,6 @@ const [terserOwn, terserVendor] = [true, false].map(isOwn => new TerserPlugin({
       ascii_only: false,
       beautify: isOwn, // line numbers in bug reports + no delay in devtools to auto-prettify
       indent_level: 2,
-      comments: false,
       wrap_func_args: false,
     },
     mangle: {
@@ -115,7 +113,6 @@ const [terserOwn, terserVendor] = [true, false].map(isOwn => new TerserPlugin({
  */
 const getBaseConfig = ({vars} = {}) => ({
   mode: DEV ? 'development' : 'production',
-  devtool: DEV && 'inline-source-map',
   output: {
     path: DST,
     filename: '[name].js',
@@ -138,7 +135,7 @@ const getBaseConfig = ({vars} = {}) => ({
       'javascript/auto': {node: false},
       'javascript/esm': {node: false},
     },
-    rules: [...moduleRules],
+    rules: moduleRules,
   },
   optimization: {
     concatenateModules: true, // makes DEV code run faster
@@ -185,7 +182,7 @@ const getBaseConfig = ({vars} = {}) => ({
 /**
  * @param {import('webpack/types').Configuration} ovr
  * @param {import('webpack/types').Configuration} [base]
- * @param {{} | [{}, {}]} [vars]
+ * @param {{}} [vars]
  * @return {import('webpack/types').Configuration}
  */
 function augment(ovr, base, vars) {
@@ -214,9 +211,11 @@ function augment(ovr, base, vars) {
         })
       );
     }
-    if (/@\//.test(Object.values(ovr.entry)))
+    const mSrc = /@\/(content)?/.exec(Object.values(ovr.entry));
+    if (mSrc)
       vars = [{...VARS, ...vars}, {...RAW_VARS}];
     base = getBaseConfig({vars});
+    base.devtool = DEV && (mSrc?.[1] ? 'inline-source-map' : 'source-map');
   } else {
     base = {...base};
   }

@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const fse = require('fs-extra');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackProcessingPlugin = require('html-webpack-processing-plugin');
@@ -17,6 +18,7 @@ const {
 } = require('./tools/wp-config-vars');
 
 global.localStorage = {}; // workaround for node 25 and HtmlWebpackPlugin's `...global`
+if (!DEV) fse.emptydirSync(DST);
 
 const {DEBUG, GITHUB_ACTIONS, PUBLISH} = process.env;
 const PAGE_BG = MV3 ? 'background/sw' : 'background';
@@ -217,12 +219,15 @@ module.exports = [
             ['csslint-mod/dist/parserlib.js', 'parserlib.js', true],
             ['stylelint-bundle', 'stylelint.js'],
             ['stylus-lang-bundle/dist/stylus-lang-bundle.min.js', 'stylus-lang.js'],
-          ].map(([npm, to, babelize]) => ({
-            from: require.resolve(npm),
-            to: DST + JS + to,
+          ].flatMap(([npm, to, babelize]) => [{
+            from: (npm = require.resolve(npm)),
+            to: (to = DST + JS + to),
             info: {minimized: !babelize},
             transform: babelize ? transESM2var : transSourceMap,
-          })),
+          }, DEV && !babelize && {
+            from: npm + '.map',
+            to: to + '.map',
+          }].filter(Boolean)),
         ],
       }),
       !GITHUB_ACTIONS && new webpack.ProgressPlugin(),
