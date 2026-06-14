@@ -78,7 +78,7 @@ export const debounce = /*@__PURE__*/(() => {
 })();
 
 export const describeClient = () => ({
-  dark: isCssDarkScheme(),
+  dark: +isCssDarkScheme(),
   frameId: window === top ? 0 : 1,
   url: location.href,
 });
