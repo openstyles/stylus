@@ -42,8 +42,8 @@ importers:
         specifier: 1.4.4-fork-1
         version: 1.4.4-fork-1
       stylelint-bundle:
-        specifier: github:openstyles/stylelint-bundle#semver:17.13.0-stylus
-        version: https://codeload.github.com/openstyles/stylelint-bundle/tar.gz/517a425676a08653546391613436111d1e3a4738
+        specifier: github:openstyles/stylelint-bundle#semver:17.13.0-stylus-v2
+        version: https://codeload.github.com/openstyles/stylelint-bundle/tar.gz/45ed2b099ad1cde62521311c17e9f7f11ea388ba
       stylus-lang-bundle:
         specifier: github:openstyles/stylus-lang-bundle#semver:0.64.0-umd-bundle
         version: https://codeload.github.com/openstyles/stylus-lang-bundle/tar.gz/ad55d729b62ffde3f97f489ac9f19e5187a64867
@@ -2770,8 +2770,8 @@ packages:
     peerDependencies:
       postcss: ^8.5.13
 
-  stylelint-bundle@https://codeload.github.com/openstyles/stylelint-bundle/tar.gz/517a425676a08653546391613436111d1e3a4738:
-    resolution: {gitHosted: true, integrity: sha512-Mwa/gC41kCG6NlUBNe9bV7JDgIIWFzyFeWz6usbypcseKAxKqWL+B3E40o+g7KjP/sFlzAEX5fVBUIpJPhVHhg==, tarball: https://codeload.github.com/openstyles/stylelint-bundle/tar.gz/517a425676a08653546391613436111d1e3a4738}
+  stylelint-bundle@https://codeload.github.com/openstyles/stylelint-bundle/tar.gz/45ed2b099ad1cde62521311c17e9f7f11ea388ba:
+    resolution: {gitHosted: true, integrity: sha512-fOtuSNqWspclSqkdVNZodeV6FJK5mTfZQLRNm2aZr5EMzsahFGYy0Xoj8R5NEmitS44ip56QYRE9wGxOjUZ+2g==, tarball: https://codeload.github.com/openstyles/stylelint-bundle/tar.gz/45ed2b099ad1cde62521311c17e9f7f11ea388ba}
     version: 17.13.0-stylus
     engines: {node: '>= 20.0.0'}
 
@@ -5832,7 +5832,7 @@ snapshots:
       postcss: 8.5.14
       postcss-selector-parser: 7.1.1
 
-  stylelint-bundle@https://codeload.github.com/openstyles/stylelint-bundle/tar.gz/517a425676a08653546391613436111d1e3a4738: {}
+  stylelint-bundle@https://codeload.github.com/openstyles/stylelint-bundle/tar.gz/45ed2b099ad1cde62521311c17e9f7f11ea388ba: {}
 
   stylus-lang-bundle@https://codeload.github.com/openstyles/stylus-lang-bundle/tar.gz/ad55d729b62ffde3f97f489ac9f19e5187a64867: {}
 
