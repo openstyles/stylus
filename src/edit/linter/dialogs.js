@@ -60,7 +60,7 @@ export async function showLintConfig() {
     hintOptions: {hint},
     lint: true,
     mode: kAppJson,
-    value: config ? stringifyConfig(config) : defaultConfig[curLinter],
+    value: config ? stringifyConfig({...defaults, ...config}) : defaultConfig[curLinter],
   });
   popup._contents.appendChild(
     $create('div', [
