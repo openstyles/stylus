@@ -1,12 +1,12 @@
 /** Registers 'hint' helper and 'autocompleteOnTyping' option in CodeMirror */
+import {CodeMirror} from '@/cm';
 import {getStyleAtPos} from '@/cm/util';
 import {kCssPropSuffix, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {hasOwn, stringAsRegExpStr, tryRegExp} from '@/js/util';
-import {CodeMirror} from '@/cm';
 import {
-  addSuffix, autocompleteOnTyping, Completion, execAt, findAllCssVars, getTokenState, isSameToken,
-  testAt, USO_INVALID_VAR, USO_VALID_VAR,
+  addSuffix, autocompleteOnTyping, Completion, execAt, findAllCssVars, getTokenState,
+  USO_INVALID_VAR, USO_VALID_VAR,
 } from './autocomplete-util';
 import cmFactory from './codemirror-factory';
 import editor from './editor';
@@ -29,6 +29,8 @@ const rxNonWord = /[^-\w]/u;
 const rxNonWordEnd = /[^-\w]$/u;
 const rxPropOrEnd = /^([-a-z]*)(: ?|\()?$/i;
 const rxPropChars = /(\s*[-a-z(]+)?/yi;
+const rxPropChars1 = /[-a-z(!]/yi;
+const rxPropChars2 = /[-a-z(]*/yi;
 const rxPropEnd = /[\s:()]*/y;
 const rxSupports = /(^|[\s()])supports\(\s*$/i;
 const rxVarEnv = /(?:^|[^-.\w\u0080-\uFFFF])(?:var|(e)nv)\(-?/iyu;
@@ -107,20 +109,17 @@ async function helper(cm) {
     // and runs a whole lot of complex calc inside which is slow on long lines
     // especially if autocomplete is auto-shown on each keystroke
     i = styleIndex;
-    while (
-      (prev == null || `${styles[i - 1]}`.startsWith(type)) &&
-      (prev = i > 2 ? styles[i - 2] : 0) &&
-      isSameToken(text, style, prev)
-    ) i -= 2;
-    if (text[prev] === '#' && testAt(rxHexColor, prev + 1, text)) {
+    prev = styleIndex > 2 ? styles[styleIndex - 2] : 0;
+    while (prev && (rxPropChars1.lastIndex = prev - 1, rxPropChars1.test(text)))
+      --prev;
+    if (text[prev] === '#' && (rxHexColor.lastIndex = prev + 1, rxHexColor.test(text))) {
       return; // ignore #hex colors
     }
-    i = styleIndex;
-    while (
-      (end == null || `${styles[i + 1]}`.startsWith(type)) &&
-      (end = styles[i]) &&
-      isSameToken(text, style, end)
-    ) i += 2;
+    end = styles[styleIndex];
+    rxPropChars2.lastIndex = end;
+    rxPropChars2.exec(text);
+    end = rxPropChars2.lastIndex;
+
     rxFilterable.lastIndex = prev;
     prev = Math.max(prev, text.slice(0, end).search(rxFilterable));
     str = text.slice(prev, end);
@@ -147,7 +146,7 @@ async function helper(cm) {
     else if (L === '-' /*--var*/ || L === '(' /*var()*/)
     {
       list = str.startsWith('--') ? findAllCssVars(cm, left) :
-        !testAt(rxVarEnv, ch - 5 - left.endsWith('-'), text) ? [] :
+        !(rxVarEnv.lastIndex = ch - 5 - left.endsWith('-'), rxVarEnv.test(text)) ? [] :
           !RegExp.$1 ? findAllCssVars(cm, left) : ['preferred-text-scale',
             'safe-area-inset-top', 'safe-area-inset-bottom', 'safe-area-inset-right',
             'safe-area-inset-left', 'safe-area-max-inset-top', 'safe-area-max-inset-bottom',
@@ -255,6 +254,8 @@ async function helper(cm) {
     const values2 = new Map();
     if (!cssPropNames) await initCssProps();
     for (const name of cssPropNames) {
+      if (leftLC === '-' && name.charCodeAt(0) !== 45/* - */)
+        continue;
       i = 0;
       for (let a, b, v, lc = cssPropsLC[name];
         i >= 0 && (!leftLC || (i = lc.indexOf(leftLC, i)) >= 0);

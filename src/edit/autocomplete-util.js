@@ -123,18 +123,7 @@ export function getTokenState(cm, pos, type) {
     : type;
 }
 
-/** makes sure we don't process a different adjacent comment */
-export function isSameToken(text, style, i) {
-  return !style || text[i] !== '/' && text[i + 1] !== '*' ||
-    !style.startsWith(USO_VALID_VAR) && !style.startsWith(USO_INVALID_VAR);
-}
-
 export function execAt(rx, index, text) {
   rx.lastIndex = index;
   return rx.exec(text);
-}
-
-export function testAt(rx, index, text) {
-  rx.lastIndex = Math.max(0, index);
-  return rx.test(text);
 }
