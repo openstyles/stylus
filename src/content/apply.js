@@ -66,6 +66,7 @@ styleInjector.onInjectorUpdate = () => {
   if (isFrame || own.cfg.wake) updatePort();
 };
 styleInjector.selfDestruct = selfDestruct;
+if (!isFrame) initMQ();
 // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
 init();
 onMessage.set(applyOnMessage, true);
@@ -98,7 +99,6 @@ function initMQ() {
         API.setSystemDark(own.cfg.dark = m);
     };
   }
-  return mqDark;
 }
 
 async function applyStyles(data, isInitial = !own.sections) {
@@ -114,7 +114,7 @@ async function applyStyles(data, isInitial = !own.sections) {
 
 function getStyles(opts) {
   // <iframe> element's color-scheme CSS style is enforced on its contents per the spec
-  if (!isFrame) opts.dark = (mqDark ?? initMQ()).matches;
+  if (mqDark) opts.dark = mqDark.matches;
   return API.styles.getSectionsByUrl(matchUrl, opts);
 }
 
