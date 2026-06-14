@@ -25,7 +25,10 @@ export let tabId;
 export let tabUrl;
 export let tabUrlSupported;
 export let isBlocked;
-let prevHeight;
+let prevHeight = Math.max(innerHeight, 150);
+
+if (!isFullscreenPopup)
+  window.on('resize', onWindowResize);
 
 (async function init(data, port) {
   data ??= (__.MV3 && swController ? prefs.clientData : await prefs.clientData)[kPopup] || {};
@@ -34,8 +37,6 @@ let prevHeight;
   initHotkeys(data);
   if (port) // re-entry from connectPort()
     return;
-  prevHeight = Math.max(innerHeight, 150);
-  if (!isFullscreenPopup) window.on('resize', onWindowResize);
   if (urlParams.has(pSideFinder)) openStyleFinder();
   (function connectPort() {
     ignoreChromeError();
@@ -61,10 +62,10 @@ prefs.subscribe('disableAll', (key, val) => {
 function onWindowResize() {
   const h = innerHeight;
   if (h > prevHeight
-  && document.readyState !== 'loading'
   && document.body.clientHeight > h + 1/*rounding errors in CSS*/) {
     window.off('resize', onWindowResize);
-    document.body.style.maxHeight = h + 'px';
+    // -1px for old Chrome which leaves empty space in place of scrollbar that we hide here
+    document.body.style.maxHeight = h - (CHROME < 125) + 'px';
   }
   prevHeight = h;
 }
