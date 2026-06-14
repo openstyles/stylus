@@ -5,7 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  terser: ^5.6.0
   minimatch@>=10.0.0 <10.2.1: '>=10.2.1'
   minimatch@>=10.0.0 <10.2.3: '>=10.2.3'
   ajv@>=7.0.0-alpha.0 <8.18.0: '>=8.18.0'
@@ -166,8 +165,8 @@ importers:
         specifier: ^16.0.0
         version: 16.0.0
       terser:
-        specifier: ^5.6.0
-        version: 5.47.1
+        specifier: ^5.48.0
+        version: 5.48.0
       terser-webpack-plugin:
         specifier: ^5.6.0
         version: 5.6.0(postcss@8.5.14)(webpack@5.107.2)
@@ -2862,6 +2861,11 @@ packages:
 
   terser@5.47.1:
     resolution: {integrity: sha512-tPbLXTI6ohPASb/1YViL428oEHu6/qv1OxqYnfaonVCFHqx4+wCd95pHrQWsL5X4pl90CTyW9piSAsS2L0VoMw==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  terser@5.48.0:
+    resolution: {integrity: sha512-J/9An6vs9Us6wKRriSFXBWdRZapREHqFzdNUKk0pmu804EMR6dr6winwo7e5JDxN4xahxQsuysyYFwlwj4XN/Q==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -5895,6 +5899,13 @@ snapshots:
       postcss: 8.5.14
 
   terser@5.47.1:
+    dependencies:
+      '@jridgewell/source-map': 0.3.11
+      acorn: 8.16.0
+      commander: 2.20.3
+      source-map-support: 0.5.21
+
+  terser@5.48.0:
     dependencies:
       '@jridgewell/source-map': 0.3.11
       acorn: 8.16.0
