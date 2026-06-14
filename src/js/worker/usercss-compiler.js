@@ -40,6 +40,9 @@ const BUILDERS = {
           source;
       }
       source = stylusLang(source, {
+        /** Copied from postcss-styl to avoid it crashing due to an empty lexer.
+         *  TODO: see if this noticeably reduces performance and maybe patch postcss-styl. */
+        cache: false,
         functions: {
           p: node => log.push(node.val || node) && stylusLang.nodes.null,
           warn: node => warn.push(node.val || node) && stylusLang.nodes.null,
