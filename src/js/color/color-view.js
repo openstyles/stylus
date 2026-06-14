@@ -10,13 +10,14 @@ const DUMB = 'Modern color support is not implemented yet...';
 const DUMB_ATTRS = {title: DUMB};
 const CLOSE_POPUP_EVENT = 'close-colorpicker-popup';
 
-const {RX_COLOR, testAt} = colorConverter;
 const jobsChanges = [];
 const jobsInvisible = [];
 const cmHighlightWorkers = new WeakMap();
+const rxNonWord = /\W|$/iy;
 let timerChanges, timerInvisible;
 let generation = 0;
-let RXS_FUNCS, RX_COMMENT, RX_DETECT_FUNC, RX_PARENS, RX_STYLE, RX_UNSUPPORTED;
+/** @type {RegExp} */
+let RX_PARENS, RX_UNSUPPORTED;
 // on initial paint the view doesn't have a size yet
 // so we process the maximum number of lines that can fit in the window
 let maxRenderChunkSize = Math.ceil(window.innerHeight / 14);
@@ -68,14 +69,10 @@ class ColorSwatcher {
     this.markersToRemove = [];
     this.markersToRepaint = [];
     this.popup = ColorPicker(cm);
-    if (!RX_DETECT_FUNC) {
-      RXS_FUNCS = '(?:(?:rgb|hsl)a?|hwb|(?:ok)?l(?:ab|ch)|color(?:-mix)?|light-dark)';
-      RX_COMMENT = /\/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$)/g;
-      RX_DETECT_FUNC = new RegExp(RXS_FUNCS + '\\(', 'iy');
-      RX_PARENS = new RegExp('[()]|' + RX_COMMENT.source, 'g');
-      RX_STYLE = /(?:^|\s)(?:atom|keyword|variable callee)(?:\s|$)/;
+    if (!RX_PARENS) {
+      RX_PARENS = /[()]|\/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$)/g;
       if (!__.MV3 && (CHROME < 125 || FIREFOX < 128)) {
-        const str = [
+        RX_UNSUPPORTED = [
           ['#abcd', '#(.{4}){1,2}$'],
           ['hwb(1 0% 0%)', '^hwb\\('],
           ['rgb(1e2,0,0)', '\\de'],
@@ -84,8 +81,8 @@ class ColorSwatcher {
           ['rgb(1,2,3,50%)', String.raw`\((([^,]+,){3}|(\s*\S+[\s/]+){3}).*?%`],
           ['rgb(1 2 3 / 1)', '^[^,]+$'],
           ['hsl(1turn, 2%, 3%)', 'deg|g?rad|turn'],
-        ].map(e => !CSS.supports('color', e[0]) && e[1]).filter(Boolean).join('|');
-        if (str) RX_UNSUPPORTED = new RegExp(RX_UNSUPPORTED, 'i');
+        ].map(e => !CSS.supports('color', e[0]) && e[1]).filter(Boolean).join('|') || null;
+        RX_UNSUPPORTED &&= new RegExp(RX_UNSUPPORTED, 'i');
       }
     }
     this.colorize();
@@ -294,122 +291,120 @@ function colorizeLineViaStyles(state, line, lineHandle) {
   // all comments may get blanked out in the loop
   const endsWithComment = text.endsWith('*/');
   let spanIndex = 0;
-  let span, style, start, end, len, isHex, func, color;
+  let span, style;
   let {markedSpans} = lineHandle;
-  let spansSorted = false;
+  let spansSorted;
   let spansZombies = markedSpans && markedSpans.length;
-  for (let i = 1, j, rxFunc; i + 1 < stylesLen; i += 2) {
-    if (!(style = styles[i + 1]) ||
-        !(style = style.split('overlay ', 1)[0].trim()) ||
-        !RX_STYLE.test(style))
+  nextStyle:
+  for (
+    let i = 1, v, spanState, marker, start, end, len, hex;
+    i + 1 < stylesLen;
+    i += 2
+  ) {
+    style = styles[i + 1];
+    if (!style || !(v = style.indexOf('overlay ')))
       continue;
-
+    if (v > 0) style = style.slice(0, v);
+    if (style !== 'atom' && style !== 'keyword' && style !== 'variable callee')
+      continue;
     start = i > 2 ? styles[i - 2] : 0;
     while (i + 3 < stylesLen && (end = styles[i + 3]) && end.startsWith(style))
       i += 2;
     end = styles[i];
     len = end - start;
-    isHex = text.charCodeAt(start) === 35/* # */;
-    func = text.charCodeAt(end) === 40/* ( */;
+    if (len < 3)
+      continue;
+    let func = !(hex = text.charCodeAt(start) === 35/* # */)
+      && text.charCodeAt(end) === 40/* ( */;
     if (func) {
-      if (len < 3 || !testAt(RX_DETECT_FUNC, start, text))
-        continue;
-      func = text.slice(start, end).toLowerCase();
-      end++;
-      let m;
+      const hasA = len === 4 && text.charCodeAt(end - 1) === 97/* a */;
+      func = len >= 3 && len <= 10 && (v = text.charCodeAt(start)) && (
+        len === 3 || hasA ? v === 114/* r */ || v === 104/* h */ || v === 108/* l */
+          : len === 5 ? v === 111/* o */ || v === 99/* c */
+            : len === 9 ? v === 99/* c */ : len === 10 && v === 108/* l */
+      ) && text.slice(start, end - hasA).toLowerCase();
+      if (!func || !(
+        len === 4 - v ? func === 'rgb' || func === 'hsl' :
+        len === 3 ? func === 'hwb' || func === 'lab' || func === 'lch' :
+        len === 5 ? func === 'color' || func === 'oklab' || func === 'oklch' :
+        len === 9 ? func === 'color-mix' : len === 10 && func === 'light-dark'
+      )) continue;
       let num = 1;
-      while ((RX_PARENS.lastIndex = end, m = RX_PARENS.exec(text))) {
-        end = RX_PARENS.lastIndex;
-        m = m[0];
-        if (m === '(') ++num;
-        else if (m === ')' && !--num)
+      let a = end;
+      let b = end;
+      while (num && ~a && ~(b = text.indexOf(')', b + 1))) {
+        num--;
+        while (~(v = text.indexOf('(', a + 1)) && v < b) {
+          a = v;
+          num++;
+        }
+      }
+      if (b < 0) // the function doesn't end on this line but maybe there are simple colors inside
+        continue;
+      end = b + 1;
+    }
+    let color = text.slice(start, end);
+    if (!hex && !func && (v = color.indexOf('!')) > 0) {
+      color = color.slice(0, v);
+      end = start + v;
+      len = end - start;
+    }
+    if (markedSpans) { // update or skip or delete existing swatches
+      spansSorted ||= markedSpans = markedSpans.sort((a, b) => a.from - b.from);
+      while (spanIndex < markedSpans.length) {
+        span = markedSpans[spanIndex];
+        if (span.from > start)
           break;
+        spanIndex++;
+        if (span.from === start && span.marker.className === SWATCH_CLS) {
+          spansZombies--;
+          span.generation = generation;
+          if (color === span.marker.color && (
+            func || (rxNonWord.lastIndex = start + color.length, rxNonWord.test(text))
+          )) continue nextStyle;
+          state.markersToRemove.push(span.marker);
+          spanState = true;
+          break;
+        }
       }
     }
-    color = text.slice(start, end);
-    j = !isHex && !func && color.indexOf('!');
-    if (j > 0) {
-      color = color.slice(0, j);
-      end = start + j;
-    }
-    const spanState = markedSpans && checkSpan();
-    if (spanState === 'same')
+    const parsedColor = colorConverter.parse(color, len);
+    if (!parsedColor && !func/*colorConverter doesn't support many modern funcs*/)
       continue;
-    if (isHex ? testAt(RX_COLOR.hex, 0, color)
-        : func || colorConverter.NAMED_COLORS.has(color.toLowerCase())) {
-      if (!__.MV3 && (isHex || rxFunc) && RX_UNSUPPORTED?.test(color))
-        color = colorConverter.format(colorConverter.parse(color), 'rgb');
-      (spanState ? redeem : mark)(color, isHex || !func || rxFunc);
+    if (spanState) {
+      ++spansZombies;
+      state.markersToRemove.pop();
+      state.markersToRepaint.push(span);
+      span.to = start + len;
+      span.line = line;
+      span.index = spanIndex - 1;
+      marker = span.marker;
+    } else {
+      marker = {className: SWATCH_CLS};
     }
+    marker.attributes = func && !parsedColor && DUMB_ATTRS;
+    marker.color = color;
+    marker.css = SWATCH_PROP + ':' + (
+      parsedColor && RX_UNSUPPORTED?.test(color)
+        ? colorConverter.format(parsedColor, 'rgb')
+        : color
+    );
+    marker.len = end - start;
+    if (!spanState)
+      state.cm.markText({line, ch: start}, {line, ch: start + 1}, marker);
   }
 
-  removeDeadSpans();
+  if (spansZombies)
+    for (const m of markedSpans)
+      if (m.generation !== generation &&
+          m.marker.className === SWATCH_CLS)
+        state.markersToRemove.push(m.marker);
 
-  state.inComment = style && style.includes('comment') && !endsWithComment;
+  state.inComment = style?.includes('comment') && !endsWithComment;
   if (state.stopAt
   && (state.cnt += stylesLen) > 2 * 100 // only waste time on performance.now() every ~100 tokens
   && (state.cnt = 0, performance.now() > state.stopAt)) {
     return true;
-  }
-
-  function mark(colorValue, pickable) {
-    state.cm.markText({line, ch: start}, {line, ch: start + 1}, {
-      className: SWATCH_CLS,
-      css: SWATCH_PROP + ':' + colorValue,
-      attributes: !pickable && DUMB_ATTRS,
-      len: end - start,
-      color,
-    });
-  }
-
-  // update or skip or delete existing swatches
-  function checkSpan() {
-    if (!spansSorted) {
-      markedSpans = markedSpans.sort((a, b) => a.from - b.from);
-      spansSorted = true;
-    }
-    while (spanIndex < markedSpans.length) {
-      span = markedSpans[spanIndex];
-      if (span.from <= start) {
-        spanIndex++;
-      } else {
-        break;
-      }
-      if (span.from === start && span.marker.className === SWATCH_CLS) {
-        spansZombies--;
-        span.generation = generation;
-        const same = color === span.marker.color &&
-          (func || /\W|^$/i.test(text.substr(start + color.length, 1)));
-        if (same) return 'same';
-        state.markersToRemove.push(span.marker);
-        return 'redeem';
-      }
-    }
-  }
-
-  function redeem(colorValue, pickable) {
-    spansZombies++;
-    state.markersToRemove.pop();
-    state.markersToRepaint.push(span);
-    span.to = start + len;
-    span.line = line;
-    span.index = spanIndex - 1;
-    /** @type {CodeMirror.TextMarker} */
-    const m = span.marker;
-    m.attributes = !pickable && DUMB_ATTRS;
-    m.color = color;
-    m.css = SWATCH_PROP + ':' + colorValue;
-    m.len = end - start;
-  }
-
-  function removeDeadSpans() {
-    if (!spansZombies) return;
-    for (const m of markedSpans) {
-      if (m.generation !== generation &&
-          m.marker.className === SWATCH_CLS) {
-        state.markersToRemove.push(m.marker);
-      }
-    }
   }
 }
 

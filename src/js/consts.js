@@ -52,6 +52,12 @@ export const IMPORT_THROTTLE = 100; //ms
 export const BIT_DARK = 1;
 export const BIT_SYS_DARK = 2;
 
+export const COLOR_HEX = 1;
+export const COLOR_RGB = 2;
+export const COLOR_HSL = 3;
+export const COLOR_HWB = 4;
+export const COLOR_HSV = 5;
+
 //#region CSS
 export const kAtRuleNoUnknown = 'at-rule-no-unknown';
 export const kDeclValue = 'declaration-property-value-no-unknown';

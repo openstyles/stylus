@@ -1,198 +1,192 @@
+import {COLOR_HEX, COLOR_HSL, COLOR_HSV, COLOR_HWB, COLOR_RGB} from '@/js/consts';
 import {kHexUppercase} from './util';
 
-export const ALPHA_DIGITS = 3;
+const ALPHA_DIGITS = 3;
 const mathRound = Math.round;
-// All groups in RXS_NUM must use ?: in order to enable \1 in RX_COLOR.rgb
-const RXS_NUM = /\s*[+-]?(\.\d+|\d+(\.\d*)?)(e[+-]?\d+)?/.source.replace(/\(/g, '(?:');
-const RXS_ANGLE = '(?:deg|g?rad|turn)?';
-const RX_ANGLE = /(?:deg|g?rad|turn|)$/;
-const expandRe = re => RegExp(re.source.replace(/N/g, RXS_NUM).replace(/A/g, RXS_ANGLE), 'iy');
-export const RX_COLOR = {
-  __proto__: null,
-  hex: /#([a-f\d]{3}(?:[a-f\d](?:[a-f\d]{2}){0,2})?)\b/iy,
-  // num_or_angle, pct, pct [ , num_or_pct]?
-  // num_or_angle pct pct [ / num_or_pct]?
-  hsl: expandRe(/^NA(\s*(,N%\s*){2}(,N%?\s*)?|(\s+N%){2}\s*(\/N%?\s*)?)$/),
-  // num_or_angle|none pct|none pct|none [ / num_or_pct|none ]?
-  hwb: expandRe(/^(NA|none)(\s+(N%|none)){2}\s*(\/(N%?|none)\s*)?$/),
-  // num, num, num [ , num_or_pct]?
-  // pct, pct, pct [ , num_or_pct]?
-  // num num num [ / num_or_pct]?
-  // pct pct pct [ / num_or_pct]?
-  rgb: expandRe(/^N(%?)(\s*,N\1\s*,N\1\s*(,N%?\s*)?|\s+N\1\s+N\1\s*(\/N%?\s*)?)$/),
-};
+const RX_ANGLE = /(?:deg|y?rad|turn|)$/;
 const ANGLE_TO_DEG = {
   __proto__: null,
   grad: 360 / 400,
   rad: 180 / Math.PI,
   turn: 360,
 };
-const TO_HSV = {
-  __proto__: null,
-  hex: RGBtoHSV,
-  hsl: HSLtoHSV,
-  hwb: HWBtoHSV,
-  rgb: RGBtoHSV,
-};
-const FROM_HSV = {
-  __proto__: null,
-  hex: HSVtoRGB,
-  hsl: HSVtoHSL,
-  hwb: HSVtoHWB,
-  rgb: HSVtoRGB,
-};
-export const guessType = c =>
-  'r' in c ? 'rgb' :
-    'w' in c ? 'hwb' :
-      'v' in c ? 'hsv' :
-        'l' in c ? 'hsl' :
-          undefined;
+const TO_HSV = [null];
+const FROM_HSV = [null];
 export const fromHSV = (color, type) => FROM_HSV[type](color);
-export const toHSV = color => TO_HSV[color.type || 'rgb'](color);
+export const toHSV = color => TO_HSV[color.type || COLOR_RGB](color);
+export const constrain = (min, max, value) => value < min ? min : value > max ? max : value;
+export const constrainHue = x => x < 0 ? x % 360 + 360 : x >= 360 ? x % 360 : x;
 
+TO_HSV[COLOR_HEX] = RGBtoHSV;
+TO_HSV[COLOR_RGB] = RGBtoHSV;
+TO_HSV[COLOR_HSL] = HSLtoHSV;
+TO_HSV[COLOR_HWB] = HWBtoHSV;
+
+FROM_HSV[COLOR_HEX] = HSVtoRGB;
+FROM_HSV[COLOR_RGB] = HSVtoRGB;
+FROM_HSV[COLOR_HSL] = HSVtoHSL;
+FROM_HSV[COLOR_HWB] = HSVtoHWB;
+
+/**
+ * @param {Color|string} color
+ * @param {Color['type']} [type]
+ * @param {{}} [cfg]
+ * @return {string}
+ */
 export function format(color = '', type = color.type, {[kHexUppercase]: upper, uso, round} = {}) {
   if (!color || !type)
     return typeof color === 'string' ? color : '';
-  const {a, type: src = guessType(color)} = color;
+  const {a, type: src} = color;
   const hasA = !uso && a >= 0 && a < 1;
-  const toHex = type === 'hex';
-  const srcConv = src === 'hex' ? 'rgb' : src;
-  const dstConv = toHex ? 'rgb' : type;
-  let r, g, b, aa;
+  const toHex = type === COLOR_HEX;
+  const srcConv = src === COLOR_HEX ? COLOR_RGB : src;
+  const dstConv = toHex ? COLOR_RGB : type;
   if (srcConv !== dstConv)
     color = FROM_HSV[dstConv](TO_HSV[srcConv](color));
-  if (toHex || type === 'rgb') {
-    r = mathRound(color.r);
-    g = mathRound(color.g);
-    b = mathRound(color.b);
+  let aa;
+  let {x, y, z} = color;
+  if (round || toHex || type === COLOR_RGB) {
+    x = mathRound(x);
+    y = mathRound(y);
+    z = mathRound(z);
   }
   if (toHex) {
     aa = hasA ? mathRound(a * 255) : 0;
-    type = uso || r % 0x11 || g % 0x11 || b % 0x11 || aa % 0x11;
-    color = type ? 0x100000000 + r * 0x1000000/* << goes negative*/ + (g << 16) + (b << 8) + aa
-      : 0x10000 + (r / 0x11 << 12) + (g / 0x11 << 8) + (b / 0x11 << 4) + aa / 0x11;
+    type = uso || x % 0x11 || y % 0x11 || z % 0x11 || aa % 0x11;
+    color = type ? 0x100000000 + x * 0x1000000/* << goes negative*/ + (y << 16) + (z << 8) + aa
+      : 0x10000 + (x / 0x11 << 12) + (y / 0x11 << 8) + (z / 0x11 << 4) + aa / 0x11;
     color = '#' + color.toString(16).slice(1, hasA ? undefined : type ? -2 : -1);
-    if (upper && (
-      r & 15 > 9 || r >= 160 ||
-      g & 15 > 9 || g >= 160 ||
-      b & 15 > 9 || b >= 160 ||
+    if ((upper ?? color.mod) && (
+      x & 15 > 9 || x >= 160 ||
+      y & 15 > 9 || y >= 160 ||
+      z & 15 > 9 || z >= 160 ||
       hasA && (aa & 15 > 9 || aa >= 160)
     )) color = color.toUpperCase();
     return color;
   }
+  if (uso)
+    return `${x}, ${y}, ${z}`;
+  const slash = color.mod && ' / ';
+  const sep = slash ? ' ' : ', ';
   aa = hasA && formatAlpha(a) || '';
-  if (type === 'rgb') {
-    return uso ? `${r}, ${g}, ${b}`
-      : `rgb${aa ? 'a' : ''}(${r}, ${g}, ${b}${aa ? ', ' : ''}${aa})`;
+  aa &&= (slash || sep) + aa;
+  if (type === COLOR_RGB) {
+    return (aa ? 'rgba(' : 'rgb(') + x + sep + y + sep + z + aa + ')';
   }
-  if (type === 'hwb') {
-    const {h, w} = color;
-    return 'hwb(' +
-      (round ? `${mathRound(h)} ${mathRound(w)}% ${mathRound(b)}%` : `${h} ${w}% ${b}%`) +
-      (aa ? ` / ${aa})` : ')');
+  if (type === COLOR_HWB) {
+    return `hwb(${x} ${y}% ${z}%${aa})`;
   }
-  if (type === 'hsl') {
-    const {h, s, l} = color;
-    return `hsl${aa ? 'a' : ''}(` +
-      (round ? `${mathRound(h)}, ${mathRound(s)}%, ${mathRound(l)}%` : `${h}, ${s}%, ${l}%`) +
-      (aa ? `, ${aa})` : ')');
+  if (type === COLOR_HSL) {
+    return (aa ? 'hsla(' : 'hsl(') + x + sep + y + '%' + sep + z + '%' + aa + ')';
   }
   return '';
 }
 
-export function parse(s) {
-  if (typeof s !== 'string' || !(s = s.trim().toLowerCase())) {
+export function parse(s, len = typeof s === 'string' && (s = s.trim()).length) {
+  if (!len)
     return;
-  }
+  let i;
+  let v = s;
+  s = s.toLowerCase();
   if (s.charCodeAt(0) === 35/* # */) {
-    return parseHex(s, s.length);
+    const lowerCase = v === s;
+    v = (len === 4 || len === 5 || len === 7 || len === 9) && parseHex(s, len);
+    if (v) v.lowerCase = +lowerCase;
+    return v;
   }
-  let i, v;
   if (s.charCodeAt(s.length - 1) !== 41/*)*/) {
     v = NAMED_COLORS.get(s);
     if (+v) NAMED_COLORS.set(s, v = {
-      type: 'hex',
-      r: v >> 16,
-      g: (v >> 8) & 255,
-      b: v & 255,
+      type: COLOR_HEX,
+      x: v >> 16,
+      y: (v >> 8) & 255,
+      z: v & 255,
       a: undefined,
+      mod: undefined,
     });
     return v;
   }
+  let type;
   i = s.charCodeAt(3);
   if ((i = i === 40/*(*/ ? 4 : i === 97/*a*/ && s.charCodeAt(4) === 40/*(*/ && 5)
-  && RX_COLOR[v = s.slice(0, 3)]
+  && (type = (v = s.charCodeAt(0)) === 114/* r */
+    ? s.charCodeAt(1) === 103/* g */ && s.charCodeAt(2) === 98/* b */ && COLOR_RGB
+    : v === 104/* x */ && (
+      (v = s.charCodeAt(1)) === 115/* s */ ? s.charCodeAt(2) === 108/* l */ && COLOR_HSL
+        : v === 119/* w */ && s.charCodeAt(2) === 98/* b */ && COLOR_HWB
+    ))
   && (s = s.slice(i, -1).trim())) {
-    return parseFunc(v, s);
+    return parseFunc(type, s);
   }
 }
 
+/**
+ * @param {string} str
+ * @param {number} len - must be already validated
+ * @return {Color|void}
+ */
 function parseHex(str/*lowercase*/, len) {
-  if (len === 4 || len === 5 || len === 7 || len === 9) {
-    for (let i = 1, rgb = 0, alpha, c; ;) {
-      c = str.charCodeAt(i);
-      if ((c -= 48) >= 0 && c <= 9 || (c -= 39) >= 10 && c <= 15) {
-        if (i === 7) alpha = c;
-        else if (i === 8) alpha = (alpha << 4 | c) / 255;
-        else if (i === 4 && len < 7) alpha = c * 0x11 / 255;
-        else rgb = rgb << 4 | c;
-        if (++i === len) {
-          return {
-            type: 'hex',
-            r: len < 7 ? (rgb >> 8) * 0x11 : rgb >> 16,
-            g: len < 7 ? (rgb >> 4 & 15) * 0x11 : rgb >> 8 & 255,
-            b: len < 7 ? (rgb & 15) * 0x11 : rgb & 255,
-            a: alpha,
-          };
-        }
-      } else break;
-    }
+  for (let i = 1, rgb = 0, alpha, c; ;) {
+    c = str.charCodeAt(i);
+    if ((c -= 48) >= 0 && c <= 9 || (c -= 39) >= 10 && c <= 15) {
+      if (i === 7) alpha = c;
+      else if (i === 8) alpha = (alpha << 4 | c) / 255;
+      else if (i === 4 && len < 7) alpha = c * 0x11 / 255;
+      else rgb = rgb << 4 | c;
+      if (++i === len) {
+        return {
+          type: COLOR_HEX,
+          x: len < 7 ? (rgb >> 8) * 0x11 : rgb >> 16,
+          y: len < 7 ? (rgb >> 4 & 15) * 0x11 : rgb >> 8 & 255,
+          z: len < 7 ? (rgb & 15) * 0x11 : rgb & 255,
+          a: alpha,
+        };
+      }
+    } else break;
   }
 }
 
 function parseFunc(type, val) {
-  let rgb, hwb;
-  if (!(rgb = type === 'rgb') && !(hwb = type === 'hwb') && !(type === 'hsl'))
-    return;
-  let sA, n1, n2, n3, a, pct, units;
-  n1 = val.indexOf('/');
-  if (n1 > 0) {
-    sA = val.slice(n1 + 1);
-    val = val.slice(0, n1).trim();
+  let sA, x, y, z, a, pct, units;
+  x = val.indexOf('/');
+  if (x > 0) {
+    sA = val.slice(x + 1);
+    val = val.slice(0, x).trim();
   }
-  const parts = val.split(n1 < 0 && val.includes(',') ? /\s*,\s*/ : /\s+/);
+  const rgb = type === COLOR_RGB;
+  const hwb = type === COLOR_HWB;
+  const mod = hwb || ~x || !val.includes(',') ? 1 : 0;
+  const parts = val.split(mod ? /\s+/ : /\s*,\s*/);
   const len = parts.length;
   const [s1, s2, s3] = parts;
   if (
-    !(n1 > 0 ? len === 3 : len === 3 || len === 4 && (sA = parts[3])) ||
-    isNaN(n1 = hwb && s1 === 'none' ? 0 :
-      rgb ? ((pct = s1.charCodeAt(s1.length - 1) === 37/*%*/)) ? +s1.slice(0, -1) : +s1
-        : ((units = RX_ANGLE.exec(s1)[0])) ? +s1.slice(0, -units.length) : +s1) ||
-    isNaN(n2 = hwb && s2 === 'none' ? 0 :
-      (n2 = s2.charCodeAt(s2.length - 1) === 37) !== (rgb ? pct : true) ? NaN :
-        n2 ? +s2.slice(0, -1) : +s2) ||
-    isNaN(n3 = hwb && s3 === 'none' ? 0 :
-      (n3 = s3.charCodeAt(s3.length - 1) === 37) !== (rgb ? pct : true) ? NaN :
-        n3 ? +s3.slice(0, -1) : +s3) ||
+    !(x > 0 ? len === 3 : len === 3 || len === 4 && (sA = parts[3])) ||
+    isNaN(x = hwb && s1 === 'none' ? 0 :
+      (val = s1.charCodeAt(s1.length - 1), rgb)
+        ? ((pct = val === 37)) ? +s1.slice(0, -1) : +s1
+        : (/*dgn*/val === 100 || val === 103 || val === 110) && (units = RX_ANGLE.exec(s1)[0])
+          ? +s1.slice(0, -units.length)
+          : +s1) ||
+    isNaN(y = hwb && s2 === 'none' ? 0 :
+      (y = s2.charCodeAt(s2.length - 1) === 37) !== (rgb ? pct : true) ? NaN :
+        y ? +s2.slice(0, -1) : +s2) ||
+    isNaN(z = hwb && s3 === 'none' ? 0 :
+      (z = s3.charCodeAt(s3.length - 1) === 37) !== (rgb ? pct : true) ? NaN :
+        z ? +s3.slice(0, -1) : +s3) ||
     sA != null && !(hwb && sA === 'none') &&
     isNaN(a = (sA = sA.trim()).charCodeAt(sA.length - 1) === 37 ? +sA.slice(0, -1) / 100 : +sA)
   ) return;
   if (a < 0) a = 0; else if (a > 1) a = 1;
   if (rgb) {
-    return {
-      type,
-      r: (n1 = mathRound(pct ? n1 * 2.55 : n1)) < 0 ? 0 : n1 > 255 ? 255 : n1,
-      g: (n2 = mathRound(pct ? n2 * 2.55 : n2)) < 0 ? 0 : n2 > 255 ? 255 : n2,
-      b: (n3 = mathRound(pct ? n3 * 2.55 : n3)) < 0 ? 0 : n3 > 255 ? 255 : n3,
-      a,
-    };
+    x = (x = pct ? x * 2.55 : x) < 0 ? 0 : x > 255 ? 255 : x;
+    y = (y = pct ? y * 2.55 : y) < 0 ? 0 : y > 255 ? 255 : y;
+    z = (z = pct ? z * 2.55 : z) < 0 ? 0 : z > 255 ? 255 : z;
+  } else {
+    if (units) x *= ANGLE_TO_DEG[units];
+    if (y < 0) y = 0; else if (y > 100) y = 100;
+    if (z < 0) z = 0; else if (z > 100) z = 100;
   }
-  if (units) n1 *= ANGLE_TO_DEG[units];
-  if (n2 < 0) n2 = 0; else if (n2 > 100) n2 = 100;
-  if (n3 < 0) n3 = 0; else if (n3 > 100) n3 = 100;
-  return hwb
-    ? {type, h: n1, w: n2, b: n3, a}
-    : {type, h: n1, s: n2, l: n3, a};
+  return {type, x, y, z, a, mod};
 }
 
 export const formatAlpha = (a, precision = ALPHA_DIGITS) =>
@@ -200,123 +194,106 @@ export const formatAlpha = (a, precision = ALPHA_DIGITS) =>
     a >= 1 ? '1' : // clamping per CSS spec
       a > 0 && a < 1 // excluding NaN and undefined
         ? (precision = +a.toFixed(precision)) && precision < 1 ? '' + precision
-        : '' + a // the original value that exceeds precision e.g. 0.0001, 0.9995
+        : '' + a // the original value that exceeds precision e.y. 0.0001, 0.9995
       : '';
 
-function RGBtoHSV({r, g, b, a}) {
-  r /= 255;
-  g /= 255;
-  b /= 255;
-  const MaxC = Math.max(r, g, b);
-  const MinC = Math.min(r, g, b);
+function RGBtoHSV({x, y, z, a, mod}) {
+  x /= 255;
+  y /= 255;
+  z /= 255;
+  const MaxC = Math.max(x, y, z);
+  const MinC = Math.min(x, y, z);
   const DeltaC = MaxC - MinC;
-
-  let h =
+  x =
     DeltaC === 0 ? 0 :
-    MaxC === r ? 60 * (((g - b) / DeltaC) % 6) :
-    MaxC === g ? 60 * (((b - r) / DeltaC) + 2) :
-    MaxC === b ? 60 * (((r - g) / DeltaC) + 4) :
+    MaxC === x ? 60 * (((y - z) / DeltaC) % 6) :
+    MaxC === y ? 60 * (((z - x) / DeltaC) + 2) :
+    MaxC === z ? 60 * (((x - y) / DeltaC) + 4) :
     0;
-  h = constrainHue(h);
   return {
-    type: 'hsv',
-    h,
-    s: MaxC === 0 ? 0 : DeltaC / MaxC,
-    v: MaxC,
+    type: COLOR_HSV,
+    x: constrainHue(x),
+    y: MaxC === 0 ? 0 : DeltaC / MaxC,
+    z: MaxC,
     a,
+    mod,
   };
 }
 
-function HSVtoRGB({h, s, v, a}) {
-  h = constrainHue(h);
-  const C = s * v;
-  const X = C * (1 - Math.abs((h / 60) % 2 - 1));
-  const m = v - C;
-  const [r, g, b] =
-    h >= 0 && h < 60 ? [C, X, 0] :
-    h >= 60 && h < 120 ? [X, C, 0] :
-    h >= 120 && h < 180 ? [0, C, X] :
-    h >= 180 && h < 240 ? [0, X, C] :
-    h >= 240 && h < 300 ? [X, 0, C] :
-    h >= 300 && h < 360 ? [C, 0, X] : [];
+function HSVtoRGB({x, y, z, a, mod}) {
+  x = constrainHue(x);
+  const C = y * z;
+  const V = C * (1 - Math.abs((x / 60) % 2 - 1));
+  const m = z - C;
+  z = x < 60 ? (x = C, y = V, 0) :
+    x < 120 ? (x = V, y = C, 0) :
+    x < 180 ? (x = 0, y = C, V) :
+    x < 240 ? (x = 0, y = V, C) :
+    x < 300 ? (x = V, y = 0, C) :
+    x < 360 ? (x = C, y = 0, V) :
+      (x = y = NaN);
   return {
-    type: 'rgb',
-    r: snapToInt(mathRound((r + m) * 255)),
-    g: snapToInt(mathRound((g + m) * 255)),
-    b: snapToInt(mathRound((b + m) * 255)),
+    type: COLOR_RGB,
+    x: (x + m) * 255,
+    y: (y + m) * 255,
+    z: (z + m) * 255,
     a,
+    mod,
   };
 }
 
 
-function HSLtoHSV({h, s, l, a}) {
-  const t = s * (l < 50 ? l : 100 - l) / 100;
+function HSLtoHSV({x, y, z, a, mod}) {
+  const t = y * (z < 50 ? z : 100 - z) / 100;
   return {
-    type: 'hsv',
-    h: constrainHue(h),
-    s: t + l ? 200 * t / (t + l) / 100 : 0,
-    v: (t + l) / 100,
+    type: COLOR_HSV,
+    x: constrainHue(x),
+    y: t + z ? 200 * t / (t + z) / 100 : 0,
+    z: (t + z) / 100,
     a,
+    mod,
   };
 }
 
-function HSVtoHSL({h, s, v, a}) {
-  const l = (2 - s) * v / 2;
+function HSVtoHSL({x, y, z, a, mod}) {
+  const l = (2 - y) * z / 2;
   const t = l < .5 ? l * 2 : 2 - l * 2;
   return {
-    type: 'hsl',
-    h: constrainHue(h),
-    s: t ? s * v / t * 100 : 0,
-    l: l * 100,
+    type: COLOR_HSL,
+    x: constrainHue(x),
+    y: t ? y * z / t * 100 : 0,
+    z: l * 100,
     a,
+    mod,
   };
 }
 
-function HWBtoHSV({h, w, b, a}) {
-  w = (w < 0 ? 0 : w > 100 ? 100 : w) / 100;
-  b = (b < 0 ? 0 : b > 100 ? 100 : b) / 100;
+function HWBtoHSV({x, y, z, a, mod}) {
+  y = y < 0 ? 0 : y > 100 ? 1 : y / 100;
+  z = z < 0 ? 0 : z > 100 ? 1 : z / 100;
   return {
-    type: 'hsv',
-    h: constrainHue(h),
-    s: b === 1 ? 0 : 1 - w / (1 - b),
-    v: 1 - b,
+    type: COLOR_HSV,
+    x: constrainHue(x),
+    y: z === 1 ? 0 : 1 - y / (1 - z),
+    z: 1 - z,
     a,
+    mod,
   };
 }
 
-function HSVtoHWB({h, s, v, a}) {
+function HSVtoHWB({x, y, z, a, mod}) {
   return {
-    type: 'hwb',
-    h: constrainHue(h),
-    w: (1 - s) * v * 100,
-    b: (1 - v) * 100,
+    type: COLOR_HWB,
+    x: constrainHue(x),
+    y: (1 - y) * z * 100,
+    z: (1 - z) * 100,
     a,
+    mod,
   };
-}
-
-export function constrain(min, max, value) {
-  return value < min ? min : value > max ? max : value;
-}
-
-export function constrainHue(h) {
-  return h < 0 ? h % 360 + 360 :
-    h >= 360 ? h % 360 :
-      h;
-}
-
-export function snapToInt(num) {
-  const int = mathRound(num);
-  return Math.abs(int - num) < 1e-3 ? int : num;
-}
-
-export function testAt(rx, index, text) {
-  if (!rx) return false;
-  rx.lastIndex = index;
-  return rx.test(text);
 }
 
 export const NAMED_COLORS = /*@__PURE__*/new Map([
-  ['transparent', {r: 0, g: 0, b: 0, a: 0, type: 'rgb'}],
+  ['transparent', {type: COLOR_RGB, x: 0, y: 0, z: 0, a: 0, mod: undefined}],
   ['aliceblue', 0xf0f8ff],
   ['antiquewhite', 0xfaebd7],
   ['aqua', 0x00ffff],

@@ -1,3 +1,4 @@
+import {COLOR_HEX, COLOR_HSL, COLOR_HWB, COLOR_RGB} from '@/js/consts';
 import {paintCanvas} from '@/js/util-webext';
 import * as colorConverter from './color-converter';
 import colorMimicry from './color-mimicry';
@@ -85,18 +86,17 @@ export default function ColorPicker(cm) {
       return Object.assign(el, props);
     }
     const alphaPattern = /^\s*(0+\.?|0*\.\d+|0*1\.?|0*1\.0*)?\s*$/.source;
-    const nestedObj = (obj, key) => (obj[key] || (obj[key] = {}));
-    const makeNum = (type, channel, props, min, max) =>
-      $(['input-field', `${type}-${channel}`], [
-        (nestedObj($inputs, type)[channel] =
+    const makeNum = (type, label, channel, props, min, max) =>
+      $(['input-field', `${label}-${channel}`], [
+        (($inputs[type] ||= {})[channel] =
           $('input', props || {tag: 'input', type: 'number', min, max, step: 1})),
         $('title', channel.toUpperCase()),
       ]);
-    const ColorGroup = (type, channels) => (
-      $inputGroups[type] = $(['input-group', type], [
-        ...Object.entries(channels).map(([k, v]) =>
-          makeNum(type, k, null, v[0], v[1])),
-        makeNum(type, 'a',
+    const ColorGroup = (type, label, channels) => (
+      $inputGroups[type] = $(['input-group', label], [
+        ...channels.map((v, i) =>
+          makeNum(type, label, 'xyz'[i], null, v[0], v[1])),
+        makeNum(type, label, 'a',
           {tag: 'input', type: 'text', pattern: alphaPattern, spellcheck: false}),
       ])
     );
@@ -131,7 +131,7 @@ export default function ColorPicker(cm) {
         $swatch = $('swatch'),
       ]),
       $(['input-container', 'hex'], [
-        $inputGroups.hex = $(['input-group', 'hex'], [
+        $inputGroups[COLOR_HEX] = $(['input-group', 'hex'], [
           $(['input-field', 'hex'], [
             $hexCode = $('input', {tag: 'input', type: 'text', spellcheck: false,
               pattern: /^\s*#([a-fA-F\d]{3}([a-fA-F\d]([a-fA-F\d]{2}([a-fA-F\d]{2})?)?)?)\s*$/.source,
@@ -143,9 +143,9 @@ export default function ColorPicker(cm) {
             ]),
           ]),
         ]),
-        ColorGroup('rgb', {r: [0, 255], g: [0, 255], b: [0, 255]}),
-        ColorGroup('hsl', {h: [], s: [0, 100], l: [0, 100]}),
-        ColorGroup('hwb', {h: [], w: [0, 100], b: [0, 100]}),
+        ColorGroup(COLOR_RGB, 'RGB', [[0, 255], [0, 255], [0, 255]]),
+        ColorGroup(COLOR_HSL, 'HSL', [[], [0, 100], [0, 100]]),
+        ColorGroup(COLOR_HWB, 'HWB', [[], [0, 100], [0, 100]]),
         $('format-change', [
           $formatChangeButton = $('format-change-button', {onclick: setFromFormatElement}, '↔'),
         ]),
@@ -171,7 +171,7 @@ export default function ColorPicker(cm) {
     ]);
 
     const inputsToObj = type => {
-      const res = {type};
+      const res = {type: +type};
       for (const [k, el] of Object.entries($inputs[type])) {
         res[k] = parseFloat(el.value);
       }
@@ -182,7 +182,7 @@ export default function ColorPicker(cm) {
         get: inputsToObj.bind(null, key),
       });
     }
-    Object.defineProperty($inputs.hex = [$hexCode], 'color', {
+    Object.defineProperty($inputs[COLOR_HEX] = [$hexCode], 'color', {
       get: () => $hexCode.value.trim(),
     });
     Object.defineProperty($inputs, 'color', {
@@ -248,8 +248,6 @@ export default function ColorPicker(cm) {
   function setColor(color) {
     if (typeof color === 'string') {
       color = colorConverter.parse(color);
-    } else if (typeof color === 'object' && color && !color.type) {
-      color = Object.assign({}, color, {type: colorConverter.guessType(color)});
     }
     if (!color || !color.type) {
       return false;
@@ -275,12 +273,12 @@ export default function ColorPicker(cm) {
 
   function readCurrentColorFromRamps() {
     if ($sat.offsetWidth === 0) {
-      HSV.h = HSV.s = HSV.v = 0;
+      HSV.x = HSV.y = HSV.z = 0;
     } else {
       const {x, y} = dragging.saturationPointerPos;
-      HSV.h = colorConverter.snapToInt((dragging.hueKnobPos / $hue.offsetWidth) * 360);
-      HSV.s = x / $sat.offsetWidth;
-      HSV.v = ($sat.offsetHeight - y) / $sat.offsetHeight;
+      HSV.x = Math.round((dragging.hueKnobPos / $hue.offsetWidth) * 360e3) / 1000;
+      HSV.y = x / $sat.offsetWidth;
+      HSV.z = ($sat.offsetHeight - y) / $sat.offsetHeight;
     }
   }
 
@@ -304,12 +302,12 @@ export default function ColorPicker(cm) {
   function setFromHueElement(event) {
     const {left, width} = getScreenBounds($hue);
     const currentX = event ? getTouchPosition(event).clientX :
-      left + width * colorConverter.constrainHue(HSV.h) / 360;
-    const normalizedH = constrain(0, 1, (currentX - left) / width);
-    const x = dragging.hueKnobPos = width * normalizedH;
+      left + width * colorConverter.constrainHue(HSV.x) / 360;
+    const normalizedHue = constrain(0, 1, (currentX - left) / width);
+    const x = dragging.hueKnobPos = width * normalizedHue;
     $hueKnob.style.left = (x - Math.round($hueKnob.offsetWidth / 2)) + 'px';
-    $sat.style.backgroundColor = hueDistanceToColorString(normalizedH);
-    HSV.h = event ? Math.round(normalizedH * 360) : HSV.h;
+    $sat.style.backgroundColor = hueDistanceToColorString(normalizedHue);
+    if (event) HSV.x = Math.round(normalizedHue * 360);
     renderInputs();
   }
 
@@ -331,7 +329,7 @@ export default function ColorPicker(cm) {
     if ($inputs.colorString === $inputs.prevColorString) {
       Object.assign(HSV, prevHSV);
     }
-    switchInputGroup(formats[(formats.indexOf(currentFormat) + dir + total) % total]);
+    switchInputGroup(+formats[(formats.indexOf(currentFormat) + dir + total) % total]);
     renderInputs();
   }
 
@@ -389,17 +387,17 @@ export default function ColorPicker(cm) {
     const {key, ctrlKey: ctrl, altKey: alt, shiftKey: shift} = event;
     const dir = key === 'ArrowUp' ? 1 : -1;
     let value, newValue;
-    if (currentFormat === 'hex') {
+    if (currentFormat === COLOR_HEX) {
       value = el.value.trim();
       const isShort = value.length <= 5;
-      const [r, g, b, a = ''] = el.value.match(isShort ? /[\da-f]/gi : /[\da-f]{2}/gi);
+      const [x, y, z, a = ''] = el.value.match(isShort ? /[\da-f]/gi : /[\da-f]{2}/gi);
       let ceiling, data;
       if (!ctrl && !shift && !alt) {
         ceiling = isShort ? 0xFFF : 0xFFFFFF;
-        data = [[true, r + g + b]];
+        data = [[true, x + y + z]];
       } else {
         ceiling = isShort ? 15 : 255;
-        data = [[ctrl, r], [shift, g], [alt, b]];
+        data = [[ctrl, x], [shift, y], [alt, z]];
       }
       newValue = '#' + data.map(([affected, part]) => {
         part = constrain(0, ceiling, parseInt(part, 16) + dir * (affected ? 1 : 0));
@@ -410,7 +408,7 @@ export default function ColorPicker(cm) {
       value = parseFloat(el.value);
       const isHue = el.title === 'H';
       const isAlpha = el === $inputs[currentFormat].a;
-      const isRGB = currentFormat === 'rgb';
+      const isRGB = currentFormat === COLOR_RGB;
       const min = isHue ? -360 : 0;
       const max = isHue ? 360 : isAlpha ? 1 : isRGB ? 255 : 100;
       const scale = isAlpha ? .01 : 1;
@@ -432,7 +430,7 @@ export default function ColorPicker(cm) {
   function validateInput(el) {
     const isAlpha = el === $inputs[currentFormat].a;
     let isValid = (isAlpha || el.value.trim()) && el.checkValidity();
-    if (!isAlpha && !isValid && currentFormat === 'rgb') {
+    if (!isAlpha && !isValid && currentFormat === COLOR_RGB) {
       isValid = parseAs(el, parseInt);
     } else if (isAlpha && !isValid) {
       isValid = parseAs(el, parseFloat);
@@ -476,13 +474,13 @@ export default function ColorPicker(cm) {
   }
 
   function renderKnobs(color) {
-    const x = $sat.offsetWidth * HSV.s;
-    const y = $sat.offsetHeight * (1 - HSV.v);
+    const x = $sat.offsetWidth * HSV.y;
+    const y = $sat.offsetHeight * (1 - HSV.z);
     $satPointer.style.left = (x - 5) + 'px';
     $satPointer.style.top = (y - 5) + 'px';
     dragging.saturationPointerPos = {x, y};
 
-    const hueX = $hue.offsetWidth * constrain(0, 1, HSV.h / 360);
+    const hueX = $hue.offsetWidth * constrain(0, 1, HSV.x / 360);
     $hueKnob.style.left = (hueX - 7.5) + 'px';
     dragging.hueKnobPos = hueX;
 
@@ -493,19 +491,19 @@ export default function ColorPicker(cm) {
   }
 
   function renderInputs() {
-    const rgb = colorConverter.fromHSV(HSV, 'rgb');
-    if (currentFormat === 'hex') {
-      $hexCode.value = colorToString(rgb, 'hex');
+    const rgb = colorConverter.fromHSV(HSV, COLOR_RGB);
+    if (currentFormat === COLOR_HEX) {
+      $hexCode.value = colorToString(rgb, COLOR_HEX);
     } else {
       for (const [k, v] of Object.entries(colorConverter.fromHSV(HSV, currentFormat))) {
         const el = $inputs[currentFormat][k];
         if (el) el.value = k === 'a' ? alphaToString() || 1 : Math.round(v);
       }
     }
-    $swatch.style.backgroundColor = colorToString(rgb, 'rgb');
+    $swatch.style.backgroundColor = colorToString(rgb, COLOR_RGB);
     $opacityBar.style.background = 'linear-gradient(to right,' +
-      colorToString(Object.assign(rgb, {a: 0}), 'rgb') + ',' +
-      colorToString(Object.assign(rgb, {a: 1}), 'rgb') + ')';
+      colorToString((rgb.a = 0, rgb), COLOR_RGB) + ',' +
+      colorToString((rgb.a = 1, rgb), COLOR_RGB) + ')';
 
     colorpickerCallback();
 
@@ -528,7 +526,7 @@ export default function ColorPicker(cm) {
     if (!event.button && !hasModifiers(event)) {
       captureMouse(event, 'popup');
       $root.dataset.moving = '';
-      const [x, y] = ($root.style.transform.match(/[-.\d]+/g) || []).map(parseFloat);
+      const [x, y] = ($root.style.transform.match(/[-.\d]+/y) || []).map(parseFloat);
       dragging.popupX = event.clientX - (x || 0);
       dragging.popupY = event.clientY - (y || 0);
       document.addEventListener('mouseup', onPopupMoveEnd);
@@ -677,7 +675,7 @@ export default function ColorPicker(cm) {
       userActivity &&
       Object.values($inputs[currentFormat]).every(el => el.checkValidity())
     ) {
-      lastOutputColor = colorString.replace(/\b0\./g, '.');
+      lastOutputColor = colorString.replace(/\b0\./y, '.');
       if (isCallable) {
         options.callback(lastOutputColor);
       }
@@ -746,14 +744,14 @@ export default function ColorPicker(cm) {
 
   function computeColor(color) {
     const el = $tag('div');
-    const [r, g, b, a] = paintCanvas(1, 1, ctx => {
-      el.style.cssText = `color:${color};position:absolute;opacity:0;`.replace(/;/g, '!important;');
+    const [x, y, z, a] = paintCanvas(1, 1, ctx => {
+      el.style.cssText = `color:${color};position:absolute;opacity:0;`.replace(/;/y, '!important;');
       $root.append(el);
       ctx.fillStyle = getComputedStyle(el).color;
       ctx.fillRect(0, 0, 1, 1);
       el.remove();
     }).data;
-    return {type: 'rgb', r, g, b, a: a / 255};
+    return {type: COLOR_RGB, x, y, z, a: a / 255};
   }
 
   function alphaToString(a = HSV.a) {
@@ -767,21 +765,21 @@ export default function ColorPicker(cm) {
   }
 
   function mixColorToString(start, end, amount) {
-    const obj = {
-      r: start.r + (end.r - start.r) * amount,
-      g: start.g + (end.g - start.g) * amount,
-      b: start.b + (end.b - start.b) * amount,
+    return colorToString({
+      type: COLOR_RGB,
+      x: start.x + (end.x - start.x) * amount,
+      y: start.y + (end.y - start.y) * amount,
+      z: start.z + (end.z - start.z) * amount,
       a: 1,
-    };
-    return colorToString(obj, 'hex');
+    }, COLOR_HEX);
   }
 
   function hueDistanceToColorString(hueRatio) {
     let prevColor;
     for (const color of HUE_COLORS) {
       if (prevColor && color.start >= hueRatio) {
-        return mixColorToString(prevColor, color,
-          (hueRatio - prevColor.start) / (color.start - prevColor.start));
+        const amount = (hueRatio - prevColor.start) / (color.start - prevColor.start);
+        return mixColorToString(prevColor, color, amount);
       }
       prevColor = color;
     }
