@@ -1,5 +1,5 @@
 import {CodeMirror, THEMES} from '@/cm';
-import {kEditorSettings, kExclusions, kInclusions, kOverridden} from '@/js/consts';
+import {kEditorSettings, kExclusions, kInclusions, kOverridden, pKeyMap} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {onDetailsToggled, setupLivePrefs} from '@/js/dom-util';
 import {template} from '@/js/localization';
@@ -168,7 +168,7 @@ function EditorSettings(ui) {
       }
     }
     const el = bin.appendChild($create('option', {value}, name));
-    if (value === prefs.__defaults['editor.keyMap']) {
+    if (value === prefs.__defaults[pKeyMap]) {
       el.dataset.default = '';
       el.title = t('defaultTheme');
     }

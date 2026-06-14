@@ -1,4 +1,5 @@
 import {CodeMirror, extraKeys} from '@/cm';
+import {pKeyMap} from '@/js/consts';
 import {setInputValue, setupLiveDetails, setupLivePrefs} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
 import {sleep, t} from '@/js/util';
@@ -11,7 +12,7 @@ export default function EditorHeader() {
   setupLiveDetails();
   setupLivePrefs();
   window.on('load', () => {
-    prefs.subscribe('editor.keyMap', showHotkeyInTooltip, true);
+    prefs.subscribe(pKeyMap, showHotkeyInTooltip, true);
     window.on('showHotkeyInTooltip', showHotkeyInTooltip);
   }, {once: true});
   for (const el of $$('#header summary')) {
@@ -69,7 +70,7 @@ async function peekDetails(evt) {
   delete el.dataset.peek;
 }
 
-function showHotkeyInTooltip(_, mapName = prefs.__values['editor.keyMap']) {
+function showHotkeyInTooltip(_, mapName = prefs.__values[pKeyMap]) {
   for (const el of $$('[data-hotkey-tooltip]')) {
     if (el._hotkeyTooltipKeyMap !== mapName) {
       el._hotkeyTooltipKeyMap = mapName;

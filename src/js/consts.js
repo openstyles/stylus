@@ -69,6 +69,7 @@ export const pKeepAlive = 'keepAlive';
 export const pManageNewUi = 'manage.newUI';
 export const pFavicons = 'manage.newUI.favicons';
 export const pFaviconsGray = 'manage.newUI.faviconsGray';
+export const pKeyMap = 'editor.keyMap';
 export const pLintReportDelay = 'editor.lintReportDelay';
 export const pLivePreview = 'editor.livePreview';
 export const pManageNewUiTargets = 'manage.newUI.targets';

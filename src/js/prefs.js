@@ -1,7 +1,7 @@
 /** Don't use this file in content script context! */
 import {
   k_busy, kBadFavs, pDisableAll, pEditorLinter, pEditorTheme, pExposeIframes, pFavicons,
-  pFaviconsGray, pLintReportDelay, pLivePreview, pManageNewUi, pManageNewUiTargets,
+  pFaviconsGray, pKeyMap, pLintReportDelay, pLivePreview, pManageNewUi, pManageNewUiTargets,
   pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr, pSync, pUrlInstaller,
 } from '@/js/consts';
 import {API} from './msg-api';
@@ -97,7 +97,7 @@ const defaults = {
   'editor.smartIndent': true,     // 'smart' indent
   'editor.indentWithTabs': false, // smart indent with tabs
   'editor.tabSize': 4,            // tab width, in spaces
-  'editor.keyMap': 'default',
+  [pKeyMap]: 'default',
   [pEditorTheme]: 'default',      // CSS theme
   // CSS beautifier
   'editor.beautify': {

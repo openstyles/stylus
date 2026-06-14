@@ -1,4 +1,5 @@
 import {CodeMirror, extraKeys, THEME_KEY} from '@/cm';
+import {pKeyMap} from '@/js/consts';
 import {$create, $createFragment} from '@/js/dom';
 import {getEventKeyName, messageBox, moveFocus} from '@/js/dom-util';
 import {tHTML} from '@/js/localization';
@@ -199,7 +200,7 @@ export function showCodeMirrorPopup(title, html, options) {
     matchBrackets: true,
     styleActiveLine: true,
     theme: prefs.__values[THEME_KEY],
-    keyMap: prefs.__values['editor.keyMap'],
+    keyMap: prefs.__values[pKeyMap],
   }, options));
   cm.focus();
 

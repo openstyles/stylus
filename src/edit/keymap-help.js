@@ -1,4 +1,5 @@
 import {CodeMirror, extraKeys} from '@/cm';
+import {pKeyMap} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
@@ -9,7 +10,7 @@ let inputs;
 let tableBody;
 
 export function keymapHelp() {
-  const PREF = 'editor.keyMap';
+  const PREF = pKeyMap;
   const keyMap = mergeKeyMaps({}, prefs.__values[PREF], extraKeys);
   const keyMapSorted = Object.keys(keyMap)
     .map(key => ({key, cmd: keyMap[key]}))
