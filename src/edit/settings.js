@@ -1,7 +1,7 @@
 import {CodeMirror, THEMES} from '@/cm';
 import {kEditorSettings, kExclusions, kInclusions, kOverridden} from '@/js/consts';
 import {$create} from '@/js/dom';
-import {setupLivePrefs} from '@/js/dom-util';
+import {onDetailsToggled, setupLivePrefs} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
@@ -22,11 +22,14 @@ for (const [id, init, tpl] of [
 ]) {
   const el = $(id);
   const onPref = (key, val) => {
-    if (!val) return;
+    if (!val)
+      return;
+    onDetailsToggled.delete(el);
     prefs.unsubscribe(key, onPref);
     template[tpl] = el.appendChild($create('main', template[tpl]));
     init(el);
   };
+  onDetailsToggled.set(el, onPref);
   prefs.subscribe(el.dataset.pref, onPref, true);
 }
 

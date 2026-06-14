@@ -15,6 +15,8 @@ export {messageBox};
  * Making the focus outline appear on keyboard tabbing, but not on mouse clicks.
  */
 let lastHocus = false;
+/** @type {Map<HTMLElement, (canSave:boolean) => any>} */
+export const onDetailsToggled = new WeakMap();
 export const closestHocused = el => el?.closest(`[${kHocusedAttr}]`);
 export const isHocused = el => el && kHocused in el.dataset;
 export const setLastHocus = (el, state) => el && $toggleDataset(el, kHocused, (lastHocus = state));
@@ -184,6 +186,7 @@ export function setupLiveDetails() {
   const mo = new MutationObserver(saveOnChange);
   const moCfg = {attributes: true, attributeFilter: ['open']};
   const SEL = 'details[data-pref]';
+  const SEL_NO_SAVE = '.ignore-pref, .compact-layout .ignore-pref-if-compact';
   for (const el of $$(SEL)) {
     prefs.subscribe(el.dataset.pref, updateOnPrefChange, true);
     mo.observe(el, moCfg);
@@ -196,18 +199,18 @@ export function setupLiveDetails() {
       }
     }
   });
-  function canSave(el) {
-    return !el.matches('.ignore-pref, .compact-layout .ignore-pref-if-compact');
-  }
   /** @param {MutationRecord[]} _ */
   function saveOnChange([{target: el}]) {
-    if (canSave(el)) {
-      prefs.set(el.dataset.pref, el.open);
-    }
+    const {open} = el;
+    const key = el.dataset.pref;
+    const fn = onDetailsToggled.get(el);
+    const canSave = !el.matches(SEL_NO_SAVE);
+    if (canSave) prefs.set(key, open);
+    fn?.(key, open);
   }
   function updateOnPrefChange(key, value) {
     const el = $(`details[data-pref="${key}"]`);
-    if (el.open !== value && canSave(el)) {
+    if (el.open !== value && !el.matches(SEL_NO_SAVE)) {
       el.open = value;
     }
   }
