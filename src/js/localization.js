@@ -12,13 +12,10 @@
  */
 import {t} from './util';
 
-/** @typedef {Record<string, Element|DocumentFragment>} TemplateCache */
 /** @type {TemplateCache} */
-export const templateCache = {};
-/** @type {TemplateCache} */
-export const template = /*@__PURE__*/new Proxy(templateCache, {
-  get: (obj, k) => obj[k] || createTemplate($(`template[data-id="${k}"]`)),
-});
+export const template = /*@__PURE__*/Object.create(new Proxy({__proto__: null}, {
+  get: (obj, k) => createTemplate($(`template[data-id="${k}"]`)),
+}));
 const RX_BAD_TAGS = /<script[^<>]*[^<]*<\/script[^>]*>/gi;
 /** Attributes are ignored. The URL of <a> must be set explicitly in JS. */
 const RX_PARTS = /<(?:(br|hr)|(\/)?(a(\s+href=[^>]*)?|b|code|nobr|p|pre|table|tr|td)|([^\s<>][^<>]*))>|(?:[^<]+|<\s+)+|$/g;
@@ -75,7 +72,7 @@ function createTemplate(el) {
   const {content = el, dataset: {id} = {}} = el;
   const first = content.firstChild;
   const res = first.nextSibling ? content : first;
-  if (id) templateCache[id] = res;
+  if (id) template[id] = res;
   tElements(res);
   return res;
 }
@@ -160,5 +157,6 @@ export function formatRelativeDate(date, style) {
 export function tBody() {
   tElements(document);
   const tpl = template.body;
-  (template.body = document.body).append(tpl);
+  if (tpl && tpl !== document.body)
+    (template.body = document.body).append(tpl);
 }

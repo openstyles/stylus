@@ -2,7 +2,7 @@ import {CodeMirror, THEMES} from '@/cm';
 import {kEditorSettings, kExclusions, kInclusions, kOverridden} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
-import {template, templateCache} from '@/js/localization';
+import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {debounce, t, tryURL} from '@/js/util';
@@ -24,8 +24,7 @@ for (const [id, init, tpl] of [
   const onPref = (key, val) => {
     if (!val) return;
     prefs.unsubscribe(key, onPref);
-    // Making templateCache reusable in $,$$ by replacing an empty document fragment
-    templateCache[tpl] = el.appendChild($create('main', template[tpl]));
+    template[tpl] = el.appendChild($create('main', template[tpl]));
     init(el);
   };
   prefs.subscribe(el.dataset.pref, onPref, true);
