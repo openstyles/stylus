@@ -55,12 +55,18 @@ export function format(color = '', type = color.type, {[kHexUppercase]: upper, u
     return typeof color === 'string' ? color : '';
   const {a, type: src = guessType(color)} = color;
   const hasA = !uso && a >= 0 && a < 1;
+  const toHex = type === 'hex';
   const srcConv = src === 'hex' ? 'rgb' : src;
-  const dstConv = type === 'hex' ? 'rgb' : type;
-  const {r, g, b} = srcConv === dstConv ? color
-    : color = FROM_HSV[dstConv](TO_HSV[srcConv](color));
-  let aa;
-  if (type === 'hex') {
+  const dstConv = toHex ? 'rgb' : type;
+  let r, g, b, aa;
+  if (srcConv !== dstConv)
+    color = FROM_HSV[dstConv](TO_HSV[srcConv](color));
+  if (toHex || type === 'rgb') {
+    r = mathRound(color.r);
+    g = mathRound(color.g);
+    b = mathRound(color.b);
+  }
+  if (toHex) {
     aa = hasA ? mathRound(a * 255) : 0;
     type = uso || r % 0x11 || g % 0x11 || b % 0x11 || aa % 0x11;
     color = type ? 0x100000000 + r * 0x1000000/* << goes negative*/ + (g << 16) + (b << 8) + aa
@@ -76,7 +82,8 @@ export function format(color = '', type = color.type, {[kHexUppercase]: upper, u
   }
   aa = hasA && formatAlpha(a) || '';
   if (type === 'rgb') {
-    return uso ? `${r}, ${g}, ${b}` : `rgb(${r}, ${g}, ${b}${aa ? ', ' : ''}${aa})`;
+    return uso ? `${r}, ${g}, ${b}`
+      : `rgb${aa ? 'a' : ''}(${r}, ${g}, ${b}${aa ? ', ' : ''}${aa})`;
   }
   if (type === 'hwb') {
     const {h, w} = color;
@@ -86,8 +93,8 @@ export function format(color = '', type = color.type, {[kHexUppercase]: upper, u
   }
   if (type === 'hsl') {
     const {h, s, l} = color;
-    return 'hsl(' +
-      (round ? `${mathRound(h)} ${mathRound(s)}% ${mathRound(l)}%` : `${h} ${s}% ${l}%`) +
+    return `hsl${aa ? 'a' : ''}(` +
+      (round ? `${mathRound(h)}, ${mathRound(s)}%, ${mathRound(l)}%` : `${h}, ${s}%, ${l}%`) +
       (aa ? `, ${aa})` : ')');
   }
   return '';
@@ -192,7 +199,7 @@ export const formatAlpha = (a, precision = ALPHA_DIGITS) =>
   a <= 0 ? '0' : // clamping per CSS spec
     a >= 1 ? '1' : // clamping per CSS spec
       a > 0 && a < 1 // excluding NaN and undefined
-        ? +(precision = a.toFixed(precision)) && precision < 1 ? precision.slice(1)
+        ? (precision = +a.toFixed(precision)) && precision < 1 ? '' + precision
         : '' + a // the original value that exceeds precision e.g. 0.0001, 0.9995
       : '';
 
