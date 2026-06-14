@@ -134,7 +134,7 @@ export default function SourceEditor() {
     cm.focus();
   }
 
-  function showLog({log, warn}) {
+  function showLog({log, warn} = {}) {
     if (log) for (const v of log) console.log(v);
     if (warn) for (const v of warn) console.warn(v);
   }

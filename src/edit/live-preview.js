@@ -25,7 +25,7 @@ export default function livePreview(now) {
   || !port && !editor.dirty.isDirty() // not modified since the style was saved and thus applied
   ) return;
   if (!now) {
-    debounce(livePreview, prefs.__values[pLivePreview + '.delay'] * 1000);
+    debounce(livePreview, prefs.__values[pLivePreview + '.delay'] * 1000, /*now=*/true);
     return;
   }
   data = editor.getValue(true);
