@@ -131,7 +131,6 @@ function makeManifest(files) {
   }
   if (GITHUB_ACTIONS) {
     delete base.key;
-    fs.appendFileSync(process.env.GITHUB_ENV, `_VER=${ver}\n`, 'utf8');
   }
   return JSON.stringify(base, null, 2);
 }

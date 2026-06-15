@@ -22,6 +22,8 @@ jobs:
         build: [chrome-mv3, firefox, mv2]
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 100 # to have build index in _REV
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
@@ -30,13 +32,13 @@ jobs:
       - run: pnpm install --ignore-scripts # ignore postinstall hook
       - run: pnpm test
         if: ${{matrix.build == 'chrome-mv3'}}
-      - run: echo "_REV=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - run: echo "_REV=$(git describe --abbrev=7)" >> $GITHUB_ENV
 
       - run: pnpm build-${{matrix.build}}
 
       - name: upload "${{matrix.build}}" to github
         uses: actions/upload-artifact@v7
         with:
-          name: 'stylus-${{matrix.build}}-${{env._VER}}-${{env._REV}}'
+          name: 'stylus-${{matrix.build}}-${{env._REV}}'
           path: 'dist/*'
           if-no-files-found: error
