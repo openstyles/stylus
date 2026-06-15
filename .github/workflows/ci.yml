@@ -24,6 +24,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 100 # to have build index in _REV
+          fetch-tags: true
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
