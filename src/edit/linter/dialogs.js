@@ -13,7 +13,7 @@ import {getIssues} from './reports';
 const RULES = {};
 const KNOWN_RULES = {};
 const defaultConfig = {};
-const linterTitles = ['CSSLint', 'Stylelint'];
+const linterTitles = ['CSSLint-mod', 'Stylelint'];
 
 let cmDlg;
 let knownRules;
