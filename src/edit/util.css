@@ -64,14 +64,18 @@
     }
   }
   .title {
-    font-weight: bold;
     background-color: rgba(128, 128, 128, .15);
     padding: var(--pad-y2) calc(20px + var(--pad-x)) var(--pad-y2) var(--pad-x);
+    font-size: medium;
+    margin: 0;
   }
   .contents {
     max-height: calc(var(--100dvh) - var(--top) - 4rem);
     overflow-y: auto;
     padding: var(--pad-y) var(--pad-x);
+    > p {
+      margin-top: 0;
+    }
   }
   > .i-close {
     position: absolute;

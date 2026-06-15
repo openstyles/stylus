@@ -14,7 +14,10 @@ const RULES = {};
 const KNOWN_RULES = {};
 const defaultConfig = {};
 const linterTitles = ['CSSLint-mod', 'Stylelint'];
-
+const linterLinks = [
+  'https://github.com/CSSLint/csslint/wiki/Rules',
+  'https://stylelint.io/user-guide/rules/',
+];
 let cmDlg;
 let knownRules;
 let isStylelint;
@@ -55,7 +58,10 @@ export async function showLintConfig() {
         cfg[id] = 0;
   }
   defaultConfig[curLinter] = stringifyConfig(defaults);
-  popup = showCodeMirrorPopup(title, null, {
+  popup = showCodeMirrorPopup(title, $create('p', [
+    $createLink(linterLinks[+isStylelint], t('linterRulesLink')),
+    !isStylelint ? ' ' + t('linterCSSLintSettings') : '',
+  ]), {
     extraKeys: {'Ctrl-Enter': onConfigSave},
     hintOptions: {hint},
     lint: true,
@@ -64,14 +70,6 @@ export async function showLintConfig() {
   });
   popup._contents.appendChild(
     $create('div', [
-      $create('p', [
-        $createLink(
-          isStylelint
-            ? 'https://stylelint.io/user-guide/rules/'
-            : 'https://github.com/CSSLint/csslint/wiki/Rules-by-ID',
-          t('linterRulesLink')),
-        !isStylelint ? ' ' + t('linterCSSLintSettings') : '',
-      ]),
       $create('.buttons', [
         $create('button.save', {onclick: onConfigSave, title: 'Ctrl-Enter'},
           t('styleSaveLabel')),
@@ -107,7 +105,7 @@ export async function showLintHelp() {
   isStylelint = curLinter === 'stylelint';
   let baseUrl, makeItem;
   if (!isStylelint) {
-    baseUrl = 'https://github.com/CSSLint/csslint/wiki/Rules';
+    baseUrl = linterLinks[0];
     makeItem = ruleID => {
       for (const rule of RULES.csslint) {
         if (rule.id === ruleID) {
@@ -120,7 +118,7 @@ export async function showLintHelp() {
       }
     };
   } else {
-    baseUrl = 'https://stylelint.io/user-guide/rules/';
+    baseUrl = linterLinks[1];
     makeItem = rule =>
       $create('li',
         rule === 'CssSyntaxError' ? rule : $createLink(baseUrl + rule, rule));

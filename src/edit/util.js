@@ -32,7 +32,7 @@ export const helpPopup = {
     }} HelpPopupElement */
     div.append(
       div._close = $create('i.i-close', {onclick: helpPopup.close}),
-      div._title = $create('.title', title),
+      div._title = $create('h2.title', title),
       div._contents = $create('.contents', body && tHTML(body)));
     document.body.append(div);
     div.onClose = new Set();
