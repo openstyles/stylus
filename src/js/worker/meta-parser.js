@@ -1,5 +1,5 @@
+import Color from '@/js/color/color-converter';
 import {createParser, ParseError} from 'usercss-meta/dist/usercss-meta';
-import * as colorConverter from '@/js/color/color-converter';
 
 const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
 const options = {
@@ -24,7 +24,7 @@ const options = {
       }
     },
     color: state => {
-      if (!colorConverter.parse(state.value)) {
+      if (!Color.parse(state.value)) {
         throw new ParseError({
           code: 'invalidColor',
           args: [state.value],

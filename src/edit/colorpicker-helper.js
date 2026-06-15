@@ -38,11 +38,15 @@ prefs.subscribe(ECP.slice(0, -1), (id, enabled) => {
         tooltipForSwitcher: t('colorpickerSwitchFormatTooltip'),
         paletteLine: t('numberedLine'),
         paletteHint: t('colorpickerPaletteHint'),
-        [kHexUppercase]: prefs.__values[ECP + kHexUppercase],
+        get [kHexUppercase]() {
+          return prefs.__values[ECP + kHexUppercase];
+        },
+        set [kHexUppercase](val) {
+          prefs.set(ECP + kHexUppercase, val);
+        },
         embedderCallback(state) {
-          for (const k of [kColor, kHexUppercase])
-            if (state[k] !== prefs.__values[ECP + k])
-              prefs.set(ECP + k, state[k]);
+          if (state[kColor] !== prefs.__values[ECP + kColor])
+            prefs.set(ECP + kColor, state[kColor]);
         },
         get [kMaxHeight]() {
           return prefs.__values[ECP + kMaxHeight];

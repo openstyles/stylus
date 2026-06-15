@@ -1,12 +1,11 @@
-import {COLOR_HEX, COLOR_HSL, COLOR_HWB, COLOR_RGB} from '@/js/consts';
+import {COLOR_HEX, COLOR_HSL, COLOR_HWB, COLOR_RGB, HEX_RETAIN_CASE} from '@/js/consts';
 import {paintCanvas} from '@/js/util-webext';
-import * as colorConverter from './color-converter';
+import Color, {constrain, constrainHue, formatAlpha} from './color-converter';
 import colorMimicry from './color-mimicry';
 import {kHexUppercase} from './util';
 import './color-picker.css';
 
 export default function ColorPicker(cm) {
-  const {constrain} = colorConverter;
   const CSS_PREFIX = 'colorpicker-';
   const HUE_COLORS = [
     {hex: '#ff0000', start: .0},
@@ -42,6 +41,8 @@ export default function ColorPicker(cm) {
   let /** @type {HTMLElement} */ $hexCode;
   let /** @type {HTMLElement} */ $palette;
   const $inputGroups = {};
+  /** @typedef {HTMLElement & {color: Color|string, colorString: string}} ChannelElement */
+  /** @type {{[type: string]: {[channel: 'x'|'y'|'z'|'a']: ChannelElement, color:Color|string} }} */
   const $inputs = {};
   const $hexLettercase = {};
 
@@ -86,20 +87,12 @@ export default function ColorPicker(cm) {
       return Object.assign(el, props);
     }
     const alphaPattern = /^\s*(0+\.?|0*\.\d+|0*1\.?|0*1\.0*)?\s*$/.source;
-    const makeNum = (type, label, channel, props, min, max) =>
-      $(['input-field', `${label}-${channel}`], [
+    const makeNum = (type, name, channel, channelName, props, min, max) =>
+      $(['input-field', `${name}-${channelName}`], [
         (($inputs[type] ||= {})[channel] =
           $('input', props || {tag: 'input', type: 'number', min, max, step: 1})),
-        $('title', channel.toUpperCase()),
+        $('title', channelName.toUpperCase()),
       ]);
-    const ColorGroup = (type, label, channels) => (
-      $inputGroups[type] = $(['input-group', label], [
-        ...channels.map((v, i) =>
-          makeNum(type, label, 'xyz'[i], null, v[0], v[1])),
-        makeNum(type, label, 'a',
-          {tag: 'input', type: 'text', pattern: alphaPattern, spellcheck: false}),
-      ])
-    );
     $root = $('popup', {
       oninput: setFromInputs,
       onkeydown: setFromKeyboard,
@@ -137,15 +130,26 @@ export default function ColorPicker(cm) {
               pattern: /^\s*#([a-fA-F\d]{3}([a-fA-F\d]([a-fA-F\d]{2}([a-fA-F\d]{2})?)?)?)\s*$/.source,
             }),
             $('title', [
-              $hexLettercase.true = $('title-action', {onclick: onHexLettercaseClicked}, 'HEX'),
-              '\xA0/\xA0',
-              $hexLettercase.false = $('title-action', {onclick: onHexLettercaseClicked}, 'hex'),
-            ]),
+              [1, 'HEX'], [],
+              [HEX_RETAIN_CASE, '\xA0✱\xA0'], [],
+              [0, 'hex'],
+            ].map(([val, label]) => !label ? '\xA0/\xA0' : (
+              $hexLettercase[val] = $('title-action', {
+                onclick: onHexLettercaseClicked,
+                upper: val,
+              }, label)))),
           ]),
         ]),
-        ColorGroup(COLOR_RGB, 'RGB', [[0, 255], [0, 255], [0, 255]]),
-        ColorGroup(COLOR_HSL, 'HSL', [[], [0, 100], [0, 100]]),
-        ColorGroup(COLOR_HWB, 'HWB', [[], [0, 100], [0, 100]]),
+        ...[[COLOR_RGB, 'rgb', [[0, 255], [0, 255], [0, 255]]],
+          [COLOR_HSL, 'hsl', [[], [0, 100], [0, 100]]],
+          [COLOR_HWB, 'hwb', [[], [0, 100], [0, 100]]],
+        ].map(([type, format, channels]) => (
+          $inputGroups[type] = $(['input-group', format.toUpperCase()],
+            channels.map((v, i) => makeNum(type, format, 'xyz'[i], format[i], null, v[0], v[1]))
+              .concat(makeNum(type, format, 'a', 'a',
+                {tag: 'input', type: 'text', pattern: alphaPattern, spellcheck: false})),
+          )
+        )),
         $('format-change', [
           $formatChangeButton = $('format-change-button', {onclick: setFromFormatElement}, '↔'),
         ]),
@@ -170,16 +174,16 @@ export default function ColorPicker(cm) {
       }),
     ]);
 
-    const inputsToObj = type => {
-      const res = {type: +type};
-      for (const [k, el] of Object.entries($inputs[type])) {
-        res[k] = parseFloat(el.value);
-      }
-      return res;
-    };
+    const inputsToColor = type => new Color(
+      +type,
+      +(type = $inputs[type]).x.value,
+      +type.y.value,
+      +type.z.value,
+      +type.a.value,
+    );
     for (const [key, val] of Object.entries($inputs)) {
       Object.defineProperty(val, 'color', {
-        get: inputsToObj.bind(null, key),
+        get: inputsToColor.bind(null, key),
       });
     }
     Object.defineProperty($inputs[COLOR_HEX] = [$hexCode], 'color', {
@@ -190,10 +194,10 @@ export default function ColorPicker(cm) {
     });
     Object.defineProperty($inputs, 'colorString', {
       get: () => currentFormat &&
-        colorConverter.format($inputs[currentFormat].color, undefined, {round: true}),
+        $inputs[currentFormat].color.toString(0, {round: true}),
     });
 
-    HUE_COLORS.forEach(color => Object.assign(color, colorConverter.parse(color.hex)));
+    HUE_COLORS.forEach(color => Object.assign(color, Color.parse(color.hex)));
     $root.style.setProperty('--margin', MARGIN + 'px');
     initialized = true;
   }
@@ -247,7 +251,7 @@ export default function ColorPicker(cm) {
 
   function setColor(color) {
     if (typeof color === 'string') {
-      color = colorConverter.parse(color);
+      color = Color.parse(color) || computeColor(color);
     }
     if (!color || !color.type) {
       return false;
@@ -264,8 +268,8 @@ export default function ColorPicker(cm) {
       return;
     }
     readCurrentColorFromRamps();
-    const color = colorConverter.fromHSV(HSV, type);
-    return type ? colorToString(color, type) : color;
+    const color = HSV.to(type);
+    return type ? color.toString(0, options) : color;
   }
 
   //endregion
@@ -302,7 +306,7 @@ export default function ColorPicker(cm) {
   function setFromHueElement(event) {
     const {left, width} = getScreenBounds($hue);
     const currentX = event ? getTouchPosition(event).clientX :
-      left + width * colorConverter.constrainHue(HSV.x) / 360;
+      left + width * constrainHue(HSV.x) / 360;
     const normalizedHue = constrain(0, 1, (currentX - left) / width);
     const x = dragging.hueKnobPos = width * normalizedHue;
     $hueKnob.style.left = (x - Math.round($hueKnob.offsetWidth / 2)) + 'px';
@@ -323,22 +327,23 @@ export default function ColorPicker(cm) {
   function setFromFormatElement({shiftKey}) {
     userActivity = true;
     HSV.a = isNaN(HSV.a) ? 1 : HSV.a;
-    const formats = Object.keys($inputGroups);
+    const types = Object.keys($inputGroups).map(Number);
     const dir = shiftKey ? -1 : 1;
-    const total = formats.length;
+    const total = types.length;
     if ($inputs.colorString === $inputs.prevColorString) {
       Object.assign(HSV, prevHSV);
     }
-    switchInputGroup(+formats[(formats.indexOf(currentFormat) + dir + total) % total]);
+    switchInputGroup(types[(types.indexOf(currentFormat) + dir + total) % total]);
     renderInputs();
   }
 
   function setFromHexLettercaseElement(event) {
-    const isUpper = !!options[kHexUppercase];
-    $hexLettercase[isUpper].dataset.active = '';
-    delete $hexLettercase[!isUpper].dataset.active;
-    const value = $hexCode.value;
-    $hexCode.value = isUpper ? value.toUpperCase() : value.toLowerCase();
+    const upper = +options[kHexUppercase] || 0;
+    for (const t in $hexLettercase)
+      $hexLettercase[t].toggleAttribute('data-active', +t === upper);
+    if (upper !== HEX_RETAIN_CASE) {
+      $hexCode.value = $hexCode.value[upper ? 'toUpperCase' : 'toLowerCase']();
+    }
     if (event) setFromInputs();
   }
 
@@ -403,7 +408,8 @@ export default function ColorPicker(cm) {
         part = constrain(0, ceiling, parseInt(part, 16) + dir * (affected ? 1 : 0));
         return (part + ceiling + 1).toString(16).slice(1);
       }).join('') + a;
-      newValue = options[kHexUppercase] ? newValue.toUpperCase() : newValue.toLowerCase();
+      if (options[kHexUppercase] !== HEX_RETAIN_CASE)
+        newValue = newValue[options[kHexUppercase] ? 'toUpperCase' : 'toLowerCase']();
     } else if (!alt) {
       value = parseFloat(el.value);
       const isHue = el.title === 'H';
@@ -436,7 +442,7 @@ export default function ColorPicker(cm) {
       isValid = parseAs(el, parseFloat);
     }
     if (isAlpha && isValid) {
-      isValid = lastOutputColor !== colorToString($inputs.color);
+      isValid = lastOutputColor !== $inputs.color.toString(currentFormat, options);
     }
     return isValid;
   }
@@ -445,32 +451,35 @@ export default function ColorPicker(cm) {
 
   function setFromColor(color) {
     if (typeof color === 'string')
-      color = colorConverter.parse(color) || computeColor(color);
-    color ||= colorConverter.parse('#f00');
-    const newHSV = colorConverter.toHSV(color);
-    if (Object.entries(newHSV).every(([k, v]) => v === HSV[k] || Math.abs(v - HSV[k]) < 1e-3)) {
+      color = Color.parse(color) || computeColor(color);
+    color ||= Color.parse('#f00');
+    const HSV2 = color.toHSV();
+    if (Math.abs(HSV2.x - HSV.x) < 1e-3
+    && Math.abs(HSV2.y - HSV.y) < 1e-3
+    && Math.abs(HSV2.z - HSV.z) < 1e-3
+    && Math.abs(HSV2.a - HSV.a) < 1e-3) {
       return;
     }
-    HSV = newHSV;
+    HSV = HSV2;
     renderKnobs(color);
     switchInputGroup(color.type);
     setFromHueElement();
   }
 
-  function switchInputGroup(format) {
-    if (currentFormat === format) {
+  function switchInputGroup(type) {
+    if (currentFormat === type) {
       return;
     }
     if (currentFormat) {
       delete $inputGroups[currentFormat].dataset.active;
     } else {
-      for (const fmt in $inputGroups) {
-        delete $inputGroups[fmt].dataset.active;
+      for (const el of Object.values($inputGroups)) {
+        delete el.dataset.active;
       }
     }
-    $inputGroups[format].dataset.active = '';
-    maybeFocus(Object.values($inputs[format])[0]);
-    currentFormat = format;
+    $inputGroups[type].dataset.active = '';
+    maybeFocus(Object.values($inputs[type])[0]);
+    currentFormat = type;
   }
 
   function renderKnobs(color) {
@@ -487,23 +496,23 @@ export default function ColorPicker(cm) {
     const opacityX = $opacity.offsetWidth * (isNaN(HSV.a) ? 1 : HSV.a);
     $opacityKnob.style.left = (opacityX - 7.5) + 'px';
 
-    $sat.style.backgroundColor = colorConverter.format(color);
+    $sat.style.backgroundColor = color.toString(COLOR_RGB);
   }
 
   function renderInputs() {
-    const rgb = colorConverter.fromHSV(HSV, COLOR_RGB);
+    const rgb = HSV.to(COLOR_RGB);
     if (currentFormat === COLOR_HEX) {
-      $hexCode.value = colorToString(rgb, COLOR_HEX);
+      $hexCode.value = rgb.toString(COLOR_HEX, options);
     } else {
-      for (const [k, v] of Object.entries(colorConverter.fromHSV(HSV, currentFormat))) {
+      for (const [k, v] of Object.entries(HSV.to(currentFormat))) {
         const el = $inputs[currentFormat][k];
         if (el) el.value = k === 'a' ? alphaToString() || 1 : Math.round(v);
       }
     }
-    $swatch.style.backgroundColor = colorToString(rgb, COLOR_RGB);
+    $swatch.style.backgroundColor = rgb.toString(COLOR_RGB);
     $opacityBar.style.background = 'linear-gradient(to right,' +
-      colorToString((rgb.a = 0, rgb), COLOR_RGB) + ',' +
-      colorToString((rgb.a = 1, rgb), COLOR_RGB) + ')';
+      (rgb.a = 0, rgb).toString(COLOR_RGB) + ',' +
+      (rgb.a = 1, rgb).toString(COLOR_RGB) + ')';
 
     colorpickerCallback();
 
@@ -568,7 +577,7 @@ export default function ColorPicker(cm) {
   }
 
   function onHexLettercaseClicked(event) {
-    options[kHexUppercase] = !options[kHexUppercase];
+    options[kHexUppercase] = constrain(0, HEX_RETAIN_CASE, +this.upper);
     setFromHexLettercaseElement(event);
   }
 
@@ -738,10 +747,6 @@ export default function ColorPicker(cm) {
   //endregion
   //region Color conversion utilities
 
-  function colorToString(color, type = currentFormat) {
-    return colorConverter.format(color, type, options);
-  }
-
   function computeColor(color) {
     const el = $tag('div');
     const [x, y, z, a] = paintCanvas(1, 1, ctx => {
@@ -751,27 +756,25 @@ export default function ColorPicker(cm) {
       ctx.fillRect(0, 0, 1, 1);
       el.remove();
     }).data;
-    return {type: COLOR_RGB, x, y, z, a: a / 255};
+    return new Color(COLOR_RGB, x, y, z, a / 255);
   }
 
   function alphaToString(a = HSV.a) {
-    return colorConverter.formatAlpha(a);
+    return formatAlpha(a);
   }
 
-  function currentColorToString(format = currentFormat, alpha = HSV.a) {
-    const converted = colorConverter.fromHSV(HSV, format);
+  function currentColorToString(type = currentFormat, alpha = HSV.a) {
+    const converted = HSV.to(type);
     converted.a = isNaN(alpha) || alpha === 1 ? undefined : alpha;
-    return colorToString(converted, format);
+    return converted.toString(type, options);
   }
 
   function mixColorToString(start, end, amount) {
-    return colorToString({
-      type: COLOR_RGB,
-      x: start.x + (end.x - start.x) * amount,
-      y: start.y + (end.y - start.y) * amount,
-      z: start.z + (end.z - start.z) * amount,
-      a: 1,
-    }, COLOR_HEX);
+    return new Color(COLOR_RGB,
+      start.x + (end.x - start.x) * amount,
+      start.y + (end.y - start.y) * amount,
+      start.z + (end.z - start.z) * amount,
+    ).toString(COLOR_HEX);
   }
 
   function hueDistanceToColorString(hueRatio) {

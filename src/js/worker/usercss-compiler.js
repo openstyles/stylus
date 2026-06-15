@@ -1,4 +1,5 @@
-import * as colorConverter from '@/js/color/color-converter';
+import Color from '@/js/color/color-converter';
+import {COLOR_HEX, COLOR_RGB} from '@/js/consts';
 import {styleCodeEmpty} from '../sections-util';
 import {nullifyInvalidVars} from './meta-parser';
 import extractSections from './moz-parser';
@@ -86,9 +87,9 @@ const BUILDERS = {
         if (type === 'dropdown' || type === 'select') {
           pool[name] = ''; // prevent infinite recursion
           value = doReplace(value);
-        } else if (type === 'color' && (hexAlpha || rgb) && (v = colorConverter.parse(value))) {
+        } else if (type === 'color' && (hexAlpha || rgb) && (v = Color.parse(value))) {
           if (hexAlpha) v.a = 1;
-          value = colorConverter.format(v, rgb ? 'rgb' : 'hex', {uso: hexAlpha || rgb}) + hexAlpha;
+          value = v.toString(rgb ? COLOR_RGB : COLOR_HEX, {uso: hexAlpha || rgb}) + hexAlpha;
         }
         return value;
       };

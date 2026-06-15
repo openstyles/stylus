@@ -52,11 +52,24 @@ export const IMPORT_THROTTLE = 100; //ms
 export const BIT_DARK = 1;
 export const BIT_SYS_DARK = 2;
 
+export const BIT_COLOR_COMMA = 1;
+export const BIT_COLOR_NAME_A = 2;
+export const BIT_COLOR_PCT_X = 4;
+export const BIT_COLOR_PCT_Y = 8;
+export const BIT_COLOR_PCT_Z = 16;
+export const BIT_COLOR_PCT_A = 32;
+export const BIT_COLOR_NONE_X = 64;
+export const BIT_COLOR_NONE_Y = 128;
+export const BIT_COLOR_NONE_Z = 256;
+export const BIT_COLOR_NONE_A = 512;
+
 export const COLOR_HEX = 1;
 export const COLOR_RGB = 2;
 export const COLOR_HSL = 3;
 export const COLOR_HWB = 4;
 export const COLOR_HSV = 5;
+
+export const HEX_RETAIN_CASE = 2;
 
 //#region CSS
 export const kAtRuleNoUnknown = 'at-rule-no-unknown';

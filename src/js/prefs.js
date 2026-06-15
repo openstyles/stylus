@@ -135,7 +135,7 @@ const defaults = {
   // show CSS colors as clickable colored rectangles
   'editor.colorpicker': true,
   // #DEAD or #beef
-  'editor.colorpicker.hexUppercase': false,
+  'editor.colorpicker.hexUppercase': 0,
   // default hotkey
   'editor.colorpicker.hotkey': '',
   // last color

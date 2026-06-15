@@ -1,6 +1,7 @@
 import {CodeMirror} from '@/cm';
+import {COLOR_HSL, COLOR_HWB, COLOR_RGB} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
-import * as colorConverter from './color-converter';
+import Color, {parseColorFunc} from './color-converter';
 import ColorPicker from './color-picker';
 import {CP, SWATCH_CLS, SWATCH_PROP} from './util';
 
@@ -297,7 +298,7 @@ function colorizeLineViaStyles(state, line, lineHandle) {
   let spansZombies = markedSpans && markedSpans.length;
   nextStyle:
   for (
-    let i = 1, v, spanState, marker, start, end, len, hex;
+    let i = 1, v, spanState, marker, start, end, len, hex, funcType;
     i + 1 < stylesLen;
     i += 2
   ) {
@@ -324,8 +325,11 @@ function colorizeLineViaStyles(state, line, lineHandle) {
             : len === 9 ? v === 99/* c */ : len === 10 && v === 108/* l */
       ) && text.slice(start, end - hasA).toLowerCase();
       if (!func || !(
-        len === 4 - v ? func === 'rgb' || func === 'hsl' :
-        len === 3 ? func === 'hwb' || func === 'lab' || func === 'lch' :
+        hasA || len === 3 ? (
+          funcType = func === 'rgb' ? COLOR_RGB
+            : func === 'hsl' ? COLOR_HSL
+              : func === 'hwb' && !hasA && COLOR_HWB
+        ) || !hasA && (func === 'lab' || func === 'lch') :
         len === 5 ? func === 'color' || func === 'oklab' || func === 'oklch' :
         len === 9 ? func === 'color-mix' : len === 10 && func === 'light-dark'
       )) continue;
@@ -344,7 +348,7 @@ function colorizeLineViaStyles(state, line, lineHandle) {
       end = b + 1;
     }
     let color = text.slice(start, end);
-    if (!hex && !func && (v = color.indexOf('!')) > 0) {
+    if (!hex && !func && (v = color.indexOf('!')) > 0) { // red!important
       color = color.slice(0, v);
       end = start + v;
       len = end - start;
@@ -368,7 +372,10 @@ function colorizeLineViaStyles(state, line, lineHandle) {
         }
       }
     }
-    const parsedColor = colorConverter.parse(color, len);
+    const parsedColor = func
+      ? (v = color.slice(len + 1, -1).trim()) &&
+        (!funcType || parseColorFunc(funcType, funcType === COLOR_RGB ? v : v.toLowerCase()))
+      : Color.parse(color, end - start, hex);
     if (!parsedColor && !func/*colorConverter doesn't support many modern funcs*/)
       continue;
     if (spanState) {
@@ -386,7 +393,7 @@ function colorizeLineViaStyles(state, line, lineHandle) {
     marker.color = color;
     marker.css = SWATCH_PROP + ':' + (
       parsedColor && RX_UNSUPPORTED?.test(color)
-        ? colorConverter.format(parsedColor, 'rgb')
+        ? parsedColor.toString(COLOR_RGB)
         : color
     );
     marker.len = end - start;
