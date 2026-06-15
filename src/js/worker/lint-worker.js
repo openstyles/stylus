@@ -5,7 +5,15 @@ import {load, loadParserlib, loadStylusLang, parserlib, stylusLang} from './util
 let CSSLint, stylelint;
 
 const loadCSSLint = () => (parserlib || loadParserlib()) && load('csslint.js', 'CSSLint');
-const loadStylelint = () => load('stylelint.js', 'stylelint');
+const loadStylelint = mode => (
+  mode === 'stylus' && loadStylusLang() || (
+    // TODO: fix stylint-bundle so it reads the `stylus` global on demand and not on startup
+    global.stylus = Object.create(new Proxy({}, {
+      get: (obj, key) => (obj[key] ||= (stylusLang || loadStylusLang())[key]),
+    }))
+  )
+) && load('stylelint.js', 'stylelint');
+
 const rxVarsLessDecl = /"@[-\w]+:"/;
 const rxVendorPrefix = /(?:^|[^-\w])-(?:moz|webkit|o|ms)-\w/;
 
@@ -106,13 +114,7 @@ const LintWorkerAPI = {
   },
 
   async stylelint(code, config, mode) {
-    if (!stylusLang) {
-      if (mode === 'stylus') loadStylusLang();
-      else global.stylus = new Proxy({}, {
-        get: (_, key) => (stylusLang || loadStylusLang())[key],
-      });
-    }
-    stylelint ||= loadStylelint();
+    stylelint ||= loadStylelint(mode);
     for (const r in config.rules)
       if (!stylelint.rules[r]) delete config.rules[r];
     const {results: [res]} = await stylelint.lint({
