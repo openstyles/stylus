@@ -1,0 +1,203 @@
+@import './edit-vars.css';
+
+/************ embedded popup for simple-window editor ************/
+#popup-iframe {
+  max-height: 600px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 1001;
+  border: none;
+  background: var(--bg);
+  box-shadow: 0 0 30px var(--fg);
+  &:not([data-loaded]) {
+    opacity: 0;
+  }
+}
+#popup-button {
+  position: fixed;
+  right: 7px;
+  top: 11px;
+  z-index: 1000;
+  cursor: pointer;
+  transition: filter .25s;
+  &:hover {
+    filter: drop-shadow(0 0 3px hsl(180, 70%, 50%));
+  }
+  .usercss:not(.compact-layout) & {
+    right: 24px;
+  }
+}
+
+#help-popup {
+  --pad-x: 1.5rem;
+  --pad-y: 1rem;
+  --pad-y2: calc(var(--pad-y) / 1.5);
+  --top: 3rem;
+  top: var(--top);
+  right: 3rem;
+  max-width: calc(100% - var(--header-width) - 6rem);
+  position: fixed;
+  background-color: var(--bg);
+  box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  &:is(.big, .wide) {
+    max-width: 100%;
+  }
+  &.big {
+    box-shadow: rgba(0, 0, 0, 0.45) 0px 0px 0px 100000px !important;
+    .normal-layout & {
+      left: calc(var(--header-width) - 3rem);
+    }
+    .CodeMirror {
+      min-height: 2rem;
+      height: 70vh;
+    }
+  }
+  &.danger {
+    .title {
+      background-color: firebrick;
+      color: white;
+    }
+    > .i-close {
+      color: white;
+    }
+  }
+  .title {
+    font-weight: bold;
+    background-color: rgba(128, 128, 128, .15);
+    padding: var(--pad-y2) calc(20px + var(--pad-x)) var(--pad-y2) var(--pad-x);
+  }
+  .contents {
+    max-height: calc(var(--100dvh) - var(--top) - 4rem);
+    overflow-y: auto;
+    padding: var(--pad-y) var(--pad-x);
+  }
+  > .i-close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: var(--pad-y2) $pad05;
+    font-size: 14px;
+  }
+  :is(input[type="search"], .CodeMirror) {
+    margin: 3px;
+  }
+  .keymap-list input[type="search"] {
+    margin: 0 0 2px;
+  }
+  .keymap-list {
+    font-size: var(--font-size);
+    padding: 0 3px 0 0;
+    border-spacing: 0;
+    word-break: break-all;
+    input {
+      width: 100%;
+    }
+    tr:nth-child(odd) {
+      background-color: rgba(0, 0, 0, 0.07);
+    }
+    td:first-child {
+      white-space: nowrap;
+      font-family: monospace;
+      padding-right: $pad05;
+    }
+  }
+  .buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: var(--pad-y2) 0 calc(var(--pad-y2) - var(--pad-y)) 0;
+    > :nth-child(n + 2) {
+      margin: 0 0 0 $pad075;
+    }
+  }
+  .non-windows & .buttons {
+    direction: rtl;
+    justify-content: flex-start;
+    > :nth-child(n + 2) {
+      margin: 0 $pad05 0 0;
+    }
+  }
+  button[name^="import"] {
+    line-height: 1.5rem;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  &.ready button[name^="import"] {
+    pointer-events: all;
+    opacity: 1.0;
+  }
+  .rules {
+    padding: 0 15px;
+    margin-top: 0;
+    li:nth-child(n + 2) {
+      padding-top: $pad05;
+    }
+    p {
+      margin: $pad025 0;
+    }
+  }
+  .compact-layout & {
+    &, &.big {
+      width: max-content;
+      height: min-content;
+      max-width: calc(100vw - 2rem);
+      --top: 7rem;
+      right: 1rem;
+      margin: auto;
+    }
+    &[style*="left:"] {
+      left: 1rem !important;
+      margin-top: -2.35rem;
+    }
+    :is(.CodeMirror-lint-markers, .CodeMirror-guttermarker-subtle) {
+      display: none !important;
+    }
+    .CodeMirror-linenumber {
+      padding: 0;
+    }
+  }
+}
+
+.beautify-options {
+  white-space: nowrap;
+  div {
+    float: left;
+    display: flex;
+    align-items: center;
+    &[newline="true"] + div {
+      clear: left;
+      span[indent] {
+        padding-left: 2rem;
+      }
+    }
+  }
+  > label {
+    top: 1em;
+    margin: 1ex 0;
+  }
+  &::after {
+    clear: both;
+    display: block;
+    content: "";
+    height: 1rem;
+  }
+  span {
+    font-weight: bold;
+    font-family: monospace;
+  }
+  select {
+    border: none;
+    background: var(--c95);
+    font-family: monospace;
+    font-weight: bold;
+    padding-left: 4px;
+    margin-left: 4px;
+  }
+}
+.beautify-hint {
+  width: 0;
+  min-width: 100%;
+  font-size: 90%;
+}

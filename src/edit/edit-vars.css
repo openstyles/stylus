@@ -1,0 +1,13 @@
+$pad025: var(--pad025);
+$pad05: var(--pad05);
+$pad075: var(--pad075);
+$pad: var(--pad);
+$plus-minus-pad: .5rem;
+$targetGapY: 2px;
+
+:root {
+  --pad025: .25rem;
+  --pad05: .5rem;
+  --pad075: .75rem;
+  --pad: 1rem; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
+}

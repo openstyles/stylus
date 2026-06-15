@@ -4,6 +4,7 @@ const {getBrowserlist} = require('./tools/util');
 
 module.exports = {
   plugins: [
+    'postcss-import',
     'postcss-simple-vars',
     'postcss-nested', // see 'nesting-rules' comment
     ['postcss-preset-env', {

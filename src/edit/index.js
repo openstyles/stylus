@@ -15,7 +15,6 @@ import './colorpicker-helper';
 import USWIntegration from './usw-integration';
 import './windowed-mode';
 import './edit.css';
-import '@/css/target-site.css';
 
 (async () => {
   if (loading) await loading;

@@ -1,0 +1,192 @@
+@import './edit-vars.css';
+
+.sectioned {
+  > body {
+    background-color: var(--c98);
+  }
+  #sections {
+    counter-reset: codebox;
+  }
+}
+#sections {
+  padding-left: calc(var(--header-width) + var(--header-resizer-width));
+  .usercss & {
+    min-height: 0;
+    height: 100%;
+  }
+  h2 {
+    margin-top: 1rem;
+    margin-left: 1.7rem;
+  }
+}
+.section {
+  --padL: calc($pad * 1.5);
+  padding: $pad 0; /* must be a part of section for fitToAvailableSpace */
+  > .CodeMirror {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto var(--cm-height);
+  }
+  > .applies-to li,
+  > .edit-actions {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto var(--input-height);
+  }
+  .sectioned:not(.compact-layout) & {
+    > * {
+      margin-right: $pad;
+    }
+    > :not(.applies-to) {
+      margin-left: var(--padL);
+    }
+  }
+  &:nth-child(n + 2) {
+    border-top: 1px dotted var(--c80);
+  }
+}
+.add-section::after {
+  content: attr(short-text);
+}
+#sections[data-section-count="1"] {
+  .add-section:after {
+    content: attr(long-text);
+  }
+  .remove-section {
+    display: none;
+  }
+}
+.edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  button {
+    margin-right: .2rem;
+    height: var(--input-height);
+  }
+}
+.section:not(.removed) > label {
+  display: block;
+  font-weight: bold;
+  animation: 2s highlight;
+  animation-play-state: paused;
+  animation-direction: reverse;
+  animation-fill-mode: both;
+}
+.code-label {
+  counter-increment: codebox;
+  > :first-child::after {
+    content: " " counter(codebox) ": ";
+  }
+  &.warn {
+    color: red;
+    font-size: 120%;
+    i {
+      color: red;
+      margin-left: $pad025;
+    }
+  }
+}
+.section {
+  &:only-of-type :is(.move-section-up, .move-section-down) {
+    display: none;
+  }
+  .CodeMirror {
+    margin-bottom: calc(1px + $targetGapY);
+    box-sizing: border-box;
+    min-height: 20px;
+    background-color: var(--bg);
+  }
+  /* deleted section */
+  &.removed {
+    &:first-child {
+      padding-top: $pad;
+    }
+    :is(.code-label, .applies-to, .edit-actions, .CodeMirror) {
+      display: none;
+    }
+  }
+}
+.deleted-section {
+  margin: 0;
+}
+.move-section-down:after,
+.move-section-up:after {
+  content: "";
+  display: block;
+  border: var(--side) solid transparent;
+  --side: .4em;
+}
+.move-section-up:after {
+  border-bottom: calc(var(--side) * 1.3) solid currentColor;
+  margin: -50% 0 0 0;
+}
+.move-section-down:after {
+  border-top: calc(var(--side) * 1.3) solid currentColor;
+  margin: 0 0 -60% 0;
+}
+.CodeMirror-vscrollbar,
+.CodeMirror-hscrollbar {
+  box-shadow: none !important;
+  pointer-events: auto !important; /* FF bug */
+}
+
+.resize-grip {
+  position: absolute;
+  display: block;
+  height: 6px;
+  content: "";
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9;
+  cursor: n-resize;
+  background-color: inherit;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: inherit;
+  &::after {
+    content: "";
+    bottom: 2px;
+    left: 0;
+    right: 0;
+    margin: 0 8px;
+    display: block;
+    position: absolute;
+    border-top-width: 2px;
+    border-top-style: dotted;
+    border-top-color: inherit;
+  }
+}
+.resize-grip-enabled {
+  .CodeMirror-scroll {
+    height: auto !important;;
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 6px; /* resize-grip height */
+  }
+  .CodeMirror-vscrollbar {
+    margin-bottom: 7px; /* make space for resize-grip */
+  }
+  .CodeMirror-hscrollbar {
+    bottom: 7px; /* make space for resize-grip */
+  }
+  .CodeMirror-scrollbar-filler {
+    bottom: 7px; /* make space for resize-grip */
+  }
+}
+
+#global-progress {
+  position: fixed;
+  height: 4px;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: hsla(180, 66%, 36%, .25);
+  border-left: 0 solid darkcyan;
+  z-index: 2147483647;
+  transition: opacity 2s;
+  contain: strict;
+  &:not([title]) {
+    opacity: 0;
+  }
+}

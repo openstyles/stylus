@@ -1,0 +1,74 @@
+@import '../edit-vars.css';
+
+#lint {
+  overflow-x: hidden;
+  > summary h2 {
+    display: inline-flex;
+    > :not(:hover) {
+      color: var(--fg);
+    }
+  }
+  table {
+    border-spacing: 0;
+    line-height: 1.0;
+    width: 100%;
+    font-size: 85%;
+    cursor: pointer;
+  }
+  .report {
+    display: flex;
+  }
+  .empty {
+    display: none;
+  }
+  .caption {
+    vertical-align: top;
+    line-height: 16px;
+    font-weight: bold;
+  }
+  .report:not(.empty) ~ :not(.empty) {
+    border-top: 1px dotted rgba(128, 128, 128, .5);
+    margin-top: $pad025;
+    padding-top: $pad025;
+  }
+  tr:hover {
+    background-color: hsla(180, 50%, 36%, .2);
+  }
+  td {
+    padding: 0;
+    line-height: 16px;
+    &:last-child {
+      width: 100%;
+    }
+    &[role="line"] {
+      padding-left: $pad025;
+    }
+    &[role="severity"] {
+      font-size: 0;
+      width: 16px;
+    }
+    &:is([role="line"], [role="sep"]) {
+      text-align: right;
+    }
+    &[role="col"] {
+      text-align: left;
+      padding-right: $pad025;
+    }
+    &[role="message"] {
+      text-align: left;
+      white-space: nowrap;
+    }
+  }
+}
+#issue-count::before {
+  content: ':\A0';
+}
+#message-box.center.lint-config #message-box-contents {
+  text-align: left;
+}
+#help-popup .cm-active-linter-rule {
+  font-weight: bold;
+  text-decoration: underline;
+  background-color: rgba(128, 128, 128, .2);
+}
+

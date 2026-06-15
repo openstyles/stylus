@@ -1,0 +1,168 @@
+@import './edit-vars.css';
+
+#header {
+  width: var(--header-width);
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  padding-top: $pad;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  a[href].icon {
+    margin-left: $pad05;
+  }
+}
+#heading {
+  > label {
+    margin: $pad025 0 $pad05;
+  }
+}
+h1 {
+  margin: 0;
+}
+/* basic info */
+#basic-info-name {
+  display: flex;
+  align-items: center;
+}
+#reset-name {
+  margin: 0 $pad025 0 $pad05;
+}
+#url {
+  margin-left: $pad025;
+}
+#url:not([href^="http"]) {
+  display: none;
+}
+
+#livePreview-settings {
+  display: inline-flex;
+  align-items: center;
+  summary {
+    padding-left: .4rem;
+    display: block;
+  }
+  details[open] summary i {
+    color: var(--fg);
+  }
+  main {
+    position: absolute;
+    z-index: 100;
+    right: 2em;
+    box-shadow: 2px 2px .5em var(--c65);
+    margin-top: $pad05;
+    padding: $pad;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    > input {
+      field-sizing: content;
+      padding-left: $pad05;
+      margin-right: 1ch;
+      max-width: 8ch;
+    }
+  }
+}
+#preview-errors:not([hidden]) {
+  color: var(--red1);
+  cursor: pointer;
+  display: inline-flex;
+  margin: $pad05 $pad05 -1em 0;
+  max-width: 100%;
+  .compact-layout & {
+    margin-top: 0;
+    max-width: 32vw;
+  }
+  .i-external {
+    font-size: 15px;
+  }
+}
+
+/* collapsibles */
+#details-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+  margin-top: $pad05;
+  details {
+    &[open] {
+      overflow-y: auto;
+    }
+  }
+  summary {
+    align-items: center;
+    margin-left: $pad025;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  h2 {
+    display: inline-block;
+    border-bottom: 1px dotted transparent;
+    margin: 0 0 0 -13px;
+    padding-left: 13px; /* clicking directly on details-marker doesn't set pref so we cover it with h2 */
+    max-width: calc(var(--header-width) - 2*$pad);
+    vertical-align: middle;
+    font-size: 16px;
+    &,
+    > :first-child {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+  .icon {
+    margin-top: -.1em;
+  }
+  details > :not(summary) {
+    margin: 0 $pad;
+    padding: $pad025 0;
+  }
+}
+#actions .buttons {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  > * {
+    margin-bottom: $pad05;
+    margin-right: $pad025;
+  }
+}
+.dirty #save-button {
+  &, & + button {
+    background: linear-gradient(gold, orange);
+    border-color: darkgoldenrod;
+    color: #000;
+  }
+}
+
+#toc-title[data-num]::after {
+  content: " (" attr(data-num) ")"
+}
+#toc {
+  counter-reset: codelabel;
+  &:empty::after {
+    content: attr(data-empty);
+  }
+  li {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    &.current {
+      font-weight: bold;
+    }
+    &[tabindex="-1"] {
+      opacity: .25;
+      pointer-events: none;
+    }
+    &:hover {
+      background-color: hsla(180, 50%, 36%, .2);
+    }
+    &[tabindex="0"]::before {
+      counter-increment: codelabel;
+      content: counter(codelabel) ": ";
+    }
+  }
+}

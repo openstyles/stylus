@@ -34,12 +34,13 @@ async function testParserlibOnFiles() {
   for (const file of glob.sync(SRC + '**/*.css')) {
     let text = fs.readFileSync(file, 'utf8');
     let lines;
-    if ((m = text.match(/\/\*\s*(postcss-.+?)\s*\*\//))) {
-      if (m[1] !== pcPlugins) {
-        pcPlugins = m[1];
-        pc = postcss(pcPlugins.split(/\s*,\s*|\s+/).map(s => require(s)));
-      }
-      text = await pc.process(text, {map: false, from: null});
+    if (/\$\w|@import\s+['"][@.]/.test(text)) {
+      pcPlugins ||= [
+        require('postcss-import'),
+        require('postcss-simple-vars'),
+      ];
+      pc = postcss(pcPlugins);
+      text = await pc.process(text, {map: false, from: file});
       text = text.css;
     }
     for (m of csslint.verify(text, {

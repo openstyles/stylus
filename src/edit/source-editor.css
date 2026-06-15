@@ -1,0 +1,35 @@
+@import './edit-vars.css';
+
+.usercss .CodeMirror-focused {
+  box-shadow: none;
+}
+
+.sectioned .usercss-only,
+.usercss .sectioned-only {
+  display: none !important; /* hide during page init */
+}
+
+.single-editor {
+  position: relative;
+  height: 100%;
+  .CodeMirror {
+  /* WARNING! If you change this or .single-editor make sure editor opens huge styles like GitHub Dark instantly */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    border: none;
+    outline: none;
+  }
+}
+
+.usercss .applies-to {
+  border-width: 1px 0;
+  > label::before {
+    content: attr(data-index) ":";
+    margin-right: $pad025;
+    font-size: var(--font-size);
+  }
+}

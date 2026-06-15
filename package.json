@@ -48,6 +48,7 @@
     "only-allow": "^1.2.2",
     "postcss": "^8.5.14",
     "postcss-calc": "^10.1.1",
+    "postcss-import": "^16.1.1",
     "postcss-loader": "^8.2.1",
     "postcss-nested": "^7.0.2",
     "postcss-preset-env": "^10.6.1",

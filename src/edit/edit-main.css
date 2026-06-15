@@ -1,0 +1,77 @@
+@import './edit-vars.css';
+
+.is-new-style .hide-if-new,
+.hidden {
+  display: none !important;
+}
+
+#sections {
+  padding-left: calc(var(--header-width) + var(--header-resizer-width));
+  .usercss & {
+    min-height: 0;
+    height: 100%;
+  }
+  h2 {
+    margin-top: 1rem;
+    margin-left: 1.7rem;
+  }
+}
+
+i {
+  width: 16px;
+  height: 16px;
+  &:not(.i-config) {
+    color: var(--fg);
+  }
+  &:hover {
+    color: var(--accent-1);
+  }
+}
+a.icon {
+  margin-left: .5rem;
+}
+@keyframes highlight {
+  from {
+    background-color: var(--gold1);
+  }
+}
+
+/************ full-width only ************/
+/* TODO: maybe move more rules here so we don't need to reset them in @media(max-width: 850px) */
+@media screen and (min-width: 851px), compact {
+  #header > :not(#details-wrapper):not(#header-resizer) {
+    margin-left: $pad;
+    margin-right: $pad;
+  }
+  #name {
+    width: 100%;
+  }
+  #basic-info {
+    margin-top: $pad025;
+    margin-bottom: $pad;
+  }
+  #basic-info-enabled {
+    margin-top: $pad025;
+    > :nth-last-child(n + 2) {
+      margin-right: $pad05;
+    }
+  }
+  #new-as {
+    margin: $pad05 0 $pad025;
+  }
+  #publish[open],
+  #details-wrapper details:not([open]) {
+    flex: 0 0 auto;
+  }
+  #details-wrapper details {
+    &[open]:not(:last-child) {
+      margin-bottom: $pad05;
+    }
+    &:last-child {
+      padding-bottom: $pad;
+    }
+  }
+  .settings[open] {
+    min-height: 6em;
+  }
+}

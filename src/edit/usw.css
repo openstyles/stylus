@@ -1,0 +1,74 @@
+@import './edit-vars.css';
+
+#publish {
+  > div > * {
+    margin-top: $pad075;
+  }
+  a:visited {
+    margin-top: $pad075;
+  }
+  &[data-connected] {
+    > summary::marker,
+    h2 {
+      color: hsl(180, 100%, 20%);
+    }
+    #usw-publish-style::after {
+      content: attr(data-push);
+    }
+  }
+  &:not([data-connected]) {
+    #usw-disconnect {
+      display: none;
+    }
+    #usw-publish-style::after {
+      content: attr(data-publish);
+    }
+  }
+}
+#usw-progress {
+  position: relative;
+  :is(.success, .unchanged) {
+    font-size: 150%;
+    font-weight: bold;
+    position: absolute;
+    margin-left: $pad025;
+  }
+  .success {
+    margin-top: calc(-1 * $pad025);
+    &::after {
+      content: '\2713'; /* checkmark */
+    }
+  }
+  .unchanged::after {
+    content: '=';
+  }
+  .error {
+    display: block;
+    margin-top: $pad05;
+    color: red;
+    + div {
+      font-size: smaller;
+    }
+  }
+  .lds-spinner {
+    transform: scale(0.125);
+    transform-origin: 0 calc(var(--input-height) / -3);
+  }
+}
+#usw-data {
+  > * > * {
+    margin-top: 0;
+    vertical-align: baseline;
+    --input-height: 1rem;
+  }
+  .empty label {
+    color: var(--c60);
+  }
+  input {
+    width: 100%;
+    &:not(:focus):not(:hover) {
+      background: none;
+      border-color: transparent;
+    }
+  }
+}

@@ -1,0 +1,150 @@
+@import './edit-vars.css';
+
+@media screen and (max-width: 850px), compact {
+  .usercss body {
+    display: flex;
+    flex-direction: column;
+  }
+  .usercss #header,
+  #header:not(.sticky) {
+    position: static;
+  }
+  #header {
+    flex: 0 0 auto;
+    height: unset;
+    width: 100%;
+    overflow: visible;
+    border-right: none;
+    border-bottom: 1px dashed var(--c65);
+    padding: $pad05 $pad05 0;
+    flex-flow: row wrap;
+    &.sticky {
+      box-shadow: 0 0 3rem -.75rem;
+      #basic-info {
+        margin: 0;
+      }
+      #preview-errors {
+        position: absolute;
+        top: $pad05;
+        right: $pad05;
+        margin: $pad025 0 0 !important;
+      }
+    }
+    details > :not(summary) {
+      margin-left: 0;
+    }
+    h2 {
+      font-size: 14px;
+    }
+    .settings h2 {
+      max-width: max(10vw, 8ex);
+    }
+  }
+  #header.sticky .hide-if-sticky,
+  #heading,
+  h2 {
+    display: none;
+  }
+  .popup-window {
+    #header.sticky #preview-errors {
+      right: calc($pad05 + 24px);
+    }
+    #basic-info,
+    #details-wrapper {
+      margin-right: 24px; /* popup button width + gap */
+    }
+  }
+  #basic-info {
+    margin-bottom: $pad05;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $pad05;
+    #header:not(.sticky) & {
+      width: 100%;
+      align-items: center;
+    }
+    #name,
+    > *:first-child {
+      flex-grow: 1;
+    }
+    > a {
+      order: 1;
+      align-self: center;
+    }
+  }
+  #basic-info-enabled {
+    display: flex;
+    flex-flow: wrap;
+    align-items: center;
+    gap: $pad025 $pad075;
+  }
+  #new-as {
+    order: 1;
+  }
+  #actions .buttons {
+    flex-wrap: nowrap;
+  }
+  #details-wrapper {
+    display: inline-flex;
+    vertical-align: top;
+    max-width: 100%;
+    flex-direction: row;
+    margin: $pad025 $pad025 $pad05;
+    > details[open] {
+      z-index: 50;
+      &:is(:hover, :focus-within) {
+        z-index: 51;
+      }
+      > summary {
+        + * {
+          position: absolute;
+          overflow: hidden auto;
+          max-height: var(--max-height, 25vh);
+          max-width: calc(100vw - 2 * $pad);
+          background: var(--bg);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
+          padding: $pad;
+        }
+      }
+    }
+  }
+  #options > main {
+    display: flex;
+    flex-wrap: wrap;
+    > :first-child {
+      margin: 0 1em 0 0;
+    }
+    > :nth-child(n + 2) {
+      margin: 0;
+    }
+  }
+  @media (max-height: 500px) {
+    #details-wrapper {
+      --max-height: 50px;
+    }
+  }
+  #toc,
+  .lint-report-container {
+    max-width: 50vw;
+  }
+  #publish[open],
+  #lint:not([open]) {
+    flex: 0 0 auto;
+    overflow-x: hidden;
+  }
+  #publish dd {
+    white-space: normal;
+    max-height: 1.25em;
+  }
+  #sections {
+    padding: 0;
+  }
+  .section {
+    padding: $pad05;
+  }
+  .single-editor {
+    overflow: hidden;
+    flex: 1;
+  }
+}
