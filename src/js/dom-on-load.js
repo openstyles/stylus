@@ -220,7 +220,7 @@ function onClickCapture(event) {
     event.preventDefault();
     if (note) {
       event.stopPropagation();
-      showTooltipNote(note);
+      showTooltipNote(el);
     }
   }
 }
