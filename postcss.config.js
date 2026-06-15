@@ -1,11 +1,13 @@
 'use strict';
 
-const {getBrowserlist} = require('./tools/util');
+const {getBrowserlist, getBrowserTargets} = require('./tools/util');
+const targets = Object.fromEntries(getBrowserTargets());
 
 module.exports = {
   plugins: [
     'postcss-import',
     'postcss-simple-vars',
+    (targets.chrome < 120 || targets.firefox < 117) && // nesting added in these versions
     'postcss-nested', // see 'nesting-rules' comment
     ['postcss-preset-env', {
       browsers: getBrowserlist(),
@@ -21,5 +23,5 @@ module.exports = {
         'prefers-color-scheme-query': false, // we manually handle it via cssRules
       },
     }],
-  ],
+  ].filter(Boolean),
 };

@@ -284,10 +284,6 @@ body {
       line-height: var(--entry-h);
       pointer-events: none;
     }
-    html[style*="border"] &::before {
-      /* the "show side borders" option adds 2px */
-      right: 7px;
-    }
     &:hover::before {
       color: var(--c50);
     }

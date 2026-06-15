@@ -42,15 +42,17 @@ function escapeToRe(str, flags) {
   return new RegExp(str.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&'), flags);
 }
 
+function getBrowserTargets() {
+  return [
+    BUILD !== 'firefox' && ['chrome', require(SRC + MANIFEST_OVR).minimum_chrome_version],
+    BUILD !== 'chrome' && ['firefox', require(SRC + MANIFEST_OVR.replace('.', '-firefox.'))
+      .browser_specific_settings.gecko.strict_min_version],
+  ].filter(Boolean);
+}
+
 function getBrowserlist() {
-  return Object.entries({
-    Chrome: BUILD !== 'firefox' &&
-      require(SRC + MANIFEST_OVR).minimum_chrome_version,
-    Firefox: BUILD !== 'chrome' &&
-      require(SRC + MANIFEST_OVR.replace('.', '-firefox.'))
-        .browser_specific_settings.gecko.strict_min_version,
-  }).map(([name, ver]) => ver && `${name} >= ${parseFloat(ver)}`)
-    .filter(Boolean);
+  return getBrowserTargets()
+    .map(([name, ver]) => ver && `${name} >= ${parseFloat(ver)}`);
 }
 
 function transESM2var(buf, from) {
@@ -94,6 +96,7 @@ module.exports = {
   escapeForRe,
   escapeToRe,
   getBrowserlist,
+  getBrowserTargets,
   makePatchOptions,
   nukeHtmlSpaces,
   transESM2var,
