@@ -146,11 +146,10 @@ Object.assign(CodeMirror.prototype, {
    * @param {boolean} [force]
    */
   setPreprocessor(meta, force) {
-    const pp = meta.preprocessor;
-    const name = getPreprocessorMode(pp);
+    const name = getPreprocessorMode(meta);
     const m = this.doc.mode;
     const {helperType} = m;
-    if (force || (helperType ? helperType !== pp : m.name !== name)) {
+    if (force || (helperType ? helperType !== meta.preprocessor : m.name !== name)) {
       this.setOption('mode', name);
     }
     return name;

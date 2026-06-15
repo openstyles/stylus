@@ -23,8 +23,6 @@ export default function SourceEditor() {
   const style = editor.style;
   const dirty = editor.dirty;
   let savedGeneration;
-  /** @type {UsercssData['preprocessor']} */
-  let preprocessor;
   let prevMode = NaN;
   let prevSel;
   let updateTocFocusPending;
@@ -36,7 +34,7 @@ export default function SourceEditor() {
   const [DEFAULT_TEMPLATE, TEMPLATE, TEMPLATE_DATA] = editor.template;
   const initialCode = style.id ? style.sourceCode : setupNewStyle(TEMPLATE || DEFAULT_TEMPLATE);
   const cm = cmFactory.create($('#sections').appendChild($create('.single-editor')), {
-    mode: getPreprocessorMode(preprocessor = (style[UCD] ||= TEMPLATE_DATA).preprocessor),
+    mode: getPreprocessorMode(style[UCD] ||= TEMPLATE_DATA),
     value: initialCode,
   }, me => {
     const si = editor.applyScrollInfo(me) || {};
@@ -142,7 +140,7 @@ export default function SourceEditor() {
   function updateLinterSwitch() {
     const select = template[kEditorSettings].$(`[id="${pEditorLinter}"]`);
     const option = select.$('[value="csslint"]');
-    const fancyMode = getPreprocessorMode(preprocessor);
+    const fancyMode = prevMode !== 'css';
     const ovr = curLinter && fancyMode && 'stylelint';
     option.disabled = fancyMode;
     option.title = fancyMode ? t('linterCSSLintIncompatible', fancyMode) : '';
@@ -175,7 +173,6 @@ export default function SourceEditor() {
     const meta = style[UCD];
     const mode = cm.setPreprocessor(meta);
     if (mode !== prevMode) {
-      preprocessor = meta.preprocessor;
       prevMode = mode;
       if (!init) {
         updateLinterSwitch();
