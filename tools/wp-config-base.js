@@ -104,6 +104,7 @@ const [terserOwn, terserVendor] = [true, false].map(isOwn => new TerserPlugin({
     mangle: {
       keep_classnames: true,
       keep_fnames: /^(?!(__)?webpack|onScriptComplete)/i,
+      reserved: isOwn ? new Set() : null,
     },
   },
 }));
