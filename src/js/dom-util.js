@@ -186,7 +186,7 @@ export function setupLiveDetails() {
   const mo = new MutationObserver(saveOnChange);
   const moCfg = {attributes: true, attributeFilter: ['open']};
   const SEL = 'details[data-pref]';
-  const SEL_NO_SAVE = '.ignore-pref, .compact-layout .ignore-pref-if-compact';
+  const SEL_NO_SAVE = '[data-peek], .compact-layout .ignore-pref-if-compact';
   for (const el of $$(SEL)) {
     prefs.subscribe(el.dataset.pref, updateOnPrefChange, true);
     mo.observe(el, moCfg);
@@ -256,7 +256,10 @@ export function setupLivePrefs(ids) {
       const oldValue = getValue(el);
       const diff = !isSame(el, oldValue, value);
       const type = el.type;
-      if (type === 'select-one'
+      const isSelect = type === 'select-one';
+      if (isSelect && el.$(`option[value="${value}"]`)?.disabled)
+        return;
+      if (isSelect
       && !__.MV3 && !cssFieldSizing && (init || diff) && el.classList.contains('fit-width')) {
         fitSelectBox(el, value, init); /* global fitSelectBox */
       } else if (diff) {

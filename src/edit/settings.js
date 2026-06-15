@@ -21,9 +21,8 @@ for (const [id, init, tpl] of [
 ]) {
   const el = $(id);
   const onPref = (key, val) => {
-    if (!val)
+    if (!val || !onDetailsToggled.delete(el) /* already ran from another subscription source */)
       return;
-    onDetailsToggled.delete(el);
     prefs.unsubscribe(key, onPref);
     template[tpl] = el.appendChild($create('main', template[tpl]));
     init(el);
