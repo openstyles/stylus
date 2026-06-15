@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@automattic/webpack-inline-constant-exports-plugin": "^1.0.0",
-    "@babel/core": "^7.29.0",
+    "@babel/core": "^7.29.6",
     "@babel/plugin-transform-runtime": "^7.29.0",
     "@babel/preset-env": "^7.29.5",
     "@types/chrome": "^0.1.42",
