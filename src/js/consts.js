@@ -51,7 +51,9 @@ export const IMPORT_THROTTLE = 100; //ms
 
 export const BIT_DARK = 1;
 export const BIT_SYS_DARK = 2;
+//#endregion
 
+//#region colors
 export const BIT_COLOR_COMMA = 1;
 export const BIT_COLOR_NAME_A = 2;
 export const BIT_COLOR_PCT_X = 4;
@@ -69,7 +71,12 @@ export const COLOR_HSL = 3;
 export const COLOR_HWB = 4;
 export const COLOR_HSV = 5;
 
+export const CP = 'colorpicker';
+export const SWATCH_CLS = 'colorview-swatch';
+export const SWATCH_PROP = `--${SWATCH_CLS}`;
+export const kHexUppercase = 'hexUppercase';
 export const HEX_RETAIN_CASE = 2;
+//#endregion
 
 //#region CSS
 export const kAtRuleNoUnknown = 'at-rule-no-unknown';

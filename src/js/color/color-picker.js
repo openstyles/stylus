@@ -1,8 +1,9 @@
-import {COLOR_HEX, COLOR_HSL, COLOR_HWB, COLOR_RGB, HEX_RETAIN_CASE} from '@/js/consts';
+import {
+  COLOR_HEX, COLOR_HSL, COLOR_HWB, COLOR_RGB, HEX_RETAIN_CASE, kHexUppercase,
+} from '@/js/consts';
 import {paintCanvas} from '@/js/util-webext';
 import Color, {constrain, constrainHue, formatAlpha} from './color-converter';
 import colorMimicry from './color-mimicry';
-import {kHexUppercase} from './util';
 import './color-picker.css';
 
 export default function ColorPicker(cm) {

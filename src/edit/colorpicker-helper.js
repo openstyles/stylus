@@ -1,7 +1,7 @@
 import {CodeMirror, extraKeys} from '@/cm';
+import {CP, kHexUppercase} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import '@/js/color/color-view';
-import {CP, kHexUppercase} from '@/js/color/util';
 import {t} from '@/js/util';
 import cmFactory from './codemirror-factory';
 

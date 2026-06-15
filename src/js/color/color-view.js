@@ -1,9 +1,8 @@
 import {CodeMirror} from '@/cm';
-import {COLOR_HSL, COLOR_HWB, COLOR_RGB} from '@/js/consts';
+import {COLOR_HSL, COLOR_HWB, COLOR_RGB, CP, SWATCH_CLS, SWATCH_PROP} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
 import Color, {parseColorFunc} from './color-converter';
 import ColorPicker from './color-picker';
-import {CP, SWATCH_CLS, SWATCH_PROP} from './util';
 
 //#region Constants
 

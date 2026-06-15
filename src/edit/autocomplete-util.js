@@ -1,6 +1,5 @@
 import {NAMED_COLORS} from '@/js/color/color-converter';
-import {SWATCH_CLS, SWATCH_PROP} from '@/js/color/util';
-import {kCssPropSuffix} from '@/js/consts';
+import {kCssPropSuffix, SWATCH_CLS, SWATCH_PROP} from '@/js/consts';
 import {debounce} from '@/js/util';
 
 const MARK = $tag('b');
