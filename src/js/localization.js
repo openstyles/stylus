@@ -12,7 +12,7 @@
  */
 import {t} from './util';
 
-/** @type {TemplateCache} */
+/** @type {{[id:string]: Element|DocumentFragment}} */
 export const template = /*@__PURE__*/Object.create(new Proxy({__proto__: null}, {
   get: (obj, k) => createTemplate($(`template[data-id="${k}"]`)),
 }));
