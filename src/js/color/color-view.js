@@ -17,7 +17,7 @@ const rxNonWord = /\W|$/iy;
 let timerChanges, timerInvisible;
 let generation = 0;
 /** @type {RegExp} */
-let RX_PARENS, RX_UNSUPPORTED;
+let RX_UNSUPPORTED;
 // on initial paint the view doesn't have a size yet
 // so we process the maximum number of lines that can fit in the window
 let maxRenderChunkSize = Math.ceil(window.innerHeight / 14);
@@ -69,21 +69,18 @@ class ColorSwatcher {
     this.markersToRemove = [];
     this.markersToRepaint = [];
     this.popup = ColorPicker(cm);
-    if (!RX_PARENS) {
-      RX_PARENS = /[()]|\/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$)/g;
-      if (!__.MV3 && (CHROME < 125 || FIREFOX < 128)) {
-        RX_UNSUPPORTED = [
-          ['#abcd', '#(.{4}){1,2}$'],
-          ['hwb(1 0% 0%)', '^hwb\\('],
-          ['rgb(1e2,0,0)', '\\de'],
-          ['rgb(1.5,0,0)', String.raw`^rgba?\((([^,]+,){0,2}[^,]*\.|(\s*\S+\s+){0,2}\S*\.)`],
-          ['rgb(1,2,3,.5)', '[^a]\\(([^,]+,){3}'],
-          ['rgb(1,2,3,50%)', String.raw`\((([^,]+,){3}|(\s*\S+[\s/]+){3}).*?%`],
-          ['rgb(1 2 3 / 1)', '^[^,]+$'],
-          ['hsl(1turn, 2%, 3%)', 'deg|g?rad|turn'],
-        ].map(e => !CSS.supports('color', e[0]) && e[1]).filter(Boolean).join('|') || null;
-        RX_UNSUPPORTED &&= new RegExp(RX_UNSUPPORTED, 'i');
-      }
+    if (RX_UNSUPPORTED === undefined && !__.MV3 && (CHROME < 125 || FIREFOX < 128)) {
+      RX_UNSUPPORTED = [
+        ['#abcd', '#(.{4}){1,2}$'],
+        ['hwb(1 0% 0%)', '^hwb\\('],
+        ['rgb(1e2,0,0)', '\\de'],
+        ['rgb(1.5,0,0)', String.raw`^rgba?\((([^,]+,){0,2}[^,]*\.|(\s*\S+\s+){0,2}\S*\.)`],
+        ['rgb(1,2,3,.5)', '[^a]\\(([^,]+,){3}'],
+        ['rgb(1,2,3,50%)', String.raw`\((([^,]+,){3}|(\s*\S+[\s/]+){3}).*?%`],
+        ['rgb(1 2 3 / 1)', '^[^,]+$'],
+        ['hsl(1turn, 2%, 3%)', 'deg|g?rad|turn'],
+      ].map(e => !CSS.supports('color', e[0]) && e[1]).filter(Boolean).join('|') || null;
+      RX_UNSUPPORTED &&= new RegExp(RX_UNSUPPORTED, 'i');
     }
     this.colorize();
     for (const name in CM_EVENTS)
