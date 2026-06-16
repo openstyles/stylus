@@ -58,6 +58,7 @@ const VARS = {
   MIRROR_PREFIX_LEN: MIRROR_PREFIX.length,
   MV3,
   PAGE_BG: PAGE_BG.split('/').pop(),
+  PREFS: 'prefs', // hiding the global from IDE
   ZIP: !!ZIP,
 };
 const DEBUG_MODE = {

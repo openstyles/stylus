@@ -13,6 +13,7 @@ import '@/content/apply'; // must run after msg (swaps `API`) and util-webext (e
 
 export let mqCompact;
 
+global[__.PREFS] = prefs; // similarly to global.API exposing it for debugging
 prefs.subscribe('disableAll', (_, val) => {
   $rootCL.toggle('all-disabled', val);
 }, true);
