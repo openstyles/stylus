@@ -1,3 +1,8 @@
+minimumReleaseAgeExclude:
+  - ws@8.21.0
+  - js-yaml@4.1.2
+  - '@babel/core@7.29.1'
+
 neverBuiltDependencies:
   - csslint-mod
 
