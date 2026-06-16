@@ -6,7 +6,7 @@ let CSSLint, stylelint;
 
 const loadCSSLint = () => (parserlib || loadParserlib()) && load('csslint.js', 'CSSLint');
 const loadStylelint = mode => (
-  mode === 'stylus' && loadStylusLang() || (
+  stylusLang || mode === 'stylus' && loadStylusLang() || (
     // TODO: fix stylint-bundle so it reads the `stylus` global on demand and not on startup
     global.stylus = Object.create(new Proxy({}, {
       get: (obj, key) => (obj[key] ||= (stylusLang || loadStylusLang())[key]),
