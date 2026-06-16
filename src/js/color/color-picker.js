@@ -536,7 +536,7 @@ export default function ColorPicker(cm) {
     if (!event.button && !hasModifiers(event)) {
       captureMouse(event, 'popup');
       $root.dataset.moving = '';
-      const [x, y] = ($root.style.transform.match(/[-.\d]+/y) || []).map(parseFloat);
+      const [x, y] = ($root.style.transform.match(/[-.\d]+/g) || []).map(parseFloat);
       dragging.popupX = event.clientX - (x || 0);
       dragging.popupY = event.clientY - (y || 0);
       document.addEventListener('mouseup', onPopupMoveEnd);
@@ -685,7 +685,7 @@ export default function ColorPicker(cm) {
       userActivity &&
       Object.values($inputs[currentFormat]).every(el => el.checkValidity())
     ) {
-      lastOutputColor = colorString.replace(/\b0\./y, '.');
+      lastOutputColor = colorString.replace(/\b0\./g, '.');
       if (isCallable) {
         options.callback(lastOutputColor);
       }
