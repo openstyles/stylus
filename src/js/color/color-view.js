@@ -137,7 +137,6 @@ function colorizeAll(state) {
     return;
   }
   if (!curOp) cm.startOperation();
-  state.inComment = null;
   state.cnt = 0;
   state.stopAt = 0;
   generation++;
@@ -285,8 +284,6 @@ function colorizeChangesLater() {
 function colorizeLineViaStyles(state, line, lineHandle) {
   const {styles, text} = lineHandle;
   const stylesLen = styles.length;
-  // all comments may get blanked out in the loop
-  const endsWithComment = text.endsWith('*/');
   let spanIndex = 0;
   let span, style;
   let {markedSpans} = lineHandle;
@@ -403,7 +400,6 @@ function colorizeLineViaStyles(state, line, lineHandle) {
           m.marker.className === SWATCH_CLS)
         state.markersToRemove.push(m.marker);
 
-  state.inComment = style?.includes('comment') && !endsWithComment;
   if (state.stopAt
   && (state.cnt += stylesLen) > 2 * 100 // only waste time on performance.now() every ~100 tokens
   && (state.cnt = 0, performance.now() > state.stopAt)) {
