@@ -57,7 +57,6 @@ import {t} from '@/js/util';
   async function updateButtons(evt) {
     const state = status.state;
     const isConnected = state === connected;
-    const isNone = elCloud.value === 'none';
     const off = state === disconnected;
     const drv = status.drive;
     if (drv) elCloud.value = drv;
@@ -72,12 +71,12 @@ import {t} from '@/js/util';
       el.hidden = el.dataset.drive !== elCloud.value;
       el.disabled = !off;
     }
-    $toggleDataset(elSync, 'enabled', !isNone);
+    $toggleDataset(elSync, 'enabled', !!drv);
     syncOpts ??= await API.sync.getDriveOptions(elCloud.value);
     for (const el of $$driveOptions()) {
       el.value = syncOpts[el.dataset.option] || '';
     }
-    if (evt && isNone)
+    if (evt && !drv)
       prefsSet(pSync, 'none');
     syncOpts = null; // clearing the initial value from clientData so that next time API is called
   }

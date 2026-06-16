@@ -42,7 +42,7 @@ export async function config(id, prop, value) {
 /** @returns {Promise<StyleObj>} */
 export function editSave(style, msg) {
   style = mergeWithMapped(style);
-  style.updateDate = Date.now();
+  style.updateDate = style._rev = Date.now();
   draftsDB.delete(style.id).catch(NOP);
   return save(style, 'editSave', msg);
 }
