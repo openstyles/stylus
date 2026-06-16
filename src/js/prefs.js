@@ -201,7 +201,8 @@ export const set = (key, val, isSynced, ...onChangeArgs) => {
   const old = values[key];
   const def = defaults[key];
   const type = typeof def;
-  if (!type) return warnUnknown(key);
+  if (def === undefined) // we don't have undefined values in defaults
+    return warnUnknown(key);
   if (type !== typeof val) {
     val = type === 'string' ? `${val}` :
       type === 'number' ? +val || 0 :
