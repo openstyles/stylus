@@ -255,8 +255,8 @@ export function parseColorFunc(type, val, mod = 0) {
   const slash = val.indexOf('/') + 1;
   const space = slash || type === COLOR_HWB || !val.includes(',');
   if (slash) {
-    sA = val.slice(slash);
-    val = val.slice(0, slash - 1).trim();
+    sA = val.slice(slash).trimStart();
+    val = val.slice(0, slash - 1).trimEnd();
   }
   if (mod) mod |= BIT_COLOR_NAME_A;
   if (!space) mod |= BIT_COLOR_COMMA;
@@ -265,25 +265,27 @@ export function parseColorFunc(type, val, mod = 0) {
   const [s1, s2, s3] = parts;
   if (
     !(slash ? len === 3 : len === 3 || len === 4 && (sA = parts[3])) ||
-    isNaN(x = space && s1 === 'none' ? (mod |= BIT_COLOR_NONE_X, 0) :
+    (x = space && s1 === 'none' ? (mod |= BIT_COLOR_NONE_X, 0) :
       (v = s1.charCodeAt(s1.length - 1), rgb)
         ? ((pct = v === 37)) ? (mod |= BIT_COLOR_PCT_X, +s1.slice(0, -1)) : +s1
         : (/*dgn*/v === 100 || v === 103 || v === 110) && (units = RX_ANGLE.exec(s1)[0])
           ? +s1.slice(0, -units.length)
           : +s1
-    ) ||
-    isNaN(y = space && s2 === 'none' ? (mod |= BIT_COLOR_NONE_X, 0) :
+    ) !== x /* NaN detection */ ||
+    (y = space && s2 === 'none' ? (mod |= BIT_COLOR_NONE_X, 0) :
       (y = s2.charCodeAt(s2.length - 1) === 37) !== (rgb ? pct : true) ? NaN :
         y ? (mod |= BIT_COLOR_PCT_Y, +s2.slice(0, -1)) : +s2
-    ) ||
-    isNaN(z = space && s3 === 'none' ? (mod |= BIT_COLOR_NONE_X, 0) :
+    ) !== y /* NaN detection */ ||
+    (z = space && s3 === 'none' ? (mod |= BIT_COLOR_NONE_X, 0) :
       (z = s3.charCodeAt(s3.length - 1) === 37) !== (rgb ? pct : true) ? NaN :
         z ? (mod |= BIT_COLOR_PCT_Z, +s3.slice(0, -1)) : +s3
-    ) ||
-    sA != null && !(slash && sA === 'none' && (mod |= BIT_COLOR_NONE_A)) &&
-    isNaN(a = (sA = sA.trim()).charCodeAt(sA.length - 1) === 37
-      ? (mod |= BIT_COLOR_PCT_A, +sA.slice(0, -1) / 100)
-      : +sA)
+    ) !== z /* NaN detection */ ||
+    sA != null &&
+    (a = slash && sA === 'none' ? (mod |= BIT_COLOR_NONE_A, 0) :
+      sA.charCodeAt(sA.length - 1) === 37
+        ? (mod |= BIT_COLOR_PCT_A, +sA.slice(0, -1) / 100)
+        : +sA
+    ) !== a /* NaN detection */
   ) return;
   if (a < 0) a = 0; else if (a > 1) a = 1;
   if (rgb) {
