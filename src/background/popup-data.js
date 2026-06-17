@@ -3,6 +3,7 @@ import {kAboutBlank, kPopup, kStyleIds, kTabOvrToggle, kUrl} from '@/js/consts';
 import {onConnect, onDisconnect} from '@/js/msg';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {ownRoot, supported} from '@/js/urls';
+import {NOP} from '@/js/util';
 import {getActiveTab, toggleListener} from '@/js/util-webext';
 import {pingTab} from './broadcast';
 import {bgBusy} from './common';
@@ -39,7 +40,9 @@ onDisconnect[kPopup] = port => {
 
 export default async function makePopupData(tabId) {
   let tmp;
-  let tab = await (tabId != null ? browser.tabs.get(tabId) : getActiveTab());
+  let tab = await (tabId != null ? browser.tabs.get(tabId).catch(NOP) : getActiveTab());
+  if (!tab)
+    return;
   tabId ??= tab.id;
   if ((__.B_FIREFOX || __.B_ANY && FIREFOX)
   && tab.status === 'loading' && tab.url === kAboutBlank) {

@@ -2,6 +2,7 @@ import '@/js/browser';
 import {kBadFavs, kPopup, pOpenEditInWindow} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
+import {NOP} from '@/js/util';
 import {browserWindows, getActiveTab} from '@/js/util-webext';
 import {sendTab} from './broadcast';
 import {prefsDB} from './db';
@@ -135,7 +136,7 @@ async function activateTab(tab, {url, index, openerTabId} = {}) {
   }
   await Promise.all([
     browser.tabs.update(tab.id, options),
-    browserWindows?.update(tab.windowId, {focused: true}),
+    browserWindows?.update(tab.windowId, {focused: true}).catch(NOP),
     index != null && browser.tabs.move(tab.id, {index}),
   ]);
   return tab;

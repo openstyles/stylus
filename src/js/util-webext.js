@@ -2,7 +2,7 @@ import './browser';
 import {CHROME} from '@/js/ua';
 import {k_deepCopy} from './consts';
 import {ownRoot} from './urls';
-import {deepCopy} from './util';
+import {deepCopy, NOP} from './util';
 
 export let ownTab;
 // Firefox uses a different id for moz-extension://
@@ -28,11 +28,13 @@ export const closeCurrentTab = async () => {
 
 export const getOwnTab = async () => (ownTab = await browser.tabs.getCurrent() || false);
 
-export const getActiveTab = async () =>
-  (await browser.tabs.query({currentWindow: true, active: true}))[0] ||
+export const getActiveTab = async () => {
+  let [v] = await browser.tabs.query({currentWindow: true, active: true});
   // workaround for Chrome bug when devtools for our popup is focused
-  browserWindows &&
-  (await browser.tabs.query({windowId: (await browserWindows.getCurrent()).id, active: true}))[0];
+  if (!v && browserWindows && (v = await browserWindows.getCurrent().catch(NOP)))
+    [v] = await browser.tabs.query({windowId: v.id, active: true}).catch(NOP);
+  return v;
+};
 
 export const ignoreChromeError = () => chrome.runtime.lastError;
 
