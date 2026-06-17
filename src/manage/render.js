@@ -9,7 +9,7 @@ import {FIREFOX} from '@/js/ua';
 import {sessionStore, t} from '@/js/util';
 import {filterAndAppend} from './filters';
 import * as sorter from './sorter';
-import {installed, padLeft, styleToDummyEntry, UI} from './util';
+import {installed, isColumnable, styleToDummyEntry, UI} from './util';
 
 const AGES = [
   [24, 'h', t('dateAbbrHour', '\x01')],
@@ -261,8 +261,10 @@ export async function showStyles(styles, matchUrlIds) {
   const perfSource = !shouldRenderAll && (__.B_FIREFOX || __.B_ANY && FIREFOX ? Date : performance);
   const t0 = perfSource && perfSource.now();
   const renderBin = document.createDocumentFragment();
-  fitNameColumn(styles);
-  fitSizeColumn(dummies);
+  if (isColumnable) {
+    fitNameColumn(styles);
+    fitSizeColumn(dummies);
+  }
   updateTotal(num);
   let numIconized; // keeping it undefined so the comparison is false if favicons are disabled
   if (num) for (let i = 0, entry, done; ; i++) {

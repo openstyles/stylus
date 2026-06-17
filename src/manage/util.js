@@ -6,6 +6,7 @@ import * as UI from './ui';
 
 export {UI};
 export const installed = $('#installed');
+export const isColumnable = screen.availWidth > 500;
 
 export const queue = Object.assign([], {
   styles: new Map(),

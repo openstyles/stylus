@@ -4,7 +4,7 @@ import {debounce, t} from '@/js/util';
 import {fitNameColumn, fitSizeColumn} from './render';
 import * as router from './router';
 import {updateStripes} from './sorter';
-import {installed} from './util';
+import {installed, isColumnable} from './util';
 
 export const filtersSelector = {
   hide: '',
@@ -140,7 +140,7 @@ function buildFilter(hide) {
 }
 
 export function filterAndAppend({entry, container}, alreadySearched) {
-  if (!container) {
+  if (!container && isColumnable) {
     fitNameColumn(undefined, entry.styleMeta);
     fitSizeColumn(undefined, entry);
   }
