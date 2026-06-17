@@ -114,7 +114,7 @@ export async function editSave(style, msg) {
  */
 export function find(data, returnBoolean) {
   const res = data.id
-    ? styleMan.get(data.id)
+    ? styleMap.get(data.id)
     : styleMan.find(makeUserCssFindFilter(data[UCD] || data), UCD);
   return returnBoolean ? !!res : res;
 }
@@ -130,8 +130,8 @@ export async function install(style, opts) {
 export async function parse(style, {dup, vars} = {}) {
   if (!style[UCD])
     style = await buildMeta(style);
-  // preserve style.vars during update
-  style.id ??= (dup ??= find(style)) && dup.id;
-  vars ??= dup;
-  return buildCode(style, vars);
+  // preserve style vars during update
+  dup ||= find(style);
+  style.id ||= dup?.id;
+  return buildCode(style, vars || dup);
 }
