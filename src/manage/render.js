@@ -57,7 +57,8 @@ function createAgeText(el, style) {
       const rounded = Math.round(val);
       if (rounded < max) {
         el.textContent = text.replace('\x01', rounded);
-        el.dataset.value = padLeft(Math.round(rounded), 2) + unit;
+        // Padding allows styling "bigness" of a value via amount of spaces at the beginning
+        el.dataset.value = `${Math.round(rounded)}`.padStart(2) + unit;
         break;
       }
       val /= max;

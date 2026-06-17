@@ -34,12 +34,6 @@ export function lazyAddEntryTitle({type, target}) {
   }
 }
 
-/** Adding spaces so CSS can detect "bigness" of a value via amount of spaces at the beginning */
-export function padLeft(val, width) {
-  val = `${val}`;
-  return ' '.repeat(Math.max(0, width - val.length)) + val;
-}
-
 export function objectDiff(first, second, path = '') {
   const diff = [];
   for (const key in first) {
