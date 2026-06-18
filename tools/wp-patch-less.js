@@ -45,9 +45,30 @@ module.exports = makePatchOptions([
   ],
   [LIB_LESS + 'parse-tree.js',
     [/if \(options\.(sourceMap|pluginManager)/g, 'if (0'],
+    ['const toCSSOptions = {', '$& docs: options.docs = [],'],
+  ],
+  [LIB_LESS + 'render.js',
+    ['callback(null, result', '$&, options.docs'],
   ],
   [LIB_LESS + 'transform-tree.js',
     [/if \(options\.pluginManager/g, 'if (0'],
+  ],
+  [LIB_LESS + 'tree/atrule.js',
+    [/(?<=\n\s+genCSS\(.+\{)[\s\S]+?(?=\n {4}})/,
+      'const start = this.name.toLowerCase() === "@-moz-document" ? output.add().length : -1;' +
+      '$&' +
+      'if (start >= 0) context.docs.push([value, output.add().slice(start)]);'],
+  ],
+  [LIB_LESS + 'tree/node.js',
+    [/toCSS\(context.+[\s\S]+strs\.join.+\s+}/, `${{
+      toCSS(context) {
+        let str = '';
+        this.genCSS(context, {
+          add: chunk => chunk ? (str += chunk) : str,
+          isEmpty: () => !str,
+        });
+        return str;
+      }}.toCSS}`],
   ],
   [LIB_LESS + 'environment/environment.js',
     [/if \(options\.pluginManager/g, 'if (0'],

@@ -17,36 +17,30 @@ const GLOBAL_META = Object.entries({
 /**
  * @param {string} sourceCode
  * @param {{id?: number, dup?: boolean, metaOnly?: boolean, vars?: boolean}} [opts]
- * @return {Promise<{style: StyleObj|UsercssData, dup: StyleObj|void, log: *}>}
+ * @return {Promise<{style: StyleObj, dup: StyleObj?, logs: Array}>}
  */
 export async function build(sourceCode, {id, dup, metaOnly, vars} = {}) {
-  // downloading here while install-usercss page is loading to avoid the wait
+  const logs = [];
   const style = await buildMeta({}, sourceCode);
   dup = (dup || vars) && (id ? styleMap.get(id) : find(style));
-  let log;
-  if (!metaOnly) {
-    await buildCode(style, vars && dup);
-    log = style.log; // extracting the non-enumerable prop, otherwise it won't survive messaging
-  }
-  return {style, dup, log};
+  if (!metaOnly) await buildCode(style, vars && dup, logs);
+  return {style, dup, logs};
 }
 
 /**
  * @param {StyleObj} style
  * @param {StyleObj | boolean} [oldStyleWithVars]
- * @return {Promise<*>}
+ * @param {Array} [logs]
+ * @return {Promise<StyleObj>}
  */
-export async function buildCode(style, oldStyleWithVars) {
-  const {sourceCode: code, [UCD]: {vars, preprocessor}} = style;
-  const {sections, errors, log} = await worker.compileUsercss(preprocessor, code,
-    vars && reuseStyleVars(vars, oldStyleWithVars));
-  const recoverable = errors.every(e => e.recoverable);
-  if (!sections.length || !recoverable) {
-    throw !recoverable ? errors : 'Style does not contain any actual CSS to apply.';
-  }
-  style.sections = sections;
-  // adding a non-enumerable prop so it won't be written to storage
-  if (log) Object.defineProperty(style, 'log', {value: log});
+export async function buildCode(style, oldStyleWithVars, logs) {
+  const ucd = style[UCD];
+  const {preprocessor: pp, vars} = ucd;
+  if (vars) reuseStyleVars(vars, oldStyleWithVars);
+  const [res, log, warn] = await worker.compileUsercss(style.sourceCode, pp, vars, style.id);
+  if (!res.length) throw t('emptyStyle');
+  if (log) logs?.push(log, warn);
+  style.sections = res;
   return style;
 }
 
@@ -99,12 +93,16 @@ export async function configVars(id, vars) {
   return (await styleMan.install(style, 'config'))[UCD].vars;
 }
 
+/**
+ * @param {StyleObj} style
+ * @param {{}} msg
+ * @return {Promise<{style: StyleObj, logs: Array}>}
+ */
 export async function editSave(style, msg) {
-  style = await parse(style);
-  return {
-    log: style.log, // extracting the non-enumerable prop, otherwise it won't survive messaging
-    style: await styleMan.editSave(style, msg),
-  };
+  const logs = [];
+  style = await parse(style, {}, logs); // a shallow copy
+  style = await styleMan.editSave(style, msg); // a shallow copy
+  return {style, logs};
 }
 
 /**
@@ -127,11 +125,11 @@ export async function install(style, opts) {
   return styleMan.install(await parse(style, opts));
 }
 
-export async function parse(style, {dup, vars} = {}) {
+async function parse(style, {dup, vars} = {}, logs) {
   if (!style[UCD])
     style = await buildMeta(style);
   // preserve style vars during update
   dup ||= find(style);
   style.id ||= dup?.id;
-  return buildCode(style, vars || dup);
+  return buildCode(style, vars || dup, logs);
 }

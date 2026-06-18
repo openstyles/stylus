@@ -6,37 +6,35 @@ import {loadParserlib, parserlib} from './util';
  * Extracts @-moz-document blocks into sections and the code between them into global sections.
  * Puts the global comments into the following section to minimize the amount of global sections.
  * Doesn't move the comment with ==UserStyle== inside.
- * @param {Object} _
- * @param {string} _.code
- * @param {number} [_.styleId] - used to preserve parserCache on subsequent runs over the same style
- * @returns {{sections: Array, errors: Array}}
- * @property {?number} lastStyleId
+ * @param {string} code
+ * @param {number} [styleId] - to reuse parserCache on re-runs
+ * @returns {StyleSection[]}
  */
-export default function extractSections({code, styleId}) {
+export default function extractSections(code, styleId) {
   if (!parserlib) loadParserlib();
   const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
-  const parser = new parserlib.css.Parser({
+  const opts = {
     noValidation: true,
     starHack: true,
-    topDocOnly: true,
-  });
+    styleId,
+  };
+  const parser = new parserlib.css.Parser(opts);
   const sectionStack = [{code: '', start: 0}];
-  const errors = [];
   const sections = [];
-  let mozStyle;
+  let parseError;
 
   parser.addListener('startstylesheet', () => {
-    mozStyle = parser.stream.source.string;
+    code = parser.stream.source.string; // in case it's changed due to normalization
   });
 
   parser.addListener('startdocument', e => {
     const lastSection = sectionStack[sectionStack.length - 1];
-    let outerText = mozStyle.slice(lastSection.start, e.offset);
     const lastCmt = e.start.comment?.text || '';
     const section = {
       code: '',
       start: e.brace.offset + 1,
     };
+    let outerText = code.slice(lastSection.start, e.offset);
     // move last comment before @-moz-document inside the section
     if (!lastCmt.includes('AGENT_SHEET') &&
       !/==userstyle==/i.test(lastCmt)) {
@@ -68,7 +66,7 @@ export default function extractSections({code, styleId}) {
   parser.addListener('enddocument', e => {
     const section = sectionStack.pop();
     const lastSection = sectionStack[sectionStack.length - 1];
-    section.code += mozStyle.slice(section.start, e.offset);
+    section.code += code.slice(section.start, e.offset);
     lastSection.start = e.offset + 1;
     doAddSection(section);
   });
@@ -76,36 +74,37 @@ export default function extractSections({code, styleId}) {
   parser.addListener('endstylesheet', () => {
     // add nonclosed outer sections (either broken or the last global one)
     const lastSection = sectionStack[sectionStack.length - 1];
-    lastSection.code += mozStyle.slice(lastSection.start);
+    lastSection.code += code.slice(lastSection.start);
     sectionStack.forEach(doAddSection);
   });
 
   parser.addListener('error', e => {
-    errors.push(e);
+    if (!e.recoverable || e.name === 'ParseError') {
+      parseError = e;
+      throw false;
+    }
     const min = 5; // characters to show
     const max = 100;
     const i = e.offset;
-    const a = Math.max(mozStyle.lastIndexOf('\n', i - min) + 1, i - max);
-    const b = Math.min(mozStyle.indexOf('\n', i - a > min ? i : i + min) + 1 || 1e9, i + max);
-    e.context = mozStyle.slice(a, b).trim();
+    const a = Math.max(code.lastIndexOf('\n', i - min) + 1, i - max);
+    const b = Math.min(code.indexOf('\n', i - a > min ? i : i + min) + 1 || 1e9, i + max);
+    e.context = code.slice(a, b).trim();
   });
 
   try {
-    parser.parse(code.replace(RX_META, ''), {
-      reuseCache: !extractSectionsLastStyleId || styleId === extractSectionsLastStyleId,
-    });
+    parser.parse(code.replace(RX_META, ''), {reuseCache: JSON.stringify(opts)});
   } catch (e) {
-    errors.push(e);
+    parseError = e || parseError;
   }
-  for (const err of errors) {
-    for (const [k, v] of Object.entries(err)) {
-      if (typeof v === 'object') delete err[k];
-    }
-    err.message = `${err.line}:${err.col} ${err.message}`;
+  if (parseError) {
+    for (const k in parseError)
+      if (typeof parseError[k] === 'object')
+        delete parseError[k];
+    parseError.message = `${parseError.line}:${parseError.col} ${parseError.message}`;
+    throw parseError;
   }
-  extractSectionsLastStyleId = styleId;
 
-  return {sections, errors};
+  return sections;
 
   function doAddSection(section) {
     section.code = section.code.trim();
@@ -126,5 +125,3 @@ export default function extractSections({code, styleId}) {
     sections.push(Object.assign({}, section));
   }
 }
-
-let extractSectionsLastStyleId;

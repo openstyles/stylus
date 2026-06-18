@@ -18,6 +18,7 @@ prefs.subscribe(pLivePreview, (key, value, init) => {
   else port &&= port.disconnect();
 }, true);
 
+/** @prop {(logs) => any} [_then] */
 export default function livePreview(now) {
   if (!enabled
   || !editor.style.id // not saved
@@ -48,9 +49,9 @@ async function updatePreviewer() {
     elErr.onclick = showError;
   }
   try {
-    const res = await API.styles.preview(data);
+    const logs = await API.styles.preview(data);
+    if (logs) livePreview._then?.(logs);
     elErr.hidden = true;
-    livePreview._then?.(res);
   } catch (err) {
     if (typeof err === 'string')
       err = new Error(err);

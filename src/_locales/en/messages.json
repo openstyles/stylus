@@ -376,6 +376,9 @@
   "emptyCode": {
     "message": "Style sections for this URL are empty"
   },
+  "emptyStyle": {
+    "message": "Style is empty"
+  },
   "enableStyleLabel": {
     "message": "Enable",
     "description": "Label for the button to enable a style"

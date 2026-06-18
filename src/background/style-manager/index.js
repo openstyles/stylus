@@ -315,9 +315,9 @@ export async function install(style, reason = styleMap.has(style.id) ? 'update' 
 /** @param {StyleObj} style */
 export async function preview(style) {
   let {id, sourceCode: res} = style;
-  let log;
+  let logs;
   if (res) {
-    ({log, style: res} = await usercssMan.build(res, {id: id, vars: true}));
+    ({logs, style: res} = await usercssMan.build(res, {id, vars: true}));
     delete res.enabled;
     Object.assign(style, res);
     stylePreviewMap.set(id, style);
@@ -325,7 +325,7 @@ export async function preview(style) {
     stylePreviewMap.delete(id);
   }
   broadcastStyleUpdated(style, 'editPreview');
-  return log;
+  return logs;
 }
 
 /**

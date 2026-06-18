@@ -109,7 +109,7 @@ export default function SourceEditor() {
             .filter(Boolean)
             .join('\n\n');
           if (badRe) messageBox.alert(badRe, 'danger pre', t('styleBadRegexp'));
-          showLog(res);
+          showLog(res.logs);
           // Awaiting inside `try` so that exceptions go to our `catch`
           await replaceStyle(savedStyle);
         }
@@ -131,7 +131,7 @@ export default function SourceEditor() {
     cm.focus();
   }
 
-  function showLog({log, warn} = {}) {
+  function showLog([log, warn]) {
     if (log) for (const v of log) console.log(v);
     if (warn) for (const v of warn) console.warn(v);
   }
@@ -139,10 +139,10 @@ export default function SourceEditor() {
   function updateLinterSwitch() {
     const select = template[kEditorSettings].$(`[id="${pEditorLinter}"]`);
     const option = select.$('[value="csslint"]');
-    const fancyMode = prevMode !== 'css';
-    const ovr = curLinter && fancyMode && 'stylelint';
-    option.disabled = fancyMode;
-    option.title = fancyMode ? t('linterCSSLintIncompatible', fancyMode) : '';
+    const fancyCss = prevMode !== 'css';
+    const ovr = curLinter && fancyCss && 'stylelint';
+    option.disabled = fancyCss;
+    option.title = fancyCss ? t('linterCSSLintIncompatible', fancyCss) : '';
     select.value = ovr || curLinter;
     if (ovr) overrideCurLinter(ovr);
   }

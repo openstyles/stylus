@@ -54,22 +54,20 @@ const editor = self.editor = {
 
   cancel: () => location.assign('/manage.html' + (isWindowed ? '?' + kPopup : '')),
 
-  makeScrollInfo: function () {
-    return /** @namespace EditorScrollInfoContainer */ {
-      sticky,
-      scrollY: window.scrollY,
-      /** @type {EditorScrollInfo[]} */
-      cms: editor.getEditors().map(cm => /** @namespace EditorScrollInfo */({
-        bookmarks: (cm.state.sublimeBookmarks || []).map(b => b.find()).filter(Boolean),
-        focus: cm.hasFocus(),
-        height: cm.display.wrapper.style.height.replace('100vh', ''),
-        parentHeight: cm.display.wrapper.parentElement.offsetHeight,
-        scroll: mapObj(cm.doc, null, ['scrollLeft', 'scrollTop']),
-        sel: [cm.doc.sel.ranges, cm.doc.sel.primIndex],
-        viewTo: cm.display.viewTo,
-      })),
-    };
-  },
+  makeScrollInfo: () => /** @namespace EditorScrollInfoContainer */ ({
+    sticky,
+    scrollY,
+    /** @type {EditorScrollInfo[]} */
+    cms: editor.getEditors().map(cm => /** @namespace EditorScrollInfo */({
+      bookmarks: (cm.state.sublimeBookmarks || []).map(b => b.find()).filter(Boolean),
+      focus: cm.hasFocus(),
+      height: cm.display.wrapper.style.height.replace('100vh', ''),
+      parentHeight: cm.display.wrapper.parentElement.offsetHeight,
+      scroll: mapObj(cm.doc, null, ['scrollLeft', 'scrollTop']),
+      sel: [cm.doc.sel.ranges, cm.doc.sel.primIndex],
+      viewTo: cm.display.viewTo,
+    })),
+  }),
 
   async save() {
     if (dirty.isDirty()) {

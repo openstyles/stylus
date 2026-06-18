@@ -1,11 +1,13 @@
 import Color from '@/js/color/color-converter';
 import {COLOR_HEX, COLOR_RGB} from '@/js/consts';
-import {getPreprocessorMode, styleCodeEmpty} from '../style-util';
+import {FROM_CSS, styleCodeEmpty} from '../style-util';
 import {nullifyInvalidVars} from './meta-parser';
 import extractSections from './moz-parser';
-import {less, loadLess, loadParserlib, loadStylusLang, parserlib, stylusLang} from './util';
+import {load, loadParserlib, loadStylusLang, parserlib, stylusLang} from './util';
 
 let builderChain = Promise.resolve();
+/** @type {import('less')} */
+let less;
 
 const addRootVars = (sections, vars) => {
   vars = `:root {\n${
@@ -29,7 +31,7 @@ const BUILDERS = {
 
   stylus: {
     log: true,
-    pre(source, vars, log, warn) {
+    pre(source, vars, sections, log, warn) {
       if (!stylusLang)
         loadStylusLang();
       /** Adding to the source text because `globals` needs a Node, but Evaluator fails on url()
@@ -56,18 +58,40 @@ const BUILDERS = {
   },
 
   less: {
-    async pre(source, vars) {
+    async pre(source, vars, sections) {
       let varDefs;
       if (vars) {
         varDefs = {};
         for (const key in vars)
           varDefs['@' + key] = vars[key].value;
       }
-      const res = await (less || loadLess()).render(source, {
+      less ||= load('less.js', 'less');
+      return new Promise((resolve, reject) => less.render(source, {
         math: 'parens-division',
         modifyVars: varDefs,
-      });
-      return res.css;
+        sections,
+      }, (err, res, docs) => {
+        if (err)
+          return reject(err);
+        for (let [prelude, code] of docs) {
+          const sec = {code};
+          let k, v, quote;
+          if (prelude && (prelude = Array.isArray(v = prelude.value) ? v : [prelude])) {
+            for (const node of prelude) {
+              if (typeof (v = node.value) !== 'string'
+              && (k = node.name || node.type)
+              && (k = FROM_CSS[k.toLowerCase()])
+              && (v ||= node.args?.[0])
+              && typeof ({quote} = v, v = v.value) === 'string') {
+                // TODO: use parserlib.Token.string to decode CSS escapes
+                (sec[k] ||= []).push(quote ? v.replace(/\\\\/g, '\\') : v);
+              }
+            }
+          }
+          sections.push(sec);
+        }
+        resolve(res.css);
+      }));
     },
   },
 
@@ -99,13 +123,14 @@ const BUILDERS = {
 };
 
 /**
- * @param {string} preprocessor
  * @param {string} code
+ * @param {string} preprocessor
  * @param {Object} [vars] - WARNING: each var's `value` will be overwritten
    (not a problem currently as this code runs in a worker so `vars` is just a copy)
- * @returns {Promise<{sections, errors}>}
+ * @param {number} [styleId]
+ * @returns {Promise<[StyleSection[], string[]?, string[]?]>}
  */
-export default async function compileUsercss(preprocessor, code, vars) {
+export default async function compileUsercss(code, preprocessor, vars, styleId) {
   const builder = BUILDERS[preprocessor] || (
     preprocessor == null || console.warn(`Unknown preprocessor "${preprocessor}"`),
     DEFAULT_BUILDER
@@ -117,21 +142,15 @@ export default async function compileUsercss(preprocessor, code, vars) {
   const {pre} = builder;
   const log = builder.log && [];
   const warn = log && [];
-  if (pre) {
-    // another compileUsercss may(?) become active while this one is awaited so let's chain
-    builderChain = builderChain.catch(() => {}).then(async () => {
-      code = await pre(code, vars, log, warn);
-    });
-    await builderChain;
+  let sections;
+  if (pre && (code = pre(code, vars, sections = [], log, warn)).then) {
+    builderChain = builderChain.catch(__.DEBUG ? console.log : () => {}).then(code);
+    code = await builderChain;
   }
-  const res = extractSections({code});
-  if (builder === DEFAULT_BUILDER && vars)
-    addRootVars(res.sections, vars);
-  if (log) {
-    res.log = log;
-    res.warn = warn;
-  }
-  return res;
+  sections ||= extractSections(code, styleId);
+  if (vars && builder === DEFAULT_BUILDER && sections.length)
+    addRootVars(sections[0], vars);
+  return [sections, log, warn];
 }
 
 /**

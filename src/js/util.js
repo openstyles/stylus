@@ -143,7 +143,6 @@ export function reuseStyleVars(vars, src) {
     for (const key in vars)
       if ((old = src[key]) && (old = old.value) != null)
         vars[key].value = old;
-  return vars;
 }
 
 export function tryRegExp(regexp, flags) {

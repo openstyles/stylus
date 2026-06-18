@@ -419,13 +419,10 @@ export default function SectionsEditor() {
               t('importPreprocessor'), 'pre-line',
               t('importPreprocessorTitle'))
         ) {
-          let errors, name;
-          if (!newSections) {
-            ({sections: newSections, errors} = await worker.extractSections({code}));
-          }
-          if (!newSections?.length || errors.some(e => !e.recoverable)) {
-            throw errors;
-          }
+          let name;
+          newSections ||= await worker.extractSections(code);
+          if (!newSections.length)
+            throw t('emptyStyle');
           if (meta
           && (replaceOldStyle || !style.id)
           && (name = meta[0].match(/[\r\n]\s*@name\s+(.+)|$/)[1].trim())) {
@@ -452,13 +449,11 @@ export default function SectionsEditor() {
         cm.display.wrapper.style.opacity = locked ? '.5' : '';
       }
     }
-    function showError(errors) {
+    function showError(e) {
       messageBox.show({
         className: 'center danger',
         title: t('styleFromMozillaFormatError'),
-        contents: $create('pre',
-          (Array.isArray(errors) ? errors : [errors])
-            .map(e => e.message || e).join('\n')),
+        contents: $create('pre', e.message || `${e}`),
         buttons: [t('confirmClose')],
       });
     }
