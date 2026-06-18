@@ -1,7 +1,7 @@
 import compareVersion from '@/js/cmpver';
 import {UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
-import {calcStyleDigest, styleSectionsEqual} from '@/js/sections-util';
+import {calcStyleDigest, styleSectionsEqual} from '@/js/style-util';
 import {chromeLocal} from '@/js/storage-util';
 import {extractUsoaId, isCdnUrl, isLocalhost, rxGF, usoApi} from '@/js/urls';
 import {debounce, deepMerge, getHost, NOP, RX_META, sleep} from '@/js/util';

@@ -2,7 +2,7 @@ import {$create} from '@/js/dom';
 import {formatRelativeDate} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
-import {styleToCss} from '@/js/sections-util';
+import {styleToCss} from '@/js/style-util';
 import {clamp, debounce, NOP, t} from '@/js/util';
 import editor from './editor';
 import {helpPopup, showCodeMirrorPopup} from './util';

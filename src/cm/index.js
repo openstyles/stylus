@@ -2,6 +2,7 @@ import {pEditorLinter, pKeyMap} from '@/js/consts';
 import {template} from '@/js/localization';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
+import {getPreprocessorMode} from '@/js/style-util';
 import {WINDOWS} from '@/js/ua';
 import {deepMerge} from '@/js/util';
 import CM from 'codemirror';
@@ -35,7 +36,6 @@ import 'codemirror/mode/stylus/stylus';
 import '@/vendor-overwrites/codemirror-addon/match-highlighter.js';
 import './css';
 import {THEME_KEY} from './themes';
-import {getPreprocessorMode} from './util';
 import './index.css';
 
 export const CodeMirror = CM; // workaround for webpack's `codemirror_default()` import

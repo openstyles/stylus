@@ -1,5 +1,5 @@
 import {kExclusions, kInclusions} from '@/js/consts';
-import {styleCodeEmpty} from '@/js/sections-util';
+import {styleCodeEmpty} from '@/js/style-util';
 import {ownRoot} from '@/js/urls';
 import {globAsRegExpStr, RX_MAYBE_REGEXP, tryURL} from '@/js/util';
 import {styleMap} from './util';

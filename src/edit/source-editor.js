@@ -1,5 +1,4 @@
 import {CodeMirror} from '@/cm';
-import {getPreprocessorMode} from '@/cm/util';
 import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
 import {kEditorSettings, pEditorLinter, UCD} from '@/js/consts';
 import {$create, $createLink, $isTextInput} from '@/js/dom';
@@ -7,7 +6,7 @@ import {messageBox} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
-import {styleToCss} from '@/js/sections-util';
+import {getPreprocessorMode, styleToCss} from '@/js/style-util';
 import {makeUserCssFindFilter, NOP, reuseStyleVars, t} from '@/js/util';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';

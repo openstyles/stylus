@@ -5,7 +5,7 @@ import {messageBox, setInputValue} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
-import {styleSectionsEqual, styleToCss} from '@/js/sections-util';
+import {styleSectionsEqual, styleToCss} from '@/js/style-util';
 import {clipString, RX_META, sleep0, t} from '@/js/util';
 import {iconize} from './applies-to';
 import editor, {scrollInfo} from './editor';

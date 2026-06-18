@@ -1,5 +1,5 @@
 import {kExclusions, kInclusions, kOverridden, kTabOvr} from '@/js/consts';
-import {styleCodeEmpty} from '@/js/sections-util';
+import {styleCodeEmpty} from '@/js/style-util';
 import {themeAllowsStyle} from '../color-scheme';
 import {urlMatchOverride, urlMatchSection} from './matcher';
 import {styleMap, stylePreviewMap} from './util';

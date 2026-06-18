@@ -1,3 +1,5 @@
+import {mimeLESS} from '@/js/consts';
+
 export const TO_CSS = {
   domains: 'domain',
   urlPrefixes: 'url-prefix',
@@ -13,6 +15,16 @@ export const FROM_CSS = {
 const STYLE_CODE_EMPTY_RE =
   /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/iyu;
 const rxEscape = /[\\"]/g;
+
+/**
+ * @param {UsercssData | UsercssData['preprocessor']} u
+ * @param {boolean} [omitVanilla] - return `false` when using vanilla CSS
+ * @return {'less'|'stylus'|'css' | false}
+ */
+export const getPreprocessorMode = (u, omitVanilla) =>
+  (u = typeof u === 'string' ? u : u.preprocessor) === 'less' ? mimeLESS
+    : u === 'stylus' ? u
+      : !omitVanilla && 'css';
 
 /**
  * @param {StyleObj} style

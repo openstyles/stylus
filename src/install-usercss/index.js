@@ -7,7 +7,7 @@ import {configDialog, messageBox, showSpinner} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
-import {styleCodeEmpty} from '@/js/sections-util';
+import {styleCodeEmpty} from '@/js/style-util';
 import {renderTargetIcons} from '@/js/target-icons';
 import {isLocalhost} from '@/js/urls';
 import {clipString, debounce, deepEqual, sessionStore, t, tryURL} from '@/js/util';

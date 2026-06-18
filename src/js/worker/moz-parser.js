@@ -1,4 +1,4 @@
-import {FROM_CSS} from '../sections-util';
+import {FROM_CSS} from '../style-util';
 import {RX_META} from '../util';
 import {loadParserlib, parserlib} from './util';
 

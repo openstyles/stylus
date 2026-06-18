@@ -4,7 +4,7 @@ import {$toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
-import {FROM_CSS, TO_CSS} from '@/js/sections-util';
+import {FROM_CSS, TO_CSS} from '@/js/style-util';
 import {debounce} from '@/js/util';
 import {
   C_ITEM, C_LIST, C_TYPE, C_VALUE, iconize, tplAppliesTo, tplAppliesToItem,

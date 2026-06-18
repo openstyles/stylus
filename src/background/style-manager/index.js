@@ -3,7 +3,7 @@ import {
   pDisableAll, pExposeIframes, pKeepAlive, pPatchCsp, pStyleViaASS, pStyleViaXhr, UCD,
 } from '@/js/consts';
 import {__values} from '@/js/prefs';
-import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
+import {calcStyleDigest, styleCodeEmpty} from '@/js/style-util';
 import {calcObjSize, isEmptyObj, mapObj, NOP} from '@/js/util';
 import {broadcast, broadcastExtension, sendTab} from '../broadcast';
 import * as colorScheme from '../color-scheme';

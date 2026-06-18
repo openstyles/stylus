@@ -1,6 +1,6 @@
 import Color from '@/js/color/color-converter';
 import {COLOR_HEX, COLOR_RGB} from '@/js/consts';
-import {styleCodeEmpty} from '../sections-util';
+import {getPreprocessorMode, styleCodeEmpty} from '../style-util';
 import {nullifyInvalidVars} from './meta-parser';
 import extractSections from './moz-parser';
 import {less, loadLess, loadParserlib, loadStylusLang, parserlib, stylusLang} from './util';

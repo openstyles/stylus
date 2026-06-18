@@ -4,7 +4,7 @@ import {$create, $toggleDataset} from '@/js/dom';
 import {animateElement, messageBox, scrollElementIntoView} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
-import {styleJSONseemsValid, styleSectionsEqual} from '@/js/sections-util';
+import {styleJSONseemsValid, styleSectionsEqual} from '@/js/style-util';
 import {MOBILE} from '@/js/ua';
 import {clipString, debounce, deepCopy, deepEqual, hasOwn, isEmptyObj, RX_META, t} from '@/js/util';
 import {addEntryTitle, queue} from './util';

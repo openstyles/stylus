@@ -2,7 +2,7 @@ import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
 import {getStyleAtPos, rxUniBody} from '@/cm/util';
 import {kCodeMirror} from '@/js/consts';
 import * as prefs from '@/js/prefs';
-import {styleJSONseemsValid, styleToCss} from '@/js/sections-util';
+import {styleJSONseemsValid, styleToCss} from '@/js/style-util';
 import {tryJSONparse} from '@/js/util';
 import editor from './editor';
 import {rerouteHotkeys} from './util';
