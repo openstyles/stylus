@@ -23,7 +23,6 @@ const makeRandomUUID = crypto.randomUUID?.bind(crypto) || !__.MV3 && (() => {
 const MISSING_PROPS = {
   name: style => `ID: ${style.id}`,
   _id: makeRandomUUID,
-  _rev: Date.now,
 };
 
 const hasVarsAndImport = ({code}) => code.startsWith(':root {\n  --') && /@import\s/i.test(code);
@@ -36,6 +35,7 @@ const hasVarsAndImport = ({code}) => code.startsWith(':root {\n  --') && /@impor
 export function fixKnownProblems(style, revive) {
   let res = 0;
   let v;
+  res += fixRevision(style) || 0;
   for (const key in MISSING_PROPS) {
     if (!style[key]) {
       style[key] = MISSING_PROPS[key](style);
@@ -94,6 +94,14 @@ export function fixKnownProblems(style, revive) {
     return usercssMan.buildCode(style);
   }
   return res && style;
+}
+
+export function fixRevision(style) {
+  const upd = style.updateDate;
+  if ((upd || 1) > (style._rev || 0)) {
+    style._rev = upd || Date.now();
+    return true;
+  }
 }
 
 /** Default homepage URL for external styles installed from a known distro */

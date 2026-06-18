@@ -8,7 +8,7 @@ import * as colorScheme from '../color-scheme';
 import {bgInit, onSchemeChange} from '../common';
 import {db, draftsDB, execMirror, prefsDB} from '../db';
 import './init';
-import {fixKnownProblems} from './fixer';
+import {fixKnownProblems, fixRevision} from './fixer';
 import {broadcastStyleUpdated, setOrderImpl, storeInMap, styleMap, stylePreviewMap} from './util';
 
 bgInit.push(initStyleMap);
@@ -62,6 +62,7 @@ async function initStyleMap() {
   for (let i = 0, fix; i < styles.length; i++) {
     const style = styles[i];
     if (+style.id > 0 && typeof style._id === 'string' && styleJSONseemsValid(style)) {
+      fixRevision(style);
       storeInMap(style);
     } else {
       try { fix = fixKnownProblems(style, true); } catch {}
