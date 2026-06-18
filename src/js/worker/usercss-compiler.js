@@ -73,11 +73,16 @@ const BUILDERS = {
       }, (err, res, docs) => {
         if (err)
           return reject(err);
-        for (let [prelude, code] of docs) {
+        res = res.css;
+        let v;
+        let prevEnd = 0;
+        for (let [prelude, code, start, end] of docs) {
+          if ((v = res.slice(prevEnd, start).trim()))
+            sections.push({code: v}); // global code before the current section
           const sec = {code};
-          let k, v, quote;
           if (prelude && (prelude = Array.isArray(v = prelude.value) ? v : [prelude])) {
             for (const node of prelude) {
+              let k, quote;
               if (typeof (v = node.value) !== 'string'
               && (k = node.name || node.type)
               && (k = FROM_CSS[k.toLowerCase()])
@@ -89,8 +94,11 @@ const BUILDERS = {
             }
           }
           sections.push(sec);
+          prevEnd = end;
         }
-        resolve(res.css);
+        if ((v = res.slice(prevEnd).trim()))
+          sections.push({code: v}); // global code at the end
+        resolve(res);
       }));
     },
   },

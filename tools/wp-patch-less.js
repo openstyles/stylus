@@ -54,10 +54,12 @@ module.exports = makePatchOptions([
     [/if \(options\.pluginManager/g, 'if (0'],
   ],
   [LIB_LESS + 'tree/atrule.js',
-    [/(?<=\n\s+genCSS\(.+\{)[\s\S]+?(?=\n {4}})/,
-      'const start = this.name.toLowerCase() === "@-moz-document" ? output.add().length : -1;' +
-      '$&' +
-      'if (start >= 0) context.docs.push([value, output.add().slice(start)]);'],
+    [/(?<=\n\s+genCSS\(.+\{)([\s\S]+?if \(rules\) \{\s+)(.+;)/,
+      'let a = this.name.toLowerCase() === "@-moz-document" ? output.add().length : -1, b, c, d;' +
+      '$1b = a >= 0 && output.add().length + !context.compress * 3;' + // skipping "{" or " {\n"
+      'context.tabLevel = -1;' +
+      '$2b && context.docs.push([value, (c = output.add()).slice(b,-1).trim(), a, c.length]);' +
+      'context.tabLevel = 0;'],
   ],
   [LIB_LESS + 'tree/node.js',
     [/toCSS\(context.+[\s\S]+strs\.join.+\s+}/, `${{
