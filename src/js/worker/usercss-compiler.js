@@ -6,7 +6,7 @@ import preStylus from './pre-stylus';
 import preUso from './pre-uso';
 import spliceCssVars from './splice-css-vars';
 
-let builderChain = Promise.resolve();
+let builderChain;
 
 /**
  * @param {string} code
@@ -28,9 +28,12 @@ export default async function compileUsercss(code, preprocessor, vars, styleId) 
   const log = fn === preStylus && [];
   const warn = log && [];
   let sections = fn === preLess && [];
-  if (fn && (code = fn(code, metaStr, vars, sections, log, warn)).then) {
-    builderChain = builderChain.catch(__.DEBUG ? console.log : () => {}).then(code);
+  if (fn && (code = fn(code, metaStr, vars, sections, log, warn)) && code.then) {
+    const me = builderChain = builderChain?.catch(__.DEBUG ? console.log : () => {}).then(code)
+      || code;
     code = await builderChain;
+    if (builderChain === me) // no one attached to the chain
+      builderChain = null; // so no need to wait next time
   }
   sections ||= extractSections(code, styleId, metaStr);
   if (vars && !fn && sections.length)

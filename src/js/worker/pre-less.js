@@ -4,12 +4,21 @@ import {load} from './util';
 /** @type {import('less')} */
 let less;
 
-export default async function preLess(code, metaStr, vars, sections) {
+export default function preLess(code, metaStr, vars, sections) {
+  let resolve, reject;
   less ||= load('less.js', 'less');
-  const [{css}, docs] = await new Promise((resolve, reject) => less.render(code, {
+  less.render(code, {
     math: 'parens-division',
     modifyVars: vars && Object.fromEntries(Object.keys(vars).map(k => ['@' + k, vars[k].value])),
-  }, (err, ...res) => err ? reject(err) : resolve(res)));
+  }, (err, ...res) => err
+    ? reject ? reject(err) : (reject = err)
+    : resolve ? resolve(extractSectionsFromLess(...res, metaStr, sections)) : (resolve = res));
+  if (reject) throw reject;
+  if (resolve) extractSectionsFromLess(...resolve, metaStr, sections);
+  else return new Promise((ok, ko) => { resolve = ok; reject = ko; });
+}
+
+function extractSectionsFromLess({css}, docs, metaStr, sections) {
   let v;
   let prevEnd = 0;
   for (let [cmt, prelude, body, start, end] of docs) {
