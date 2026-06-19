@@ -293,6 +293,9 @@
   "emptyCode": {
     "message": "Sekcje stylu dla tego adresu URL są puste"
   },
+  "emptyStyle": {
+    "message": "Styl jest pusty"
+  },
   "enableStyleLabel": {
     "message": "Włącz"
   },

@@ -296,6 +296,9 @@
   "emptyCode": {
     "message": "أقسام النمط لهذا العنوان URL فارغة"
   },
+  "emptyStyle": {
+    "message": "النمط فارغ"
+  },
   "enableStyleLabel": {
     "message": "تمكين"
   },

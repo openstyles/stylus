@@ -255,6 +255,9 @@
   "emptyCode": {
     "message": "このURLのスタイルセクションが空です"
   },
+  "emptyStyle": {
+    "message": "スタイルが空です"
+  },
   "enableStyleLabel": {
     "message": "有効化"
   },
