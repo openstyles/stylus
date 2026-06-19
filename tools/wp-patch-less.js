@@ -34,6 +34,11 @@ module.exports = makePatchOptions([
     /\badd: error,\s+remove: removeError\b/,
     'add: errorConsole, remove: removeErrorConsole',
   ]],
+  [LIB_LESS + 'less-error.js',
+    ['if (fileContentMap', 'if (0'],
+    ['if (typeof Object.create', 'if (0'],
+    ['LessError.prototype.toString = ', '0&&'],
+  ],
   [LIB_LESS + 'import-manager.js',
     [/, pluginLoader = .+/, ''],
     [/importOptions\.isPlugin/g, '0'],
@@ -54,12 +59,30 @@ module.exports = makePatchOptions([
     [/if \(options\.pluginManager/g, 'if (0'],
   ],
   [LIB_LESS + 'tree/atrule.js',
-    [/(?<=\n\s+genCSS\(.+\{)([\s\S]+?if \(rules\) \{\s+)(.+;)/,
-      'let a = this.name.toLowerCase() === "@-moz-document" ? output.add().length : -1, b, c, d;' +
-      '$1b = a >= 0 && output.add().length + !context.compress * 3;' + // skipping "{" or " {\n"
-      'context.tabLevel = -1;' +
-      '$2b && context.docs.push([value, (c = output.add()).slice(b,-1).trim(), a, c.length]);' +
-      'context.tabLevel = 0;'],
+    [/\) \{\s+super\(\);/,
+      ',cmt $& this.cmt = cmt;'],
+    ['visibilityInfo())))',
+      'visibilityInfo(), this.cmt)))'],
+    [/(?<=\n\s+genCSS\(.+\{)([\s\S]+?if \(rules\) \{\s+)(.+;)/, `\
+      let _start = this.cmt != null ? output.add().length : -1;
+      let _body, _str;
+      $1
+      if (_start >= 0) {
+        context.tabLevel = -1;
+        _body = output.add().length + !context.compress * 3; // skipping "{" or " {\\n"
+      }
+      $2
+      if (_body) {
+        _str = output.add();
+        context.docs.push([
+          this.cmt,
+          value,
+          _str.slice(_body, -1).trim(),
+          _start,
+          _str.length,
+        ]);
+        context.tabLevel = 0;
+      }`],
   ],
   [LIB_LESS + 'tree/node.js',
     [/toCSS\(context.+[\s\S]+strs\.join.+\s+}/, `${{
@@ -76,6 +99,17 @@ module.exports = makePatchOptions([
     [/if \(options\.pluginManager/g, 'if (0'],
   ],
   [LIB_LESS + 'parser/parser.js',
-    [/if \(context\.pluginManager/, 'if (0'],
+    [/if \(context\.pluginManager/,
+      'if (0'],
+    [/while .+\s+node = this\.comment.+\s+if \(!node.+/,
+      'let cmt1; $& cmt1 = node._index;'],
+    ['|| this.atrule(',
+      '$&cmt1, cmt1 >= 0 && parserInput.i'],
+    ['atrule: function (',
+      '$&cmt1, cmt2, cmt'],
+    ["case '@document':",
+      '$& cmt = cmt2 ? parserInput.getInput().slice(cmt1, cmt2).trim() : "";'],
+    [/new\(tree\.AtRule\).+\s+.+\s+isRooted/,
+      '$&, null, cmt'],
   ],
 ]);

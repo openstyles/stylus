@@ -8,9 +8,10 @@ import {loadParserlib, parserlib} from './util';
  * Doesn't move the comment with ==UserStyle== inside.
  * @param {string} code
  * @param {number} [styleId] - to reuse parserCache on re-runs
+ * @param {string} [metaStr]
  * @returns {StyleSection[]}
  */
-export default function extractSections(code, styleId) {
+export default function extractSections(code, styleId, metaStr) {
   if (!parserlib) loadParserlib();
   const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
   const opts = {
@@ -36,14 +37,14 @@ export default function extractSections(code, styleId) {
     };
     let outerText = code.slice(lastSection.start, e.offset);
     // move last comment before @-moz-document inside the section
-    if (!lastCmt.includes('AGENT_SHEET') &&
-      !/==userstyle==/i.test(lastCmt)) {
-      if (lastCmt) {
-        section.code = lastCmt + '\n';
-        outerText = outerText.slice(0, -lastCmt.length - outerText.match(/\s*$/)[0].length);
-      }
-      outerText = outerText.match(/^\s*/)[0] + outerText.trim();
+    if (lastCmt && (
+      !(metaStr ??= code.match(RX_META)?.[0] || '') ||
+      !lastCmt.includes(metaStr)
+    )) {
+      section.code = lastCmt + '\n';
+      outerText = outerText.slice(0, -lastCmt.length);
     }
+    outerText = outerText.trimEnd();
     if (outerText.trim()) {
       lastSection.code = outerText;
       doAddSection(lastSection);
@@ -92,7 +93,7 @@ export default function extractSections(code, styleId) {
   });
 
   try {
-    parser.parse(code.replace(RX_META, ''), {reuseCache: JSON.stringify(opts)});
+    parser.parse(code, {reuseCache: JSON.stringify(opts)});
   } catch (e) {
     parseError = e || parseError;
   }
