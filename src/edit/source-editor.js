@@ -2,6 +2,7 @@ import {CodeMirror} from '@/cm';
 import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
 import {kEditorSettings, pEditorLinter, UCD} from '@/js/consts';
 import {$create, $createLink, $isTextInput} from '@/js/dom';
+import showUnhandledError from '@/js/dom-error';
 import {messageBox} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
@@ -233,26 +234,21 @@ export default function SourceEditor() {
     }
   }
 
-  function showSaveError(err, errStyle) {
-    err = Array.isArray(err) ? err : [err];
-    const text = err.map(e => e.message || e).join('\n');
-    const points = err.map(e =>
+  function showSaveError(e, errStyle) {
+    const pos =
       e.index >= 0 && cm.posFromIndex(e.index) || // usercss meta parser
-      e.offset >= 0 && {line: e.line - 1, ch: (e.col || e.column) - 1} // csslint code parser
-    ).filter(Boolean);
+      e.offset >= 0 && {line: e.line - 1, ch: (e.col || e.column) - 1}; // csslint code parser
     const pp = errStyle[UCD]?.preprocessor;
     const ppUrl = editor.ppDemo[pp];
-    if (points[0]) cm.operation(() => {
-      cm.jumpToPos(points[0]);
-      cm.setSelections(points.map(p => ({anchor: p, head: p})));
+    if (!pos)
+      return showUnhandledError(e);
+    cm.operation(() => {
+      cm.jumpToPos(pos);
+      cm.setSelections({anchor: pos, head: pos});
     });
-    messageBox.show({
-      title: t('genericError'),
-      className: 'center pre danger',
-      contents: $create('pre', text),
+    messageBox.alert($create('pre', e.message || e), 'pre danger', t('genericError'), ppUrl && {
       buttons: [
-        t('confirmClose'),
-        ppUrl && $createLink({className: 'icon', href: ppUrl}, [
+        $createLink({className: 'icon', href: ppUrl}, [
           t('genericTest'),
           $create('i.i-external', {style: 'line-height:0'}),
         ]),
