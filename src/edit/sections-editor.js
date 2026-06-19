@@ -450,12 +450,8 @@ export default function SectionsEditor() {
       }
     }
     function showError(e) {
-      messageBox.show({
-        className: 'center danger',
-        title: t('styleFromMozillaFormatError'),
-        contents: $create('pre', e.message || `${e}`),
-        buttons: [t('confirmClose')],
-      });
+      messageBox.alert($create('pre', e.message || `${e}`), 'danger',
+        t('styleFromMozillaFormatError'));
     }
   }
 

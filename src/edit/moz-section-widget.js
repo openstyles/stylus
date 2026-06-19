@@ -46,10 +46,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       '.remove-applies-to'(elItem, func) {
         const funcs = getFuncsFor(elItem);
         if (funcs.length < 2) {
-          messageBox.show({
-            contents: t('appliesRemoveError'),
-            buttons: [t('confirmClose')],
-          });
+          messageBox.alert(t('appliesRemoveError'));
           return;
         }
         const i = funcs.indexOf(func);

@@ -246,10 +246,7 @@ function stringifyConfig(config) {
 }
 
 async function showLinterErrorMessage(title, contents) {
-  await messageBox.show({
-    title,
-    contents,
-    className: 'danger center lint-config',
+  await messageBox.alert(contents, 'danger lint-config', title, {
     buttons: [t('confirmOK')],
   });
   popup?.codebox?.focus();

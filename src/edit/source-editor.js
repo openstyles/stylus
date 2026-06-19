@@ -217,9 +217,7 @@ export default function SourceEditor() {
   }
 
   async function saveTemplate() {
-    const res = await messageBox.show({
-      contents: t('usercssReplaceTemplateConfirmation'),
-      className: 'center',
+    const res = await messageBox.alert(t('usercssReplaceTemplateConfirmation'), {
       buttons: [t('confirmYes'), t('confirmNo'), {
         textContent: t('genericResetLabel'),
         title: t('restoreTemplate'),

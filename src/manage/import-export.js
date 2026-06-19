@@ -402,11 +402,8 @@ async function importFromString(jsonString) {
     await API.styles.importMany(newIds.map(oldStylesById.get, oldStylesById).filter(Boolean));
     await API.styles.setOrder(oldOrder);
     await chromeSync.setLZValues(oldLZ);
-    await messageBox.show({
-      title: t('importReportUndoneTitle'),
-      contents: newIds.length + ' ' + t('importReportUndone'),
-      buttons: [t('confirmClose')],
-    });
+    await messageBox.alert(newIds.length + ' ' + t('importReportUndone'),
+      '', t('importReportUndoneTitle'));
   }
 
   function bindClick(box) {

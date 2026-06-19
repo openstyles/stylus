@@ -353,7 +353,7 @@ function enablePostActions() {
   sessionStore.justEditedStyleId = id;
   $id('edit').search = `?id=${id}`;
   $id('delete').onclick = async () => {
-    if (await messageBox.confirm(t('deleteStyleConfirm'), 'danger center', t('confirmDelete'))) {
+    if (await messageBox.confirm(t('deleteStyleConfirm'), 'danger', t('confirmDelete'))) {
       await API.styles.remove(id);
       if (tabId < 0 && history.length > 1) {
         history.back();

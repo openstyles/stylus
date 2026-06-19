@@ -39,6 +39,8 @@ export class MessageBox {
    *        CSS class name of the message box element
    * @prop {Array<String | WritableElementProps | AppendableElementGuts>} [buttons]
    *        anything $create() can handle
+   * @prop {MessageBoxParams['buttons']} [buttons2] - for convenience in alert() and confirm(),
+   *        this array is pushed into `buttons`.
    * @prop {Boolean} [blockScroll]
    *        blocks the page scroll
    */
@@ -48,8 +50,10 @@ export class MessageBox {
     contents,
     className = '',
     buttons = [],
+    buttons2,
     blockScroll,
   }) {
+    if (buttons2) buttons.push(...buttons2);
     this.#blockScroll = blockScroll;
     this.el = $create('#message-box', {className});
     this.el.appendChild($tag('div')).append(
@@ -216,30 +220,34 @@ export class MessageBox {
  * @param {String|Node|Array<String|Node>} contents
  * @param {String} [className] like 'pre' for monospace font
  * @param {String} [title]
+ * @param {MessageBoxParams} [opts]
  * @returns {Promise<MessageBoxResult>}
  */
-export function alert(contents, className, title) {
-  return new MessageBox({
+export function alert(contents, className, title, opts) {
+  return show({
     title,
     contents,
     className: `center ${className || ''}`,
     buttons: [t('confirmClose')],
-  }).open();
+    ...opts,
+  });
 }
 
 /**
  * @param {String|Node|Array<String|Node>} contents
  * @param {String} [className] like 'pre' for monospace font
  * @param {String} [title]
+ * @param {MessageBoxParams} [opts]
  * @returns {Promise<Boolean>} resolves to true when confirmed
  */
-export async function confirm(contents, className, title) {
-  const res = await new MessageBox({
+export async function confirm(contents, className, title, opts) {
+  const res = await show({
     title,
     contents,
     className: `center ${className || ''}`,
     buttons: [t('confirmYes'), t('confirmNo')],
-  }).open();
+    ...opts,
+  });
   return res.button === 0 || res.enter;
 }
 

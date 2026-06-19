@@ -65,16 +65,13 @@ const ENTRY_ROUTES = {
   },
 
   async '.delete'(event, entry) {
-    const id = entry.styleId;
     animateElement(entry);
-    const {button} = await messageBox.show({
-      title: t('deleteStyleConfirm'),
-      contents: entry.styleMeta.customName || entry.styleMeta.name,
-      className: 'danger center',
+    const meta = entry.styleMeta;
+    const name = meta.customName || meta.name;
+    if (await messageBox.confirm(name, 'danger', t('deleteStyleConfirm'), {
       buttons: [t('confirmDelete'), t('confirmCancel')],
-    });
-    if (button === 0) {
-      API.styles.remove(id);
+    })) {
+      API.styles.remove(entry.styleId);
     }
   },
 

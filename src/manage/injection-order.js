@@ -1,4 +1,4 @@
-import {$create, $createFragment} from '@/js/dom';
+import {$create} from '@/js/dom';
 import DraggableList from '@eight04/draggable-list/dist/draggable-list.esm';
 import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
@@ -31,7 +31,7 @@ export default async function InjectionOrder(show, el, selector) {
   ]);
   await messageBox.show({
     title: t('styleInjectionOrder'),
-    contents: $createFragment(Object.entries(groups).map(makeList)),
+    contents: Object.entries(groups).map(makeList),
     className: 'center-dialog ' + selector.slice(1),
     blockScroll: true,
     buttons: [t('confirmClose')],

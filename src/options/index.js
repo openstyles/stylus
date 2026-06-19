@@ -150,11 +150,8 @@ function clickableValue() {
 function customizeHotkeys() {
   const CTRL = MAC ? 'metaKey' : 'ctrlKey';
   const SKIP = ['Control', 'Alt', 'Shift', 'Meta', 'CapsLock', 'Tab', 'Escape', 'OS'];
-  messageBox.show({
-    title: t('shortcutsNote'),
-    contents: template.shortcutsFF.cloneNode(true),
+  messageBox.alert(template.shortcutsFF.cloneNode(true), '', t('shortcutsNote'), {
     className: 'center-dialog pre-line',
-    buttons: [t('confirmClose')],
     onshow(box) {
       const inputs = box.$$('input');
       for (const el of inputs) el.onkeydown = onInput;
