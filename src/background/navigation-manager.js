@@ -1,4 +1,3 @@
-import '@/js/browser';
 import {kAboutBlank} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
@@ -8,22 +7,25 @@ import {pingTab, sendTab} from './broadcast';
 import {bgBusy, onUrlChange} from './common';
 import {tabCache} from './tab-manager';
 
+/** @type {{ url: chrome.events.UrlFilter[] }} */
+const FILTER = (__.B_CHROME || __.B_ANY && CHROME)
+  ? {url: [{schemes: ['http', 'https', 'file', 'chrome', 'chrome-extension']}]}
+  : undefined;
 export const kCommitted = 'committed';
 /** @type {{[url: string]: number[]}} */
 export const ownPagesCommitted = {};
 let prevData = {};
 
-webNavigation.onCommitted.addListener(onNavigation.bind(null, kCommitted));
-webNavigation.onHistoryStateUpdated.addListener(onNavigation.bind(null, 'history'));
-webNavigation.onReferenceFragmentUpdated.addListener(onNavigation.bind(null, 'hash'));
+webNavigation.onCommitted.addListener(onNavigation.bind(null, kCommitted), FILTER);
+webNavigation.onHistoryStateUpdated.addListener(onNavigation.bind(null, 'history'), FILTER);
+webNavigation.onReferenceFragmentUpdated.addListener(onNavigation.bind(null, 'hash'), FILTER);
 
 async function onNavigation(navType, data) {
   const {url} = data;
-  if (!__.B_FIREFOX && (
-    url.startsWith('devtools:') ||
+  if (!__.B_FIREFOX &&
     // https://crbug.com/40365717 listener is called twice with identical data
     CHROME <= 143 && data.timeStamp === prevData.timeStamp && deepEqual(data, prevData)
-  )) {
+  ) {
     return;
   }
   prevData = data;
