@@ -97,9 +97,9 @@ export function fixKnownProblems(style, revive) {
 }
 
 export function fixRevision(style) {
-  const upd = style.updateDate;
-  if ((upd || 1) > (style._rev || 0)) {
-    style._rev = upd || Date.now();
+  const upd = style.updateDate || style.installDate;
+  if (upd > (style._rev || 0)) {
+    style._rev = upd;
     return true;
   }
 }
