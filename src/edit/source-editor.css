@@ -27,6 +27,17 @@
 
 .usercss .applies-to {
   border-width: 1px 0;
+  margin: 0 0 $pad025;
+  padding: $targetGapY calc($pad025 + var(--cm-bar-width, 0)) 0 $pad075;
+  font-family: var(--family);
+  > label,
+  li[data-type] option[value=""],
+  li:not([data-type]) option:not([value=""]) {
+    display: none;
+  }
+  li:not([data-type]) {
+    margin-left: 0.2rem;
+  }
   > label::before {
     content: attr(data-index) ":";
     margin-right: $pad025;
