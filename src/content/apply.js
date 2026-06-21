@@ -253,6 +253,7 @@ function updatePort() {
 
 function updateUrl(url) {
   if (url !== matchUrl) {
+    throttledCount = // a value not equal to ids string in updateCount() to force an update
     matchUrl = url;
     if (own.sections) applyStyles(own.cfg.off && {});
     navHub.dispatchEvent(new Event(NAV_ID));
