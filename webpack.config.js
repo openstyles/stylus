@@ -219,10 +219,12 @@ module.exports = [
             ['stylelint-bundle', 'stylelint.js'],
             ['stylus-lang-bundle/dist/stylus-lang-bundle.min.js', 'stylus-lang.js'],
           ].flatMap(([npm, to, babelize]) => [{
+            transform: babelize
+              ? transESM2var
+              : transSourceMap.bind(DEV && `${to}.map`),
             from: (npm = require.resolve(npm)),
             to: (to = DST + JS + to),
             info: {minimized: !babelize},
-            transform: babelize ? transESM2var : transSourceMap,
           }, DEV && !babelize && {
             from: npm + '.map',
             to: to + '.map',
