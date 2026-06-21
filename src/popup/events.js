@@ -28,23 +28,10 @@ const selOptions = '#options-btn';
 export const selUnstylable = '#unstylable';
 /** @type {{[sel: string]: OnClickHandler}} */
 export const EntryClick = {
-  '.style-name': Object.assign((evt, entry, button) => {
-    if (evt.altKey) {
-      hotkeys.toggleStateInTab([entry], null);
-    } else if (button || evt.ctrlKey || MAC && evt.metaKey) {
-      openEditor(evt, entry);
-    } else if (!button && !evt.shiftKey) {
-      API.styles.toggle(entry.styleId, !entry.$('input').checked);
-    }
-  }, {
-    btn: 1 + 2,
-  }),
-  [selConfig]: Object.assign(configure, {
-    btn: 1 + 2,
-  }),
-  '.menu-button': Object.assign((event, entry) => openMenu(entry), {
-    btn: 2,
-  }),
+  'input': nameRouter,
+  '.style-name': Object.assign(nameRouter, {btn: 1 + 2}),
+  [selConfig]: Object.assign(configure, {btn: 1 + 2}),
+  '.menu-button': Object.assign((event, entry) => openMenu(entry), {btn: 2}),
   [selEdit]: openEditor,
 };
 
@@ -146,6 +133,26 @@ function clickRouter(event, btn = event.button) {
   }
 }
 
+/**
+ * @param {MouseEvent|KeyboardEvent} event
+ * @param {StyleEntryElement} [entry]
+ * @param {number} [button]
+ */
+function nameRouter(event, entry, button) {
+  if (event.altKey || button && this.localName === 'input') {
+    hotkeys.toggleStateInTab([entry], null);
+  } else if (button || event.ctrlKey || MAC && event.metaKey) {
+    openEditor(event, entry);
+  } else if (!button && !event.shiftKey) {
+    API.styles.toggle(entry.styleId, !entry.styleMeta.enabled);
+  }
+}
+
+/**
+ * @param {MouseEvent|KeyboardEvent} event
+ * @param {StyleEntryElement} [entry]
+ * @param {number} [button]
+ */
 export async function configure(event, entry, button) {
   if (!this.target) {
     let mode;
@@ -162,6 +169,11 @@ export async function configure(event, entry, button) {
   }
 }
 
+/**
+ * @param {MouseEvent|KeyboardEvent} event
+ * @param {StyleEntryElement} [entry]
+ * @param {number} [button]
+ */
 export async function openEditor(event, entry, button) {
   const params = entry ? '?id=' + entry.styleId : this.search;
   if (browserSidebar && (button === 2 || __values[pSideEditor])) {
@@ -172,6 +184,11 @@ export async function openEditor(event, entry, button) {
     close();
 }
 
+/**
+ * @param {MouseEvent|KeyboardEvent} event
+ * @param {StyleEntryElement} [entry]
+ * @param {number} [button]
+ */
 export async function openManager(event, entry, button) {
   event?.preventDefault();
   const params = tabUrl && (!event || event.shiftKey)
@@ -185,6 +202,11 @@ export async function openManager(event, entry, button) {
     close();
 }
 
+/**
+ * @param {MouseEvent|KeyboardEvent} event
+ * @param {StyleEntryElement} [entry]
+ * @param {number} [button]
+ */
 export async function openOptions(event, entry, button) {
   if (browserSidebar && (button === 2 || __values[pSideOptions])) {
     return sidebarOpen('options.html');
@@ -194,6 +216,11 @@ export async function openOptions(event, entry, button) {
     close();
 }
 
+/**
+ * @param {MouseEvent|KeyboardEvent} event
+ * @param {StyleEntryElement} [entry]
+ * @param {number} [button]
+ */
 export async function openStyleFinder(event, entry, button) {
   if (browserSidebar && (button === 2 || __values[pSideFinder]))
     return sidebarOpen(`popup.html?${pSideFinder}`);
@@ -202,6 +229,9 @@ export async function openStyleFinder(event, entry, button) {
   styleFinder.inline();
 }
 
+/**
+ * @param {MouseEvent|KeyboardEvent} event
+ */
 export async function openURLandHide(event) {
   event.preventDefault();
   const tab = await getActiveTab();

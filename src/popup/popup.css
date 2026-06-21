@@ -140,7 +140,6 @@ body {
   overflow-y: auto;
   counter-reset: style-number;
   input {
-    pointer-events: none;
     color: var(--fg);
     &::after {
       height: auto;
