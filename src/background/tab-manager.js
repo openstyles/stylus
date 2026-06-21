@@ -2,6 +2,7 @@ import {kApplyPort, kStyleIds, kUrl, pKeepAlive} from '@/js/consts';
 import {onDisconnect} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {supported} from '@/js/urls';
+import {deepCopy} from '@/js/util';
 import {ignoreChromeError} from '@/js/util-webext';
 import {bgBusy, bgInit, onTabUrlChange, onUnload, onUrlChange} from './common';
 import {stateDB} from './db';
@@ -22,8 +23,8 @@ export const get = (tabId, ...keyPath) => {
  * (tabId, 'foo', 'bar', 'etc', 123) will set tabId's meta to {foo: {bar: {etc: 123}}}
  */
 export const set = function (tabId, ...args) {
+  __.DEBUGLOG('tabMan.set:', tabId, ...args, deepCopy(tabCache[tabId]));
   if (!(+tabId > 0)) { // null, undefined, NaN
-    __.DEBUGWARN(`tabCache.set() params are invalid: ${tabId}, ${JSON.stringify(args)}`);
     return;
   }
   const depth = args.length - 2;
@@ -112,6 +113,7 @@ bgInit.push(async () => {
       }
     });
   }
+  __.DEBUGLOG('tabMan init: saved %o, tabCache %o', saved, deepCopy(tabCache));
 });
 
 bgBusy.then(() => {

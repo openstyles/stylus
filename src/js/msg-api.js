@@ -46,7 +46,13 @@ export function updateTDM(value) {
   TDM = value;
 }
 
+export function apiSendProxyDebugLog(path, args) {
+  __.DEBUGTRACE('%cAPI.%s', 'color:darkorange;font-weight:bold', path, ...args,
+    ...(isFrame ? ['FRAME:', document] : []));
+}
+
 export async function apiSendProxy({name: path}, thisObj, args) {
+  apiSendProxyDebugLog(path, args);
   const localErr = new Error();
   const msg = {data: {method: kInvokeAPI, path, args}, TDM};
   for (let res, err, retry = 0; retry < (__.MV3 ? 1 : 2); retry++) {

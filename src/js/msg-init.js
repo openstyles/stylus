@@ -2,7 +2,7 @@
 import './browser';
 import {k_busy, k_deepCopy, k_msgExec, kInvokeAPI} from '@/js/consts';
 import {_execute} from './msg';
-import {apiHandler, apiSendProxy, isTab} from './msg-api';
+import {apiHandler, apiSendProxy, apiSendProxyDebugLog, isTab} from './msg-api';
 import {createPortExec, createPortProxy, initRemotePort} from './port';
 import {swPath, workerPath} from './urls';
 import {deepCopy} from './util';
@@ -29,6 +29,7 @@ if (!__.IS_BG) {
 }
 
 async function invokeAPI({name: path}, _thisObj, args) {
+  apiSendProxyDebugLog(path, args);
   // Non-cloneable event is passed when doing `elem.onclick = API.foo`
   if (args[0] instanceof Event) args[0] = 'Event';
   if (path.startsWith(workerApiPrefix)) {

@@ -123,6 +123,7 @@ if (__.MV3) {
 }
 
 async function onStartup() {
+  __.DEBUGLOG('onStartup');
   await refreshIconsWhenReady();
   await sleep(1000);
   const minDate = Date.now() - 30 * 24 * 60e3;

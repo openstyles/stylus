@@ -92,12 +92,10 @@ function addEventLogger() {
       return val;
     },
   };
-  if (chrome === browser) {
-    global.chrome = global.browser = new Proxy(chrome, handler);
-  } else {
-    global.chrome = new Proxy(chrome, handler);
-    global.browser = new Proxy(browser, handler);
-  }
+  const patchedChrome = global.chrome = Object.create(new Proxy(chrome, handler));
+  global.browser = chrome === browser
+    ? patchedChrome
+    : Object.create(new Proxy(browser, handler));
 }
 
 function patchEventListener(obj, name, fn) {
@@ -106,7 +104,8 @@ function patchEventListener(obj, name, fn) {
     case 'addListener':
       res = (cb, ...opts) =>
         fn.call(obj, (...args) => {
-          console.log(name, ...name === 'onMessage' ? args.slice(0, 2) : args);
+          console.log('%c%s', 'color:#A2C;font-weight:bold', name,
+            ...name === 'onMessage' ? args.slice(0, 2) : args);
           return cb(...args);
         }, ...opts);
       origListeners.set(fn, res);

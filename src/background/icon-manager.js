@@ -1,7 +1,7 @@
 import {kDisableAll, kSidebar, kStyleIds} from '@/js/consts';
 import {__values as __prefs, subscribe} from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
-import {debounce, NOP, t} from '@/js/util';
+import {debounce, deepCopy, NOP, t} from '@/js/util';
 import {
   browserAction, browserSidebar, MF_ICON_EXT, MF_ICON_PATH, paintCanvas, toggleListener,
 } from '@/js/util-webext';
@@ -132,7 +132,10 @@ function getIconName(hasStyles = false) {
 }
 
 function refreshIcon(tabId, force = false) {
-  const td = tabCache[tabId] ??= {id: tabId};
+  const td = tabCache[tabId] ??= (
+    __.DEBUGLOG('refreshIcon missing %d in tabCache', tabId, deepCopy(tabCache)),
+    {id: tabId}
+  );
   const oldIcon = td.icon;
   const newIcon = getIconName(td[kStyleIds]?.[0]);
   // (changing the icon only for the main page, frameId = 0)
@@ -205,6 +208,7 @@ function refreshIconBadgeColor() {
 }
 
 function refreshAllIcons() {
+  __.DEBUGLOG('refreshAllIcons', deepCopy(tabCache));
   for (const tabId in tabCache) {
     refreshIcon(+tabId);
   }
@@ -212,12 +216,14 @@ function refreshAllIcons() {
 }
 
 function refreshAllIconsBadgeText() {
+  __.DEBUGLOG('refreshAllIconsBadgeText', deepCopy(tabCache));
   for (const tabId in tabCache) {
     refreshIconBadgeText(+tabId);
   }
 }
 
 function refreshStaleBadges() {
+  __.DEBUGLOG('refreshStaleBadges', [...staleBadges]);
   for (const tabId of staleBadges) {
     refreshIconBadgeText(tabId);
   }
