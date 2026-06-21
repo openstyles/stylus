@@ -1349,7 +1349,7 @@
     }
   },
   "popupHotkeysInfoTab": {
-    "message": "Hold <Alt> to toggle styles only for the current tab.",
+    "message": "Toggle styles only for the current tab by (1) right-clicking or long-pressing the style's checkbox or (2) clicking the style name while holding <Alt> or (3) using keyboard e.g. <Alt-1> for style #1, the numbers are shown at the right edge.",
     "description": "Preserve < and > symbols so that <hotkey> is styled as a key"
   },
   "popupHotkeysTooltip": {

@@ -212,16 +212,13 @@ function suppressFocusRingOnClick({target}) {
 
 /** @param {MouseEvent|KeyboardEvent} event */
 function onClickCapture(event) {
-  let note, el;
-  if ((el = event.target.closest('a')) && (
-    (note = el.dataset.cmd === 'note') ||
-    el.closest('summary')
-  )) {
+  const note = event.target.closest('[data-cmd="note"]');
+  if (note || event.target.closest('summary a')) {
     event.preventDefault();
-    if (note) {
-      event.stopPropagation();
-      showTooltipNote(el);
-    }
+  }
+  if (note) {
+    event.stopPropagation();
+    showTooltipNote(note);
   }
 }
 
