@@ -1,5 +1,5 @@
 import '@/js/dom-init';
-import {kAboutBlank, kPopup} from '@/js/consts';
+import {kAboutBlank, kPopup, pPopupTogglerExpanded} from '@/js/consts';
 import {$create, isSidebar, urlParams} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {template} from '@/js/localization';
@@ -88,7 +88,8 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
       }, true);
     }
     setupLivePrefs();
-
+    if (prefs.__values[pPopupTogglerExpanded])
+      $('#toggler details').open = true;
     el = $$('#toggler label')[1];
     el.title = el.title.replace('<', MAC ? '<⌥' : '<Alt-');
 

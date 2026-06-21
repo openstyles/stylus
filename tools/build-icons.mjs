@@ -5,12 +5,13 @@ import path from 'path';
 import stream from 'stream';
 import svg2ttf from 'svg2ttf';
 import {SVGIcons2SVGFontStream} from 'svgicons2svgfont';
-import {SRC} from './util.js';
+import util from './util.js';
 
 process.stdout.write('Creating icons font: ');
 
 const ERRORS = [];
 const SVG_MAP = [];
+const {SRC} = util;
 const SVG_DIR = SRC + 'icons/';
 const CSS_FILE = SRC + 'css/global.css';
 const CSS_FONT = SRC + 'css/icons.ttf';

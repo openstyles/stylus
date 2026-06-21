@@ -2,7 +2,8 @@
 import {
   k_busy, kBadFavs, pDisableAll, pEditorLinter, pEditorTheme, pExposeIframes, pFavicons,
   pFaviconsGray, pKeyMap, pLintReportDelay, pLivePreview, pManageNewUi, pManageNewUiTargets,
-  pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr, pSync, pUrlInstaller,
+  pOpenEditInWindow, pPatchCsp, pPopupTogglerExpanded, pStyleViaASS, pStyleViaXhr, pSync,
+  pUrlInstaller,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {swController} from './msg-init'; // also installs API handler for own pages
@@ -169,6 +170,7 @@ const defaults = {
   'popup.sidePanel.finder': false,
   'popup.sidePanel.manager': false,
   'popup.sidePanel.options': true,
+  [pPopupTogglerExpanded]: false,
   'popupWidth': 246,              // popup width in pixels
   'popupWidthMax': 280,           // popup width in pixels
 

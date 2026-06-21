@@ -72,7 +72,35 @@ body {
     }
   }
   details {
+    $pinW: 14px;
     flex: 1;
+    padding-right: calc($pad * 2 + $pinW);
+    .icon {
+      padding: 0 $pad;
+      position: absolute;
+      align-items: center;
+      display: flex;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+      input {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        z-index: 2;
+        &:checked + i::after {
+          content: "P";
+        }
+      }
+      i {
+        font-size: $pinW;
+      }
+    }
     &[open] {
       padding: calc($pad/2);
       &, div {

@@ -101,6 +101,7 @@ export const pLivePreview = 'editor.livePreview';
 export const pManageNewUiTargets = 'manage.newUI.targets';
 export const pOpenEditInWindow = 'openEditInWindow';
 export const pPatchCsp = 'patchCsp';
+export const pPopupTogglerExpanded = 'popup.toggler.expanded';
 export const pStyleViaASS = 'styleViaASS';
 export const pStyleViaXhr = 'styleViaXhr';
 export const pSync = 'sync.enabled';
