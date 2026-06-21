@@ -9,14 +9,11 @@ module.exports = {
     noDocumentAll: true,
     noIncompleteNsImportDetection: true,
     noNewArrows: true,
-    objectRestNoSymbols: true,
     privateFieldsAsSymbols: true,
   },
   presets: [
     ['@babel/preset-env', {
       useBuiltIns: false,
-      bugfixes: true,
-      loose: true,
       modules: false,
     }],
   ],

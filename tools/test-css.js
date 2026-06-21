@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs');
-const chalk = require('chalk');
+const chalk = require('chalk').default;
 const csslint = require('csslint-mod').default;
 const glob = require('fast-glob');
 const postcss = require('postcss');

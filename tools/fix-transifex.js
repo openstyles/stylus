@@ -2,7 +2,7 @@
 
 const childProcess = require('child_process');
 const fs = require('fs');
-const chalk = require('chalk');
+const chalk = require('chalk').default;
 const {SRC} = require('./util');
 
 const DIR = SRC + '_locales/';

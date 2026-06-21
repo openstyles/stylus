@@ -1,7 +1,7 @@
 'use strict';
 const acorn = require('acorn');
 const acornWalk = require('acorn-walk');
-const chalk = require('chalk');
+const chalk = require('chalk').default;
 const fs = require('fs');
 const {SRC} = require('./util');
 
