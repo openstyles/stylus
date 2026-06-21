@@ -14,9 +14,10 @@ let builderChain;
  * @param {Object} [vars] - WARNING: each var's `value` will be overwritten
    (not a problem currently as this code runs in a worker so `vars` is just a copy)
  * @param {number} [styleId]
+ * @param {boolean} [strict] throw on parsing error
  * @returns {Promise<[StyleSection[], string[]?, string[]?]>}
  */
-export default async function compileUsercss(code, preprocessor, vars, styleId) {
+export default async function compileUsercss(code, preprocessor, vars, styleId, strict) {
   if (vars) {
     nullifyInvalidVars(vars);
     simplifyUsercssVars(vars);
@@ -27,7 +28,7 @@ export default async function compileUsercss(code, preprocessor, vars, styleId) 
   const metaStr = code.match(RX_META)?.[0] || '';
   const log = fn === preStylus && [];
   const warn = log && [];
-  let sections = fn === preLess && [];
+  let sections = (fn === preLess || fn === preStylus) && [];
   if (fn && (code = fn(code, metaStr, vars, sections, log, warn)) && code.then) {
     const me = builderChain = builderChain?.catch(__.DEBUG ? console.log : () => {}).then(code)
       || code;
@@ -35,9 +36,9 @@ export default async function compileUsercss(code, preprocessor, vars, styleId) 
     if (builderChain === me) // no one attached to the chain
       builderChain = null; // so no need to wait next time
   }
-  sections ||= extractSections(code, styleId, metaStr);
+  sections ||= extractSections(code, styleId, metaStr, strict);
   if (vars && !fn && sections.length)
-    spliceCssVars(sections[0], vars);
+    spliceCssVars(sections, vars);
   if (!fn && preprocessor && preprocessor !== 'default')
     console.warn(`Unknown preprocessor "${preprocessor}" in style #${styleId}`);
   return [sections, log, warn];

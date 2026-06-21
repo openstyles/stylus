@@ -16,14 +16,19 @@ const GLOBAL_META = Object.entries({
 
 /**
  * @param {string} sourceCode
- * @param {{id?: number, dup?: boolean, metaOnly?: boolean, vars?: boolean}} [opts]
+ * @param {{}} [opts]
+ * @param {number} [opts.id]
+ * @param {boolean} [opts.dup]
+ * @param {boolean} [opts.metaOnly]
+ * @param {boolean} [opts.strict] throw on parsing error
+ * @param {boolean} [opts.vars]
  * @return {Promise<{style: StyleObj, dup: StyleObj?, logs: Array}>}
  */
-export async function build(sourceCode, {id, dup, metaOnly, vars} = {}) {
+export async function build(sourceCode, {id, dup, metaOnly, strict, vars} = {}) {
   const logs = [];
   const style = await buildMeta({}, sourceCode);
   dup = (dup || vars) && (id ? styleMap.get(id) : find(style));
-  if (!metaOnly) await buildCode(style, vars && dup, logs);
+  if (!metaOnly) await buildCode(style, vars && dup, logs, strict);
   return {style, dup, logs};
 }
 
@@ -31,13 +36,14 @@ export async function build(sourceCode, {id, dup, metaOnly, vars} = {}) {
  * @param {StyleObj} style
  * @param {StyleObj | boolean} [oldStyleWithVars]
  * @param {Array} [logs]
+ * @param {boolean} [strict] throw on parsing error
  * @return {Promise<StyleObj>}
  */
-export async function buildCode(style, oldStyleWithVars, logs) {
-  const ucd = style[UCD];
+export async function buildCode(style, oldStyleWithVars, logs, strict) {
+  const {id, [UCD]: ucd} = style;
   const {preprocessor: pp, vars} = ucd;
   if (vars) reuseStyleVars(vars, oldStyleWithVars);
-  const [res, log, warn] = await worker.compileUsercss(style.sourceCode, pp, vars, style.id);
+  const [res, log, warn] = await worker.compileUsercss(style.sourceCode, pp, vars, id, strict);
   if (!res.length) throw t('emptyStyle');
   if (log) logs?.push(log, warn);
   style.sections = res;

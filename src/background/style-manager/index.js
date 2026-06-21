@@ -317,7 +317,7 @@ export async function preview(style) {
   let {id, sourceCode: res} = style;
   let logs;
   if (res) {
-    ({logs, style: res} = await usercssMan.build(res, {id, vars: true}));
+    ({logs, style: res} = await usercssMan.build(res, {id, vars: true, strict: true}));
     delete res.enabled;
     Object.assign(style, res);
     stylePreviewMap.set(id, style);

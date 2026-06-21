@@ -22,13 +22,12 @@ function extractSectionsFromLess({css}, docs, metaStr, sections) {
   let v;
   let prevEnd = 0;
   for (let [cmt, prelude, body, start, end] of docs) {
-    if (cmt) {
-      // If it's right before the section, metaStr will be added as a part of global code
-      if (cmt === metaStr) cmt = '';
-      else body = cmt + '\n' + body;
-    }
-    // Global code before the current section including metaStr determined above
-    if ((v = css.slice(prevEnd, start - cmt.length - (css.charCodeAt(start - 1) === 10)).trim()))
+    if (cmt && cmt !== metaStr)
+      body = cmt + '\n' + body;
+    // Global code before the current section
+    v = css.slice(prevEnd, start - cmt.length - (css.charCodeAt(start - 1) === 10))
+      .replace(metaStr, '').trim();
+    if (v)
       sections.push({code: v});
     const sec = {code: body};
     if (prelude && (prelude = Array.isArray(v = prelude.value) ? v : [prelude])) {
@@ -48,6 +47,6 @@ function extractSectionsFromLess({css}, docs, metaStr, sections) {
     prevEnd = end;
   }
   // Global code at the end
-  if ((v = css.slice(prevEnd).trim()))
+  if ((v = css.slice(prevEnd).replace(metaStr, '').trim()))
     sections.push({code: v});
 }

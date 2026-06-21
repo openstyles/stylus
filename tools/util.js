@@ -75,11 +75,11 @@ function transSourceMap(buf, from, mode) {
   const str = buf.toString();
   const map = from + '.map';
   const res = str.replace(/(\r?\n\/\/# sourceMappingURL=).+/,
-    typeof this === 'string' ? '$1' + this :
+    typeof this?.map === 'string' ? '$1' + this.map :
     mode !== transESM2var || !DEV || !fs.existsSync(map) ? '' :
       '$1data:application/json;charset=utf-8;base64,' +
       fs.readFileSync(map).toString('base64'));
-  return res;
+  return this?.patch?.(res) ?? res;
 }
 
 module.exports = {

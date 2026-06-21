@@ -135,6 +135,14 @@ function makeManifest(files) {
   return JSON.stringify(base, null, 2);
 }
 
+function patchStylus(str) {
+  const str2 = str.replace(
+    /(}mozdocument\(.+?,([^.]+)\.push.+?return (\S+))(?=\.segments=)/,
+    '$1.funcs=$2,$3');
+  if (str === str2) throw new Error(patchStylus.name + ' failed!');
+  return str2;
+}
+
 module.exports = [
 
   augment({
@@ -217,15 +225,15 @@ module.exports = [
             ['csslint-mod/dist/csslint.js', 'csslint.js', true],
             ['csslint-mod/dist/parserlib.js', 'parserlib.js', true],
             ['stylelint-bundle', 'stylelint.js'],
-            ['stylus-lang-bundle/dist/stylus-lang-bundle.min.js', 'stylus-lang.js'],
-          ].flatMap(([npm, to, babelize]) => [{
-            transform: babelize
+            ['stylus-lang-bundle/dist/stylus-lang-bundle.min.js', 'stylus-lang.js', 0, patchStylus],
+          ].flatMap(([npm, to, mod, patch]) => [{
+            transform: mod
               ? transESM2var
-              : transSourceMap.bind(DEV && `${to}.map`),
+              : transSourceMap.bind({map: DEV && `${to}.map`, patch}),
             from: (npm = require.resolve(npm)),
             to: (to = DST + JS + to),
-            info: {minimized: !babelize},
-          }, DEV && !babelize && {
+            info: {minimized: !mod},
+          }, DEV && !mod && {
             from: npm + '.map',
             to: to + '.map',
           }].filter(Boolean)),

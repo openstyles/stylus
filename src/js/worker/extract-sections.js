@@ -9,9 +9,10 @@ import {loadParserlib, parserlib} from './util';
  * @param {string} code
  * @param {number} [styleId] - to reuse parserCache on re-runs
  * @param {string} [metaStr]
+ * @param {boolean} [strict] throw on parsing error
  * @returns {StyleSection[]}
  */
-export default function extractSections(code, styleId, metaStr) {
+export default function extractSections(code, styleId, metaStr, strict) {
   if (!parserlib) loadParserlib();
   const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
   const opts = {
@@ -44,8 +45,8 @@ export default function extractSections(code, styleId, metaStr) {
       section.code = lastCmt + '\n';
       outerText = outerText.slice(0, -lastCmt.length);
     }
-    outerText = outerText.trimEnd();
-    if (outerText.trim()) {
+    outerText = outerText.replace(metaStr ??= code.match(RX_META)?.[0] || '', '').trim();
+    if (outerText) {
       lastSection.code = outerText;
       doAddSection(lastSection);
       lastSection.code = '';
@@ -80,22 +81,24 @@ export default function extractSections(code, styleId, metaStr) {
   });
 
   parser.addListener('error', e => {
-    if (!e.recoverable || e.name === 'ParseError') {
-      parseError = e;
-      throw false;
-    }
+    if (parseError)
+      return;
     const min = 5; // characters to show
     const max = 100;
     const i = e.offset;
     const a = Math.max(code.lastIndexOf('\n', i - min) + 1, i - max);
     const b = Math.min(code.indexOf('\n', i - a > min ? i : i + min) + 1 || 1e9, i + max);
     e.context = code.slice(a, b).trim();
+    if (strict && (!e.recoverable || e.name === 'ParseError')) {
+      parser.stream.source.offset = 1e9;
+      parseError ||= e;
+    }
   });
 
   try {
     parser.parse(code, {reuseCache: JSON.stringify(opts)});
   } catch (e) {
-    parseError = e || parseError;
+    parseError ||= e;
   }
   if (parseError) {
     for (const k in parseError)
