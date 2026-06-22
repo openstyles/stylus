@@ -1083,9 +1083,6 @@
       }
     }
   },
-  "popupHotkeysInfoTab": {
-    "message": "Houd <Alt> ingedrukt om stijlen alleen voor het huidige tabblad in/uit te schakelen."
-  },
   "popupHotkeysTooltip": {
     "message": "Klik om beschikbare sneltoetsen te tonen"
   },

@@ -1115,7 +1115,7 @@
     }
   },
   "popupHotkeysInfoTab": {
-    "message": "Przytrzymaj <Alt>, aby przełączać style tylko dla bieżącej karty."
+    "message": "Możesz przełączać style tylko dla bieżącej karty, (1) klikając prawym przyciskiem myszy lub naciskając długo pole wyboru stylu albo (2) klikając nazwę stylu, przytrzymując klawisz <Alt>, albo (3) używając klawiatury, np. <Alt-1> dla stylu nr 1, liczby są wyświetlane przy prawej krawędzi."
   },
   "popupHotkeysTooltip": {
     "message": "Kliknij, aby zobaczyć dostępne skróty klawiszowe"

@@ -1084,9 +1084,6 @@
       }
     }
   },
-  "popupHotkeysInfoTab": {
-    "message": "Mantém <Alt> premido para alternar os estilos apenas no separador atual."
-  },
   "popupHotkeysTooltip": {
     "message": "Clica para ver as teclas de atalho disponíveis"
   },

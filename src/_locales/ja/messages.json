@@ -1079,9 +1079,6 @@
       }
     }
   },
-  "popupHotkeysInfoTab": {
-    "message": "<Alt>を押すと、現在のタブのスタイルのみを切り替えます。"
-  },
   "popupHotkeysTooltip": {
     "message": "クリックすると使用可能なホットキーを表示します"
   },

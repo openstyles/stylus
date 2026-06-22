@@ -1111,9 +1111,6 @@
       }
     }
   },
-  "popupHotkeysInfoTab": {
-    "message": "按住 <Alt> 鍵僅切換目前分頁的樣式。"
-  },
   "popupHotkeysTooltip": {
     "message": "點選以檢視可用的快速鍵"
   },
