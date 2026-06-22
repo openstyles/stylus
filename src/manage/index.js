@@ -1,7 +1,8 @@
 import '@/js/dom-init';
 import {kSidebar, pSync} from '@/js/consts';
 import {$create, $toggleDataset, isSidebar} from '@/js/dom';
-import {animateElement, setupLiveDetails, setupLivePrefs} from '@/js/dom-util';
+import {setupLiveDetails, setupLivePrefs} from '@/js/dom-prefs';
+import {animateElement} from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';

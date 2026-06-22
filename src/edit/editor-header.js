@@ -1,6 +1,7 @@
 import {CodeMirror, extraKeys} from '@/cm';
 import {pKeyMap} from '@/js/consts';
-import {setInputValue, setupLiveDetails, setupLivePrefs} from '@/js/dom-util';
+import {setupLiveDetails, setupLivePrefs} from '@/js/dom-prefs';
+import {setInputValue} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
 import {sleep, t} from '@/js/util';
 import {initBeautifyButton} from './beautify';

@@ -1,6 +1,7 @@
 import {kStyleIdPrefix, UCD} from '@/js/consts';
 import {$create, $toggleDataset, isSidebar} from '@/js/dom';
-import {setupLivePrefs, showSpinner} from '@/js/dom-util';
+import {setupLivePrefs} from '@/js/dom-prefs';
+import {showSpinner} from '@/js/dom-util';
 import {breakWord, formatDate, template} from '@/js/localization';
 import {onConnect} from '@/js/msg';
 import {API} from '@/js/msg-api';

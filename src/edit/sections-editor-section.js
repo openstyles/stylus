@@ -1,7 +1,7 @@
 import {CodeMirror} from '@/cm';
 import {kCodeMirror, kEditorSettings, pFavicons} from '@/js/consts';
 import {$toggleDataset} from '@/js/dom';
-import {setupLivePrefs} from '@/js/dom-util';
+import {setupLivePrefs} from '@/js/dom-prefs';
 import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {FROM_CSS, TO_CSS} from '@/js/style-util';

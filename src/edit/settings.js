@@ -1,7 +1,8 @@
 import {CodeMirror, THEMES} from '@/cm';
 import {kEditorSettings, kExclusions, kInclusions, kOverridden, pKeyMap} from '@/js/consts';
 import {$create} from '@/js/dom';
-import {onDetailsToggled, setupLivePrefs} from '@/js/dom-util';
+import {setupLivePrefs} from '@/js/dom-prefs';
+import {onDetailsToggled} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';

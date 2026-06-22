@@ -1,7 +1,7 @@
 import '@/js/dom-init';
 import {kAboutBlank, kPopup, pPopupTogglerExpanded} from '@/js/consts';
 import {$create, isSidebar, urlParams} from '@/js/dom';
-import {setupLivePrefs} from '@/js/dom-util';
+import {setupLivePrefs} from '@/js/dom-prefs';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {swController} from '@/js/msg-init';

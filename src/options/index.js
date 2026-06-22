@@ -2,7 +2,8 @@ import '@/js/dom-init';
 import '@/js/browser';
 import {kBadFavs, pKeepAlive} from '@/js/consts';
 import {$create} from '@/js/dom';
-import {getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '@/js/dom-util';
+import {setupConditionalPrefs, setupLivePrefs} from '@/js/dom-prefs';
+import {getEventKeyName, messageBox, setInputValue} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {swController} from '@/js/msg-init';
@@ -14,9 +15,6 @@ import {browserSidebar} from '@/js/util-webext';
 import './options-sync';
 import '@/css/onoffswitch.css';
 import './options.css';
-
-/** @type {{[id: string]: {el:HTMLElement, not:string, op:string, opVal:string}[]}} */
-const showIf = {__proto__: null};
 
 $$('input[min], input[max]').forEach(enforceInputRange);
 if (location.hash === '#sync-styles') {
@@ -99,11 +97,7 @@ for (const el of $$('[data-clickable]')) {
     el.firstChild.replaceWith(...parts.map((p, i) =>
       i % 2 ? $create('span.clickable', {onclick: clickableValue}, p) : p));
 }
-for (const el of $$('[show-if]')) {
-  const [, not, id, op, opVal, mode] = el.getAttribute('show-if')
-    .match(/^\s*(!\s*)?([.\w]+)\s*(?:(!?=)\s*(\S*)|:(\w+))?/);
-  (showIf[id] ??= []).push({el, not, op, opVal});
-  prefs.subscribe(id, toggleShowIf, true);
+setupConditionalPrefs(({el}, id, mode) => {
   if (mode === 'radio')
     el.$('input').on('click', {handleEvent: toggleAlter, id});
   if (el.matches('.sites')) {
@@ -117,7 +111,7 @@ for (const el of $$('[show-if]')) {
       }
     }
   }
-}
+});
 if (browserSidebar)
   $rootCL.add('has-sidebar');
 setupLivePrefs();
@@ -217,15 +211,6 @@ function onTextKey(e) {
 function toggleAlter(evt) {
   if (evt.target.checked && $id(this.id).checked)
     $id(this.id).click();
-}
-
-function toggleShowIf(key, val) {
-  for (const {el, not, op, opVal} of showIf[key]) {
-    el.classList.toggle('disabled', !(
-      not ? !val : !op ? val :
-        op === '=' ? val == opVal : val != opVal // eslint-disable-line eqeqeq
-    ));
-  }
 }
 
 function tellTopToCloseOptions() {

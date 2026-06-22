@@ -1,7 +1,8 @@
 import ColorPicker from '@/js/color/color-picker';
 import {SWATCH_CLS, UCD} from '@/js/consts';
 import {$create, $createLink, isSidebar} from '@/js/dom';
-import {important, messageBox, setupLivePrefs} from '@/js/dom-util';
+import {setupLivePrefs} from '@/js/dom-prefs';
+import {important, messageBox} from '@/js/dom-util';
 import {breakWord} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
