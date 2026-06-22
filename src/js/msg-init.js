@@ -29,7 +29,7 @@ if (!__.IS_BG) {
 }
 
 async function invokeAPI({name: path}, _thisObj, args) {
-  apiSendProxyDebugLog(path, args);
+  if (__.DEBUG) apiSendProxyDebugLog(path, args);
   // Non-cloneable event is passed when doing `elem.onclick = API.foo`
   if (args[0] instanceof Event) args[0] = 'Event';
   if (path.startsWith(workerApiPrefix)) {
