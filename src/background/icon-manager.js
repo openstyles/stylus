@@ -6,7 +6,7 @@ import {
   browserAction, browserSidebar, MF_ICON_EXT, MF_ICON_PATH, paintCanvas, toggleListener,
 } from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
-import {bgBusy, bgInit, onSchemeChange, onUnload} from './common';
+import {bgBusy, bgInit, onSchemeChange} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
 import {tabCache, set as tabSet} from './tab-manager';
 
@@ -71,12 +71,6 @@ function initIcons(runNow = !__.MV3) {
     kIconset,
   ], () => debounce(refreshAllIcons), runNow);
 }
-
-onUnload.add((tabId, frameId, port) => {
-  if (frameId && tabCache[tabId]?.[kStyleIds]) {
-    updateIconBadge.call(port, [], true);
-  }
-});
 
 /**
  * @param {(number|string)[]} styleIds

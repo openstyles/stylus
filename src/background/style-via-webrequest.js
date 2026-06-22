@@ -1,5 +1,5 @@
 import {
-  kAppJson, kMainFrame, kPopup, kSubFrame, pDisableAll, pPatchCsp, pStyleViaXhr,
+  kAppJson, kMainFrame, kPopup, kStyleIds, kSubFrame, pDisableAll, pPatchCsp, pStyleViaXhr,
 } from '@/js/consts';
 import {updateSessionRules} from '@/js/dnr';
 import {CLIENT} from '@/js/port';
@@ -11,6 +11,7 @@ import {ownId, toggleListener, webNavigation} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgPreInit, clientDataJobs, dataHub, onUnload, WRBTest, WRB} from './common';
 import {stateDB} from './db';
+import {updateIconBadge} from './icon-manager';
 import offscreen from './offscreen';
 import {isOptionSite, optionSites} from './option-sites';
 import makePopupData from './popup-data';
@@ -66,9 +67,15 @@ bgBusy.then(() => {
   if (tabIds.length) removeTabData(tabIds);
 });
 
-onUnload.add((tabId, frameId) => {
-  if (frameId) setTimeout(removePreloadedStyles, REVOKE_TIMEOUT, null, tabId + ':' + frameId);
-  else removeTabData([tabId]);
+onUnload.add((tabId, frameId, port) => {
+  const key = tabId + ':' + frameId;
+  const data = toSend[key];
+  if (data) { // new data for this target is prepared
+    data.timer = setTimeout(removePreloadedStyles, REVOKE_TIMEOUT, null, key);
+  } else if (frameId && tabMan.tabCache[tabId]?.[kStyleIds]) {
+    updateIconBadge.call(port, [], true);
+    if (!frameId) removeTabData([tabId]);
+  }
 });
 
 webNavigation.onErrorOccurred.addListener(removePreloadedStyles, WEBNAV_FILTER);
@@ -125,28 +132,28 @@ async function prepareStyles(req) {
     await colorScheme.refreshSystemDark();
   const oldData = toSend[key];
   const data = oldData || {};
-  const payload = data.payload = getSectionsByUrl.call({sender: req}, url, {init: pStyleViaXhr});
+  const payload = getSectionsByUrl.call({sender: req}, url, {init: pStyleViaXhr});
+  const samePayload = oldData && deepEqual(payload, data.payload);
   const willStyle = payload.sections.length;
+  data.payload = payload;
   data.url = url;
-  if (oldData) removePreloadedStyles(null, key, data, willStyle);
-  if (__.MV3 && xhrOn && willStyle) {
-    await prepareStylesMV3(tabId, frameId, url, data, key, payload);
-  }
+  if (samePayload) data.timer = clearTimeout(data.timer);
+  else if (oldData) removePreloadedStyles(null, key, data, willStyle);
   toSend[key] = data;
-  __.DEBUGLOG('prepareStyles done', key, data);
-}
-
-/** @returns {?} falsy = bgPreInit is not locked */
-async function prepareStylesMV3(tabId, frameId, url, data, key, payload) {
+  if (!__.MV3 || !xhrOn || !willStyle)
+    return;
   let blobId;
-  for (const k in toSend) {
-    if (key === k) continue;
-    const val = toSend[k];
-    if (val.url === url && deepEqual(payload, val.payload)) {
-      setTimeout(removeTemporaryTab, REVOKE_TIMEOUT, tabId);
-      payload = val.payload;
-      blobId = val.blobId;
-      break;
+  if (!samePayload) {
+    for (const k in toSend) {
+      if (key === k) continue;
+      const val = toSend[k];
+      if (val.url === url && deepEqual(payload, val.payload)) {
+        clearTimeout(val.timer);
+        val.timer = setTimeout(removeTemporaryTab, REVOKE_TIMEOUT, tabId);
+        Object.assign(payload, val.payload);
+        blobId = val.blobId;
+        break;
+      }
     }
   }
   if (!blobId) {

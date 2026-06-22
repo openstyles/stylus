@@ -83,8 +83,7 @@ async function init() {
   )) {
     await new Promise(onFrameElementInView);
   } else {
-    data = !isFrameSameOrigin && !isXml && getStylesViaXhr();
-    // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
+    data = getStylesViaXhr();
   }
   if (!runtime.id)
     return selfDestruct();
@@ -123,8 +122,10 @@ function getStylesViaXhr() {
   try {
     const blobId = (document.cookie.split(ownId + '=')[1] || '').split(';')[0];
     if (!blobId) return; // avoiding an exception so we don't spoil debugging in devtools
-    const url = 'blob:' + runtime.getURL(blobId);
+    // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
+    const url = !isXml && 'blob:' + runtime.getURL(blobId);
     document.cookie = `${ownId}=1; max-age=0; SameSite=Lax`; // remove our cookie
+    if (!url) return;
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url, false); // synchronous
     xhr.send();
