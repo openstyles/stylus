@@ -69,16 +69,21 @@ export default async function makePopupData(tabId) {
   const unknown = new Map(frames.map(f => [f.frameId, f]));
   const known = new Map();
   const urls = new Set([kAboutBlank]);
-  if (td && (tmp = td[kStyleIds])) {
-    for (let id in tmp) {
-      if (!unknown.has(id = +id)) { // chrome bug: getAllFrames misses some frames
-        const frameUrl = td[kUrl][id];
+  const styleMap = td[kStyleIds];
+  if (styleMap) {
+    for (let id in styleMap) {
+      // chrome bug: getAllFrames misses some frames
+      if (unknown.has(id = +id)) {
+        // nothing
+      } else if ((tmp = td[kUrl][id])) {
         unknown.set(id, {
           frameId: id,
           parentFrameId: 0,
-          styles: getByUrl(frameUrl, undefined, tabId),
-          url: frameUrl,
+          styles: getByUrl(tmp, undefined, tabId),
+          url: tmp,
         });
+      } else {
+        delete styleMap[id]; // TODO: find out why it wasn't removed by unload tracker
       }
     }
   }
