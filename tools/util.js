@@ -11,6 +11,7 @@ const [TARGET, ZIP] = process.env.NODE_ENV?.split(':') || [''];
 const [BUILD, FLAVOR = 'mv2'] = TARGET.split('-');
 const MV3 = FLAVOR === 'mv3';
 const DEV = process.env.npm_lifecycle_event?.startsWith('watch');
+const HMR = process.env.npm_lifecycle_event?.includes('hmr');
 
 const MANIFEST = 'manifest.json';
 const MANIFEST_OVR = `manifest-${FLAVOR}.json`;
@@ -87,6 +88,7 @@ module.exports = {
   CM_PACKAGE_PATH: path.dirname(require.resolve('codemirror/package.json')) + path.sep,
   DEV,
   FLAVOR,
+  HMR,
   MANIFEST,
   MV3,
   ROOT,

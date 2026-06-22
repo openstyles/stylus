@@ -9,7 +9,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const {RawEnvPlugin} = require('./tools/wp-raw-patch-plugin');
 const {
-  nukeHtmlSpaces, transESM2var, transSourceMap, BUILD, DEV, FLAVOR, MANIFEST, MV3, SRC,
+  nukeHtmlSpaces, transESM2var, transSourceMap, BUILD, DEV, HMR, FLAVOR, MANIFEST, MV3, SRC,
 } = require('./tools/util');
 const augment = require('./tools/wp-config-base');
 const {
@@ -132,6 +132,10 @@ function makeManifest(files) {
   if (GITHUB_ACTIONS) {
     delete base.key;
   }
+  if (HMR) {
+    const csp = "script-src 'self' http://localhost:8080; connect-src 'self' *";
+    base.content_security_policy = MV3 ? {extension_pages: csp} : csp;
+  }
   return JSON.stringify(base, null, 2);
 }
 
@@ -242,6 +246,14 @@ module.exports = [
       !GITHUB_ACTIONS && new webpack.ProgressPlugin(),
     ].filter(Boolean),
     resolve: RESOLVE_VIA_SHIM,
+    devServer: HMR && {
+      hot: true,
+      liveReload: true,
+      client: {webSocketURL: 'ws://localhost:8080/ws'},
+      devMiddleware: {writeToDisk: true},
+      // allowedHosts: 'all',
+      // headers: {'Access-Control-Allow-Origin': '*'},
+    },
   }),
 
   MV3 && augment({
@@ -291,4 +303,4 @@ module.exports = [
   makeLibrary({less: 'less/lib/less-browser/bootstrap'}, 'less'),
 ].filter(Boolean);
 
-module.exports.parallelism = 2;
+module.exports.parallelism = 4;

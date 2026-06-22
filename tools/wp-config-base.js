@@ -114,6 +114,7 @@ const [terserOwn, terserVendor] = [true, false].map(isOwn => new TerserPlugin({
  */
 const getBaseConfig = ({vars} = {}) => ({
   mode: DEV ? 'development' : 'production',
+  devServer: false,
   output: {
     path: DST,
     filename: '[name].js',

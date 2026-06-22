@@ -60,7 +60,8 @@
     "terser-webpack-plugin": "^5.6.1",
     "webpack": "^5.107.2",
     "webpack-bundle-analyzer": "^5.3.0",
-    "webpack-cli": "^7.0.3"
+    "webpack-cli": "^7.0.3",
+    "webpack-dev-server": "^5.2.5"
   },
   "scripts": {
     "lint": "eslint . --cache",
@@ -74,6 +75,7 @@
     "build-firefox": "webpack-cli --config-node-env firefox",
     "watch-mv2": "webpack-cli watch --config-node-env any-mv2",
     "watch-mv3": "webpack-cli watch --config-node-env chrome-mv3",
+    "watch-mv3-hmr": "webpack-cli serve --config-node-env chrome-mv3",
     "watch-firefox": "webpack-cli watch --config-node-env firefox",
     "zip": "pnpm test && node tools/build-zip.js",
     "preversion": "pnpm test",
