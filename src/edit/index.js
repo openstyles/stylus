@@ -1,5 +1,5 @@
 import '@/js/dom-init';
-import {pEditorLinter} from '@/js/consts';
+import {pEditorLinter, pEditorLinterOn} from '@/js/consts';
 import {subscribe} from '@/js/prefs';
 import CompactHeader, {toggleSticky} from './compact-header';
 import editor, {scrollInfo} from './editor';
@@ -28,13 +28,14 @@ import './edit.css';
   (uc ? SourceEditor : SectionsEditor)();
 
   editor.dirty.onChange(editor.updateDirty);
-  subscribe(pEditorLinter, linterPrefSubscriber, true);
+  subscribe([pEditorLinter, pEditorLinterOn], linterPrefSubscriber, true);
   CompactHeader();
   // enabling after init to prevent flash of validation failure on an empty name
   $id('name').required = !uc;
   $id('save-button').onclick = editor.save;
   $id('cancel-button').onclick = editor.cancel;
   $('#lint-help').onclick = showLintHelp;
+  $('#linter-settings').onclick =
   $('#lint .config').onclick = showLintConfig;
   // $id('testRE').hidden = !editor.style.sections.some(({regexps: r}) => r && r.length);
   const elSec = $id('sections-list');

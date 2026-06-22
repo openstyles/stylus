@@ -43,27 +43,21 @@ a.icon {
     margin-left: $pad;
     margin-right: $pad;
   }
-  #name {
-    width: 100%;
+  #details-wrapper {
+    h2 {
+      max-width: calc(var(--header-width) - 2*$pad);
+      font-size: 16px;
+    }
   }
   #basic-info {
     margin-top: $pad025;
     margin-bottom: $pad;
   }
-  #basic-info-enabled {
-    margin-top: $pad025;
-    > :nth-last-child(n + 2) {
-      margin-right: $pad05;
-    }
-  }
-  #new-as {
-    margin: $pad05 0 $pad025;
-  }
   #publish[open],
   #details-wrapper details:not([open]) {
     flex: 0 0 auto;
   }
-  #details-wrapper details {
+  #details-wrapper > details {
     &[open]:not(:last-child) {
       margin-bottom: $pad05;
     }

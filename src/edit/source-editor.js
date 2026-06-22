@@ -1,10 +1,9 @@
 import {CodeMirror} from '@/cm';
 import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
-import {kEditorSettings, pEditorLinter, UCD} from '@/js/consts';
+import {pEditorLinter, UCD} from '@/js/consts';
 import {$create, $createLink, $isTextInput} from '@/js/dom';
 import showUnhandledError from '@/js/dom-error';
 import {messageBox} from '@/js/dom-util';
-import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {getPreprocessorMode, styleToCss} from '@/js/style-util';
@@ -138,13 +137,14 @@ export default function SourceEditor() {
   }
 
   function updateLinterSwitch() {
-    const select = template[kEditorSettings].$(`[id="${pEditorLinter}"]`);
+    const select = $(`[id="${pEditorLinter}"]`);
     const option = select.$('[value="csslint"]');
     const fancyCss = prevMode !== 'css';
     const ovr = curLinter && fancyCss && 'stylelint';
+    const val = ovr || curLinter;
     option.disabled = fancyCss;
     option.title = fancyCss ? t('linterCSSLintIncompatible', fancyCss) : '';
-    select.value = ovr || curLinter;
+    if (val) select.value = val;
     if (ovr) overrideCurLinter(ovr);
   }
 

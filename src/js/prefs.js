@@ -1,9 +1,9 @@
 /** Don't use this file in content script context! */
 import {
-  k_busy, kBadFavs, pDisableAll, pEditorLinter, pEditorTheme, pExposeIframes, pFavicons,
-  pFaviconsGray, pKeyMap, pLintReportDelay, pLivePreview, pManageNewUi, pManageNewUiTargets,
-  pOpenEditInWindow, pPatchCsp, pPopupTogglerExpanded, pStyleViaASS, pStyleViaXhr, pSync,
-  pUrlInstaller,
+  k_busy, kBadFavs, pDisableAll, pEditorLinter, pEditorLinterOn, pEditorTheme, pExposeIframes,
+  pFavicons, pFaviconsGray, pKeyMap, pLintReportDelay, pLivePreview, pManageNewUi,
+  pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pPopupTogglerExpanded, pStyleViaASS,
+  pStyleViaXhr, pSync, pUrlInstaller,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {swController} from './msg-init'; // also installs API handler for own pages
@@ -92,6 +92,7 @@ const defaults = {
   'editor.toc.expanded': true,    // UI element state: expanded/collapsed
   'editor.options.expanded': true, // UI element state: expanded/collapsed
   'editor.options.style.expanded': true, // UI element state: expanded/collapsed
+  'editor.general.expanded': true,
   'editor.lint.expanded': true,   // UI element state: expanded/collapsed
   'editor.publish.expanded': true, // UI element state expanded/collapsed
   'editor.lineWrapping': true,    // word wrap
@@ -116,7 +117,8 @@ const defaults = {
     space_around_cmp: false,
   },
   'editor.beautify.hotkey': '',
-  [pEditorLinter]: 'csslint',     // 'csslint' or 'stylelint' or ''
+  [pEditorLinter]: 'csslint',     // 'csslint' or 'stylelint'
+  [pEditorLinterOn]: true,
   [pLintReportDelay]: 500,  // lint report update delay, ms
   'editor.matchHighlight': 'token', // token = token/word under cursor even if nothing is selected
                                     // selection = only when something is selected
@@ -200,6 +202,10 @@ export const getDbArray = async key => {
 };
 
 export const set = (key, val, isSynced, ...onChangeArgs) => {
+  if (!val && key === pEditorLinter) {
+    key = pEditorLinterOn;
+    val = false;
+  }
   const old = values[key];
   const def = defaults[key];
   const type = typeof def;

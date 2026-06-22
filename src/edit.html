@@ -38,51 +38,18 @@
            href="https://github.com/openstyles/stylus/wiki/Writing-styles">
           <i class=i-info></i>
         </a>
-        <a class="usercss-only icon" target="_blank" id="usercss-docs">
+        <a class="usercss-only icon" target="_blank" id="usercss-docs"
+           href="https://github.com/openstyles/stylus/wiki/Writing-UserCSS"
+           i18n="title:externalUsercssDocument">
           <i class=i-usercss style="font-size: 16px"></i>
         </a>
       </div>
       <section id="basic-info">
-        <div id="basic-info-name" class="hide-if-sticky">
+        <div id="basic-info-name" class="flex center-items">
           <input id="name" spellcheck="false">
           <a id="reset-name" i18n="title:customNameResetHint" tabindex="0" hidden>
             <i class=i-close></i>
           </a>
-        </div>
-        <div id="basic-info-enabled">
-          <label id="new-as" class="hide-if-sticky flex">
-            <input type="checkbox" id="newStyleAsUsercss">
-            <span i18n="newStyleAsUserCSS"></span>
-            <a class=icon tabindex="0" data-cmd="note" style="margin-top: -2px">
-              <i class=i-info></i>
-            </a>
-          </label>
-          <label id="enabled-label" class="hide-if-sticky"
-                 i18n="+styleEnabledLabel, title:toggleStyle"
-                 data-hotkey-tooltip="toggleStyle">
-            <input type="checkbox" id="enabled">
-          </label>
-          <span id="livePreview-settings" class="hide-if-sticky hide-if-new">
-            <label i18n="+previewLabel, title:previewTooltip">
-              <input type="checkbox" id="editor.livePreview">
-            </label>
-            <details>
-              <summary>
-                <i class=i-config></i>
-              </summary>
-              <main>
-                <input id="editor.livePreview.delay" type="number" min="0" max="9" step="0.1">s
-              </main>
-            </details>
-          </span>
-          <label id="disableAll-label" class="hide-if-sticky"
-                 i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
-            <input id="disableAll" type="checkbox">
-          </label>
-          <div id="preview-errors" class="ellipsis" hidden>
-            &nbsp;
-            <a class="icon" target="_blank"><i class="i-external"></i></a>
-          </div>
         </div>
       </section>
       <section id="actions">
@@ -98,25 +65,70 @@
           </a>
         </div>
         <div id="mozilla-format-buttons" class="buttons sectioned-only hide-if-sticky">
-          <button id="from-mozilla" i18n="importLabel"></button>
-          <button id="to-mozilla" i18n="exportLabel"></button>
-          <a class=icon tabindex="0" data-cmd="note" i18n="title:styleToMozillaFormatHelp">
+          <button id="from-mozilla" i18n="importLabel" data-icon="⤊"></button>
+          <button id="to-mozilla" i18n="exportLabel" data-icon="⤋"></button>
+          <a tabindex="0" data-cmd="note" i18n="title:styleToMozillaFormatHelp">
             <i class=i-info></i>
           </a>
         </div>
       </section>
       <div id="details-wrapper">
+        <details id="general" class="ignore-pref-if-compact"
+                 data-pref="editor.general.expanded">
+          <summary><h2 i18n="general" data-icon="‖"></h2></summary>
+          <main>
+            <label id="enabled-label"
+                   i18n="+styleEnabledLabel, title:toggleStyle"
+                   data-hotkey-tooltip="toggleStyle">
+              <input type="checkbox" id="enabled">
+            </label>
+            <span id="livePreview-settings" class="hide-if-new">
+              <label i18n="+previewLabel, title:previewTooltip">
+                <input type="checkbox" id="editor.livePreview">
+              </label>
+              <input id="editor.livePreview.delay" type="number" min="0" max="9" step="0.1">s
+            </span>
+            <label id="new-as" class="flex">
+              <input type="checkbox" id="newStyleAsUsercss">
+              <span i18n="newStyleAsUserCSS"></span>
+              <a class=icon tabindex="0" data-cmd="note" style="margin-top: -2px"
+                 i18n="title:newStyleAsUserCSSHint">
+                <i class=i-info></i>
+              </a>
+            </label>
+            <label id="disableAll-label"
+                   i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
+              <input id="disableAll" type="checkbox">
+            </label>
+            <div id="preview-errors" class="ellipsis" hidden>
+              &nbsp;
+              <a class="icon" target="_blank"><i class="i-external"></i></a>
+            </div>
+            <div>
+              <label id="linter-label" i18n="+cm_linter">
+                <input type="checkbox" id="editor.linter.on">
+              </label>
+              <select id="editor.linter" class="unstyled" show-if="editor.linter.on">
+                <option value="csslint" selected>CSSLint-mod</option>
+                <option value="stylelint">Stylelint</option>
+              </select>
+              <a id="linter-settings" class=icon i18n="title:linterConfigTooltip" tabindex="0">
+                <i class=i-config></i>
+              </a>
+            </div>
+          </main>
+        </details>
         <details id="options" class="settings ignore-pref-if-compact"
                  data-pref="editor.options.expanded">
-          <summary><h2 i18n="editorSettings"></h2></summary>
+          <summary><h2 i18n="editorSettings" data-icon="s"></h2></summary>
         </details>
         <details id="styleOpts" class="settings ignore-pref-if-compact"
                  data-pref="editor.options.style.expanded">
-          <summary><h2 i18n="styleSettings"></h2></summary>
+          <summary><h2 i18n="styleSettings" data-icon="S"></h2></summary>
         </details>
         <details id="publish" data-pref="editor.publish.expanded"
                  class="ignore-pref-if-compact hide-if-new">
-          <summary><h2 i18n="publish"></h2></summary>
+          <summary><h2 i18n="publish" data-icon="@"></h2></summary>
           <main>
             <a id="usw-url" href="https://userstyles.world" target="_blank">&nbsp;</a>
             <p>

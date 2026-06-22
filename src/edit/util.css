@@ -16,8 +16,8 @@
 }
 #popup-button {
   position: fixed;
-  right: 7px;
-  top: 11px;
+  right: $pad05;
+  top: calc((2 * $pad05 + var(--input-height) - 16px) / 2); /* #header's min height */
   z-index: 1000;
   cursor: pointer;
   transition: filter .25s;

@@ -9,7 +9,6 @@ import * as prefs from '@/js/prefs';
 import {debounce, t, tryURL} from '@/js/util';
 import editor from './editor';
 import {keymapHelp} from './keymap-help';
-import {showLintConfig} from './linter/dialogs';
 import {createHotkeyInput, helpPopup} from './util';
 
 // TODO: allow the user to customize which options are always shown
@@ -193,5 +192,4 @@ function EditorSettings(ui) {
 
   setupLivePrefs(ui);
   ui.$('#keyMap-help').onclick = keymapHelp;
-  ui.$('#linter-settings').onclick = showLintConfig;
 }

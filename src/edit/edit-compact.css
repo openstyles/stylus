@@ -10,19 +10,22 @@
     position: static;
   }
   #header {
-    flex: 0 0 auto;
+    flex: 0;
     height: unset;
-    width: 100%;
+    width: unset;
     overflow: visible;
     border-right: none;
     border-bottom: 1px dashed var(--c65);
-    padding: $pad05 $pad05 0;
-    flex-flow: row wrap;
+    padding: $pad05;
+    .popup-window & {
+      padding-right: 32px;
+    }
+    flex-flow: row;
+    align-items: center;
+    align-content: start;
+    gap: $pad05 $pad;
     &.sticky {
       box-shadow: 0 0 3rem -.75rem;
-      #basic-info {
-        margin: 0;
-      }
       #preview-errors {
         position: absolute;
         top: $pad05;
@@ -33,70 +36,55 @@
     details > :not(summary) {
       margin-left: 0;
     }
+    summary::marker {
+      content: none;
+    }
     h2 {
       font-size: 14px;
     }
-    .settings h2 {
-      max-width: max(10vw, 8ex);
+    [data-icon] {
+      font-size: 0;
+      &::after {
+        content: attr(data-icon);
+        font: 16px/1 icons;
+      }
+    }
+    button {
+      height: var(--input-height); /* some buttons may be icons */
     }
   }
   #header.sticky .hide-if-sticky,
-  #heading,
-  h2 {
+  #heading {
     display: none;
   }
-  .popup-window {
-    #header.sticky #preview-errors {
-      right: calc($pad05 + 24px);
-    }
-    #basic-info,
-    #details-wrapper {
-      margin-right: 24px; /* popup button width + gap */
-    }
-  }
   #basic-info {
-    margin-bottom: $pad05;
-    box-sizing: border-box;
+    flex: 100;
+  }
+  #actions {
     display: flex;
-    flex-wrap: wrap;
     gap: $pad05;
-    #header:not(.sticky) & {
-      width: 100%;
-      align-items: center;
+    .buttons {
+      flex-wrap: nowrap;
     }
-    #name,
-    > *:first-child {
-      flex-grow: 1;
-    }
-    > a {
-      order: 1;
-      align-self: center;
-    }
-  }
-  #basic-info-enabled {
-    display: flex;
-    flex-flow: wrap;
-    align-items: center;
-    gap: $pad025 $pad075;
-  }
-  #new-as {
-    order: 1;
-  }
-  #actions .buttons {
-    flex-wrap: nowrap;
   }
   #details-wrapper {
-    display: inline-flex;
-    vertical-align: top;
-    max-width: 100%;
-    flex-direction: row;
-    margin: $pad025 $pad025 $pad05;
+    display: flex;
+    flex-flow: row wrap;
+    margin: 0;
+    gap: $pad05;
+    > details {
+      padding: 4px;
+      border: 1px solid transparent;
+    }
     > details[open] {
       z-index: 50;
-      &:is(:hover, :focus-within) {
+      background: var(--bg);
+      border-color: var(--c80);
+      &:hover, &:focus-within {
         z-index: 51;
       }
       > summary {
+        color: var(--accent-1);
         + * {
           position: absolute;
           overflow: hidden auto;

@@ -36,7 +36,10 @@ for (const file of glob.globSync(SVG_DIR + '*.svg')) {
     continue;
   }
   process.stdout.write(char);
-  const glyph = stream.Readable.from([text]);
+  const scaled = text.replace(/<svg[^>]*?viewbox="0 0 (\d+) (?!512")(\d+)"[^>]*/i,
+    (s, w, h) => +h === 512 || s.includes('height="512"') ? s
+    : s + ` width="${512 / h * w}" height="512"`);
+  const glyph = stream.Readable.from([scaled]);
   glyph.metadata = {name, file, unicode: [char]};
   fontStream.write(glyph);
   SVG_MAP.push([name, char]);

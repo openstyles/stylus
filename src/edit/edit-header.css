@@ -22,9 +22,10 @@ h1 {
   margin: 0;
 }
 /* basic info */
-#basic-info-name {
-  display: flex;
-  align-items: center;
+#name {
+  flex: 1;
+  field-sizing: content;
+  padding-right: var(--input-height);
 }
 #reset-name {
   margin: 0 $pad025 0 $pad05;
@@ -37,37 +38,16 @@ h1 {
 }
 
 #livePreview-settings {
-  display: inline-flex;
-  align-items: center;
-  summary {
-    padding-left: .4rem;
-    display: block;
-  }
-  details[open] summary i {
-    color: var(--fg);
-  }
-  main {
-    position: absolute;
-    z-index: 100;
-    right: 2em;
-    box-shadow: 2px 2px .5em var(--c65);
-    margin-top: $pad05;
-    padding: $pad;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    > input {
-      field-sizing: content;
-      padding-left: $pad05;
-      margin-right: 1ch;
-      max-width: 8ch;
-    }
+  input[type="number"] {
+    field-sizing: content;
+    padding-left: $pad05;
+    margin: 0 .5ch 0 1ch;
+    max-width: 8ch;
   }
 }
 #preview-errors:not([hidden]) {
   color: var(--red1);
   cursor: pointer;
-  display: inline-flex;
   max-width: 100%;
   .normal-layout & {
     margin: $pad05 $pad05 -1em 0;
@@ -79,33 +59,28 @@ h1 {
     font-size: 15px;
   }
 }
-
 /* collapsibles */
 #details-wrapper {
   display: flex;
-  flex-direction: column;
+  flex-flow: column;
   flex-grow: 1;
-  overflow: hidden;
   margin-top: $pad05;
-  details {
+  > details {
     &[open] {
       overflow-y: auto;
     }
-  }
-  summary {
-    align-items: center;
-    margin-left: $pad025;
-    white-space: nowrap;
-    overflow: hidden;
+    > summary {
+      align-items: center;
+      white-space: nowrap;
+      overflow: hidden;
+    }
   }
   h2 {
     display: inline-block;
     border-bottom: 1px dotted transparent;
     margin: 0 0 0 -13px;
     padding-left: 13px; /* clicking directly on details-marker doesn't set pref so we cover it with h2 */
-    max-width: calc(var(--header-width) - 2*$pad);
     vertical-align: middle;
-    font-size: 16px;
     &,
     > :first-child {
       white-space: nowrap;
@@ -113,7 +88,7 @@ h1 {
       text-overflow: ellipsis;
     }
   }
-  .icon {
+  .settings .icon {
     margin-top: -.1em;
   }
   details > :not(summary) {
@@ -121,14 +96,22 @@ h1 {
     padding: $pad025 0;
   }
 }
+#general {
+  > main > :not([hidden]) {
+    display: flex;
+    align-items: center;
+    min-height: var(--input-height);
+  }
+}
+#editor\.linter {
+  background: none;
+  margin-left: $pad05;
+}
 #actions .buttons {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  > * {
-    margin-bottom: $pad05;
-    margin-right: $pad025;
-  }
+  gap: $pad05;
 }
 .dirty #save-button {
   &, & + button {
@@ -166,4 +149,8 @@ h1 {
       content: counter(codelabel) ": ";
     }
   }
+}
+
+.disabled {
+  opacity: .5;
 }

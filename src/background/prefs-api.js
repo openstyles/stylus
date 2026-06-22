@@ -1,4 +1,5 @@
 import * as chromeSync from '@/js/chrome-sync';
+import {pEditorLinter, pEditorLinterOn} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {debounce, deepEqual, deepMerge, isObject} from '@/js/util';
 import {bgBusy, bgPreInit} from './common';
@@ -29,8 +30,11 @@ prefs.set._bgSet = (key, val) => {
 
 bgPreInit.push(chromeSync.get(prefs.STORAGE_KEY).then(orig => {
   orig = orig[prefs.STORAGE_KEY];
-  __.DEBUGLOG('prefsApi', orig);
-  prefs.ready.set(isObject(orig) ? deepMerge(orig) : {}, {});
+  if (!orig || !isObject(orig))
+    orig = {};
+  __.DEBUGLOG('prefsApi', {...orig});
+  orig[pEditorLinterOn] ??= !!orig[pEditorLinter] || (delete orig[pEditorLinter], false);
+  prefs.ready.set(deepMerge(orig), {});
   if (!deepEqual(orig, nondefaults)) bgBusy.then(updateStorage);
   return prefs.ready;
 }));

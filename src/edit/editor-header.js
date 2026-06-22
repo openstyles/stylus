@@ -1,6 +1,6 @@
 import {CodeMirror, extraKeys} from '@/cm';
 import {pKeyMap} from '@/js/consts';
-import {setupLiveDetails, setupLivePrefs} from '@/js/dom-prefs';
+import {setupConditionalPrefs, setupLiveDetails, setupLivePrefs} from '@/js/dom-prefs';
 import {setInputValue} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
 import {sleep, t} from '@/js/util';
@@ -12,6 +12,7 @@ export default function EditorHeader() {
   initNameArea();
   setupLiveDetails();
   setupLivePrefs();
+  setupConditionalPrefs();
   window.on('load', () => {
     prefs.subscribe(pKeyMap, showHotkeyInTooltip, true);
     window.on('showHotkeyInTooltip', showHotkeyInTooltip);

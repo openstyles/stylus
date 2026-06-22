@@ -141,7 +141,7 @@
     "description": "Label for the checkbox controlling word wrap option for the style editor."
   },
   "cm_linter": {
-    "message": "CSS Linter",
+    "message": "Validate CSS",
     "description": "Select the linter to check for CSS issues"
   },
   "cm_matchHighlight": {
