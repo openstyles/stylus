@@ -1,6 +1,5 @@
 import {getLZValue, LZ_KEY} from '@/js/chrome-sync';
 import {kRulesOvr, mimeLESS, pEditorLinter} from '@/js/consts';
-import {__values} from '@/js/prefs';
 import {onStorageChanged} from '@/js/util-webext';
 import * as linterMan from '.';
 import editor from '../editor';
@@ -8,7 +7,7 @@ import {worker} from '../util';
 import {DEFAULTS} from './defaults';
 import {linters, onLinterPref} from './store';
 
-export let curLinter = '';
+export let curLinter;
 export const overrideCurLinter = val => { curLinter = val; };
 
 const kAtRuleDisallowedList = 'at-rule-disallowed-list';
@@ -36,10 +35,11 @@ const runLinter = async (text, _options, cm) => {
 };
 
 export const linterPrefSubscriber = (key, val) => {
-  curLinter = !val ? ''
-    : configHandlers[val = __values[pEditorLinter]] ? val
-      : 'csslint';
-  linters[curLinter ? 'add' : 'delete'](runLinter);
+  if (key === pEditorLinter) {
+    curLinter = configHandlers[val] ? val : 'csslint';
+  } else {
+    linters[val ? 'add' : 'delete'](runLinter);
+  }
   for (const fn of onLinterPref)
     fn();
   linterMan.run();

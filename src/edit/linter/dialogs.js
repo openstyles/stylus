@@ -24,8 +24,6 @@ let isStylelint;
 let popup;
 
 export async function showLintConfig() {
-  if (!curLinter)
-    return;
   RULES[curLinter] ||= await worker.getRules(curLinter);
   await import(/* webpackChunkName: "jsonlint" */'@/cm/jsonlint-bundle');
   isStylelint = curLinter === 'stylelint';
@@ -99,8 +97,6 @@ export async function showLintConfig() {
 }
 
 export async function showLintHelp() {
-  if (!curLinter)
-    return;
   RULES[curLinter] ||= await worker.getRules(curLinter);
   isStylelint = curLinter === 'stylelint';
   let baseUrl, makeItem;

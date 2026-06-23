@@ -143,11 +143,10 @@ export default function SourceEditor() {
     const select = $(`[id="${pEditorLinter}"]`);
     const option = select.$('[value="csslint"]');
     const fancyCss = prevMode !== 'css';
-    const ovr = curLinter && fancyCss && 'stylelint';
-    const val = ovr || curLinter;
+    const ovr = fancyCss && 'stylelint';
     option.disabled = fancyCss;
     option.title = fancyCss ? t('linterCSSLintIncompatible', fancyCss) : '';
-    if (val) select.value = val;
+    select.value = ovr || curLinter;
     if (ovr) overrideCurLinter(ovr);
   }
 
