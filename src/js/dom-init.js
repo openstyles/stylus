@@ -1,12 +1,13 @@
 import {kSidebar, pFavicons, pFaviconsGray} from '@/js/consts';
 import {isTab} from '@/js/msg-api';
-import {swController} from '@/js/msg-init';
-import {$toggleClasses, header, isSidebar, isTouch} from './dom';
+import {$toggleClasses, isSidebar, isTouch} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
+import HeaderResizer from './header-resizer';
 import {tBody} from './localization';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
 import './dom-error';
+import './dom-on-load';
 import './msg-init';
 import './themer';
 import './util-webext';
@@ -60,20 +61,5 @@ if ($rootCL.contains('normal-layout')) {
   }, true);
 }
 
-if (prefs.knownKeys.includes(
-  header.prefId = (header.prefHub = 'headerWidth.') + location.pathname.match(/^.(\w*)/)[1]
-)) (async () => {
-  if (!__.MV3 || !swController)
-    await prefs.ready;
-  requestAnimationFrame((header.setWidth = width => {
-    // If this is a small window on a big monitor the user can maximize it later
-    const max = (innerWidth < 850 ? screen.availWidth : innerWidth) / 3;
-    width = Math.round(Math.max(200, Math.min(max, Number(width) || 0)));
-    $root.style.setProperty('--header-width', width + 'px');
-    header.width = width;
-    return width;
-  }).bind(null, prefs.__values[header.prefId]));
-})();
-
-window.on('load', () => import('./dom-on-load'), {once: true});
 tBody();
+if ($id('header')) HeaderResizer();

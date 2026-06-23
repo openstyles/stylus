@@ -1,5 +1,5 @@
 import {UCD} from '@/js/consts';
-import {header} from '@/js/dom';
+import {headerWidth} from '@/js/header-resizer';
 import * as prefs from '@/js/prefs';
 import {t} from '@/js/util';
 import {installed} from './util';
@@ -191,7 +191,7 @@ function updateColumnWidth(_, val) {
 }
 
 function onResize(evt) {
-  const c = Math.max(1, (innerWidth - header.width) / minWidth >> 0);
+  const c = Math.max(1, (innerWidth - headerWidth) / minWidth >> 0);
   if (columns !== c) {
     $root.style.setProperty(COL_PROP, c);
     if (evt) {

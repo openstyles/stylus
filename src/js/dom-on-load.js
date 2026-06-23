@@ -3,7 +3,6 @@ import {
   closestFocusable, closestHocused, getEventKeyName, isHocused, messageBox, moveFocus, setHocus,
   setLastHocus,
 } from './dom-util';
-import HeaderResizer from './header-resizer';
 import {sanitizeHtml} from './localization';
 import {onMessage} from './msg';
 import * as prefs from './prefs';
@@ -18,9 +17,9 @@ const noteBoxes = new WeakMap();
 const rxTag = /<(?:\/[a-z]+|[a-z]+(?:\s+[^>]*)?)>/g;
 const rxLong1 = /([.?!]\s+|[．。？！]\s*|(?:<[^\s<>][^<>]*>)?.{55,70},)\s+/gu;
 const rxLong2 = /((?:<[^\s<>][^<>]*>)?.{55,70}(?=.{50,}))\s+/gu;
+const elOff = $id('disableAll-label'); // won't hide if already shown
+const getFSH = DataTransferItem.prototype.getAsFileSystemHandle;
 
-splitLongTooltips();
-addTooltipsToEllipsized();
 window.on('mousedown', suppressFocusRingOnClick, {passive: true});
 window.on('keydown', keepFocusRingOnTabbing, {passive: true});
 window.on('keypress', clickDummyLinkOnEnter);
@@ -33,22 +32,24 @@ onMessage.set(request => {
     document.execCommand('delete');
   }
 });
-// Removing transition-suppressor rule
-if (__.B_FIREFOX || !__.MV3 && __.B_ANY && (!CHROME || CHROME < 93)) {
-  nextSheet: for (const sheet of document.styleSheets) {
-    for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {
-      if (/#\\1\s?transition-suppressor/.test(rule.cssText)) {
-        sheet.deleteRule(i);
-        break nextSheet;
+window.on('load', () => {
+  splitLongTooltips();
+  addTooltipsToEllipsized();
+  // Removing transition-suppressor rule
+  if (__.B_FIREFOX || !__.MV3 && __.B_ANY && (!CHROME || CHROME < 93)) {
+    nextSheet: for (const sheet of document.styleSheets) {
+      for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {
+        if (/#\\1\s?transition-suppressor/.test(rule.cssText)) {
+          sheet.deleteRule(i);
+          break nextSheet;
+        }
       }
     }
   }
+}, {once: true});
+if (elOff) {
+  prefs.subscribe('disableAll', () => (elOff.dataset.persist = ''));
 }
-const elOff = $id('disableAll-label'); // won't hide if already shown
-if (elOff) prefs.subscribe('disableAll', () => (elOff.dataset.persist = ''));
-if ($id('header')) HeaderResizer();
-
-const getFSH = DataTransferItem.prototype.getAsFileSystemHandle;
 if (getFSH) {
   addEventListener('dragover', e => {
     if (e.dataTransfer.types.includes('Files')) {

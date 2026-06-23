@@ -12,13 +12,6 @@ for (const {prototype} of [Document, DocumentFragment, Element]) {
 export const cssFieldSizing = __.MV3 || CSS.supports('field-sizing', 'content');
 const detachments = new WeakMap();
 const getObjectType = /*@__PURE__*/Object.call.bind({}.toString);
-/** @type {{
- *   prefHub: string,
- *   prefId: string,
- *   width: number,
- *   setWidth: (width: number) => number,
- * }} */
-export const header = {};
 export const urlParams = new URLSearchParams(location.search);
 export const isSidebar = /*@__PURE__*/urlParams.has(kSidebar);
 export const isTouch = navigator.maxTouchPoints;
