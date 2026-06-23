@@ -35,6 +35,9 @@
     }
     h2 {
       font-size: 14px;
+      height: 20px;
+      display: flex;
+      align-items: center;
     }
     [data-icon] {
       font-size: 0;
@@ -48,11 +51,12 @@
     }
   }
   #header.sticky .hide-if-sticky,
-  #heading {
-    display: none;
+  .hide-if-compact {
+    display: none !important;
   }
   #basic-info {
     flex: 100;
+    order: -1;
   }
   #basic-info-name {
     gap: $pad05;
@@ -66,11 +70,11 @@
   }
   #details-wrapper {
     display: flex;
+    align-items: center;
     flex-flow: row wrap;
     margin: 0;
-    gap: $pad05;
+    gap: $pad;
     > details {
-      padding: 4px;
       border: 1px solid transparent;
     }
     > details[open] {
@@ -121,6 +125,9 @@
   #publish dd {
     white-space: normal;
     max-height: 1.25em;
+  }
+  #lint {
+    padding: 0 4px;
   }
   #sections {
     padding: 0;

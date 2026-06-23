@@ -18,9 +18,7 @@ let timerChanges, timerInvisible;
 let generation = 0;
 /** @type {RegExp} */
 let RX_UNSUPPORTED;
-// on initial paint the view doesn't have a size yet
-// so we process the maximum number of lines that can fit in the window
-let maxRenderChunkSize = Math.ceil(window.innerHeight / 14);
+let maxRenderChunkSize = 100;
 
 //#endregion
 //#region CodeMirror Events

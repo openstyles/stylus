@@ -25,6 +25,9 @@ function loadStyle({style, si, theme, themeText, ...props}) {
   Object.assign(scrollInfo, si);
   editor.updateClass();
   editor.updateTitle(false);
+  // Preallocate width in compact mode to avoid layout shifts
+  $id('toc-title').dataset.num = style.sections.length;
+  $id('testRE').hidden = !style.sections.some(({regexps}) => regexps?.length);
   sessionStore.justEditedStyleId = id || '';
   // no such style so let's clear the invalid URL parameters
   if (id === null) {

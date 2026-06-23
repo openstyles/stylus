@@ -3,7 +3,6 @@
 #lint {
   overflow-x: hidden;
   > summary h2 {
-    display: inline-flex;
     > :not(:hover) {
       color: var(--fg);
     }

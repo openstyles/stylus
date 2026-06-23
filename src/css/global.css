@@ -161,7 +161,7 @@ i {
     cursor: pointer;
   }
   vertical-align: middle;
-  font: var(--icon-font-size)/16px icons;
+  font: var(--icon-font-size)/1 icons;
   .icon:hover > &,
   &:hover {
     color: var(--accent-1);
@@ -330,6 +330,12 @@ summary {
 }
 .center-items {
   align-items: center;
+}
+.ml1 {
+  margin-left: .25rem;
+}
+.ml2 {
+  margin-left: .5rem;
 }
 .wrap {
   flex-wrap: wrap;

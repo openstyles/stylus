@@ -30,7 +30,7 @@
   <template data-id="body"><!-- https://crbug.com/1288447 -->
     <div id="header" class="dvh100">
       <div id="heading" class="flex wrap center-items">
-        <h1 class="ellipsis"></h1>
+        <h1 class="ellipsis hide-if-compact"></h1>
         <a id="url" target="_blank" class="icon" i18n="title:externalHomepage">
           <i class=i-external></i>
         </a>
@@ -61,7 +61,7 @@
             <button id="save-button" i18n="styleSaveLabel" data-hotkey-tooltip="save" disabled></button
             ><button class="split-btn-pedal usercss-only" i18n="menu-tpl:saveAsTemplate"></button>
           </div>
-          <button id="beautify" i18n="styleBeautify"></button>
+          <button id="beautify" i18n="styleBeautify" class="hide-if-sticky"></button>
           <button id="testRE" i18n="+genericTest, title:appliesRegexpOption" hidden></button>
           <a id="cancel-button" i18n="title:styleCancelEditLabel" tabindex="0">
             <i class=i-undo></i>
@@ -146,10 +146,10 @@
         <details id="lint" data-pref="editor.lint.expanded" class="ignore-pref-if-compact" hidden>
           <summary>
             <h2><span i18n="linterIssues"></span><span id="issue-count"></span>
-              <a id="lint-help" class="icon" tabindex="0">
+              <a id="lint-help" class="icon ml2" tabindex="0">
                 <i class=i-info></i>
               </a>
-              <a class="icon config" i18n="title:linterConfigTooltip" tabindex="0">
+              <a class="icon config ml2" i18n="title:linterConfigTooltip" tabindex="0">
                 <i class=i-config-lite></i>
               </a>
             </h2>

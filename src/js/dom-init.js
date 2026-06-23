@@ -65,14 +65,14 @@ if (prefs.knownKeys.includes(
 )) (async () => {
   if (!__.MV3 || !swController)
     await prefs.ready;
-  (header.setWidth = width => {
+  requestAnimationFrame((header.setWidth = width => {
     // If this is a small window on a big monitor the user can maximize it later
     const max = (innerWidth < 850 ? screen.availWidth : innerWidth) / 3;
     width = Math.round(Math.max(200, Math.min(max, Number(width) || 0)));
     $root.style.setProperty('--header-width', width + 'px');
     header.width = width;
     return width;
-  })(prefs.__values[header.prefId]);
+  }).bind(null, prefs.__values[header.prefId]));
 })();
 
 window.on('load', () => import('./dom-on-load'), {once: true});

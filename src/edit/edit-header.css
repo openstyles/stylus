@@ -62,12 +62,6 @@ h1 {
     margin: 0 0 0 -13px;
     padding-left: 13px; /* clicking directly on details-marker doesn't set pref so we cover it with h2 */
     vertical-align: middle;
-    &,
-    > :first-child {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
   }
   .settings .icon {
     margin-top: -.1em;
@@ -103,7 +97,8 @@ h1 {
 }
 
 #toc-title[data-num]::after {
-  content: " (" attr(data-num) ")"
+  content: "(" attr(data-num) ")";
+  margin-left: .5ex;
 }
 #toc {
   counter-reset: codelabel;
