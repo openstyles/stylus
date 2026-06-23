@@ -1,6 +1,7 @@
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
 import {getStyleAtPos, rxUniBody} from '@/cm/util';
 import {kCodeMirror} from '@/js/consts';
+import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {styleJSONseemsValid, styleToCss} from '@/js/style-util';
 import {tryJSONparse} from '@/js/util';
@@ -123,7 +124,8 @@ const prefKeys = prefs.knownKeys.filter(k =>
   prefToCmOpt(k) in CodeMirror.defaults);
 const {insertTab, insertSoftTab} = CodeMirror.commands;
 (async () => {
-  if (!__.MV3) await prefs.ready;
+  if (!__.MV3 || !swController)
+    await prefs.ready;
   for (const key of prefKeys) {
     cmDefaults[prefToCmOpt(key)] = prefs.__values[key];
   }

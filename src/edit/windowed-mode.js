@@ -1,6 +1,7 @@
 import '@/js/browser';
 import {kPopup, pOpenEditInWindow} from '@/js/consts';
 import {urlParams} from '@/js/dom';
+import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
 import {sessionStore, tryJSONparse} from '@/js/util';
@@ -30,7 +31,7 @@ async function initWindowedMode() {
   isWindowed = urlParams.has(kPopup);
   if (isWindowed) EmbeddedPopup();
   else isWindowed = history.length === 1 &&
-    (__.MV3 || await prefs.ready, prefs.__values[pOpenEditInWindow]) &&
+    (__.MV3 && swController || await prefs.ready, prefs.__values[pOpenEditInWindow]) &&
     (await browserWindows.getAll()).length > 1 &&
     (await browser.tabs.query({currentWindow: true})).length === 1;
 }
