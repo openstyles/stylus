@@ -4,6 +4,7 @@ import glob from 'fast-glob';
 import path from 'path';
 import stream from 'stream';
 import svg2ttf from 'svg2ttf';
+import ttf2woff2 from 'ttf2woff2';
 import {SVGIcons2SVGFontStream} from 'svgicons2svgfont';
 import util from './util.js';
 
@@ -14,7 +15,7 @@ const SVG_MAP = [];
 const {SRC} = util;
 const SVG_DIR = SRC + 'icons/';
 const CSS_FILE = SRC + 'css/global.css';
-const CSS_FONT = SRC + 'css/icons.ttf';
+const CSS_FONT = SRC + 'css/icons.woff2';
 const CMT = '/*AUTO-GENERATED-ICON*/';
 const CMT_RANGE = '/*AUTO-GENERATED-ICON-RANGE*/';
 const CSS_ICON = `${CMT} .i-$NAME::after { content: "$CHAR"; }`;
@@ -80,7 +81,7 @@ function convert() {
     fs.writeFileSync(CSS_FILE, newText, 'utf8');
   }
 
-  fs.writeFileSync(CSS_FONT, Buffer.from(ttf.buffer));
+  fs.writeFileSync(CSS_FONT, ttf2woff2(Buffer.from(ttf.buffer)));
 
   console.log(` (${SVG_MAP.length})`, ERRORS[0]
     ? chalk.red(`and ${ERRORS.length} with no id skipped:\n  `) + ERRORS.join('\n  ')
