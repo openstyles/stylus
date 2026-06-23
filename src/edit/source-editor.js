@@ -1,7 +1,7 @@
 import {CodeMirror} from '@/cm';
 import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
 import {pEditorLinter, UCD} from '@/js/consts';
-import {$create, $createLink, $isTextInput} from '@/js/dom';
+import {$create, $isTextInput} from '@/js/dom';
 import showUnhandledError from '@/js/dom-error';
 import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
@@ -49,8 +49,10 @@ export default function SourceEditor() {
   const sectionFinder = MozSectionFinder(cm);
   const sectionWidget = MozSectionWidget(cm, sectionFinder);
   const mozSections = editor.sections = sectionFinder.sections;
+  const pvErr = $id('preview-error');
   prevSel = cm.doc.sel;
   livePreview._then = showLog;
+  livePreview._catch = showError;
   prefs.subscribe([kToc, kWidget], (k, val) => {
     sectionFinder.onOff(updateToc, prefs.__values[kToc] || prefs.__values[kWidget]);
     // TODO: detect global sections
@@ -114,7 +116,7 @@ export default function SourceEditor() {
           await replaceStyle(savedStyle);
         }
       } catch (err) {
-        showSaveError(err, savedStyle || style);
+        showError(err);
       }
     },
     scrollToEditor: NOP,
@@ -132,6 +134,7 @@ export default function SourceEditor() {
   }
 
   function showLog([log, warn]) {
+    pvErr.hidden = true;
     if (log) for (const v of log) console.log(v);
     if (warn) for (const v of warn) console.warn(v);
   }
@@ -234,25 +237,32 @@ export default function SourceEditor() {
     }
   }
 
-  function showSaveError(e, errStyle) {
-    const pos =
-      e.index >= 0 && cm.posFromIndex(e.index) || // usercss meta parser
-      e.offset >= 0 && {line: e.line - 1, ch: (e.col || e.column) - 1}; // csslint code parser
-    const pp = errStyle[UCD]?.preprocessor;
-    const ppUrl = editor.ppDemo[pp];
+  function showError(err) {
+    const pp = style[UCD].preprocessor;
+    let pos;
+    if (typeof err === 'string')
+      err = pos = new Error(err);
+    pos ||= pp && (err.line ??= err.lineno) && err.column
+      ? {line: err.line - 1, ch: err.column - 1}
+      : err.index;
+    let str = err.message || `${err}`;
+    if (pos >= 0) {
+      // FIXME: this would fail if editors[0].getValue() !== data.sourceCode
+      pos = cm.posFromIndex(pos);
+    } else if (!pos && pp === 'stylus' && (
+      pos = str.match(/^\w+:(\d+):(\d+)(?:\n.+)+\s+(.+)/)
+    )) {
+      str = pos[3];
+      pos = {line: pos[1] - 1, ch: pos[2] - 1};
+    }
     if (!pos)
-      return showUnhandledError(e);
-    cm.operation(() => {
+      return showUnhandledError(err);
+    pvErr.title = (pos === err ? '' : `${pos.line + 1}:${pos.ch + 1} `) + str;
+    pvErr.href = editor.ppDemo[pp] || '';
+    pvErr.hidden = false;
+    if (cmpPos(pos, cm.getCursor())) cm.operation(() => {
       cm.jumpToPos(pos);
       cm.setSelections({anchor: pos, head: pos});
-    });
-    messageBox.alert($create('pre', e.message || e), 'pre danger', t('genericError'), ppUrl && {
-      buttons: [
-        $createLink({className: 'icon', href: ppUrl}, [
-          t('genericTest'),
-          $create('i.i-external', {style: 'line-height:0'}),
-        ]),
-      ],
     });
   }
 

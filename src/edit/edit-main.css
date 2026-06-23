@@ -17,19 +17,11 @@
   }
 }
 
-i {
-  width: 16px;
-  height: 16px;
-  &:not(.i-config) {
-    color: var(--fg);
-  }
-  &:hover {
-    color: var(--accent-1);
-  }
-}
-a.icon {
+label .icon,
+label ~ .icon {
   margin-left: .5rem;
 }
+
 @keyframes highlight {
   from {
     background-color: var(--gold1);

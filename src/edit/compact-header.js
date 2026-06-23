@@ -21,7 +21,7 @@ export default function CompactHeader() {
   const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
   const xoRoot = isUsercss ? scroller : undefined;
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
-  const elInfo = $$('#heading a');
+  const elInfo = $$('#heading > h1 ~ *');
   const elIconized = $$('[data-icon]');
   $('#new-as').onclick = () => {
     if (!editor.style.id && !editor.dirty.isDirty()) {

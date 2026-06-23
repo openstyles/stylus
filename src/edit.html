@@ -43,6 +43,9 @@
            i18n="title:externalUsercssDocument">
           <i class=i-usercss style="font-size: 16px"></i>
         </a>
+        <a class="icon" id="preview-error" target="_blank" hidden>
+          <i class="i-caution red1"></i>
+        </a>
       </div>
       <section id="basic-info">
         <div id="basic-info-name" class="flex center-items">
@@ -82,7 +85,7 @@
                    data-hotkey-tooltip="toggleStyle">
               <input type="checkbox" id="enabled">
             </label>
-            <span id="livePreview-settings" class="hide-if-new">
+            <span class="hide-if-new">
               <label i18n="+previewLabel, title:previewTooltip">
                 <input type="checkbox" id="editor.livePreview">
               </label>
@@ -100,10 +103,6 @@
                    i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
               <input id="disableAll" type="checkbox">
             </label>
-            <div id="preview-errors" class="ellipsis" hidden>
-              &nbsp;
-              <a class="icon" target="_blank"><i class="i-external"></i></a>
-            </div>
             <div>
               <label id="linter-label" i18n="+cm_linter">
                 <input type="checkbox" id="editor.linter.on">
@@ -113,7 +112,7 @@
                 <option value="stylelint">Stylelint</option>
               </select>
               <a id="linter-settings" class=icon i18n="title:linterConfigTooltip" tabindex="0">
-                <i class=i-config></i>
+                <i class=i-config-lite></i>
               </a>
             </div>
           </main>
@@ -151,7 +150,7 @@
                 <i class=i-info></i>
               </a>
               <a class="icon config" i18n="title:linterConfigTooltip" tabindex="0">
-                <i class=i-config></i>
+                <i class=i-config-lite></i>
               </a>
             </h2>
           </summary>

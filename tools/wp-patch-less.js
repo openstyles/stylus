@@ -35,7 +35,7 @@ module.exports = makePatchOptions([
     'add: errorConsole, remove: removeErrorConsole',
   ]],
   [LIB_LESS + 'less-error.js',
-    ['if (fileContentMap', 'if (0'],
+    ['if (!this.line', 'if (0'],
     ['if (typeof Object.create', 'if (0'],
     ['LessError.prototype.toString = ', '0&&'],
   ],

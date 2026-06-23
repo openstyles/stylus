@@ -9,11 +9,9 @@
   z-index: 10;
   display: flex;
   flex-direction: column;
-  a[href].icon {
-    margin-left: $pad05;
-  }
 }
 #heading {
+  gap: $pad05;
   > label {
     margin: $pad025 0 $pad05;
   }
@@ -36,28 +34,11 @@ h1 {
 #url:not([href^="http"]) {
   display: none;
 }
-
-#livePreview-settings {
-  input[type="number"] {
-    field-sizing: content;
-    padding-left: $pad05;
-    margin: 0 .5ch 0 1ch;
-    max-width: 8ch;
-  }
-}
-#preview-errors:not([hidden]) {
-  color: var(--red1);
-  cursor: pointer;
-  max-width: 100%;
-  .normal-layout & {
-    margin: $pad05 $pad05 -1em 0;
-  }
-  .compact-layout & {
-    max-width: 32vw;
-  }
-  .i-external {
-    font-size: 15px;
-  }
+#editor\.livePreview\.delay {
+  field-sizing: content;
+  padding-left: $pad05;
+  margin: 0 .5ch 0 1ch;
+  max-width: 8ch;
 }
 /* collapsibles */
 #details-wrapper {

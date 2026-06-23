@@ -26,12 +26,6 @@
     gap: $pad05 $pad;
     &.sticky {
       box-shadow: 0 0 3rem -.75rem;
-      #preview-errors {
-        position: absolute;
-        top: $pad05;
-        right: $pad05;
-        margin: $pad025 0 0 !important;
-      }
     }
     details > :not(summary) {
       margin-left: 0;
@@ -59,6 +53,9 @@
   }
   #basic-info {
     flex: 100;
+  }
+  #basic-info-name {
+    gap: $pad05;
   }
   #actions {
     display: flex;
