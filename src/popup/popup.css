@@ -587,26 +587,13 @@ a.configure[target="_blank"] .i-config {
 }
 
 .csp-problem-indicator {
-  background-color: #c0d;
+  color: #c0d;
 }
 .regexp-problem-indicator {
-  background-color: #d00;
+  color: #d00;
 }
-[class$="-problem-indicator"] {
-  width: 14px;
-  height: 14px;
-  line-height: 15px;
-  border-radius: 8px;
-  margin-right: 4px;
-  margin-left: 4px;
-  text-align: center;
-  &, &:hover {
-    color: white !important;
-  }
-  font-weight: bold;
-  box-sizing: border-box;
-  cursor: pointer;
-  font-size: 90%;
+.i-attention {
+  padding: 0 calc((var(--entry-h) - 16px) / 2);
 }
 
 :is(.regexp-partial, .regexp-invalid) .actions {
@@ -616,6 +603,7 @@ a.configure[target="_blank"] .i-config {
 i {
   pointer-events: none;
   font-size: 16px;
+  color: inherit;
 }
 
 a:hover i {

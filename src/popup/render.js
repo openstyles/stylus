@@ -20,7 +20,6 @@ const xo = new IntersectionObserver(onIntersect);
 export const installed = $id('installed');
 const writerIcon = $('#write-wrapper .icon');
 const disabler = $('#disableAll-label');
-let errCsp, errRegexp;
 let titleCSP;
 
 let initNoStyles = () => {
@@ -206,8 +205,7 @@ export function createStyleElement(style, entry) {
   if (!sloppy) {
     elSloppy?.remove();
   } else if (!elSloppy) {
-    errRegexp ??= template.errRegexp;
-    entry.$('.main-controls').appendChild(errRegexp.cloneNode(true))
+    entry.$('.main-controls').appendChild(template.errRegexp.cloneNode(true))
       .onShowNote = onShowNotePartial;
   }
   if (oldEntry) xo.unobserve(name); // forcing recalc of the title
@@ -216,9 +214,8 @@ export function createStyleElement(style, entry) {
 }
 
 function renderErrCsp(entry, elCsp, csp) {
-  errCsp ??= template.errCsp;
   titleCSP ??= `${t('styleAssetsCSP', t('optionsAdvancedPatchCsp'))}\n<pre>`;
-  elCsp ??= entry.$('.main-controls').appendChild(errCsp.cloneNode(true));
+  elCsp ??= entry.$('.main-controls').appendChild(template.errCsp.cloneNode(true));
   elCsp.title = titleCSP + Object.keys(csp).map(k => clipString(k, 50)).join('\n') + '</pre>';
   elCsp.dataset.title = titleCSP + Object.keys(csp).join('\n') + '</pre>';
   elCsp.onShowNote = onShowNoteCsp;
