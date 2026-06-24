@@ -1,5 +1,6 @@
 import {
-  kAppJson, kMainFrame, kPopup, kStyleIds, kSubFrame, pDisableAll, pPatchCsp, pStyleViaXhr,
+  kAppJson, kContentType, kMainFrame, kPopup, kStyleIds, kSubFrame, pDisableAll, pPatchCsp,
+  pStyleViaXhr,
 } from '@/js/consts';
 import {updateSessionRules} from '@/js/dnr';
 import {CLIENT} from '@/js/port';
@@ -174,7 +175,9 @@ async function prepareStyles(req) {
       urlFilter: '|' + url + '|',
       resourceTypes: [frameId ? kSubFrame : kMainFrame],
       // Forcing the rule to be evaluated later, when response headers are received.
-      excludedResponseHeaders: [{header: kSetCookie, values: [cookie]}],
+      // XML in Chrome is re-rendered by the browser so it can't be styled at document_start
+      // Skipping application/xml, text/xml, along with any added cruft like ;charset
+      excludedResponseHeaders: [{header: kContentType, values: ['*/xml*']}],
     },
     action: {
       type: 'modifyHeaders',
