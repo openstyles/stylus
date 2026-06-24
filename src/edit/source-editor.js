@@ -11,7 +11,7 @@ import {makeUserCssFindFilter, NOP, reuseStyleVars, t} from '@/js/util';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';
 import * as linterMan from './linter';
-import {curLinter, overrideCurLinter} from './linter/engines';
+import {curLinter, linterOn, overrideCurLinter} from './linter/engines';
 import {linters, onLinterPref} from './linter/store';
 import livePreview from './live-preview';
 import MozSectionFinder from './moz-section-finder';
@@ -24,6 +24,7 @@ export default function SourceEditor() {
   let savedGeneration;
   let prevMode = NaN;
   let prevSel;
+  let saving;
   let updateTocFocusPending;
 
   $id('header').on('wheel', headerOnScroll);
@@ -41,9 +42,15 @@ export default function SourceEditor() {
     Object.assign(me.curOp, si.scroll);
     editor.viewTo = 0;
   });
-  const getStyleValue = asObject => asObject
-    ? {...style, sourceCode: cm.getValue(), sections: undefined, [UCD]: undefined}
-    : cm.getValue();
+  /**
+   * @param {boolean|string} asObject - string is the code to use
+   * @return {Partial<StyleObj> | string}
+   */
+  const getStyleValue = asObject => !asObject ? cm.getValue() : {
+    ...style,
+    sourceCode: typeof asObject === 'string' ? asObject : cm.getValue(),
+    sections: undefined, [UCD]: undefined,
+  };
   const kToc = 'editor.toc.expanded';
   const kWidget = 'editor.appliesToLineWidget';
   const sectionFinder = MozSectionFinder(cm);
@@ -97,6 +104,7 @@ export default function SourceEditor() {
       if (pendingMeta)
         await pendingMeta;
       let savedStyle;
+      saving = true;
       try {
         if (!style.id && await API.usercss.find({
           id: style.id,
@@ -118,6 +126,7 @@ export default function SourceEditor() {
       } catch (err) {
         showError(err);
       }
+      saving = false;
     },
     scrollToEditor: NOP,
   });
@@ -185,18 +194,18 @@ export default function SourceEditor() {
 
   async function replaceStyle(newStyle, draft) {
     dirty.clear('name');
+    const code = newStyle.sourceCode;
     const sameCode = editor.isSame(newStyle);
     if (sameCode) {
       savedGeneration = cm.changeGeneration();
       editor.useSavedStyle(newStyle);
       dirty.clear('sourceGeneration');
       dirty.clear('enabled');
-      livePreview(true);
-      return;
+      return livePreview(code);
     }
 
     if (draft || await messageBox.confirm(t('styleUpdateDiscardChanges'))) {
-      newStyle[UCD] ||= await metaCompiler(newStyle.sourceCode, {}, cm, /*force=*/true);
+      newStyle[UCD] ||= await metaCompiler(code, {}, cm, /*force=*/true);
       editor.useSavedStyle(newStyle);
       if (!sameCode) {
         const si0 = draft && draft.si.cms[0];
@@ -209,13 +218,10 @@ export default function SourceEditor() {
         }
         savedGeneration = cm.changeGeneration();
       }
-      if (sameCode) {
-        // the code is same but the environment is changed
-        livePreview(true);
-      }
-      if (!draft) {
+      if (!draft)
         dirty.clear();
-      }
+      if (sameCode) // the code is same but the environment is changed
+        await livePreview(code);
     }
   }
 
@@ -238,31 +244,51 @@ export default function SourceEditor() {
 
   function showError(err) {
     const pp = style[UCD].preprocessor;
-    let pos;
+    let pos, line, ch;
     if (typeof err === 'string')
       err = pos = new Error(err);
-    pos ||= pp && (err.line ??= err.lineno) && err.column
-      ? {line: err.line - 1, ch: err.column - 1}
-      : err.index;
+    pos ||= (err.line ??= err.lineno) && (err.col ??= err.column)
+      ? {line: line = err.line - 1, ch: ch = err.col - 1}
+      : err.index ?? err.offset;
     let str = err.message || `${err}`;
     if (pos >= 0) {
       // FIXME: this would fail if editors[0].getValue() !== data.sourceCode
-      pos = cm.posFromIndex(pos);
+      ({line, ch} = pos = cm.posFromIndex(pos));
     } else if (!pos && pp === 'stylus' && (
       pos = str.match(/^\w+:(\d+):(\d+)(?:\n.+)+\s+(.+)/)
     )) {
       str = pos[3];
-      pos = {line: pos[1] - 1, ch: pos[2] - 1};
+      line = pos[1] - 1;
+      ch = pos[2] - 1;
     }
+    if (!pos || saving)
+      showUnhandledError(err);
     if (!pos)
-      return showUnhandledError(err);
-    pvErr.title = (pos === err ? '' : `${pos.line + 1}:${pos.ch + 1} `) + str;
-    pvErr.href = editor.ppDemo[pp] || '';
+      return;
+    pvErr.title = str;
+    const url = editor.ppDemo[pp];
+    const state = cm.state.lint;
+    const {options} = state;
+    const fnKey = 'getAnnotations';
+    const fn = options[fnKey];
+    const inOp = cm.curOp || cm.startOperation();
+    pvErr[`${url ? 'set' : 'remove'}Attribute`]('href', url);
     pvErr.hidden = false;
-    if (cmpPos(pos, cm.getCursor())) cm.operation(() => {
+    if (cmpPos(pos, cm.getCursor())) {
       cm.jumpToPos(pos);
       cm.setSelections({anchor: pos, head: pos});
-    });
+    }
+    if (!linterOn) { // the linter can show the error by itself hopefully
+      options[fnKey] = () => [{
+        message: str.replace(/^\d+:\d+\s*/, ''),
+        from: pos, to: {line, ch: ch + 1}, severity: 'error',
+      }];
+      cm.getValue = NOP;
+      cm.performLint();
+      options[fnKey] = fn;
+      delete cm.getValue;
+    }
+    if (!inOp) cm.endOperation();
   }
 
   function nextPrevSection(dir) {

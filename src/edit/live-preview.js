@@ -18,6 +18,7 @@ prefs.subscribe(pLivePreview, (key, value, init) => {
 /**
  * @prop {(logs: []) => any} [_then]
  * @prop {(err: Error) => any} [_catch]
+ * @param {boolean | string} now - string is the code to use
  */
 export default function livePreview(now) {
   if (!enabled
@@ -29,14 +30,10 @@ export default function livePreview(now) {
     debounce(livePreview, prefs.__values[pLivePreview + '.delay'] * 1000, /*now=*/true);
     return;
   }
-  data = editor.getValue(true);
-  updatePreviewer();
-}
-
-async function updatePreviewer() {
   if (!port) {
     port = chrome.runtime.connect({name: 'livePreview:' + editor.style.id});
     port.onDisconnect.addListener(() => (port = null));
   }
-  API.styles.preview(data).then(livePreview._then, livePreview._catch);
+  data = editor.getValue(now);
+  return API.styles.preview(data).then(livePreview._then, livePreview._catch);
 }

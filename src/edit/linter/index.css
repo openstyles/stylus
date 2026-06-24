@@ -17,6 +17,7 @@
   .report {
     display: flex;
   }
+  .disabled,
   .empty {
     display: none;
   }

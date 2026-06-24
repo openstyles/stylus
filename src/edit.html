@@ -145,10 +145,12 @@
         <details id="lint" data-pref="editor.lint.expanded" class="ignore-pref-if-compact" hidden>
           <summary>
             <h2><span i18n="linterIssues"></span><span id="issue-count"></span>
-              <a id="lint-help" class="icon ml2" tabindex="0">
+              <a id="lint-help" class="icon ml2" tabindex="0"
+                 show-if="editor.linter.on">
                 <i class=i-info></i>
               </a>
-              <a class="icon config ml2" i18n="title:linterConfigTooltip" tabindex="0">
+              <a class="icon config ml2" i18n="title:linterConfigTooltip" tabindex="0"
+                 show-if="editor.linter.on">
                 <i class=i-config-lite></i>
               </a>
             </h2>

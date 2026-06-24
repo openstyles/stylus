@@ -9,6 +9,7 @@ import {DEFAULTS} from './defaults';
 import {linters, onLinterPref} from './store';
 
 export let curLinter;
+export let linterOn;
 export const overrideCurLinter = val => { curLinter = val; };
 
 const kAtRuleDisallowedList = 'at-rule-disallowed-list';
@@ -39,6 +40,7 @@ export const linterPrefSubscriber = (key, val) => {
   if (key === pEditorLinter) {
     curLinter = configHandlers[val] ? val : __defaults[key];
   } else {
+    linterOn = val;
     linters[val ? 'add' : 'delete'](runLinter);
   }
   for (const fn of onLinterPref)
