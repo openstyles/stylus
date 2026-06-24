@@ -269,6 +269,8 @@ export default function MozSectionFinder(cm) {
               continue;
             }
             goal = goal.slice(1);
+            if (!type && goal.length > 1) // current span can't be a function/string
+              continue;
           }
           if (goal === 'func') {
             if (!type || !(rxFUNC.lastIndex = ch, m = rxFUNC.exec(text))) {
@@ -335,9 +337,10 @@ export default function MozSectionFinder(cm) {
             rxNEXT.lastIndex = ch;
             s = text.match(rxNEXT);
             goal = s[2];
-            goal = goal === ',' ? 'func' :
-              goal === '{' ? 'cmt' :
-                !goal && ','; // non-space something at this place = syntax error
+            goal = goal === ',' ? '_func' :
+              goal === '{' ? '_cmt' :
+                goal ? '' : // non-space something at this place = syntax error
+                  ',';
             if (!goal) {
               goal = 'error';
               break;
@@ -347,8 +350,6 @@ export default function MozSectionFinder(cm) {
               goal = '';
               break;
             }
-            if (s[1])
-              goal = '_' + goal;
           }
           if (goal === ',') {
             goal = text[ch] === ',' ? '_func' : '';
