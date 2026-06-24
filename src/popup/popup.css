@@ -74,16 +74,22 @@ body {
   details {
     $pinW: 14px;
     flex: 1;
-    padding-right: calc($pad * 2 + $pinW);
     .icon {
-      padding: 0 $pad;
       position: absolute;
       align-items: center;
+      justify-content: center;
       display: flex;
       top: 0;
       right: 0;
       bottom: 0;
       z-index: 100;
+      margin: auto $pad auto 0;
+      width: 24px; /* standard minimum for a touch target */
+      height: 24px;
+      border-radius: 50%;
+      &:hover {
+        background-color: var(--c90);
+      }
       input {
         opacity: 0;
         position: absolute;
@@ -290,7 +296,7 @@ body {
     .actions i {
       color: var(--c60);
     }
-    &:hover a:hover i {
+    a:hover i {
       color: var(--fg);
     }
   }
