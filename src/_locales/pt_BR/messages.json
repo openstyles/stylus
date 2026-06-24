@@ -97,9 +97,6 @@
   "cm_lineWrapping": {
     "message": "Quebra de linha"
   },
-  "cm_linter": {
-    "message": "Linter CSS"
-  },
   "cm_matchHighlight": {
     "message": "Destacar"
   },

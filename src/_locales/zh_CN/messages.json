@@ -106,9 +106,6 @@
   "cm_lineWrapping": {
     "message": "自动换行"
   },
-  "cm_linter": {
-    "message": "CSS 检查器"
-  },
   "cm_matchHighlight": {
     "message": "高亮"
   },

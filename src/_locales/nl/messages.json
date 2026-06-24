@@ -103,9 +103,6 @@
   "cm_lineWrapping": {
     "message": "Tekstterugloop"
   },
-  "cm_linter": {
-    "message": "CSS-linter"
-  },
   "cm_matchHighlight": {
     "message": "Markeren"
   },

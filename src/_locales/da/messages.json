@@ -100,9 +100,6 @@
   "cm_lineWrapping": {
     "message": "Ordombrydning"
   },
-  "cm_linter": {
-    "message": "CSS-linter"
-  },
   "cm_matchHighlight": {
     "message": "Fremhævning"
   },
