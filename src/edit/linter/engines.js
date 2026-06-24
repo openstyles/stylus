@@ -1,5 +1,6 @@
 import {getLZValue, LZ_KEY} from '@/js/chrome-sync';
 import {kRulesOvr, mimeLESS, pEditorLinter} from '@/js/consts';
+import {__defaults} from '@/js/prefs';
 import {onStorageChanged} from '@/js/util-webext';
 import * as linterMan from '.';
 import editor from '../editor';
@@ -36,7 +37,7 @@ const runLinter = async (text, _options, cm) => {
 
 export const linterPrefSubscriber = (key, val) => {
   if (key === pEditorLinter) {
-    curLinter = configHandlers[val] ? val : 'csslint';
+    curLinter = configHandlers[val] ? val : __defaults[key];
   } else {
     linters[val ? 'add' : 'delete'](runLinter);
   }
