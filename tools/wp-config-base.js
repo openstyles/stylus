@@ -81,6 +81,7 @@ const moduleRules = [
 const [terserOwn, terserVendor] = [true, false].map(isOwn => new TerserPlugin({
   [isOwn ? 'exclude' : 'include']: /^less|codemirror|csslint|parserlib|beautify|jsonlint|webdav/,
   extractComments: false,
+  parallel: 4,
   terserOptions: {
     ecma: MV3 ? 2024 : 2017,
     compress: {
@@ -94,6 +95,7 @@ const [terserOwn, terserVendor] = [true, false].map(isOwn => new TerserPlugin({
       reduce_funcs: false,
       sequences: !isOwn,
       unsafe_arrows: isOwn,
+      passes: 2, // adds one second but drops debugging artifacts like 0; in place if __.DEBUGLOG
     },
     output: {
       ascii_only: false,

@@ -303,4 +303,4 @@ module.exports = [
   makeLibrary({less: 'less/lib/less-browser/bootstrap'}, 'less'),
 ].filter(Boolean);
 
-module.exports.parallelism = 4;
+module.exports.parallelism = 2;

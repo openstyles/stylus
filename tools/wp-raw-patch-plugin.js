@@ -33,7 +33,7 @@ const MakeNamespaceObjectRuntimeModule =
 const rxVar = /\b__\.([$_A-Z][$_A-Z\d]*)\b/g;
 /** Patching (0,module.export) */
 const rxCall = /^\(0,([$\w]+\.[$\w]+)\)$/;
-const rxUnmangled = /(?!<[$\w])(?!\w*webpack|^(moduleId|cachedModule|(parent)?chunkLoading|installed\w*?Chunk))[$a-z][$\w]+/gi;
+const rxUnmangled = /(?!<[$\w])(?!\w*webpack|moduleId|cachedModule|(parent)?chunkLoading|installed\w*?Chunk)[$a-z][$\w]+/gi;
 const STAGE = (/**@type {typeof import('webpack/types').Compilation}*/webpack.Compilation)
   .PROCESS_ASSETS_STAGE_OPTIMIZE_COMPATIBILITY;
 const NAME = __filename.slice(__dirname.length + 1).replace(/\.\w+$/, '');
