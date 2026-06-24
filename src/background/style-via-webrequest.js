@@ -115,21 +115,18 @@ async function setup(key) {
 
 /** @param {browser.webRequest._OnBeforeRequestDetails} req */
 async function prepareStyles(req) {
-  const {tabId, frameId, url} = req; if (tabId < 0) return;
+  const init = bgBusy;
+  if (init) await init;
   let v;
+  const {tabId, frameId, url} = req;
   const key = tabId + ':' + frameId;
-  const isInit = bgBusy;
-  const cspOn = __values[pPatchCsp]
-    && (!(v = optionSites[pPatchCsp]) || isOptionSite(v, url));
   const xhrOn = __values[pStyleViaXhr]
     && (!(v = optionSites[pStyleViaXhr]) || isOptionSite(v, url));
   __.DEBUGLOG('prepareStyles', key, req);
-  if (!xhrOn && !cspOn && !bgBusy)
-    return;
-  if (bgBusy)
-    await bgBusy;
-  if (xhrOn && colorScheme.isSystem() && (isInit || !tabMan.someInjectable()))
+  if (__.MV3 && xhrOn && colorScheme.isSystem() && !tabMan.someInjectable())
     await colorScheme.refreshSystemDark();
+  if (tabId < 0 || init/* no point in priming the cache by now */)
+    return;
   const oldData = toSend[key];
   const data = oldData || {};
   const payload = getSectionsByUrl.call({sender: req}, url, {init: pStyleViaXhr});
