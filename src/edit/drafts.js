@@ -23,14 +23,16 @@ maybeRestore().then(() => {
 
 async function maybeRestore() {
   const draft = await API.draftsDB.get(makeId());
-  if (!draft || draft.isUsercss !== editor.isUsercss || editor.isSame(draft.style)) {
+  let resolve, style, value;
+  if (!draft
+  || !(style = draft.style)
+  || !(value = draft.isUsercss ? style.sourceCode : styleToCss(style))
+  || draft.isUsercss !== editor.isUsercss
+  || editor.isSame(draft.style)) {
     return;
   }
-  let resolve;
-  const {style} = draft;
   const onYes = () => resolve(true);
   const onNo = () => resolve(false);
-  const value = draft.isUsercss ? style.sourceCode : styleToCss(style);
   const info = t('draftTitle', formatRelativeDate(draft.date));
   const popup = showCodeMirrorPopup(info, '', {value, readOnly: true});
   const buttons = [t('confirmYes'), t('confirmNo')].map((btn, i) =>
