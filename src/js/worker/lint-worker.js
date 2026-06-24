@@ -187,14 +187,14 @@ function getRawValue(code, n, end) {
 }
 
 const collectStylelintResults = (messages, code, mode) => {
-  let v;
+  let prev, pL, pC, pL2, pC2, v;
   let len = 0;
-  for (let i = 0; i < messages.length; i++) {
-    const m = messages[i];
-    const {rule} = m;
+  for (const m of messages) {
+    const {rule, line: L, column: C, endLine: L2 = L, endColumn: C2 = C} = m;
     const {start: {offset: a} = {}, end: {offset: b} = {}} = m;
     const msg = m.text.replace(/^Unexpected\s+/, '').replace(` (${rule})`, '');
     if (
+      msg === prev && L === pL && C === pC && L2 === pL2 && C2 === pC2 ||
       mode === 'less' &&
         rule === kAtRuleNoUnknown && rxVarsLessDecl.test(msg) ||
       mode === 'stylus' &&
@@ -206,16 +206,16 @@ const collectStylelintResults = (messages, code, mode) => {
         v.includes('/*[[')
       )
     ) continue;
-    const {line: L, column: C} = m;
     const isImport = msg.includes('at-rule "@import"');
     /** @namespace LintAnnotation */
     messages[len++] = {
       message: isImport ? '@import prevents parallel downloads and may be blocked by CSP.' : msg,
       from: {line: L - 1, ch: C - 1, offset: a},
-      to: {line: (m.endLine || L) - 1, ch: (m.endColumn || C) - 1, offset: b},
+      to: {line: L2 - 1, ch: C2 - 1, offset: b},
       rule: isImport ? '' : rule,
       severity: isImport ? 'warning' : m.severity,
     };
+    prev = msg; pL = L; pC = C; pL2 = L2; pC2 = C2;
   }
   messages.length = len;
 };
