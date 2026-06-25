@@ -147,6 +147,7 @@ hookFunc(HarmonyExportSpecifierDependency.Template, 'apply', (fn, me, args) => {
   if (dep[SYM]) {
     if (old < frags.length) {
       const boundVal = '/* binding */ ' + dep.id;
+      // TODO: adapt to webpack 5.108+
       frags.at(-1).exportMap.forEach((val, key, map) => {
         if (val === boundVal) map.set(key, `/*${dep[SYM]}*/${dep.id}`);
       });

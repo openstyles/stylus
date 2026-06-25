@@ -178,7 +178,7 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1
       webpack:
-        specifier: ^5.107.2
+        specifier: 5.107.2
         version: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.3)
       webpack-bundle-analyzer:
         specifier: ^5.3.0
