@@ -58,6 +58,10 @@ module.exports = makePatchOptions([
   [LIB_LESS + 'transform-tree.js',
     [/if \(options\.pluginManager/g, 'if (0'],
   ],
+  [LIB_LESS + 'functions/string.js',
+    [/import JavaScript.+/, ''],
+    ['str instanceof JavaScript ? str.evaluated : ', ''],
+  ],
   [LIB_LESS + 'tree/atrule.js',
     [/\) \{\s+super\(\);/,
       ',cmt $& this.cmt = cmt;'],
@@ -83,6 +87,10 @@ module.exports = makePatchOptions([
         ]);
         context.tabLevel = 0;
       }`],
+  ],
+  [LIB_LESS + 'tree/index.js',
+    [/import JavaScript.+/, ''],
+    [', JavaScript', ''],
   ],
   [LIB_LESS + 'tree/node.js',
     [/toCSS\(context.+[\s\S]+strs\.join.+\s+}/, `${{
@@ -111,5 +119,9 @@ module.exports = makePatchOptions([
       '$& cmt = cmt2 ? parserInput.getInput().slice(cmt1, cmt2).trim() : "";'],
     [/new\(tree\.AtRule\).+\s+.+\s+isRooted/,
       '$&, null, cmt'],
+    ['entities.javascript()',
+      'undefined'],
+    [/javascript: function [\s\S]+?invalid javascript.+\s+}/,
+      ''],
   ],
 ]);
