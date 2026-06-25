@@ -1,12 +1,12 @@
 import ColorPicker from '@/js/color/color-picker';
 import {SWATCH_CLS, UCD} from '@/js/consts';
-import {$create, $createLink, isSidebar} from '@/js/dom';
+import {$create, $createLink} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-prefs';
 import {important, messageBox} from '@/js/dom-util';
 import {breakWord} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
-import {clamp, debounce, deepCopy, NOP, t} from '@/js/util';
+import {clamp, debounce, deepCopy, isSidebar, NOP, t} from '@/js/util';
 import {MOBILE} from '@/js/ua';
 import './config-dialog.css';
 import '@/css/onoffswitch.css';

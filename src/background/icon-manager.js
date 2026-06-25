@@ -3,7 +3,8 @@ import {__values as __prefs, subscribe} from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
 import {debounce, deepCopy, NOP, t} from '@/js/util';
 import {
-  browserAction, browserSidebar, MF_ICON_EXT, MF_ICON_PATH, paintCanvas, toggleListener,
+  browserAction, browserSidebar, MF_ICON_EXT, MF_ICON_PATH, openSidebar, paintCanvas,
+  toggleListener,
 } from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgInit, onSchemeChange} from './common';
@@ -32,10 +33,10 @@ if (browserAction) {
   bgInit.push(initIcons);
   if (browserSidebar) {
     if (__.MV3) // receiving a wake-up event, gonna unregister in subscribe() if not enabled
-      toggleListener(browserAction.onClicked, true, openSidebar);
+      toggleListener(browserAction.onClicked, true, openPopupInSidebar);
     subscribe('popup.sidePanel', (key, val) => {
       browserAction.setPopup({popup: val ? '' : 'popup.html'});
-      toggleListener(browserAction.onClicked, val, openSidebar);
+      toggleListener(browserAction.onClicked, val, openPopupInSidebar);
     }, true);
   }
 }
@@ -177,15 +178,9 @@ async function loadImage(url) {
   return result;
 }
 
-function openSidebar(tab) {
-  tab = {tabId: tab.id};
-  if (__.MV3) {
-    browserSidebar.setOptions({path: 'popup.html?' + kSidebar, ...tab});
-    browserSidebar.open(tab);
-  } else {
-    browserSidebar.setPanel({panel: 'popup.html?' + kSidebar, ...tab});
-    browserSidebar.open();
-  }
+/** @param {chrome.tabs.Tab} tab */
+function openPopupInSidebar(tab) {
+  openSidebar('popup.html?' + kSidebar, false, {tabId: tab.id});
 }
 
 function refreshGlobalIcon() {

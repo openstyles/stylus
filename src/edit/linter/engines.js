@@ -1,7 +1,6 @@
 import {getLZValue, LZ_KEY} from '@/js/chrome-sync';
 import {kRulesOvr, mimeLESS, pEditorLinter} from '@/js/consts';
-import {__defaults} from '@/js/prefs';
-import {onStorageChanged} from '@/js/util-webext';
+import {__defaults, onStorageChanged} from '@/js/prefs';
 import * as linterMan from '.';
 import editor from '../editor';
 import {worker} from '../util';
@@ -48,7 +47,7 @@ export const linterPrefSubscriber = (key, val) => {
   linterMan.run();
 };
 
-onStorageChanged.addListener(changes => {
+onStorageChanged.add(changes => {
   for (const name of Object.keys(configHandlers)) {
     if (LZ_KEY[name] in changes) {
       getConfig(name).then(linterMan.run);

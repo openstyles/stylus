@@ -1,6 +1,7 @@
 import {kSidebar, pFavicons, pFaviconsGray} from '@/js/consts';
 import {isTab} from '@/js/msg-api';
-import {$toggleClasses, isSidebar, isTouch} from './dom';
+import {isSidebar} from '@/js/util';
+import {$toggleClasses, isTouch} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
 import HeaderResizer from './header-resizer';
 import {tBody} from './localization';

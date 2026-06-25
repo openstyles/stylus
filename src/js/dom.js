@@ -1,5 +1,3 @@
-import {kSidebar} from '@/js/consts';
-
 Object.assign(EventTarget.prototype, {
   on: addEventListener,
   off: removeEventListener,
@@ -12,8 +10,6 @@ for (const {prototype} of [Document, DocumentFragment, Element]) {
 export const cssFieldSizing = __.MV3 || CSS.supports('field-sizing', 'content');
 const detachments = new WeakMap();
 const getObjectType = /*@__PURE__*/Object.call.bind({}.toString);
-export const urlParams = new URLSearchParams(location.search);
-export const isSidebar = /*@__PURE__*/urlParams.has(kSidebar);
 export const isTouch = navigator.maxTouchPoints;
 
 export const $isTextInput = ({localName, type} = document.activeElement || {}) =>

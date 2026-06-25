@@ -1,4 +1,4 @@
-import {UCD} from '@/js/consts';
+import {kSidebar, UCD} from '@/js/consts';
 
 /**
  * WARNING!
@@ -30,6 +30,8 @@ export const globAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&')
   .replace(/\\\\\\\*/g, '\\*');
 export const RX_MAYBE_REGEXP = /^\s*\/(.+?)\/([simguy]*)\s*$/;
 export const RX_META = /\/\*!?\s*==userstyle==(?:[^*]+?|\*(?!\/))*==\/userstyle==\s*\*\//i;
+export const urlParams = new URLSearchParams(location.search);
+export const isSidebar = /*@__PURE__*/urlParams.has(kSidebar);
 
 const tCache = /*@__PURE__*/new Map();
 

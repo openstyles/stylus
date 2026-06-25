@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import {kSidebar, pSync} from '@/js/consts';
-import {$create, $toggleDataset, isSidebar} from '@/js/dom';
+import {$create, $toggleDataset} from '@/js/dom';
 import {setupLiveDetails, setupLivePrefs} from '@/js/dom-prefs';
 import {animateElement} from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
@@ -8,7 +8,7 @@ import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import * as syncUtil from '@/js/sync-util';
 import {favicon} from '@/js/urls';
-import {t} from '@/js/util';
+import {isSidebar, t} from '@/js/util';
 import InjectionOrder from './injection-order';
 import {showStyles} from './render';
 import * as router from './router';

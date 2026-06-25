@@ -1,16 +1,16 @@
 import '@/js/dom-init';
 import {kStyleIdPrefix, kTabOvr, pPatchCsp, UCD} from '@/js/consts';
-import {$create, $toggleClasses, isSidebar} from '@/js/dom';
+import {$create, $toggleClasses} from '@/js/dom';
 import {splitLongTooltips} from '@/js/dom-on-load';
 import {sanitizeHtml, template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {CHROME} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
-import {capitalize, clipString, stringAsRegExpStr, t} from '@/js/util';
+import {capitalize, clipString, isSidebar, stringAsRegExpStr, t} from '@/js/util';
 import {MF} from '@/js/util-webext';
 import {isBlocked, tabId, tabUrlSupported} from '.';
-import {openOptions, openStyleFinder, pSideConfig, tSideHint} from './events';
+import {openStyleFinder, pSideConfig, tSideHint} from './events';
 import {closeMenu, menu, openMenu} from './menu';
 
 const EXT_NAME = `<${MF.name}>`;
@@ -224,7 +224,7 @@ function renderErrCsp(entry, elCsp, csp) {
 
 /** @param {MessageBoxElement} _ */
 function onShowNoteCsp({_buttons: el}) {
-  el.append($create('button', {onclick: openOptions}, t('openOptions')));
+  el.append($create('button#options-btn', t('openOptions')));
 }
 
 function onShowNotePartial({_body: el}) {

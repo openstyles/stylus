@@ -1,9 +1,8 @@
 import {loadCmTheme} from '@/cm';
-import {urlParams} from '@/js/dom';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {FROM_CSS} from '@/js/style-util';
-import {clipString, sessionStore, tryURL} from '@/js/util';
+import {clipString, sessionStore, tryURL, urlParams} from '@/js/util';
 import editor, {scrollInfo} from './editor';
 
 if (location.hash) { // redirected from devtools -> "open in a new tab"

@@ -83,7 +83,7 @@ export default async function setClientData({
   const page = url.pathname.slice(1/*"/"*/, -5/*".html"*/);
   const pagesForUrl = ownPagesCommitted[pageUrl];
   const tabId = pagesForUrl?.shift();
-  const sender = {frameId, tab: {id: tabId, url: pageUrl}};
+  const sender = {frameId, tab: tabId >= 0 ? {id: tabId, url: pageUrl} : {}};
   const jobs = Object.assign(/** @namespace StylusClientData */ {
     apply: styleMan.getSectionsByUrl.call({sender}, pageUrl, {init: true}),
     dark: isDark,

@@ -1,8 +1,10 @@
-import './browser';
+import '@/js/browser';
+import {k_deepCopy, kSidebar, pSideManager, pSideOptions} from '@/js/consts';
+import {API} from '@/js/msg-api';
+import {__values} from '@/js/prefs';
 import {CHROME} from '@/js/ua';
-import {k_deepCopy} from './consts';
-import {ownRoot} from './urls';
-import {deepCopy, NOP} from './util';
+import {ownRoot} from '@/js/urls';
+import {deepCopy, isSidebar, NOP} from '@/js/util';
 
 export let ownTab;
 // Firefox uses a different id for moz-extension://
@@ -16,9 +18,8 @@ export const MF_ICON_EXT = /*@__PURE__*/ MF_ICON.slice(MF_ICON.lastIndexOf('.'))
 
 export const browserAction = __.MV3 ? chrome.action : browser.browserAction;
 export const browserWindows = browser.windows;
-export const browserSidebar = browserWindows && (__.MV3 ? chrome.sidePanel : browser.sidebarAction);
-/** A scoped listener won't trigger for our [big] stuff in `local`, Chrome 73+, FF */
-export const onStorageChanged = chrome.storage.sync.onChanged || chrome.storage.onChanged;
+export const browserSidepanel = chrome.sidePanel;
+export const browserSidebar = browserSidepanel || browser.sidebarAction;
 export const webNavigation = browser.webNavigation;
 
 export const closeCurrentTab = async () => {
@@ -37,6 +38,33 @@ export const getActiveTab = async () => {
 };
 
 export const ignoreChromeError = () => chrome.runtime.lastError;
+
+/**
+ * @param {{}} [mgr] manager options or falsy to open options
+ * @param {boolean} [side]
+ * @param {boolean} [close]
+ * @param {{tabId?: number, windowId?: number}} [where] only one specifier is allowed
+ * @return {void | Promise<void>}
+ */
+export const openDashboard = (mgr, side, close, where) =>
+  browserSidebar && (side || __values[mgr ? pSideManager : pSideOptions])
+    ? openSidebar(mgr ? 'manage.html?' + new URLSearchParams(mgr) : 'options.html', close, where)
+    : API.openManager(mgr || {options: true}).then(close);
+
+/**
+ * @param {string} path
+ * @param {boolean} [close]
+ * @param {{tabId?: number, windowId?: number}} [where] only one specifier is allowed
+ * @return {void | Promise<void>}
+ */
+export const openSidebar = async (path, close, where) => {
+  path += (path.includes('?') ? '&' : '?') + kSidebar;
+  return isSidebar ? location.assign(path)
+    : (browserSidepanel
+      ? (browserSidepanel.setOptions({tabId: where.tabId, path}), browserSidepanel.open(where))
+      : (browserSidebar.setPanel({...where, panel: path}), browserSidebar.open())
+    ).then(__.ENTRY === true && !isSidebar && close && global.close);
+};
 
 export const paintCanvas = (w, h, cb) => {
   // The check must be inlined, not reused as a variable, to enable elimination of dead code

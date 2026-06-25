@@ -4,11 +4,10 @@ import * as prefs from '@/js/prefs';
 import {CHROME} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
 import {NOP, t} from '@/js/util';
-import {getActiveTab, ignoreChromeError, MF} from '@/js/util-webext';
+import {getActiveTab, ignoreChromeError, MF, openDashboard} from '@/js/util-webext';
 import {sendTab} from './broadcast';
 import * as styleMan from './style-manager';
 import {tabCache} from './tab-manager';
-import {openManager} from './tab-util';
 
 const kStyleManager = 'styleManager';
 /** Keeping r-less old spelling to preserve user's browser pref for the hotkey */
@@ -18,8 +17,8 @@ const kReload = 'reload';
 const kStyleDisableAll = 'styleDisableAll';
 const kToggleTab = 'toggleTab';
 
-const cmdOpenManager = () => openManager();
-const cmdOpenOptions = () => openManager({options: true});
+const cmdOpenManager = (info, {windowId}) => openDashboard({}, null, false, {windowId});
+const cmdOpenOptions = (info, {windowId}) => openDashboard(null, null, false, {windowId});
 const cmdReload = () => chrome.runtime.reload();
 const cmdStyleDisableAll = info => prefs.ready.then(() => prefs.set(kDisableAll,
   info ? info.checked : !prefs.__values[kDisableAll]));

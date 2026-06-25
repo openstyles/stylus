@@ -1,12 +1,12 @@
 import {kPopup, kStyleIdPrefix, UCD} from '@/js/consts';
-import {$toggleClasses, urlParams} from '@/js/dom';
+import {$toggleClasses} from '@/js/dom';
 import {
   animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView,
 } from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {renderTargetIcons} from '@/js/target-icons';
-import {sessionStore, t} from '@/js/util';
+import {sessionStore, t, urlParams} from '@/js/util';
 import {browserWindows, getOwnTab} from '@/js/util-webext';
 import {filterAndAppend, showFiltersStats} from './filters';
 import {createStyleElement, createTargetsElement, updateTotal} from './render';

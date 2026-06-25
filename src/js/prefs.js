@@ -8,7 +8,6 @@ import {
 import {API} from './msg-api';
 import {swController} from './msg-init'; // also installs API handler for own pages
 import {deepCopy, deepEqual, describeClient, makePropertyPopProxy} from './util';
-import {onStorageChanged} from './util-webext';
 
 let busy, ready, setReady;
 let toUpload;
@@ -184,6 +183,7 @@ const values = deepCopy(defaults);
 /** @type {Record<string, Set<function>>} */
 const onChange = {};
 
+export const onStorageChanged = new Set();
 export const STORAGE_KEY = 'settings';
 /** @type {typeof defaults} */
 const defaultsClone = new Proxy({}, {
@@ -305,10 +305,12 @@ if (__.IS_BG) {
   busy = ready = clientData;
 }
 
-onStorageChanged.addListener((changes, area) => {
+/** A scoped listener won't trigger for our [big] stuff in `local`, Chrome 73+, FF */
+(chrome.storage.sync.onChanged || chrome.storage.onChanged).addListener((changes, area) => {
   if (busy) return;
   const data = (!area || area === 'sync') && changes[STORAGE_KEY];
   if (data) setAll(data.newValue, data.oldValue);
+  for (const fn of onStorageChanged) fn(changes, area);
 });
 
 export {

@@ -1,6 +1,6 @@
 import {getLZValue, LZ_KEY} from '@/js/chrome-sync';
+import {onStorageChanged} from '@/js/prefs';
 import {NOP} from '@/js/util';
-import {onStorageChanged} from '@/js/util-webext';
 import {buildMeta} from './usercss-manager';
 
 /** @typedef {[string, ?string, UsercssData|false]} UsercssTemplate */
@@ -27,7 +27,7 @@ const parseTemplate = async (str = DEFAULT) => (value = [
 
 export const loadTemplate = () => (value ??= getLZValue(key).then(parseTemplate));
 
-onStorageChanged.addListener(changes => {
+onStorageChanged.add(changes => {
   if (changes[key])
     value = null; // will be updated next time the editor needs it
 });

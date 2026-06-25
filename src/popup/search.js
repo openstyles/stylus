@@ -1,5 +1,5 @@
 import {kStyleIdPrefix, UCD} from '@/js/consts';
-import {$create, $toggleDataset, isSidebar} from '@/js/dom';
+import {$create, $toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-prefs';
 import {showSpinner} from '@/js/dom-util';
 import {breakWord, formatDate, template} from '@/js/localization';
@@ -8,7 +8,7 @@ import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import * as URLS from '@/js/urls';
 import {
-  clipString, debounce, sleep, stringAsRegExp, stringAsRegExpStr, t, tryRegExp, tryURL,
+  clipString, debounce, isSidebar, sleep, stringAsRegExp, stringAsRegExpStr, t, tryRegExp, tryURL,
 } from '@/js/util';
 import {tabUrl, tabUrlSupported} from '.';
 import {configure, openURLandHide, styleFinder} from './events';

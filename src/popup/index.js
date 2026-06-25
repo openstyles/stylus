@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import {kAboutBlank, kPopup, pPopupTogglerExpanded} from '@/js/consts';
-import {$create, isSidebar, urlParams} from '@/js/dom';
+import {$create} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-prefs';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
@@ -8,7 +8,7 @@ import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MAC, MOBILE, OPERA} from '@/js/ua';
-import {clamp, sleep0, t} from '@/js/util';
+import {clamp, isSidebar, sleep0, t, urlParams} from '@/js/util';
 import {getActiveTab, ignoreChromeError} from '@/js/util-webext';
 import {openStyleFinder, pSideFinder, selUnstylable} from './events';
 import {initHotkeys} from './hotkeys';
@@ -24,6 +24,7 @@ const isFullscreenPopup = MOBILE
 export let tabId;
 export let tabUrl;
 export let tabUrlSupported;
+export let windowId;
 export let isBlocked;
 let prevHeight = Math.max(innerHeight, 150);
 
@@ -100,6 +101,7 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
   tabId = tab.id;
   tabUrl = frames[0].url;
   tabUrlSupported = urlSupported;
+  windowId = tab.windowId;
   frames.forEach(createWriterElement);
 
   if ($('.match .match:not(.dupe),' + WRITE_FRAME_SEL)) {

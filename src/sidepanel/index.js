@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import configDialog from '@/js/dlg/config-dialog';
-import {urlParams} from '@/js/dom';
+import {urlParams} from '@/js/util';
 import './index.css';
 
 const id = +urlParams.get('id');

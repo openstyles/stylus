@@ -1,14 +1,14 @@
-import {kSidebar, UCD} from '@/js/consts';
-import {isSidebar, isTouch} from '@/js/dom';
+import {pSideManager, pSideOptions, UCD} from '@/js/consts';
+import {isTouch} from '@/js/dom';
 import {configDialog} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {__values, subscribe} from '@/js/prefs';
 import {FIREFOX, MAC} from '@/js/ua';
-import {NOP, t} from '@/js/util';
-import {getActiveTab, browserSidebar} from '@/js/util-webext';
-import {tabId, tabUrl} from '.';
+import {isSidebar, NOP, t} from '@/js/util';
+import {browserSidebar, getActiveTab, openDashboard, openSidebar} from '@/js/util-webext';
+import {tabId, tabUrl, windowId} from '.';
 import * as hotkeys from './hotkeys';
 import {openMenu} from './menu';
 import {installed, updateStyleEntry} from './render';
@@ -50,8 +50,6 @@ export const tSideHint = '\n' + t('popupSidePanelOpenHint');
 export const pSideConfig = 'popup.sidePanel.config';
 export const pSideFinder = 'popup.sidePanel.finder';
 const pSideEditor = 'popup.sidePanel.editor';
-const pSideManager = 'popup.sidePanel.manager';
-const pSideOptions = 'popup.sidePanel.options';
 const sideTitleMap = {
   [pSideEditor]: selEdit + ', #write-wrapper a',
   [pSideManager]: selManager,
@@ -161,7 +159,7 @@ export async function configure(event, entry, button) {
       !(mode = __values[pSideConfig]) ||
       mode > 0 && entry.styleMeta[UCD].vars >= mode
     )) {
-      return sidebarOpen(`sidepanel.html?id=${entry.styleId}`);
+      return openSidebar(`sidepanel.html?id=${entry.styleId}`, close, {tabId});
     }
     hotkeys.pause(() => configDialog(entry.styleId, entry.getBoundingClientRect().bottom));
   } else {
@@ -177,7 +175,7 @@ export async function configure(event, entry, button) {
 export async function openEditor(event, entry, button) {
   const params = entry ? '?id=' + entry.styleId : this.search;
   if (browserSidebar && (button === 2 || __values[pSideEditor])) {
-    return sidebarOpen('edit.html' + params);
+    return openSidebar('edit.html' + params, close, {tabId});
   }
   await API.openEditor(params);
   if (!isSidebar)
@@ -189,17 +187,10 @@ export async function openEditor(event, entry, button) {
  * @param {StyleEntryElement} [entry]
  * @param {number} [button]
  */
-export async function openManager(event, entry, button) {
+function openManager(event, entry, button) {
   event?.preventDefault();
-  const params = tabUrl && (!event || event.shiftKey)
-    ? {search: tabUrl, searchMode: 'url'}
-    : {};
-  if (browserSidebar && (button === 2 || __values[pSideManager])) {
-    return sidebarOpen('manage.html?' + new URLSearchParams(params));
-  }
-  await API.openManager(params);
-  if (!isSidebar)
-    close();
+  return openDashboard(!event || event.shiftKey ? {search: tabUrl, searchMode: 'url'} : {},
+    button === 2, close, {windowId});
 }
 
 /**
@@ -207,13 +198,8 @@ export async function openManager(event, entry, button) {
  * @param {StyleEntryElement} [entry]
  * @param {number} [button]
  */
-export async function openOptions(event, entry, button) {
-  if (browserSidebar && (button === 2 || __values[pSideOptions])) {
-    return sidebarOpen('options.html');
-  }
-  await API.openManager({options: true});
-  if (!isSidebar)
-    close();
+export function openOptions(event, entry, button) {
+  return openDashboard(null, button === 2, close, {windowId});
 }
 
 /**
@@ -223,7 +209,7 @@ export async function openOptions(event, entry, button) {
  */
 export async function openStyleFinder(event, entry, button) {
   if (browserSidebar && (button === 2 || __values[pSideFinder]))
-    return sidebarOpen(`popup.html?${pSideFinder}`);
+    return openSidebar(`popup.html?${pSideFinder}`, close, {tabId});
   this.disabled = true;
   if (!styleFinder.on) await import('./search');
   styleFinder.inline();
@@ -241,22 +227,6 @@ export async function openURLandHide(event) {
   });
   if (!isSidebar)
     close();
-}
-
-export async function sidebarOpen(path) {
-  path += (path.includes('?') ? '&' : '?') + kSidebar;
-  if (isSidebar) {
-    location.assign(path);
-    return;
-  }
-  if (__.B_CHROME) {
-    browserSidebar.setOptions({tabId, path});
-    await browserSidebar.open({tabId});
-  } else {
-    browserSidebar.setPanel({tabId, panel: path});
-    await browserSidebar.open();
-  }
-  close();
 }
 
 function updateTitle(el, alwaysSidebar) {

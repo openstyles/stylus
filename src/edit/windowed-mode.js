@@ -1,10 +1,9 @@
 import '@/js/browser';
 import {kPopup, pOpenEditInWindow} from '@/js/consts';
-import {urlParams} from '@/js/dom';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
-import {sessionStore, tryJSONparse} from '@/js/util';
+import {sessionStore, tryJSONparse, urlParams} from '@/js/util';
 import {browserWindows, getOwnTab, ownTab} from '@/js/util-webext';
 import editor from './editor';
 import EmbeddedPopup from './embedded-popup';
