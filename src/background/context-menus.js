@@ -17,8 +17,8 @@ const kReload = 'reload';
 const kStyleDisableAll = 'styleDisableAll';
 const kToggleTab = 'toggleTab';
 
-const cmdOpenManager = (info, {windowId}) => openDashboard({}, null, false, {windowId});
-const cmdOpenOptions = (info, {windowId}) => openDashboard(null, null, false, {windowId});
+const cmdOpenManager = (info, {windowId} = {}) => openDashboard({}, null, false, {windowId});
+const cmdOpenOptions = (info, {windowId} = {}) => openDashboard(null, null, false, {windowId});
 const cmdReload = () => chrome.runtime.reload();
 const cmdStyleDisableAll = info => prefs.ready.then(() => prefs.set(kDisableAll,
   info ? info.checked : !prefs.__values[kDisableAll]));
