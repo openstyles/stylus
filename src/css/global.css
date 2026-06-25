@@ -167,6 +167,8 @@ i {
     color: var(--accent-1);
   }
 }
+.i-export,
+.i-import,
 .i-info,
 .i-caution,
 .i-config {

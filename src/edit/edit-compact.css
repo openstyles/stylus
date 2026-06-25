@@ -61,13 +61,6 @@
   #basic-info-name {
     gap: $pad05;
   }
-  #actions {
-    display: flex;
-    gap: $pad05;
-    .buttons {
-      flex-wrap: nowrap;
-    }
-  }
   #details-wrapper {
     display: flex;
     align-items: center;

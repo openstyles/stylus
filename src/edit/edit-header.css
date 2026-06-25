@@ -82,10 +82,7 @@ h1 {
   background: none;
   margin-left: $pad05;
 }
-#actions .buttons {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
+#actions {
   gap: $pad05;
 }
 .dirty #save-button {
