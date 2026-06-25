@@ -106,6 +106,9 @@
   "cm_lineWrapping": {
     "message": "自動換行"
   },
+  "cm_linter": {
+    "message": "驗證 CSS"
+  },
   "cm_matchHighlight": {
     "message": "突顯"
   },
@@ -292,6 +295,9 @@
   },
   "emptyCode": {
     "message": "此 URL 的樣式區段為空"
+  },
+  "emptyStyle": {
+    "message": "樣式為空"
   },
   "enableStyleLabel": {
     "message": "啟用"
@@ -1110,6 +1116,9 @@
         "content": "$1"
       }
     }
+  },
+  "popupHotkeysInfoTab": {
+    "message": "若要僅針對當前分頁切換樣式，請 (1) 右鍵點擊或長按該樣式的核取方塊，或 (2) 按住 <Alt> 鍵的同時點擊樣式名稱，或 (3) 使用鍵盤操作，例如 <Alt-1> 對於樣式 #1，數字會顯示在右側邊緣。"
   },
   "popupHotkeysTooltip": {
     "message": "點選以檢視可用的快速鍵"

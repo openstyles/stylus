@@ -103,6 +103,9 @@
   "cm_lineWrapping": {
     "message": "ワードラップを有効にする"
   },
+  "cm_linter": {
+    "message": "CSSを検証"
+  },
   "cm_matchHighlight": {
     "message": "ハイライト"
   },
@@ -1078,6 +1081,9 @@
         "content": "$1"
       }
     }
+  },
+  "popupHotkeysInfoTab": {
+    "message": "現在のタブのスタイルのみを切り替えるには、(1) 右クリックもしくはスタイルのチェックボックスを長押しするか、(2) <Alt> を押しながらスタイル名をクリックするか、(3) キーボードを使用します (例えばスタイル #1 ならば <Alt-1> を押す。番号は右端に表示されています)"
   },
   "popupHotkeysTooltip": {
     "message": "クリックすると使用可能なホットキーを表示します"
