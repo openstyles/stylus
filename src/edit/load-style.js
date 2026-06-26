@@ -20,7 +20,7 @@ export const loadingLazy = import(/* webpackChunkName: "edit-lazy" */'./load-laz
 /** @param {StylusClientData} clientData */
 function loadStyle({style, si, theme, themeText, ...props}) {
   Object.assign(editor, props);
-  Object.assign(editor.style, style || makeNewStyleObj());
+  Object.assign(editor.style, style ||= makeNewStyleObj());
   Object.assign(scrollInfo, si);
   editor.updateClass();
   editor.updateTitle(false);
