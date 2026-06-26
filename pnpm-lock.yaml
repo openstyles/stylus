@@ -45,8 +45,8 @@ importers:
         specifier: github:openstyles/stylelint-bundle#semver:17.13.0-stylus-v2
         version: https://codeload.github.com/openstyles/stylelint-bundle/tar.gz/45ed2b099ad1cde62521311c17e9f7f11ea388ba
       stylus-lang-bundle:
-        specifier: github:openstyles/stylus-lang-bundle#semver:0.64.0-umd-bundle-v2
-        version: https://codeload.github.com/openstyles/stylus-lang-bundle/tar.gz/64b36de5471ce6aa691f7c7480cdd297c4add01a
+        specifier: github:openstyles/stylus-lang-bundle#semver:0.64.0-umd-bundle-v3
+        version: https://codeload.github.com/openstyles/stylus-lang-bundle/tar.gz/ad941359ffd800eb6a16fa8459902573e7d5e240
       usercss-meta:
         specifier: ^0.12.0
         version: 0.12.0
@@ -3547,8 +3547,8 @@ packages:
     version: 17.13.0-stylus
     engines: {node: '>= 20.0.0'}
 
-  stylus-lang-bundle@https://codeload.github.com/openstyles/stylus-lang-bundle/tar.gz/64b36de5471ce6aa691f7c7480cdd297c4add01a:
-    resolution: {gitHosted: true, integrity: sha512-acYvUnuH4ZGr84LlCcTEKvCLSIW31rH7dXsKtCBedCbLr4Z+SRJruBfSI/Av80RpT34KJ/jxRkHxmMilxi2ONw==, tarball: https://codeload.github.com/openstyles/stylus-lang-bundle/tar.gz/64b36de5471ce6aa691f7c7480cdd297c4add01a}
+  stylus-lang-bundle@https://codeload.github.com/openstyles/stylus-lang-bundle/tar.gz/ad941359ffd800eb6a16fa8459902573e7d5e240:
+    resolution: {gitHosted: true, integrity: sha512-PC1ptiCFaWBcAoELYQRpwZNNh0TkHoyqZfdtdm4vWFMoCQBknyRx6GqVfZ0p/xt2AGv00P4mSF5ow3Lq4VMM5Q==, tarball: https://codeload.github.com/openstyles/stylus-lang-bundle/tar.gz/ad941359ffd800eb6a16fa8459902573e7d5e240}
     version: 0.64.0-umd-bundle
     engines: {node: '>=22'}
 
@@ -7526,7 +7526,7 @@ snapshots:
 
   stylelint-bundle@https://codeload.github.com/openstyles/stylelint-bundle/tar.gz/45ed2b099ad1cde62521311c17e9f7f11ea388ba: {}
 
-  stylus-lang-bundle@https://codeload.github.com/openstyles/stylus-lang-bundle/tar.gz/64b36de5471ce6aa691f7c7480cdd297c4add01a: {}
+  stylus-lang-bundle@https://codeload.github.com/openstyles/stylus-lang-bundle/tar.gz/ad941359ffd800eb6a16fa8459902573e7d5e240: {}
 
   supports-color@7.2.0:
     dependencies:
