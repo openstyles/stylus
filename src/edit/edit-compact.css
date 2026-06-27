@@ -44,6 +44,7 @@
       &::after {
         content: attr(data-icon);
         font: 16px/1 icons;
+        padding: $pad05;
       }
     }
     button {
@@ -66,7 +67,6 @@
     align-items: center;
     flex-flow: row wrap;
     margin: 0;
-    gap: $pad;
     > details {
       border: 1px solid transparent;
     }
@@ -84,6 +84,7 @@
           overflow: hidden auto;
           max-height: var(--max-height, 25vh);
           max-width: calc(100vw - 2 * $pad);
+          width: max-content;
           background: var(--bg);
           box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
           padding: $pad;
