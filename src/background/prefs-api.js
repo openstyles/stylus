@@ -33,7 +33,10 @@ bgPreInit.push(chromeSync.get(prefs.STORAGE_KEY).then(orig => {
   if (!orig || !isObject(orig))
     orig = {};
   __.DEBUGLOG('prefsApi', {...orig});
-  orig[pEditorLinterOn] ??= !!orig[pEditorLinter] || (delete orig[pEditorLinter], false);
+  if (orig[pEditorLinter] === '') {
+    delete orig[pEditorLinter];
+    orig[pEditorLinterOn] = false;
+  }
   prefs.ready.set(deepMerge(orig), {});
   if (!deepEqual(orig, nondefaults)) bgBusy.then(updateStorage);
   return prefs.ready;
