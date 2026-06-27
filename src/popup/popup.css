@@ -723,6 +723,14 @@ a:hover i {
 .i-manage {
   font-size: 18px;
 }
+#find-styles-btn ~ .split-btn-menu {
+  @media (max-height: 130px) {
+    --menu-pad: .25em;
+  }
+  @media (max-height: 100px) {
+    transform: none !important;
+  }
+}
 .styles-first:not(.search-results-shown) {
   #popup-options .split-btn-menu {
     bottom: 0;
@@ -816,10 +824,5 @@ a:hover i {
   position: static;
   > div {
     max-height: none;
-  }
-}
-@media (max-height: 130px) {
-  #find-split {
-    --menu-pad: .25em;
   }
 }
