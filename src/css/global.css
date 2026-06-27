@@ -234,12 +234,15 @@ label {
   -moz-appearance: none;
   -webkit-appearance: none;
   height: var(--input-height);
+  padding: 0 20px 0 6px;
+  transition: color .1s;
+}
+
+select {
   font: inherit;
   color: var(--fg);
   background-color: var(--bg);
   border: 1px solid var(--c65);
-  padding: 0 20px 0 6px;
-  transition: color .1s;
   field-sizing: content;
 }
 
