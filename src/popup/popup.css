@@ -1,5 +1,6 @@
 /* postcss-simple-vars */
 $pad: var(--outer-padding);
+$pad05: calc($pad / 2);
 $padToEntryH: calc((var(--entry-h) - var(--font-size)) / 2);
 $entryActionW: var(--entry-h);
 $powerWidth: 30px;
@@ -17,6 +18,7 @@ $powerOverlap: 4px; /* must be >= 1px (transparent edge) */
   --hover-icon: var(--c10);
   --hover-disabled: var(--c40);
   scrollbar-width: none; /* suppressing the redundant overall scrollbar */
+  width: fit-content;
 }
 :root.touch {
   --inner-padding: 25px;
@@ -108,7 +110,7 @@ body {
       }
     }
     &[open] {
-      padding: calc($pad/2);
+      padding: $pad05;
       &, div {
         position: relative;
       }
@@ -129,7 +131,7 @@ body {
       margin-right: $pad; /* workaround for `gap` not working on the parent `details` */
     }
     > * {
-      margin: calc($pad/2);
+      margin: $pad05;
     }
   }
   label:hover, #help:hover i {
@@ -410,13 +412,6 @@ a.configure[target="_blank"] .i-config {
 
 .frame .style-name {
   font-weight: normal;
-}
-
-#help {
-  i {
-    padding: 0 1px;
-    font-size: 18px;
-  }
 }
 
 #menu {
@@ -711,22 +706,22 @@ a:hover i {
 
 #popup-options {
   display: flex;
-  padding: $pad;
   background: var(--bg);
   justify-content: space-between;
-  button:not(:hover) {
-    border-color: transparent;
-    background: none;
-  }
-  > * {
-    display: flex;
+  align-items: center;
+  > div > a,
+  > a {
+    display: inline-flex;
     align-items: center;
-    max-width: calc(50% - 2px - var(--inner-padding));
+    padding: $pad;
+    border-radius: 50%;
+    &:hover {
+      background-color: var(--c95);
+    }
   }
 }
-button.icon {
-  padding: 2px;
-  border-radius: 50%;
+.i-manage {
+  font-size: 18px;
 }
 .styles-first:not(.search-results-shown) {
   #popup-options .split-btn-menu {

@@ -59,7 +59,7 @@ function tElements(elems) {
       if (key === 'html' || !key && val.includes('<'))
         el[fn](sanitizeHtml(val));
       else if (key)
-        el.setAttribute(key, val);
+        el.setAttribute(key, add ? el.getAttribute(key) + val : val);
       else
         el[fn](val.length <= 10 ? val : val.replace(RX_WORD_BREAK, '$&\u00AD'));
     }

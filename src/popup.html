@@ -105,27 +105,34 @@
   </div>
 
   <div id="popup-options">
-    <div class="split-btn" id="manage-split">
-      <button id="popup-manage-button" i18n="openManage" title="<Shift>: "
-              data-href="manage.html"></button
-      ><button class="if-not-blocked split-btn-pedal" i18n="menu-site:popupManageSiteStyles"></button>
+    <div class="split-btn">
+      <a id="popup-manage-button" i18n="title:openManage" href="manage.html" class="icon">
+        <i class="i-manage"></i>
+      </a>
+      <a tabindex="0" class="dropdown if-not-blocked" i18n="menu-site:popupManageSiteStyles">
+        <i class="i-select-arrow"></i>
+      </a>
     </div>
-    <div class="split-btn" id="find-split">
-      <button id="find-styles-btn" i18n="find" title="<Ctrl-F>"></button
-      ><button class="split-btn-pedal"
-               menu-usoa="UserStyles Archive"
-               menu-usw="UserStyles World"
-               menu-uso="UserStyles"
-               menu-gf="GreasyFork"></button>
+    <div class="split-btn">
+      <a id="find-styles-btn" i18n="+title:find" title="<Ctrl-F> " tabindex="0">
+        <i class="i-search"></i>
+      </a>
+      <a tabindex="0" class="dropdown"
+         menu-gf="GreasyFork"
+         menu-uso="UserStyles"
+         menu-usoa="UserStyles Archive"
+         menu-usw="UserStyles World">
+        <i class="i-select-arrow"></i>
+      </a>
     </div>
-    <button id="help" class="icon" data-cmd="note">
+    <a id="help" data-cmd="note" tabindex="0">
       <i class="i-info"></i>
-    </button>
-    <button id="options-btn" i18n="title:openOptions" class="icon">
+    </a>
+    <a id="options-btn" i18n="title:openOptions" tabindex="0">
       <svg class="hollow-gear" viewBox="0 0 20 20">
         <text y="100%">⚙</text>
       </svg>
-    </button>
+    </a>
   </div>
 </template>
 <template data-id="menu">

@@ -38,9 +38,6 @@ export const EntryClick = {
 /** All these handlers accept a right-click, `btn = 2` property is added below */
 const GlobalClick = {
   'a[href*="edit.html"]': openEditor,
-  [selManager + '~ .split-btn-menu a'](evt, ...args) {
-    openManager(null, ...args);
-  },
   [selFinder]: openStyleFinder,
   [selManager]: openManager,
   [selOptions]: openOptions,
@@ -70,7 +67,7 @@ $(selFinder).on('split-btn', async e => {
   if (!styleFinder.on) await import('./search');
   styleFinder.inSite(e);
 });
-$(selManager).title += t('popupManageSiteStyles');
+$(selManager).title += '\n<Shift>: ' + t('popupManageSiteStyles');
 $(selManager).on('split-btn', openManager);
 if ((__.B_FIREFOX || __.B_ANY && FIREFOX) && isTouch)
   installed.on('click', NOP); // Fenec bug workaround: wrong action element in click event
@@ -189,7 +186,10 @@ export async function openEditor(event, entry, button) {
  */
 function openManager(event, entry, button) {
   event?.preventDefault();
-  return openDashboard(!event || event.shiftKey ? {search: tabUrl, searchMode: 'url'} : {},
+  return openDashboard(
+    event.shiftKey || (/**@type{CustomEvent}*/event).detail === 'site'
+      ? {search: tabUrl, searchMode: 'url'}
+      : {},
     button === 2, close, {windowId});
 }
 

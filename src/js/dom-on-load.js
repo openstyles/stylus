@@ -142,7 +142,7 @@ function keepFocusRingOnTabbing(event) {
 function splitMenu(event) {
   const prevMenu = $('.split-btn.active ' + SPLIT_BTN_MENU) || $(SPLIT_BTN_MENU);
   const prevPedal = prevMenu?.previousElementSibling;
-  const pedal = event && event.target.closest('.split-btn-pedal');
+  const pedal = event && event.target.closest('.split-btn-pedal, .dropdown');
   const entry = event && prevMenu && event.target.closest(SPLIT_BTN_MENU + '>*');
   if (prevMenu) {
     prevMenu.onfocusout = null;
