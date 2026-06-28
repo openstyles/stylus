@@ -44,6 +44,7 @@ label ~ .icon {
   #basic-info {
     margin-top: $pad025;
     margin-bottom: $pad;
+    flex-wrap: wrap;
   }
   #publish[open],
   #details-wrapper details:not([open]) {

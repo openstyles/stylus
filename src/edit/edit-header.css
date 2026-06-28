@@ -10,23 +10,23 @@
   display: flex;
   flex-direction: column;
 }
-#heading {
-  gap: $pad05;
-  > label {
-    margin: $pad025 0 $pad05;
-  }
-}
 h1 {
   margin: 0;
 }
 /* basic info */
+#basic-info,
+#basic-info-name,
+#actions {
+  display: flex;
+  align-items: center;
+  gap: $pad05;
+}
+#basic-info-name {
+  flex: 1;
+}
 #name {
   flex: 1;
-  field-sizing: content;
   padding-right: var(--input-height);
-}
-#reset-name {
-  margin: 0 $pad025 0 $pad05;
 }
 #url {
   margin-left: $pad025;
@@ -81,9 +81,6 @@ h1 {
 #editor\.linter {
   background: none;
   margin-left: $pad05;
-}
-#actions {
-  gap: $pad05;
 }
 .dirty #save-button {
   &, & + button {

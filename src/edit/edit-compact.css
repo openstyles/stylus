@@ -20,7 +20,7 @@
     .popup-window & {
       padding-right: 32px;
     }
-    flex-flow: row;
+    flex-flow: row wrap;
     align-items: center;
     align-content: start;
     gap: $pad05 $pad;
@@ -57,10 +57,17 @@
   }
   #basic-info {
     flex: 100;
-    order: -1;
+    max-width: 100%;
   }
   #basic-info-name {
-    gap: $pad05;
+    order: -1;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 1px; /* to fit the focus outline on the input */
+  }
+  #name {
+    field-sizing: content;
+    min-width: 5em;
   }
   #details-wrapper {
     display: flex;

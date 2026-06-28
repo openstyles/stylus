@@ -28,7 +28,7 @@
 
   <template data-id="body"><!-- https://crbug.com/1288447 -->
     <div id="header" class="dvh100">
-      <div id="heading" class="flex wrap center-items">
+      <section id="basic-info">
         <h1 class="ellipsis hide-if-compact"></h1>
         <a id="url" target="_blank" class="icon" i18n="title:externalHomepage">
           <i class=i-external></i>
@@ -45,16 +45,14 @@
         <a class="icon" id="preview-error" target="_blank" hidden>
           <i class="i-caution red1"></i>
         </a>
-      </div>
-      <section id="basic-info">
-        <div id="basic-info-name" class="flex center-items">
+        <div id="basic-info-name">
           <input id="name" spellcheck="false">
           <a id="reset-name" i18n="title:customNameResetHint" tabindex="0" hidden>
             <i class=i-close></i>
           </a>
         </div>
       </section>
-      <section id="actions" class="flex center-items">
+      <section id="actions">
         <div class="split-btn">
           <button id="save-button" i18n="styleSaveLabel" data-hotkey-tooltip="save" disabled></button
           ><button class="split-btn-pedal usercss-only" i18n="menu-tpl:saveAsTemplate"></button>
