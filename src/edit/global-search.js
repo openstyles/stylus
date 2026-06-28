@@ -7,6 +7,7 @@ import {chromeLocal} from '@/js/storage-util';
 import {debounce, RX_MAYBE_REGEXP, stringAsRegExpStr, t, tryRegExp} from '@/js/util';
 import editor from './editor';
 import {loading} from './load-style';
+import './css/search.css';
 
 //region Constants and state
 
@@ -525,8 +526,7 @@ function annotateScrollbar(cm, query, icase) {
 //endregion
 //region Dialog
 
-async function focusDialog(type, cm) {
-  await import(/*webpackMode:"eager"*/'./global-search.css');
+function focusDialog(type, cm) {
   setActiveEditor(cm);
 
   const dialogFocused = stateDialog && stateDialog.contains(document.activeElement);

@@ -15,7 +15,7 @@ import {closeCurrentTab} from '@/js/util-webext';
 import DirectDownloader from './direct-downloader';
 import PortDownloader from './port-downloader';
 import '../css/target-site.css';
-import '../edit/settings.css';
+import '../edit/css/settings.css';
 import './install-usercss.css';
 
 const CFG_SEL = '#message-box.config-dialog';

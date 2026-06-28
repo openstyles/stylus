@@ -1,4 +1,4 @@
-@import './edit-vars.css';
+@import 'vars.css';
 
 @media screen and (max-width: 850px), compact {
   .usercss body {

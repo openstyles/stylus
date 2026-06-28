@@ -1,4 +1,4 @@
-@import '../edit-vars.css';
+@import 'vars.css';
 
 #lint {
   overflow-x: hidden;

@@ -14,7 +14,7 @@ import SourceEditor from './source-editor';
 import './colorpicker-helper';
 import USWIntegration from './usw-integration';
 import './windowed-mode';
-import './edit.css';
+import './css/index.css';
 
 (async () => {
   if (loading) await loading;

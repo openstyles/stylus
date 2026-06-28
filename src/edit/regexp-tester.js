@@ -7,7 +7,7 @@ import {t, tryRegExp} from '@/js/util';
 import {MF_ICON} from '@/js/util-webext';
 import editor from './editor';
 import {helpPopup} from './util';
-import './regexp-tester.css';
+import './css/regexp-tester.css';
 
 const cachedRegexps = new Map();
 const inputs = editor.regexps;

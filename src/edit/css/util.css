@@ -1,4 +1,4 @@
-@import './edit-vars.css';
+@import 'vars.css';
 
 /************ embedded popup for simple-window editor ************/
 #popup-iframe {

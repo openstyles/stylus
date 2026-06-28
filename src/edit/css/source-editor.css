@@ -1,4 +1,4 @@
-@import './edit-vars.css';
+@import 'vars.css';
 
 .usercss .CodeMirror-focused {
   box-shadow: none;
