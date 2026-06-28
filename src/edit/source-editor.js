@@ -274,10 +274,6 @@ export default function SourceEditor() {
     const inOp = cm.curOp || cm.startOperation();
     pvErr[`${url ? 'set' : 'remove'}Attribute`]('href', url);
     pvErr.hidden = false;
-    if (cmpPos(pos, cm.getCursor())) {
-      cm.jumpToPos(pos);
-      cm.setSelections({anchor: pos, head: pos});
-    }
     if (!linterOn) { // the linter can show the error by itself hopefully
       options[fnKey] = () => [{
         message: str.replace(/^\d+:\d+\s*/, ''),
