@@ -140,9 +140,7 @@ function makeManifest(files) {
 }
 
 function patchStylus(str) {
-  const str2 = str.replace(
-    /(}mozdocument\(.+?,([^.]+)\.push.+?return (\S+))(?=\.segments=)/,
-    '$1.funcs=$2,$3');
+  const str2 = str.replace(/(?<=segments=)\[new [$\w]+\.Literal\(([$\w]+)\.join\(", "\)\)]/, '$1');
   if (str === str2) throw new Error(patchStylus.name + ' failed!');
   return str2;
 }
