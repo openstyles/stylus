@@ -32,12 +32,23 @@ let hasCanvas = FIREFOX_ANDROID ? false : null;
 if (browserAction) {
   bgInit.push(initIcons);
   if (browserSidebar) {
-    if (__.MV3) // receiving a wake-up event, gonna unregister in subscribe() if not enabled
-      toggleListener(browserAction.onClicked, true, openPopupInSidebar);
-    subscribe('popup.sidePanel', (key, val) => {
-      browserAction.setPopup({popup: val ? '' : 'popup.html'});
-      toggleListener(browserAction.onClicked, val, openPopupInSidebar);
-    }, true);
+    // Some runtimes (e.g. WebKit-based browsers) expose a partial toolbar/action
+    // API that throws "unable to find toolbar item" when the button lives in an
+    // overflow menu. Guard so a broken action API can't abort background init.
+    try {
+      if (__.MV3) // receiving a wake-up event, gonna unregister in subscribe() if not enabled
+        toggleListener(browserAction.onClicked, true, openPopupInSidebar);
+      subscribe('popup.sidePanel', (key, val) => {
+        try {
+          browserAction.setPopup({popup: val ? '' : 'popup.html'});
+          toggleListener(browserAction.onClicked, val, openPopupInSidebar);
+        } catch (err) {
+          __.DEBUGLOG('browserAction.setPopup failed', err);
+        }
+      }, true);
+    } catch (err) {
+      __.DEBUGLOG('browserAction sidebar init failed', err);
+    }
   }
 }
 
