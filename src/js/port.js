@@ -8,6 +8,7 @@ const TTL = 5 * 60e3; // TODO: add a configurable option?
 const navLocks = navigator.locks;
 const willAutoClose = __.ENTRY === 'worker' || __.ENTRY === 'offscreen';
 const SharedWorker =
+  __.ENTRY !== 'worker' && // already in a worker
   __.ENTRY !== 'sw' && // SW can't nest workers, https://crbug.com/40772041
   !/Apple/.test(navigator.vendor) && // Safari/Orion's SharedWorker is unreliable in extensions
   global.SharedWorker;

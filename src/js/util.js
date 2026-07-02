@@ -30,8 +30,8 @@ export const globAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&')
   .replace(/\\\\\\\*/g, '\\*');
 export const RX_MAYBE_REGEXP = /^\s*\/(.+?)\/([simguy]*)\s*$/;
 export const RX_META = /\/\*!?\s*==userstyle==(?:[^*]+?|\*(?!\/))*==\/userstyle==\s*\*\//i;
-export const urlParams = /*@__PURE__*/new URLSearchParams(location.search);
-export const isSidebar = /*@__PURE__*/urlParams.has(kSidebar);
+export const urlParams = __.ENTRY === true && new URLSearchParams(location.search);
+export const isSidebar = __.ENTRY === true && urlParams.has(kSidebar);
 
 const tCache = /*@__PURE__*/new Map();
 
