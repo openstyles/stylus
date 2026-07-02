@@ -1,5 +1,5 @@
 import {CodeMirror, THEMES} from '@/cm';
-import {kEditorSettings, kExclusions, kInclusions, kOverridden, pKeyMap} from '@/js/consts';
+import {kEditorSettings, kExclusions, kInclusions, kNone, kOverridden, pKeyMap} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-prefs';
 import {onDetailsToggled} from '@/js/dom-util';
@@ -48,7 +48,7 @@ function StyleSettings(ui) {
         return el.validity.valid;
       },
     }),
-    initRadio('ss-scheme', 'preferScheme', 'none'),
+    initRadio('ss-scheme', 'preferScheme', kNone),
     initArea(kInclusions),
     initArea(kExclusions),
   ];

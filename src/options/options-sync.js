@@ -1,4 +1,4 @@
-import {pSync} from '@/js/consts';
+import {kNone, pSync} from '@/js/consts';
 import {$create, $toggleDataset} from '@/js/dom';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
@@ -77,7 +77,7 @@ import {t} from '@/js/util';
       el.value = syncOpts[el.dataset.option] || '';
     }
     if (evt && !drv)
-      prefsSet(pSync, 'none');
+      prefsSet(pSync, kNone);
     syncOpts = null; // clearing the initial value from clientData so that next time API is called
   }
 })();

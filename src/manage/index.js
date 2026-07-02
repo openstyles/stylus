@@ -1,5 +1,5 @@
 import '@/js/dom-init';
-import {kSidebar, pSync} from '@/js/consts';
+import {kNone, kSidebar, pSync} from '@/js/consts';
 import {$create, $toggleDataset} from '@/js/dom';
 import {setupLiveDetails, setupLivePrefs} from '@/js/dom-prefs';
 import {animateElement} from '@/js/dom-util';
@@ -71,7 +71,7 @@ function initSyncButton(sync) {
   onMessage.set(e => {
     if (e.method === 'syncStatusUpdate') render(e.status);
   });
-  prefs.subscribe(pSync, (k, v) => v === 'none' && render({}));
+  prefs.subscribe(pSync, (k, v) => v === kNone && render({}));
   render(sync);
 }
 

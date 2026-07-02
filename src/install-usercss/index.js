@@ -1,7 +1,7 @@
 import '@/js/dom-init';
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
 import compareVersion from '@/js/cmpver';
-import {pFavicons, UCD} from '@/js/consts';
+import {kNone, pFavicons, UCD} from '@/js/consts';
 import {$$remove, $create, $createLink} from '@/js/dom';
 import {configDialog, messageBox, showSpinner} from '@/js/dom-util';
 import {template} from '@/js/localization';
@@ -222,7 +222,7 @@ function updateMeta(newStyle) {
   $('.meta-version').textContent = data.version;
   $('.meta-description').textContent = data.description;
   $$('#ss-scheme input').forEach(el => {
-    el.checked = el.value === (style.preferScheme || 'none');
+    el.checked = el.value === (style.preferScheme || kNone);
   });
 
   replaceChildren($('.meta-author'), makeAuthor(data.author), true);

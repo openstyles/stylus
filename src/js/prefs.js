@@ -1,9 +1,9 @@
 /** Don't use this file in content script context! */
 import {
-  k_busy, kBadFavs, pDisableAll, pEditorLinter, pEditorLinterOn, pEditorTheme, pExposeIframes,
-  pFavicons, pFaviconsGray, pKeyMap, pLintReportDelay, pLivePreview, pManageNewUi,
+  k_busy, kBadFavs, kNone, pDisableAll, pEditorLinter, pEditorLinterOn, pEditorTheme,
+  pExposeIframes, pFavicons, pFaviconsGray, pKeyMap, pLintReportDelay, pLivePreview, pManageNewUi,
   pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pPopupTogglerExpanded, pStyleViaASS,
-  pStyleViaXhr, pSync, pUrlInstaller,
+  pStyleViaXhr, pSync, pUrlInstaller, STORAGE_KEY,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {swController} from './msg-init'; // also installs API handler for own pages
@@ -150,7 +150,7 @@ const defaults = {
   'hotkey.styleDisableAll': '',
   'hotkey.toggleTab': '',
 
-  [pSync]: 'none',
+  [pSync]: kNone,
 
   'iconset': -1,                  // 0 = dark-themed icon
                                   // 1 = light-themed icon
@@ -184,7 +184,6 @@ const values = deepCopy(defaults);
 const onChange = {};
 
 export const onStorageChanged = new Set();
-export const STORAGE_KEY = 'settings';
 /** @type {typeof defaults} */
 const defaultsClone = new Proxy({}, {
   get: (_, key) => deepCopy(defaults[key]),

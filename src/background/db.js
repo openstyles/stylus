@@ -1,6 +1,5 @@
-import {CACHE_DB, DB, kContentType, kInjectionOrder, STATE_DB, UCD} from '@/js/consts';
+import {CACHE_DB, DB, kContentType, kInjectionOrder, STATE_DB, STORAGE_KEY, UCD} from '@/js/consts';
 import {API} from '@/js/msg-api';
-import {STORAGE_KEY} from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
 import {CHROME} from '@/js/ua';
 import {deepMerge, sleep, sleep0} from '@/js/util';

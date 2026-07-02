@@ -27,6 +27,7 @@ export const kInclusions = 'inclusions';
 export const kInjectionOrder = 'injectionOrder';
 export const kInvokeAPI = 'invokeAPI';
 export const kMainFrame = 'main_frame';
+export const kNone = 'none';
 export const kOverridden = 'overridden';
 export const kPopup = 'popup';
 export const kResolve = 'resolve';
@@ -46,6 +47,7 @@ export const k_size = '_size';
 export const CACHE_DB = 'cache';
 export const DB = 'stylish';
 export const STATE_DB = 'state';
+export const STORAGE_KEY = 'settings';
 
 export const IMPORT_THROTTLE = 100; //ms
 

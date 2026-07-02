@@ -176,7 +176,7 @@ const getBaseConfig = ({vars} = {}) => ({
     // new webpack.debug.ProfilingPlugin({outputPath: DST + '.profile.json'}),
     vars && new RawEnvPlugin(...vars),
     new webpack.ids.NamedChunkIdsPlugin({context: SRC + JS}),
-    new InlineConstantExportsPlugin([/[/\\]consts\.js$/]),
+    new InlineConstantExportsPlugin([/[/\\](consts|themer|sync-util)\.js$/]),
   ].filter(Boolean),
   stats: {
     // optimizationBailout: true,

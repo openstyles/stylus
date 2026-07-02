@@ -1,5 +1,5 @@
 import * as chromeSync from '@/js/chrome-sync';
-import {IMPORT_THROTTLE, kAppJson, kStyleIdPrefix, UCD} from '@/js/consts';
+import {IMPORT_THROTTLE, kAppJson, kStyleIdPrefix, STORAGE_KEY, UCD} from '@/js/consts';
 import {$create, $toggleDataset} from '@/js/dom';
 import {animateElement, messageBox, scrollElementIntoView} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
@@ -61,7 +61,7 @@ async function collectSettings() {
     if (!hasOwn(prefs.__defaults, key))
       delete prefsObj[key];
   return {
-    [prefs.STORAGE_KEY]: prefsObj,
+    [STORAGE_KEY]: prefsObj,
     order,
     ...lz,
   };
@@ -125,7 +125,7 @@ async function importFromString(jsonString) {
     .map(style => style.customName && [style.customName.trim(), style])
     .filter(Boolean));
   const oldStylesByName = new Map(oldStyles.map(style => [style.name.trim(), style]));
-  const {order: oldOrder, [prefs.STORAGE_KEY]: oldPrefs, ...oldLZ} = await collectSettings();
+  const {order: oldOrder, [STORAGE_KEY]: oldPrefs, ...oldLZ} = await collectSettings();
   const items = [];
   const GROUP = 30;
   const INFO = Symbol('info'); // for private props that shouldn't be transferred into API
@@ -158,7 +158,7 @@ async function importFromString(jsonString) {
   return done();
 
   function analyze(item, index) {
-    if (item && !item.id && item[prefs.STORAGE_KEY]) {
+    if (item && !item.id && item[STORAGE_KEY]) {
       return analyzeStorage(item);
     }
     if (
@@ -207,8 +207,8 @@ async function importFromString(jsonString) {
   }
 
   async function analyzeStorage(storage) {
-    analyzePrefs(storage[prefs.STORAGE_KEY], prefs.knownKeys, prefs.__values, true);
-    delete storage[prefs.STORAGE_KEY];
+    analyzePrefs(storage[STORAGE_KEY], prefs.knownKeys, prefs.__values, true);
+    delete storage[STORAGE_KEY];
     order = storage.order;
     delete storage.order;
     if (!isEmptyObj(storage)) {

@@ -1,6 +1,6 @@
 import '@/js/browser';
 import * as chromeSync from '@/js/chrome-sync';
-import {pSync} from '@/js/consts';
+import {kNone, pSync} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
 import * as STATES from '@/js/sync-util';
@@ -149,7 +149,7 @@ export async function stop() {
     await chromeLocal.remove(STORAGE_KEY + curDriveName);
   } catch {}
   curDrive = curDriveName = null;
-  prefs.set(PREF_ID, 'none');
+  prefs.set(PREF_ID, kNone);
   status.state = STATES.disconnected;
   status.drive = null;
   status.login = false;
@@ -284,7 +284,7 @@ async function getDrive(name) {
   const opts = await getDriveOptions(name);
   const webdav = name === 'webdav';
   if (webdav && !tryURL(opts.url)) {
-    prefs.set(PREF_ID, 'none');
+    prefs.set(PREF_ID, kNone);
     throw new Error('Broken options: WebDAV server URL is missing');
   }
   if (!__.MV3 || !webdav) opts.getAccessToken = () => getToken(name);
@@ -301,7 +301,7 @@ async function schedule(prefKey, prefVal = curDriveName, isInit) {
   if (!delayedInit) {
     status.state = STATES.disconnected;
     if (alarm) chrome.alarms.clear(ALARM_ID);
-    if (isInit || prefVal === 'none')
+    if (isInit || prefVal === kNone)
       emitStatusChange();
   } else if (!alarm
     || Math.abs((alarm.periodInMinutes || 1e99) - SYNC_INTERVAL) > 1e-6

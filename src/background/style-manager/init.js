@@ -1,6 +1,5 @@
-import {DB, kInjectionOrder, kResolve} from '@/js/consts';
+import {DB, kInjectionOrder, kResolve, STORAGE_KEY} from '@/js/consts';
 import {onConnect, onDisconnect} from '@/js/msg';
-import {STORAGE_KEY} from '@/js/prefs';
 import {styleJSONseemsValid} from '@/js/style-util';
 import {NOP} from '@/js/util';
 import {ignoreChromeError} from '@/js/util-webext';

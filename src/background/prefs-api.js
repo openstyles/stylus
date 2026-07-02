@@ -1,5 +1,5 @@
 import * as chromeSync from '@/js/chrome-sync';
-import {pEditorLinter, pEditorLinterOn} from '@/js/consts';
+import {pEditorLinter, pEditorLinterOn, STORAGE_KEY} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {debounce, deepEqual, deepMerge, isObject} from '@/js/util';
 import {bgBusy, bgPreInit} from './common';
@@ -13,7 +13,7 @@ export const setPrefs = data => {
     prefs.set(k, data[k]);
 };
 
-const updateStorage = () => chromeSync.set({[prefs.STORAGE_KEY]: nondefaults});
+const updateStorage = () => chromeSync.set({[STORAGE_KEY]: nondefaults});
 
 prefs.set._bgSet = (key, val) => {
   const def = prefs.__defaults[key];
@@ -28,8 +28,8 @@ prefs.set._bgSet = (key, val) => {
   return true;
 };
 
-bgPreInit.push(chromeSync.get(prefs.STORAGE_KEY).then(orig => {
-  orig = orig[prefs.STORAGE_KEY];
+bgPreInit.push(chromeSync.get(STORAGE_KEY).then(orig => {
+  orig = orig[STORAGE_KEY];
   if (!orig || !isObject(orig))
     orig = {};
   __.DEBUGLOG('prefsApi', {...orig});
