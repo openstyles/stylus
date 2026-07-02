@@ -5,7 +5,7 @@ import {_execute} from './msg';
 import {apiHandler, apiSendProxy, apiSendProxyDebugLog, isTab} from './msg-api';
 import {createPortExec, createPortProxy, initRemotePort} from './port';
 import {swPath, workerPath} from './urls';
-import {deepCopy} from './util';
+import {deepCopy, NOP} from './util';
 import {getOwnTab, ownTab} from './util-webext';
 
 /** falsy: reuse ownTab, truthy: real tab object */
@@ -56,10 +56,8 @@ if (__.MV3) {
   }
 } else if (!__.IS_BG) {
   apiHandler.apply = async (fn, thisObj, args) => {
-    // WebKit (Orion) can return undefined instead of a Promise here, so guard
-    // the .catch and fall back to messaging the background instead of throwing.
-    bg ??= await Promise.resolve(browser.runtime.getBackgroundPage?.())
-      .catch(() => {}) || false;
+    // Orion's getBackgroundPage can return `undefined` instead of `Promise`
+    bg ??= await browser.runtime.getBackgroundPage?.()?.catch(NOP) || false;
     const exec = bg && (bg[k_msgExec] || await bg[k_busy])
       ? invokeAPI
       : apiSendProxy;

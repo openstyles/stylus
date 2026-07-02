@@ -7,14 +7,10 @@ const PATH = location.pathname;
 const TTL = 5 * 60e3; // TODO: add a configurable option?
 const navLocks = navigator.locks;
 const willAutoClose = __.ENTRY === 'worker' || __.ENTRY === 'offscreen';
-// WebKit (Safari/Orion) masks as Chrome but reports the Apple vendor; its
-// SharedWorker is unreliable in an extension context, so fall back to a plain
-// Worker there. WorkerNavigator has no `vendor` (→ '' → false), which is fine
-// since getWorkerPort only runs in a document context. Chrome ('Google Inc.')
-// and Firefox ('') keep using SharedWorker.
-const WEBKIT = typeof navigator === 'object' && /Apple/.test(navigator.vendor || '');
-// SW can't nest workers, https://crbug.com/40772041
-const SharedWorker = __.ENTRY !== 'sw' && !WEBKIT && global.SharedWorker;
+const SharedWorker =
+  __.ENTRY !== 'sw' && // SW can't nest workers, https://crbug.com/40772041
+  !/Apple/.test(navigator.vendor) && // Safari/Orion's SharedWorker is unreliable in extensions
+  global.SharedWorker;
 const kWorker = '_worker';
 let numJobs = 0;
 let lastBusy = 0;
