@@ -241,24 +241,32 @@ export function fetchWebDAV(url, init = {}) {
 export let sessionStore = /*@__PURE__*/ new Proxy({}, {
   get(target, name) {
     try {
-      const val = sessionStorage[name];
-      sessionStore = sessionStorage;
+      const api = sessionStorage;
+      const val = api[name];
+      sessionStore = api;
       return val;
     } catch {
-      Object.defineProperty(window, 'sessionStorage', {value: target});
+      sessionStore = target;
     }
   },
   set(target, name, value) {
     try {
-      sessionStorage[name] = `${value}`;
-      sessionStore = sessionStorage;
+      const api = sessionStorage;
+      api[name] = `${value}`;
+      sessionStore = api;
     } catch {
-      this.get(target);
+      sessionStore = target;
       target[name] = `${value}`;
     }
     return true;
   },
   deleteProperty(target, name) {
-    return delete target[name];
+    try {
+      const api = sessionStorage;
+      return delete api[name] && !!(sessionStore = api);
+    } catch {
+      sessionStore = target;
+      return true;
+    }
   },
 });
