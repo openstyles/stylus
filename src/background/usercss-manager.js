@@ -85,7 +85,9 @@ export async function buildMeta(style, sourceCode) {
         ? err.args.map(e => e.length === 1 ? JSON.stringify(e) : e).join(', ')
         : err.args;
       const msg = t(`meta_${(err.code)}`, args);
-      if (msg) err.message = msg;
+      // Fall back to a readable message if the locale string is missing (e.g.
+      // i18n not fully initialized), instead of surfacing a bare 'meta_NN'.
+      err.message = msg || `${err.code}${args ? `: ${args}` : ''}`;
       err.index += match.index;
     }
     throw err;

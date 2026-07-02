@@ -56,7 +56,10 @@ if (__.MV3) {
   }
 } else if (!__.IS_BG) {
   apiHandler.apply = async (fn, thisObj, args) => {
-    bg ??= await browser.runtime.getBackgroundPage().catch(() => {}) || false;
+    // WebKit (Orion) can return undefined instead of a Promise here, so guard
+    // the .catch and fall back to messaging the background instead of throwing.
+    bg ??= await Promise.resolve(browser.runtime.getBackgroundPage?.())
+      .catch(() => {}) || false;
     const exec = bg && (bg[k_msgExec] || await bg[k_busy])
       ? invokeAPI
       : apiSendProxy;
