@@ -71,7 +71,7 @@ import {t} from '@/js/util';
       el.hidden = el.dataset.drive !== elCloud.value;
       el.disabled = !off;
     }
-    $toggleDataset(elSync, 'enabled', !!drv);
+    $toggleDataset(elSync, 'enabled', !!drv || off && elCloud.value !== kNone);
     syncOpts ??= await API.sync.getDriveOptions(elCloud.value);
     for (const el of $$driveOptions()) {
       el.value = syncOpts[el.dataset.option] || '';
