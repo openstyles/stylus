@@ -61,6 +61,9 @@
   "backup": {
     "message": "Respaldo"
   },
+  "backupReminder": {
+    "message": "<b>Los estilos pueden perderse</b> debido a un corte de corriente, a errores del navegador o a un error personal.<hr><b>Haz una copia de seguridad de tus datos:</b> usa la opción «Sincronizar con la nube», el botón exportar cada vez que realices cambios importantes o, preferiblemente, configura una copia de seguridad automática de todos tus datos mediante una aplicación especializada."
+  },
   "checkAllUpdates": {
     "message": "Actualizar todos los estilos"
   },
@@ -263,8 +266,14 @@
   "emptyCode": {
     "message": "Las secciones de estilo de esta URL están vacías"
   },
+  "emptyStyle": {
+    "message": "El estilo está vacío"
+  },
   "enableStyleLabel": {
     "message": "Activar"
+  },
+  "exclude": {
+    "message": "Excluir"
   },
   "exportCompatible": {
     "message": "Exportar (modo compatible)"
@@ -403,6 +412,9 @@
   "importReportLegendInvalid": {
     "message": "no válidos omitidos"
   },
+  "importReportLegendOrphans": {
+    "message": "estilos instalados que no están en la copia de seguridad"
+  },
   "importReportLegendUpdatedBoth": {
     "message": "actualizado tanto metadatos como código"
   },
@@ -426,6 +438,9 @@
   },
   "importStyles": {
     "message": "Importar estilos"
+  },
+  "include": {
+    "message": "Incluir"
   },
   "installButton": {
     "message": "Instalar estilo"
@@ -509,6 +524,9 @@
   },
   "linterRulesLink": {
     "message": "Vea una lista completa de reglas"
+  },
+  "liveReloadAfterInstall": {
+    "message": "Recarga automática tras la instalación"
   },
   "liveReloadError": {
     "message": "Se ha producido un error al visualizar el archivo"
@@ -762,17 +780,29 @@
   "newStyleAsUserCSS": {
     "message": "Escribir nuevo estilo como UserCSS"
   },
+  "newStyleAsUserCSSHint": {
+    "message": "Al activar o desactivar la opción, también se cambia el estilo actual en el editor si es nuevo, es decir, si se acaba de crear y aún no se ha editado ni guardado."
+  },
   "noStylesForSite": {
     "message": "No hay estilos instalados para este sitio."
   },
   "numberedLine": {
     "message": "Línea:"
   },
+  "openAsPopupWindow": {
+    "message": "...sin barras de herramientas ni pestañas"
+  },
   "openManage": {
     "message": "Gestionar"
   },
   "openOptions": {
     "message": "Opciones"
+  },
+  "optionCompactWidth": {
+    "message": "Ancho máximo de la ventana para el diseño compacto de la interfaz de usuario (en píxeles)"
+  },
+  "optionConfigSidePanel": {
+    "message": "Configuración de UserCSS"
   },
   "optionFOUC": {
     "message": "¿Estilos aplicados demasiado tarde?"
@@ -808,6 +838,26 @@
   "optionKeepAliveNote": {
     "message": "Auméntalo si encuentras parpadeo de contenido sin estilo (FOUC) al abrir una página después de no interactuar con el navegador durante un tiempo.\n\n-1 = Comportamiento por defecto de ManifestV2 (sin límite).\n0 = Comportamiento por defecto de ManifestV3 (medio minuto).\n\nLa caché ocupa 30MB o más de RAM, pero reconstruirla puede llevar demasiado tiempo y causar FOUC dependiendo del sitio web, la velocidad de la red, la cantidad de estilos, el tamaño de la RAM y el rendimiento de la CPU."
   },
+  "optionSidePanelActions": {
+    "message": "Panel lateral para acciones emergentes"
+  },
+  "optionSidePanelActionsHint": {
+    "message": "Acciones que se abrirán en un panel lateral al utilizar la ventana emergente en modo estándar (La opción \"$optPopup$\" no está activada).\n\nTambién puedes hacer clic con el botón derecho o mantener pulsado el botón correspondiente en la ventana emergente.",
+    "placeholders": {
+      "optPopup": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionSidePanelNumberHint": {
+    "message": "1..99: número mínimo de elementos,\n0: siempre el panel lateral,\n-1: siempre aparece una ventana emergente."
+  },
+  "optionSidePanelPopup": {
+    "message": "Abrir ventana emergente en un panel lateral"
+  },
+  "optionTargetIcons": {
+    "message": "Iconos para los sitios de destino"
+  },
   "optionTargetIconsNote": {
     "message": "Stylus usa un servicio externo $SRV$",
     "placeholders": {
@@ -815,6 +865,9 @@
         "content": "$1"
       }
     }
+  },
+  "optionTargetNum": {
+    "message": "Número de sitios de destino"
   },
   "optionsAdvanced": {
     "message": "Avanzado"
@@ -848,6 +901,12 @@
   },
   "optionsAdvancedPatchCspNote": {
     "message": "Activa esta opción si los estilos contienen imágenes o fuentes que no se cargan en un sitio con una configuración estricta de <CSP> (<Content-Security-Policy>, Política de seguridad de contenido).\n\nAl activar esta opción, se reducen las restricciones de <CSP> para que puedan cargarse los contenidos de estilo necesarios. Esta opción va dirigida únicamente a usuarios avanzados que comprenden las posibles implicaciones de seguridad y aceptan la responsabilidad de supervisar el contenido que permiten que se cargue. Antes de usar esta opción, obtén más información sobre los ataques basados en CSS.\n\nAdemás, puede que esta opción específica no se aplique si otra extensión modifica antes la respuesta de red."
+  },
+  "optionsAdvancedSites": {
+    "message": "...solo en páginas que coincidan"
+  },
+  "optionsAdvancedSitesNote": {
+    "message": "<abc.com> un sitio.\n<*.abc.com> sitio + subdominios.\n<-m.abc.com> exclusión utilizando el prefijo «-».\n<*> todos los sitios (útil para exclusiones).\n<#abc.com> Ignorado debido a un carácter no válido.\n<*://abc.*/xyz> patrón global sencillo.\n<https://abc.com/xyz> URL completa.\nLas entradas se separan con un espacio o una nueva línea. El texto se guarda automáticamente al pulsar Ctrl-S o ⌘S en el campo de entrada, al hacer clic fuera de dicho campo o al cerrar las opciones."
   },
   "optionsAdvancedStyleViaASS": {
     "message": "Evitar <style-src> de <CSP> mediante <adoptedStyleSheets>"
@@ -970,6 +1029,14 @@
   "optionsUrlInstaller": {
     "message": "Abrir el instalador al navegar a una URL .user.css"
   },
+  "optionsUrlInstallerNote": {
+    "message": "Permite la instalación desde cualquier sitio web cuando se cumplan estas condiciones:\n1) La URL termina en <.user.css>, <.user.less> o <.user.styl>,\n2) La URL apunta al contenido en texto sin formato del estilo (lo que suele denominarse «raw»), es decir, no a una página web en HTML.\n\nDesactívalo para limitar las instalaciones a las galerías de estilos específicas:\n$LIST$.",
+    "placeholders": {
+      "LIST": {
+        "content": "$1"
+      }
+    }
+  },
   "overwriteFileExport": {
     "message": "¿Desea sobrescribir un archivo existente?"
   },
@@ -1017,6 +1084,9 @@
   },
   "popupOpenEditInWindowTooltip": {
     "message": "También se activa al desacoplar la pestaña del editor de una ventana del navegador,\ny se desactiva acoplando una única pestaña del editor en otra ventana."
+  },
+  "popupSidePanelOpenHint": {
+    "message": "Clic derecho: en el panel lateral"
   },
   "popupStylesFirst": {
     "message": "Estilos antes que las órdenes"
@@ -1075,6 +1145,9 @@
   "replaceWith": {
     "message": "Reemplazar con"
   },
+  "reportBug": {
+    "message": "Informar del error"
+  },
   "restoreTemplate": {
     "message": "Restaurar la plantilla predeterminada.\n\n(Las páginas del editor actualmente abiertas no cambiarán.)"
   },
@@ -1095,6 +1168,9 @@
   },
   "searchGlobalStylesHint": {
     "message": "Incluye estilos que se aplican a todos los sitios si el nombre contiene el texto de búsqueda o el sitio actual"
+  },
+  "searchLooseSpaces": {
+    "message": "El espacio en blanco sustituye a cualquier número de espacios en blanco"
   },
   "searchNumberOfResults": {
     "message": "Número de coincidencias"
@@ -1222,6 +1298,12 @@
   "styleEnabledLabel": {
     "message": "Activado"
   },
+  "styleForceAppliedTab": {
+    "message": "Se ha forzado la aplicación a la pestaña actual del menú de estilos"
+  },
+  "styleForceTab": {
+    "message": "Solo la pestaña actual"
+  },
   "styleFromMozillaFormatError": {
     "message": "No se pudo importar desde el formato Mozilla"
   },
@@ -1271,6 +1353,9 @@
   "styleName": {
     "message": "Nombre del estilo"
   },
+  "styleNotAppliedExcludedTab": {
+    "message": "Excluido de la pestaña actual en el menú de estilos"
+  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "El estilo no se aplicó debido a su uso incorrecto de 'regexp()'"
   },
@@ -1319,6 +1404,18 @@
   "styleSettings": {
     "message": "Configuración del estilo"
   },
+  "styleSitesExclude": {
+    "message": "Sitios web personales excluidos"
+  },
+  "styleSitesInclude": {
+    "message": "Sitios web personales incluidos"
+  },
+  "styleSitesIncludeOvr": {
+    "message": "sobrescribir estilo"
+  },
+  "styleSitesPopupHeading": {
+    "message": "Incluir (y <br>) o excluir el estilo al visitar:"
+  },
   "styleToMozillaFormatHelp": {
     "message": "El formato Mozilla del código se puede enviar a userstyles.org y usarse con el Stylish para Firefox clásico."
   },
@@ -1354,8 +1451,23 @@
   "syncStorageErrorSaving": {
     "message": "El valor no se puede guardar. Trate de reducir la longitud del texto."
   },
+  "toggleCurrentTab": {
+    "message": "Mostrar/ocultar la pestaña actual"
+  },
   "toggleStyle": {
     "message": "Activar/Desactivar estilo"
+  },
+  "toggleStylesHeading": {
+    "message": "Mostrar/ocultar estilos"
+  },
+  "toggleStylesHint": {
+    "message": "Activar o desactivar los estilos habilitados inicialmente, igual que <✱>"
+  },
+  "toggleStylesPerm": {
+    "message": "de forma permanente"
+  },
+  "toggleStylesTab": {
+    "message": "solo en esta pestaña"
   },
   "undo": {
     "message": "Deshacer"
