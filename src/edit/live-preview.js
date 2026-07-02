@@ -23,7 +23,7 @@ prefs.subscribe(pLivePreview, (key, value, init) => {
 export default function livePreview(now) {
   if (!enabled
   || !editor.style.id // not saved
-  || !editor.style.enabled && (!data || !data.enabled) // disabled both before and now
+  || !editor.style.enabled && (!data || !data.enabled) && !editor.dirty.has('enabled')
   || !port && !editor.dirty.isDirty() // not modified since the style was saved and thus applied
   ) return;
   if (!now) {
