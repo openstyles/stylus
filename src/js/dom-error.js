@@ -5,10 +5,11 @@ import {MF} from '@/js/util-webext';
 import '@/css/dom-error.css';
 
 export default showUnhandledError;
+export let elError;
+let elEntry;
 
 /** onerror() is called from prefs.js directly to avoid importing this DOM module in bg */
 window.onerror = window.onunhandledrejection = showUnhandledError;
-let elError, elEntry;
 
 function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params */) {
   err = err.reason || err; // for onunhandledrejection

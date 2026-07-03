@@ -2,7 +2,7 @@ import {CodeMirror} from '@/cm';
 import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
 import {pEditorLinter, UCD} from '@/js/consts';
 import {$create, $isTextInput} from '@/js/dom';
-import showUnhandledError from '@/js/dom-error';
+import showUnhandledError, {elError} from '@/js/dom-error';
 import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
@@ -123,6 +123,7 @@ export default function SourceEditor() {
           // Awaiting inside `try` so that exceptions go to our `catch`
           await replaceStyle(savedStyle);
         }
+        elError?.remove();
       } catch (err) {
         showError(err);
       }

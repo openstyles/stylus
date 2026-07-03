@@ -88,7 +88,7 @@ export async function buildMeta(style, sourceCode) {
       // Fall back to a readable message if the locale string is missing (e.g.
       // i18n not fully initialized), instead of surfacing a bare 'meta_NN'.
       err.message = msg || `${err.code}${args ? `: ${args}` : ''}`;
-      err.index += match.index;
+      err.index = (err.index || 0) + match.index;
     }
     throw err;
   }
