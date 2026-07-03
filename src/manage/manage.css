@@ -292,25 +292,14 @@ h1 {
 
 [id=header] {
   details {
-    &:not([open]) {
-      &, & h2 {
-        padding-bottom: 0;
-      }
-    }
+    display: flex;
+    gap: $pad05;
   }
   summary {
-    margin-top: .25rem;
-    margin-left: calc(-1 * $summaryX);
     cursor: auto;
-    .normal-layout &:empty {
-      width: 0;
-      height: 0;
-    }
-    .compact-layout & {
-      padding: $pad05 0;
-      width: $pad;
-      margin: -3px 0 0 0;
-      position: absolute;
+    .touch & {
+      padding: $pad05;
+      margin: calc(-1 * $pad05) 0;
     }
     h2 {
       display: inline;
@@ -693,6 +682,20 @@ button i {
   }
 }
 
+.normal-layout {
+  [id=header] {
+    summary {
+      margin-left: calc(-1 * $summaryX);
+    }
+  }
+  #actions {
+    align-items: flex-start;
+    summary {
+      margin-top: 4px;
+    }
+  }
+}
+
 .compact-layout {
   body {
     display: block;
@@ -724,10 +727,15 @@ button i {
     z-index: 1000;
     border-right: none;
     border-bottom: 1px dashed var(--c65);
-    details + main,
-    details > main {
-      margin: 0 0 0 $pad;
+    details {
+      align-items: center;
+      &:not([open]):only-child {
+        margin: 0 calc(-.5 * $pad);
+      }
     }
+  }
+  #actions {
+    display: flex;
   }
   #stats {
     position: static;

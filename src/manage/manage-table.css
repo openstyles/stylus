@@ -70,7 +70,7 @@ $iconGapY: .25rem;
     max-width: 50%;
     :root:not(.has-targets) & {
       max-width: none;
-      flex-grow: 1;
+      flex: 1;
     }
     &:hover .style-name-link {
       text-decoration: underline;
@@ -249,9 +249,6 @@ $iconGapY: .25rem;
     }
     .entry {
       padding: 0;
-      > .style-info {
-        display: none;
-      }
     }
   }
 }
