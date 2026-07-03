@@ -38,7 +38,7 @@
     "message": "对经过压缩的 CSS 无效"
   },
   "appliesRegexpOption": {
-    "message": "匹配此正则表达式的 URL"
+    "message": "正则表达式"
   },
   "appliesRemove": {
     "message": "删除"
@@ -105,6 +105,9 @@
   },
   "cm_lineWrapping": {
     "message": "自动换行"
+  },
+  "cm_linter": {
+    "message": "检查 CSS"
   },
   "cm_matchHighlight": {
     "message": "高亮"
@@ -293,6 +296,9 @@
   "emptyCode": {
     "message": "应用于此 URL 的样式片段是空的"
   },
+  "emptyStyle": {
+    "message": "样式是空的"
+  },
   "enableStyleLabel": {
     "message": "启用"
   },
@@ -368,7 +374,7 @@
     "message": "错误"
   },
   "genericHistoryLabel": {
-    "message": "历史"
+    "message": "历史记录"
   },
   "genericMaximum": {
     "message": "最大值"
@@ -505,7 +511,7 @@
     "message": "帮助"
   },
   "linkGetShareStyles": {
-    "message": "获取&分享样式"
+    "message": "获取 & 分享样式"
   },
   "linkGetStyles": {
     "message": "获取样式"
@@ -533,7 +539,7 @@
     }
   },
   "linterConfigTooltip": {
-    "message": "点击以配置此检查器"
+    "message": "点击配置此检查器"
   },
   "linterIssues": {
     "message": "问题"
@@ -577,7 +583,7 @@
     "message": "过滤器"
   },
   "manageMinColumnWidth": {
-    "message": "最小列宽度（以像素为单位；9999 停用多列模式）"
+    "message": "最小列宽（单位为像素，9999 停用多列模式）"
   },
   "manageNewUI": {
     "message": "表格布局"
@@ -808,7 +814,7 @@
     }
   },
   "newStyleAsUserCSS": {
-    "message": "以 UserCSS 编写新样式"
+    "message": "新样式使用 UserCSS 格式"
   },
   "newStyleAsUserCSSHint": {
     "message": "如果当前样式处于新建状态（即刚刚创建且尚未编辑或保存），切换该选项也会更改编辑器中的当前样式。"
@@ -820,7 +826,7 @@
     "message": "行："
   },
   "openAsPopupWindow": {
-    "message": "新窗口打开编辑器时，窗口不带工具栏与标签页"
+    "message": "在新窗口中打开编辑器时，窗口不带工具栏与标签页"
   },
   "openManage": {
     "message": "管理样式"
@@ -829,7 +835,7 @@
     "message": "选项"
   },
   "optionCompactWidth": {
-    "message": "紧凑型 UI 布局的最大窗口宽度（以像素为单位）"
+    "message": "窗口宽度 ≤ N 像素时，使用紧凑 UI 布局"
   },
   "optionConfigSidePanel": {
     "message": "UserCSS 配置"
@@ -886,7 +892,7 @@
     "message": "在侧栏中打开弹出框"
   },
   "optionTargetIcons": {
-    "message": "为样式目标网站下载和显示图标"
+    "message": "为样式的目标网站下载和显示图标"
   },
   "optionTargetIconsNote": {
     "message": "Stylus 使用外部服务 $SRV$ 来获取图标",
@@ -897,7 +903,7 @@
     }
   },
   "optionTargetNum": {
-    "message": "目标网站显示数量限制"
+    "message": "目标网站显示数量"
   },
   "optionsAdvanced": {
     "message": "高级设置"
@@ -924,7 +930,7 @@
     "message": "暴露样式名称"
   },
   "optionsAdvancedExposeStyleNameNote": {
-    "message": "在页面中暴露样式名称以方便在 DevTools 中调试样式。请重新加载标签页以应用新设置。"
+    "message": "在页面中暴露样式名称以便在开发者工具中调试样式。\n\n请重新加载标签页以应用新设置。"
   },
   "optionsAdvancedPatchCsp": {
     "message": "启用 <CSP> 补丁以使样式资源生效"
@@ -939,7 +945,7 @@
     "message": "<abc.com> 单个网站。\n<*.abc.com> 网站 + 子域名。\n<-m.abc.com> 使用 \"-\" 前缀排除网站。\n<*> 所有网站（用于将匹配改为排除）。\n<#abc.com> 因含有无效符号而被忽略（译注：可用作注释）。\n<*://abc.*/xyz> 简单的通配符匹配，也被称为 glob 模式匹配。\n<https://abc.com/xyz> 完整 URL。\n\n每项之间使用空格或换行符分隔。内容文本会在以下情况时自动保存：在输入框中按下 Ctrl-S 或 ⌘S，或点击输入框外部，或关闭选项窗口。"
   },
   "optionsAdvancedStyleViaASS": {
-    "message": "‌利用<adoptedStyleSheets>绕过<CSP>的<style-src>"
+    "message": "‌利用 <adoptedStyleSheets> 绕过 <CSP> 的 <style-src> 限制"
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "XHR 即时注入模式"
@@ -1104,12 +1110,15 @@
     "message": "按住 <Enter>（或 <▤>）再按下数字键以打开对应序号样式的菜单。"
   },
   "popupHotkeysInfoSide": {
-    "message": "右键单击或长按操作按钮以在侧栏中打开。您可以在选项中更改默认行为 🞂$side$。",
+    "message": "右键点击或长按操作按钮：在浏览器侧栏中打开对应页面。可在 选项 - $side$ 中更改左键点击的默认行为。",
     "placeholders": {
       "side": {
         "content": "$1"
       }
     }
+  },
+  "popupHotkeysInfoTab": {
+    "message": "只为当前标签页启用/禁用样式的各种方法：（1）右键点击或长按样式的启用复选框；（2）按住 <Alt> 再点击样式名称；（3）使用快捷键，例如，按 <Alt-1> 切换样式 #1 的启用状态，数字显示在样式的最右侧。"
   },
   "popupHotkeysTooltip": {
     "message": "查看可用的快捷键"
@@ -1121,7 +1130,7 @@
     "message": "操作菜单"
   },
   "popupOpenEditInWindow": {
-    "message": "在新窗口打开编辑器"
+    "message": "在新窗口中打开编辑器"
   },
   "popupOpenEditInWindowTooltip": {
     "message": "可以通过将编辑器标签页拖出为单独窗口来启用，将被拖出的编辑器标签页拖入其他窗口即可禁用。"
@@ -1416,7 +1425,7 @@
     "message": "样式管理器"
   },
   "styleMissingName": {
-    "message": "输入名称"
+    "message": "请输入名称"
   },
   "styleName": {
     "message": "样式名称"
@@ -1465,22 +1474,22 @@
     "message": "匹配到标签页的正则"
   },
   "styleRegexpTestInvalid": {
-    "message": "已跳过的无效正则表达式"
+    "message": "被跳过的无效正则表达式"
   },
   "styleRegexpTestNone": {
-    "message": "没有匹配到标签页的正则"
+    "message": "未匹配到标签页的正则"
   },
   "styleRegexpTestNote": {
     "message": "注意：正则表达式中只要使用单个 \\ 即可进行转义，其会根据 CSS 中的引用字符串被自动转换为 \\\\。"
   },
   "styleRegexpTestNoteStar": {
-    "message": "💡Stylus正则不是部分匹配而是完整匹配（首尾会分别自动隐式加上 <^>和<$> ）\n　比如前缀匹配得在末尾添加 <.*> 　例如　<https?://(www\\.)?foo\\.com/(one|two).*>"
+    "message": "如果想进行前缀匹配，请在正则末尾添加 <.*>，例如 <https?://(www\\.)?foo\\.com/(one|two).*>；译注：这是因为正则不是部分匹配，而是完整匹配，相当于匹配前先在正则首尾分别加上 <^> 和 <$>。"
   },
   "styleRegexpTestPartial": {
     "message": "没有完全匹配，因此忽略"
   },
   "styleRegexpTestTitle": {
-    "message": "已打开标签页的正则匹配（点击URL可跳转）"
+    "message": "已打开标签页的正则匹配结果（点击 URL 可切换至对应标签页）"
   },
   "styleSaveLabel": {
     "message": "保存"
@@ -1615,7 +1624,7 @@
     "message": "更新失败：无法访问服务器。"
   },
   "updateCheckHistory": {
-    "message": "检测升级的历史记录"
+    "message": "更新检查历史记录"
   },
   "updateCheckManualUpdateForce": {
     "message": "安装更新（将覆盖本地修改的样式）"
