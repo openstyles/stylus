@@ -452,8 +452,8 @@ async function exportToFile(e, styles, suffix = '') {
   const today = new Date();
   $create('a', {
     href: URL.createObjectURL(new Blob([text], {type})),
-    download: 'stylus-' + today.toISOString().slice(0, 10) + '-' +
-      today.toTimeString().split(':', 2).join('-') + suffix + '.json',
+    download: 'stylus-' + // YYYY-MM-DD-HH-mm
+      today.toLocaleString('sv').replace(/[\s:]/g, '-').slice(0, -3) + suffix + '.json',
     type,
   }).dispatchEvent(new MouseEvent('click'));
   /** strip `sections`, `null` and empty objects */
