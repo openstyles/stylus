@@ -30,11 +30,12 @@ export const worker = __.MV3
   : createPortProxy(workerPath);
 
 const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
-const rxHtmlEntity = /&(#x?)?([^;]+);( (?=none|nonce-|self|unsafe-|sha256-|strict-dynamic))?/g;
+const rxHtmlEntity = /&(#x?)?([^;]+);/g;
+const rxQuoteSpace = / '\s+([-+/=\w]+')/g;
 const rxMetaCSP = /<meta\s+[^<>]*http-equiv\s*=\s*(["']?)Content-Security-Policy\1[^<>]*>/i;
 const rxMetaCSPVal = /(\scontent\s*=)(?:'([^']+)'|"([^"]+)"|([^<>\s]+))/i;
 const patchCspMetaTagValReplacer = (_, key, q1, q2, q0) => key + '"' +
-  patchCsp((q1 || q2 || q0).replace(rxHtmlEntity, patchHtmlEntities))
+  patchCsp((q1 || q2 || q0).replace(rxHtmlEntity, patchHtmlEntities).replace(rxQuoteSpace, " '$1"))
     .replace(/"/g, '&#34;') + '"';
 const patchCspMetaTagReplacer = str => str.replace(rxMetaCSPVal, patchCspMetaTagValReplacer);
 const patchHtmlEntities = (_, hash, s) => hash
