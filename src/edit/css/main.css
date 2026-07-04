@@ -36,6 +36,7 @@ label ~ .icon {
     margin-right: $pad;
   }
   #details-wrapper {
+    max-height: 100%;
     h2 {
       max-width: calc(var(--header-width) - 2*$pad);
       font-size: 16px;
@@ -51,14 +52,14 @@ label ~ .icon {
     flex: 0 0 auto;
   }
   #details-wrapper > details {
+    &[open] {
+      min-height: 8em;
+    }
     &[open]:not(:last-child) {
       margin-bottom: $pad05;
     }
     &:last-child {
       padding-bottom: $pad;
     }
-  }
-  .settings[open] {
-    min-height: 6em;
   }
 }
