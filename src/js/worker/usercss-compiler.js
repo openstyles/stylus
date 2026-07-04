@@ -1,4 +1,4 @@
-import {RX_META} from '@/js/util';
+import {getMetaComment} from '@/js/style-util';
 import extractSections from './extract-sections';
 import {nullifyInvalidVars} from './meta-parser';
 import preLess from './pre-less';
@@ -25,7 +25,7 @@ export default async function compileUsercss(code, preprocessor, vars, styleId, 
   const fn = preprocessor === 'stylus' ? preStylus
     : preprocessor === 'less' ? preLess
       : preprocessor === 'uso' && preUso;
-  const metaStr = code.match(RX_META)?.[0] || '';
+  const metaStr = getMetaComment(code);
   const log = fn === preStylus && [];
   const warn = log && [];
   let sections = (fn === preLess || fn === preStylus) && [];

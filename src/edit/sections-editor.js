@@ -5,8 +5,8 @@ import {messageBox, setInputValue} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
-import {styleSectionsEqual, styleToCss} from '@/js/style-util';
-import {clipString, RX_META, sleep0, t} from '@/js/util';
+import {getMetaComment, styleSectionsEqual, styleToCss} from '@/js/style-util';
+import {clipString, sleep0, t} from '@/js/util';
 import {iconize} from './applies-to';
 import editor, {scrollInfo} from './editor';
 import * as linterMan from './linter';
@@ -413,8 +413,8 @@ export default function SectionsEditor() {
       lockPageUI(true);
       try {
         const code = text || cm.getValue().trim();
-        const meta = code.match(RX_META);
-        if (!meta?.[0].match(/[\r\n]\s*@preprocessor\s+\S/) ||
+        const meta = getMetaComment(code);
+        if (!meta.match(/[\r\n]\s*@preprocessor\s+\S/) ||
             await messageBox.confirm(
               t('importPreprocessor'), 'pre-line',
               t('importPreprocessorTitle'))
@@ -425,7 +425,7 @@ export default function SectionsEditor() {
             throw t('emptyStyle');
           if (meta
           && (replaceOldStyle || !style.id)
-          && (name = meta[0].match(/[\r\n]\s*@name\s+(.+)|$/)[1].trim())) {
+          && (name = meta.match(/[\r\n]\s*@name\s+(.+)|$/)[1].trim())) {
             setInputValue($id('name'), name); // allows Ctrl-Z to undo
             editor.updateName(true);
           }

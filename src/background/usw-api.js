@@ -1,6 +1,7 @@
 import {kAppJson, kContentType, UCD} from '@/js/consts';
+import {getMetaComment} from '@/js/style-util';
 import * as URLS from '@/js/urls';
-import {deepEqual, mapObj, RX_META, tryURL} from '@/js/util';
+import {deepEqual, mapObj, tryURL} from '@/js/util';
 import {broadcastExtension} from './broadcast';
 import {dataHub} from './common';
 import * as styleMan from './style-manager';
@@ -46,7 +47,7 @@ function fakeUsercssHeader(style, usw) {
 
 async function linkStyle(style, sourceCode) {
   const {id, name} = style;
-  const {metadata} = await worker.metaParse(sourceCode.match(RX_META)[0]);
+  const {metadata} = await worker.metaParse(getMetaComment(sourceCode));
   const out = {name, sourceCode, [UCD]: {}};
   for (const k of KEYS_OUT) out[k] = out[UCD][k] = metadata[k] || '';
   pushId(id, out);

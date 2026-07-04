@@ -1,5 +1,6 @@
 import {worker} from '@/edit/util';
-import {RX_META, t} from '@/js/util';
+import {getMetaComment} from '@/js/style-util';
+import {t} from '@/js/util';
 
 export let pendingMeta;
 let /**@type{CM}*/cm;
@@ -7,10 +8,9 @@ let onUpdated;
 let prevRes = [];
 let prevMetadata;
 let meta, done, iFrom, lineTo, chTo;
-const [rxMetaStart, rxMetaEnd] = RX_META.source.split(/(?=\(\?:)/).map(s => RegExp(s, 'yi'));
 /** @param {CodeMirror.EditorChange} change */
 const isAfterMeta = ({from, removed}) => (
-  from.line - lineTo - removed.length ||
+  from.line - lineTo - removed.length + 1 ||
   from.ch - chTo
 ) >= 0;
 
@@ -25,49 +25,19 @@ export const metaCompiler = async (text, linterOptions, linterCM, force) => {
     return;
   let iFromNew = 0;
   if (!linterCM && !force) {
-    text = '';
+    let m;
     let line = -1;
-    let inComment, inMeta;
+    text = '';
     cm.eachLine(({text: str}) => {
-      line++;
-      let i = -15; // minimal length of meta start
-      let j, m;
-      while (true) {
-        if (!inComment) {
-          inComment = (i = str.indexOf('/*', i)) >= 0;
-          if (!inComment)
-            break;
-          rxMetaStart.lastIndex = i;
-          inMeta = rxMetaStart.test(str);
-          if (inMeta) iFromNew += i;
-        }
-        inComment = (j = str.indexOf('*/', i + 2)) < 0;
-        if (inComment) {
-          if (inMeta) {
-            if (text) text += '\n';
-            text += str;
-          }
-          break;
-        }
-        j += 2;
-        inMeta &&= j - i >= 31 &&
-          ((str.indexOf('==/', i + 15) + 1 || j) < j) &&
-          (rxMetaEnd.lastIndex = i + 15, m = rxMetaEnd.exec(str)) &&
-          (m.index + m[0].length === j);
-        if (inMeta) {
-          if (text) text += '\n';
-          text += str.slice(i < 0 ? 0 : i, j);
-          lineTo = line;
-          chTo = j;
-          return true;
-        }
-        i = j;
-      }
-      i = str.length + 1;
-      if (!inMeta) iFromNew += i;
+      ++line;
+      text += str + '\n';
+      return str.includes('*/') && (m = getMetaComment(text, 'match'));
     });
+    text = m && m[0];
+    lineTo = m && line;
+    chTo = m && text.length + (iFromNew = m.index);
   } else if (
-    (text = text.match(RX_META))
+    (text = getMetaComment(text, 'match'))
   ) {
     iFromNew = text.index;
     text = text[0];

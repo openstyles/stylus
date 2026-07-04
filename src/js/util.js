@@ -29,7 +29,6 @@ export const globAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&')
   .replace(/(^|[^\\])\\\*/g, '$1.*')
   .replace(/\\\\\\\*/g, '\\*');
 export const RX_MAYBE_REGEXP = /^\s*\/(.+?)\/([simguy]*)\s*$/;
-export const RX_META = /\/\*!?\s*==userstyle==(?:[^*]+?|\*(?!\/))*==\/userstyle==\s*\*\//i;
 export const urlParams = __.ENTRY === true && new URLSearchParams(location.search);
 export const isSidebar = __.ENTRY === true && urlParams.has(kSidebar);
 

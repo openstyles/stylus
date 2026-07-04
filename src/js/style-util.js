@@ -12,6 +12,10 @@ export const FROM_CSS = {
   'url': 'urls',
   'regexp': 'regexps',
 };
+/** Dumb regexp to avoid catastrophic backtracking. Historically matches strings and open comments
+ * like /* foo /* ==userstyle==. TODO: extract a simplified CSS tokenizer from csslint-mod? */
+export const RX_META1 = /\/\*!?\s*==userstyle==/gi;
+export const RX_META2 = /(==\/userstyle==\s*)?\*\//gi;
 const STYLE_CODE_EMPTY_RE =
   /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/iyu;
 const rxEscape = /[\\"]/g;
@@ -124,4 +128,33 @@ export function styleJSONseemsValid(json) {
     && json.name.trim()
     && Array.isArray(json.sections)
     && typeof json.sections[0]?.code === 'string';
+}
+
+/**
+ * @param {string} str
+ * @param {'?' | 'get' | 'del' | 'match'} [action]
+ * @return {true | string | RegExpMatchArray}
+ */
+export function getMetaComment(str, action) {
+  let a, b, res;
+  let i = 0;
+  while (
+    (RX_META1.lastIndex = i, a = RX_META1.exec(str)) &&
+    (RX_META2.lastIndex = RX_META1.lastIndex, b = RX_META2.exec(str))
+  ) {
+    i = RX_META2.lastIndex;
+    if (b[1]) break; // a properly closed meta comment /* ==UserStyle== .... ==/UserStyle== */
+  }
+  if (action === 'del') {
+    res = a && b?.[1] ? str.slice(0, a.index) + str.slice(i) : str;
+  } else if (!a || !b || !(b = b[1])) {
+    // nothing
+  } else if (action === '?') {
+    res = true;
+  } else {
+    a = a.index;
+    res = str.slice(a, i);
+    if (action === 'match') (res = [res]).index = a;
+  }
+  return res || '';
 }

@@ -1,5 +1,6 @@
 import {UCD} from '@/js/consts';
-import {debounce, RX_META, stringAsRegExp, tryRegExp} from '@/js/util';
+import {getMetaComment} from '@/js/style-util';
+import {debounce, stringAsRegExp, tryRegExp} from '@/js/util';
 import {getByUrl} from './style-manager';
 import {styleMap} from './style-manager/util';
 
@@ -9,12 +10,12 @@ const METAKEYS = ['customName', 'name', 'url', 'installationUrl', 'updateUrl'];
 
 const extractMeta = style =>
   style[UCD]
-    ? (style.sourceCode.match(RX_META) || [''])[0]
+    ? getMetaComment(style.sourceCode)
     : null;
 
 const stripMeta = style =>
   style[UCD]
-    ? style.sourceCode.replace(RX_META, '')
+    ? getMetaComment(style.sourceCode, 'del')
     : null;
 
 const MODES = Object.assign(Object.create(null), {

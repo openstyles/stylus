@@ -4,9 +4,9 @@ import {$create, $toggleDataset} from '@/js/dom';
 import {animateElement, messageBox, scrollElementIntoView} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
-import {styleJSONseemsValid, styleSectionsEqual} from '@/js/style-util';
+import {getMetaComment, styleJSONseemsValid, styleSectionsEqual} from '@/js/style-util';
 import {MOBILE} from '@/js/ua';
-import {clipString, debounce, deepCopy, deepEqual, hasOwn, isEmptyObj, RX_META, t} from '@/js/util';
+import {clipString, debounce, deepCopy, deepEqual, hasOwn, isEmptyObj, t} from '@/js/util';
 import {addEntryTitle, queue} from './util';
 
 const btnImport = $id('import');
@@ -89,7 +89,7 @@ async function importFromFile(file) {
     if (/^\s*[[{]/.test(text)) {
       await importFromString(text);
       setTimeout(() => queue.styles.clear(), IMPORT_THROTTLE * 2);
-    } else if (RX_META.test(text)) {
+    } else if (getMetaComment(text, '?')) {
       throw t('dragDropUsercssTabstrip');
     }
   } catch (err) {

@@ -1,5 +1,4 @@
-import {FROM_CSS} from '../style-util';
-import {RX_META} from '../util';
+import {FROM_CSS, getMetaComment} from '../style-util';
 import {loadParserlib, parserlib} from './util';
 
 /**
@@ -39,13 +38,13 @@ export default function extractSections(code, styleId, metaStr, strict) {
     let outerText = code.slice(lastSection.start, e.offset);
     // move last comment before @-moz-document inside the section
     if (lastCmt && (
-      !(metaStr ??= code.match(RX_META)?.[0] || '') ||
+      !(metaStr ??= getMetaComment(code)) ||
       !lastCmt.includes(metaStr)
     )) {
       section.code = lastCmt + '\n';
       outerText = outerText.slice(0, -lastCmt.length);
     }
-    outerText = outerText.replace(metaStr ??= code.match(RX_META)?.[0] || '', '').trim();
+    outerText = outerText.replace(metaStr ??= getMetaComment(code), '').trim();
     if (outerText) {
       lastSection.code = outerText;
       doAddSection(lastSection);

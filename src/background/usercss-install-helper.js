@@ -2,9 +2,10 @@ import '@/js/browser';
 import {kContentType, kMainFrame, pUrlInstaller} from '@/js/consts';
 import {DNR_ID_INSTALLER, updateDynamicRules} from '@/js/dnr';
 import * as prefs from '@/js/prefs';
+import {getMetaComment} from '@/js/style-util';
 import {FIREFOX} from '@/js/ua';
 import * as URLS from '@/js/urls';
-import {getHost, RX_META} from '@/js/util';
+import {getHost} from '@/js/util';
 import {bgBusy, onTabUrlChange, WRB} from './common';
 import download from './download';
 import {findHeader} from './style-via-webrequest';
@@ -113,7 +114,7 @@ async function maybeInstall(tabId, url, oldUrl = '') {
       !oldUrl.startsWith(makeInstallerUrl(url))) {
     const inTab = (__.B_FIREFOX || __.B_ANY && FIREFOX) && url.startsWith('file:');
     const code = await (inTab ? loadFromFile : loadFromUrl)(tabId, url);
-    if (!/^\s*</.test(code) && RX_META.test(code)) {
+    if (!/^\s*</.test(code) && getMetaComment(code, '?')) {
       await openInstallerPage(tabId, url, {code, inTab});
     }
   }

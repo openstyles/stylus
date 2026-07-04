@@ -1,5 +1,6 @@
 import {UCD} from '@/js/consts';
-import {deepCopy, makeUserCssFindFilter, reuseStyleVars, RX_META, t} from '@/js/util';
+import {getMetaComment} from '@/js/style-util';
+import {deepCopy, makeUserCssFindFilter, reuseStyleVars, t} from '@/js/util';
 import * as styleMan from './style-manager';
 import {styleMap} from './style-manager/util';
 import {worker} from './util';
@@ -59,7 +60,7 @@ export async function buildMeta(style, sourceCode) {
   if (!sourceCode && style && style[UCD])
     return style;
   const code = (sourceCode || style?.sourceCode).replace(/\r\n?/g, '\n');
-  const match = code.match(RX_META);
+  const match = getMetaComment(code, 'match');
   if (!match)
     throw new Error('Could not find metadata.');
   try {

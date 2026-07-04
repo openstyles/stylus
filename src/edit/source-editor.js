@@ -136,7 +136,7 @@ export default function SourceEditor() {
   cm.on('changes', (_, changes) => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
     livePreview();
-    metaCompiler(changes);
+    metaCompiler(changes).then(!linterOn && spoofLinter);
   });
   setTimeout(linterMan.enableForEditor, 0, cm, initialCode, /*force=*/true);
   if (!$isTextInput()) {
@@ -268,23 +268,26 @@ export default function SourceEditor() {
       return;
     pvErr.title = str;
     const url = editor.ppDemo[pp];
-    const state = cm.state.lint;
-    const {options} = state;
-    const fnKey = 'getAnnotations';
-    const fn = options[fnKey];
-    const inOp = cm.curOp || cm.startOperation();
     pvErr[`${url ? 'set' : 'remove'}Attribute`]('href', url);
     pvErr.hidden = false;
     if (!linterOn) { // the linter can show the error by itself hopefully
-      options[fnKey] = () => [{
+      spoofLinter([{
         message: str.replace(/^\d+:\d+\s*/, ''),
         from: pos, to: {line, ch: ch + 1}, severity: 'error',
-      }];
-      cm.getValue = NOP;
-      cm.performLint();
-      options[fnKey] = fn;
-      delete cm.getValue;
+      }]);
     }
+  }
+
+  function spoofLinter(annos) {
+    const {options} = cm.state.lint;
+    const fnKey = 'getAnnotations';
+    const fn = options[fnKey];
+    const inOp = cm.curOp || cm.startOperation();
+    options[fnKey] = () => annos;
+    cm.getValue = NOP;
+    cm.performLint();
+    options[fnKey] = fn;
+    delete cm.getValue;
     if (!inOp) cm.endOperation();
   }
 

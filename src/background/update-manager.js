@@ -1,10 +1,10 @@
 import compareVersion from '@/js/cmpver';
 import {UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
-import {calcStyleDigest, styleSectionsEqual} from '@/js/style-util';
+import {calcStyleDigest, getMetaComment, styleSectionsEqual} from '@/js/style-util';
 import {chromeLocal} from '@/js/storage-util';
 import {extractUsoaId, isCdnUrl, isLocalhost, rxGF, usoApi} from '@/js/urls';
-import {debounce, deepMerge, getHost, NOP, RX_META, sleep} from '@/js/util';
+import {debounce, deepMerge, getHost, NOP, sleep} from '@/js/util';
 import {bgBusy} from './common';
 import {db} from './db';
 import download from './download';
@@ -181,9 +181,9 @@ export async function checkStyle(opts) {
     let m;
     // UserCSS metadata may be embedded in the original USO style so let's use its updateURL
     if ((css || extractUsoaId(updateUrl))
-    && (m = css || style.sourceCode.replace(RX_META, '')).includes('@updateURL')
-    && (m = m.match(RX_META))
-    && (m = await usercssMan.buildMeta(null, m[0]).catch(NOP))
+    && (m = css || getMetaComment(style.sourceCode, 'del')).includes('@updateURL')
+    && (m = getMetaComment(m))
+    && (m = await usercssMan.buildMeta(null, m).catch(NOP))
     && m.updateUrl) {
       updateUrl = m.updateUrl;
       oldVer = m.version || '0';
