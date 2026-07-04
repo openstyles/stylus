@@ -77,24 +77,22 @@ function makeLibrary(entry, name, vars) {
         export: name[0] === '*' ? undefined : 'default',
       },
     },
-    plugins: name
-      ? addWrapper()
-      : addWrapper(INTRO + '; (()=>{', '})()}'),
+    plugins: addWrapper('"use strict";(()=>{const global=self,window=global;', '})()'),
   }, undefined, vars);
-  if (!name) cfg = augment(OUTPUT_MODULE, cfg);
+  cfg = augment({output: {iife: false}}, cfg);
   return cfg;
 }
 
 function makeContentScript(name) {
   // (!) `global` must be `this` because in Firefox it's not equal to `window` or `self`
-  const intro = `if (self["${name}"]!==1) { self["${name}"]=1; const global = this, ${
+  const intro = `"use strict"; this["${name}"]!==1&&(()=>{ this["${name}"]=1; const global=this, ${
     INTRO_ALIASES
-  }; (() => { "use strict"; `;
-  return augment(OUTPUT_MODULE, augment({
+  };\n`;
+  return augment({
     entry: '@/content/' + name,
-    output: {path: DST + JS},
-    plugins: addWrapper(intro, '})()}'),
-  }));
+    output: {path: DST + JS, iife: false},
+    plugins: addWrapper(intro, '})()'),
+  });
 }
 
 function makeManifest(files) {
