@@ -65,9 +65,8 @@ async function initStyleMap() {
       storeInMap(style);
     } else {
       try { fix = fixKnownProblems(style, true); } catch {}
-      if (styleJSONseemsValid(fix)) {
+      if (fix instanceof Promise ? needsRebuild = true : styleJSONseemsValid(fix)) {
         (fixed ??= []).push(fix);
-        needsRebuild ||= fix.then;
       } else {
         (lost ??= []).push(style);
       }
