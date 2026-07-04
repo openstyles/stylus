@@ -14,13 +14,13 @@ const {
 const augment = require('./tools/wp-config-base');
 const {
   CSS, JS, SHIM, OUTPUT_MODULE, SEP_ESC, SRC_ESC, THEME_NAMES, THEME_PATH, CM_PATH, DST, ALIASES,
-  VARS,
+  VARS, DEBUG, GITHUB_ACTIONS,
 } = require('./tools/wp-config-vars');
 
 global.localStorage = {}; // workaround for node 25 and HtmlWebpackPlugin's `...global`
 if (!DEV) fse.emptydirSync(DST);
 
-const {DEBUG, GITHUB_ACTIONS, PUBLISH} = process.env;
+const {PUBLISH} = process.env;
 const PAGE_BG = MV3 ? 'background/sw' : 'background';
 const OFFSCREEN = 'offscreen';
 const PAGES = [

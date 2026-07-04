@@ -5,7 +5,8 @@ const path = require('path');
 
 const {escapeForRe, BUILD, DEV, MV3, ROOT, TARGET, ZIP, CM_PACKAGE_PATH, SRC} = require('./util');
 
-const {DEBUG, GITHUB_ACTIONS} = process.env;
+const {GITHUB_ACTIONS} = process.env;
+const DEBUG = +process.env.DEBUG || 0;
 const DST = `${ROOT}dist${GITHUB_ACTIONS ? '' : `-${TARGET}`}/`;
 const CSS = 'css/';
 const JS = 'js/';
@@ -79,8 +80,10 @@ module.exports = {
   ALIASES,
   CM_PATH,
   CSS,
+  DEBUG,
   DST,
   FS_CACHE,
+  GITHUB_ACTIONS,
   JS,
   OUTPUT_MODULE,
   RAW_VARS,
