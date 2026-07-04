@@ -7,7 +7,7 @@ import * as colorScheme from '../color-scheme';
 import {bgInit, onSchemeChange} from '../common';
 import {db, draftsDB, execMirror, prefsDB} from '../db';
 import './init';
-import {fixKnownProblems, fixRevision} from './fixer';
+import {fixKnownProblems} from './fixer';
 import {broadcastStyleUpdated, setOrderImpl, storeInMap, styleMap, stylePreviewMap} from './util';
 
 bgInit.push(initStyleMap);
@@ -49,7 +49,6 @@ if (__.MV3) {
 
 async function initStyleMap() {
   __.DEBUGLOG('styleMan init...');
-  let fixed, lost, mirrored, needsRebuild;
   let [orderFromDb, styles] = await Promise.all([
     prefsDB.get(kInjectionOrder),
     db.getAll(),
@@ -57,29 +56,20 @@ async function initStyleMap() {
   if (!orderFromDb)
     orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder).catch(console.error);
   if (!styles.length)
-    styles = (mirrored = await execMirror(DB, 'getAll').catch(console.error)) || styles;
-  for (let i = 0, fix; i < styles.length; i++) {
-    const style = styles[i];
-    if (+style.id > 0 && typeof style._id === 'string' && styleJSONseemsValid(style)) {
-      fixRevision(style);
+    styles = await execMirror(DB, 'getAll').catch(console.error) || styles;
+  for (let style of styles) {
+    const fix = fixKnownProblems(style, true);
+    if (fix instanceof Promise) try {
+      style = await fix;
+    } catch (err) {
+      console.warn(err, style); // TODO: expose in UI
+      continue;
+    }
+    if (styleJSONseemsValid(style)) {
       storeInMap(style);
     } else {
-      try { fix = fixKnownProblems(style, true); } catch {}
-      if (fix instanceof Promise ? needsRebuild = true : styleJSONseemsValid(fix)) {
-        (fixed ??= []).push(fix);
-      } else {
-        (lost ??= []).push(style);
-      }
+      console.warn('Ignoring damaged style in DB', style); // TODO: expose in UI
     }
-  }
-  if (lost)
-    console.error(`Skipped ${lost.length} unrecoverable styles:`, lost);
-  if (fixed) {
-    if (needsRebuild)
-      fixed = await Promise.all(fixed);
-    fixed.forEach(storeInMap);
-    console[mirrored ? 'log' : 'warn']('Fixed styles:', fixed);
-    setTimeout(db.putMany, 1000, fixed);
   }
   setOrderImpl(orderFromDb, {store: false});
   __.DEBUGLOG('styleMan init done');

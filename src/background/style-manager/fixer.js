@@ -25,7 +25,8 @@ const MISSING_PROPS = {
   _id: makeRandomUUID,
 };
 
-const hasVarsAndImport = ({code}) => code.startsWith(':root {\n  --') && /@import\s/i.test(code);
+const rxVarsAndImport = /^:root\s*{\s+--[\s\S].*?@import\s/i;
+const hasVarsAndImport = ({code}) => rxVarsAndImport.test(code);
 
 /**
  * @param {StyleObj} style
