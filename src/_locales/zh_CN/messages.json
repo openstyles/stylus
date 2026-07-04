@@ -35,7 +35,7 @@
     "message": "显示「应用于」控件"
   },
   "appliesLineWidgetWarning": {
-    "message": "对经过压缩的 CSS 无效"
+    "message": "不支持经过压缩的 CSS"
   },
   "appliesRegexpOption": {
     "message": "正则表达式"
@@ -65,7 +65,7 @@
     "message": "备份"
   },
   "backupReminder": {
-    "message": "样式可能会因为断电，浏览器漏洞，个人错误而导致<b>丢失</b>。<hr><b>备份您的数据：</b>在选项中配置「同步到云端」，或者在进行重大更改时手动点击「导出」按钮，再或者，更通用的办法，使用专门的备份工具自动备份设备上的所有数据。"
+    "message": "样式可能会因断电，浏览器漏洞，个人错误而<b>丢失</b>。<hr><b>备份您的数据：</b>在选项中配置「同步到云端」，或者在进行重大更改时手动点击「导出」按钮，导出备份。再或者，使用更加通用的办法，设置专门的备份工具，自动备份设备上包括浏览器数据的所有数据。"
   },
   "checkAllUpdates": {
     "message": "全部检查更新"
@@ -440,37 +440,37 @@
     "message": "放弃当前样式的内容，使用已导入样式覆盖它"
   },
   "importReportLegendAdded": {
-    "message": "个样式已被添加"
+    "message": "个样式已添加"
   },
   "importReportLegendIdentical": {
-    "message": "已忽略相同样式"
+    "message": "个相同样式被跳过"
   },
   "importReportLegendInvalid": {
-    "message": "忽略无效的代码"
+    "message": "个无效样式被跳过"
   },
   "importReportLegendOrphans": {
-    "message": "未包含在备份中的已安装样式"
+    "message": "个已安装样式未包含在备份中"
   },
   "importReportLegendUpdatedBoth": {
-    "message": "已更新的所有信息和代码"
+    "message": "个样式的元数据和代码已更新"
   },
   "importReportLegendUpdatedCode": {
-    "message": "代码已更新"
+    "message": "个样式的代码已更新"
   },
   "importReportLegendUpdatedMeta": {
-    "message": "升级信息"
+    "message": "个样式的元数据已更新"
   },
   "importReportTitle": {
     "message": "样式导入完成"
   },
   "importReportUnchanged": {
-    "message": "导入的样式无效。"
+    "message": "没有任何变化。"
   },
   "importReportUndone": {
-    "message": "个样式被还原"
+    "message": "个样式已还原"
   },
   "importReportUndoneTitle": {
-    "message": "样式导入被取消"
+    "message": "样式导入已被撤销"
   },
   "importStyles": {
     "message": "导入所有样式"
@@ -583,7 +583,7 @@
     "message": "过滤器"
   },
   "manageMinColumnWidth": {
-    "message": "最小列宽（单位为像素，9999 停用多列模式）"
+    "message": "px 最小列宽（9999 px 停用多列模式）"
   },
   "manageNewUI": {
     "message": "表格布局"
@@ -835,7 +835,7 @@
     "message": "选项"
   },
   "optionCompactWidth": {
-    "message": "窗口宽度 ≤ N 像素时，使用紧凑 UI 布局"
+    "message": "px 窗口宽度 ≤ N px 时，使用紧凑 UI 布局"
   },
   "optionConfigSidePanel": {
     "message": "UserCSS 配置"
@@ -972,7 +972,7 @@
     "message": "同步到云端"
   },
   "optionsCustomizeUpdate": {
-    "message": "检测更新"
+    "message": "检查更新"
   },
   "optionsHeading": {
     "message": "选项"
@@ -1598,7 +1598,7 @@
     "message": "Stylus 可改变 file:// 协议或无痕的页面样式，需要先开启权限：\n在 chrome://extensions 找到 Stylus →点击详情，→打开「允许访问文件网址」。\n同时打开「在无痕模式下启用」则可在无痕页面或小号标签页工作。"
   },
   "unreachableMozSiteHint": {
-    "message": "在 Firefox 60 及更新版本中，您还需在 <about:config> 中移除 <extensions.webextensions.restrictedDomains> 包含的域名。"
+    "message": "在 Firefox 60 及更新版本中，您还需在 <about:config> 的 <extensions.webextensions.restrictedDomains> 中移除此域名。"
   },
   "unreachableMozSiteHintOldFF": {
     "message": "Firefox ⩾59 才能配置为允许 WebExtensions 在受 <CSP> 保护的网站上（例如本站）添加样式元素。"
