@@ -7,7 +7,7 @@ let /**@type{CM}*/cm;
 let onUpdated;
 let prevRes = [];
 let prevMetadata;
-let meta, done, iFrom, lineTo, chTo;
+let meta, iFrom, lineTo, chTo;
 /** @param {CodeMirror.EditorChange} change */
 const isAfterMeta = ({from, removed}) => (
   from.line - lineTo - removed.length + 1 ||
@@ -24,6 +24,7 @@ export const metaCompiler = async (text, linterOptions, linterCM, force) => {
   if (!force && (pendingMeta || (linterCM ? linterCM !== cm : meta && text.every(isAfterMeta))))
     return;
   let iFromNew = 0;
+  let ok, done;
   if (!linterCM && !force) {
     let m;
     let line = -1;
@@ -60,25 +61,26 @@ export const metaCompiler = async (text, linterOptions, linterCM, force) => {
     pendingMeta = null;
     if (force)
       return metadata;
-    if (errors.every(err => err.code === 'unknownMeta')) {
-      onUpdated(metadata);
-    }
+    ok = true;
     meta = text;
-    prevRes = errors.map(({code, index, args, message}) => {
-      const isUnknownMeta = code === 'unknownMeta';
+    prevRes = errors;
+    for (let i = 0; i < errors.length; i++) {
+      const {code, index, args, message} = errors[i];
+      const isUnknownMeta = code === 'unknownMeta' || (ok = false);
       const typo = isUnknownMeta && args[1] ? 'Typo' : ''; // args[1] may be present but undefined
-      const i = (index || 0) + iFromNew;
-      const pos = cm.posFromIndex(i);
-      return {
-        i,
+      const offset = (index || 0) + iFromNew;
+      const pos = cm.posFromIndex(offset);
+      errors[i] = {
+        i: offset,
         from: pos,
         to: pos,
         message: code && t(`meta_${code}${typo}`, args, false) || message,
         severity: isUnknownMeta ? 'warning' : 'error',
         rule: code,
       };
-    });
-    done(prevRes);
+    }
+    done(errors);
+    if (ok) onUpdated(metadata);
   }
   iFrom = iFromNew;
   ({line: lineTo, ch: chTo} = cm.posFromIndex(iFromNew + text.length));
