@@ -18,11 +18,11 @@ import {isOptionSite, optionSites} from './option-sites';
 import makePopupData from './popup-data';
 import {getSectionsByUrl} from './style-manager';
 import * as tabMan from './tab-manager';
+import {patchCsp, patchCspMetaTag} from './util';
 
 const REVOKE_TIMEOUT = 10e3;
 const kRuleIds = 'ruleIds';
 const kSetCookie = 'set-cookie'; // must be lowercase
-const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
 const rxNONCE = /(?:^|[;,])\s*style-src\s+[^;,]*?'nonce-([-+/=\w]+)'/;
 const BLOB_URL_PREFIX = 'blob:' + ownRoot;
 const WEBNAV_FILTER = {url: [{urlPrefix: 'http'}]};
@@ -39,7 +39,7 @@ const toSend = {};
 const ruleIdKeys = {};
 let ruleIds;
 let curOFF = true;
-let flushPending, setupPending;
+let flushPending;
 
 if (__.MV3) {
   setup(); // register listeners synchronously so they can receive the wakeup event
@@ -56,7 +56,7 @@ if (__.MV3) {
   }, clientDataJobs.size ? 1000/*let the client page load first*/ : 0));
 }
 
-subscribe([pDisableAll], setup, true);
+subscribe(pDisableAll, setup, true);
 
 bgBusy.then(() => {
   const tabIds = [];
@@ -98,14 +98,12 @@ if (__.B_CHROME || __.B_ANY && CHROME) {
   });
 }
 
-async function setup(key) {
-  if (key) return (setupPending ??= setTimeout(setup)); // when many keys are changed at once
-  setupPending = null;
-  const OFF = __values[pDisableAll];
+async function setup(_, OFF) {
   if (curOFF !== OFF) {
     curOFF = OFF;
     // in MV3 onBeforeRequest also wakes up the background script earlier to avoid FOUC
-    toggleListener(chrome.webRequest.onBeforeRequest, !OFF, prepareStyles, WR_FILTER);
+    toggleListener(chrome.webRequest.onBeforeRequest, !OFF, prepareStyles, WR_FILTER,
+      (__.B_FIREFOX || __.B_ANY && FIREFOX) ? ['blocking'] : []);
     toggleListener(chrome.webRequest.onHeadersReceived, !OFF, modifyHeaders, WR_FILTER, !OFF && [
       'responseHeaders',
       (WRBTest ? await WRBTest : WRB) && 'blocking',
@@ -123,6 +121,10 @@ async function prepareStyles(req) {
   const key = tabId + ':' + frameId;
   const xhrOn = __values[pStyleViaXhr]
     && (!(v = optionSites[pStyleViaXhr]) || isOptionSite(v, url));
+  const cspOn = (__.B_FIREFOX || __.B_ANY && FIREFOX) && __values[pPatchCsp]
+    && (!(v = optionSites[pPatchCsp]) || isOptionSite(v, url));
+  if (cspOn)
+    patchCspMetaTag(req.requestId);
   __.DEBUGLOG('prepareStyles', key, req);
   if (__.MV3 && xhrOn && colorScheme.isSystem() && !tabMan.someInjectable())
     await colorScheme.refreshSystemDark();
@@ -226,37 +228,6 @@ function modifyHeaders(req) {
   }
   if (blobId || csp) {
     return {responseHeaders};
-  }
-}
-
-function patchCsp(str) {
-  const src = {};
-  for (let p of str.split(/[;,]/)) {
-    p = p.trim().split(/\s+/);
-    src[p[0]] = p.slice(1);
-  }
-  // Allow style assets
-  patchCspSrc(src, 'img-src', 'data:', '*');
-  patchCspSrc(src, 'font-src', 'data:', '*');
-  // Allow our DOM styles, allow @import from any URL
-  patchCspSrc(src, 'style-src', "'unsafe-inline'", '*');
-  // Allow our XHR cookies in CSP sandbox (known case: raw github urls)
-  if (src.sandbox && !src.sandbox.includes('allow-same-origin')) {
-    src.sandbox.push('allow-same-origin');
-  }
-  return Object.entries(src).map(([k, v]) =>
-    `${k}${v.length ? ' ' : ''}${v.join(' ')}`).join('; ');
-}
-
-function patchCspSrc(src, name, ...values) {
-  let def = src['default-src'];
-  let list = src[name];
-  if (def || list) {
-    if (!def) def = [];
-    if (!list) list = [...def];
-    if (values.includes('*')) list = src[name] = list.filter(v => !rxHOST.test(v));
-    list.push(...values.filter(v => !list.includes(v)));
-    if (!list.length) delete src[name];
   }
 }
 
