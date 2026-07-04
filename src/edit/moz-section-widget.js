@@ -1,6 +1,6 @@
 import colorMimicry from '@/js/color/color-mimicry';
 import {pFavicons} from '@/js/consts';
-import {$toggleDataset} from '@/js/dom';
+import {$root, $toggleDataset} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
 import * as prefs from '@/js/prefs';

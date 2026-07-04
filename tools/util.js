@@ -7,11 +7,14 @@ const babel = require('@babel/core');
 const ROOT = path.dirname(__dirname.replaceAll('\\', '/')) + '/';
 const SRC = ROOT + 'src/';
 
-const [TARGET, ZIP] = process.env.NODE_ENV?.split(':') || [''];
-const [BUILD, FLAVOR = 'mv2'] = TARGET.split('-');
+const JOB = process.env.npm_lifecycle_event || process.argv.slice(2).join('-');
+const CMD = JOB.match(/^(build|watch|serve)(?=-|$)/)?.[0];
+const BUILD = JOB.match(/(?<=-|^)(chrome|firefox|any)(?=-|$)/)?.[0] || 'any';
+const FLAVOR = JOB.match(/(?<=-|^)(mv\d)(?=-|$)/)?.[0] || 'mv2';
+const TARGET = `${BUILD}-${FLAVOR}`;
+const DEV = CMD === 'watch';
+const HMR = CMD === 'serve';
 const MV3 = FLAVOR === 'mv3';
-const DEV = process.env.npm_lifecycle_event?.startsWith('watch');
-const HMR = process.env.npm_lifecycle_event?.includes('hmr');
 
 const MANIFEST = 'manifest.json';
 const MANIFEST_OVR = `manifest-${FLAVOR}.json`;
@@ -94,7 +97,6 @@ module.exports = {
   ROOT,
   SRC,
   TARGET,
-  ZIP,
   anyPathSep,
   escapeForRe,
   escapeToRe,

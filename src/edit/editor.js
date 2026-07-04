@@ -1,5 +1,5 @@
 import {kPopup} from '@/js/consts';
-import {$create} from '@/js/dom';
+import {$create, $rootCL} from '@/js/dom';
 import {clipString, deepEqual, mapObj, sessionStore, t} from '@/js/util';
 import {sticky} from './compact-header';
 import DirtyReporter from './dirty-reporter';

@@ -1,5 +1,6 @@
 import '@/js/dom-init';
 import {pEditorLinter, pEditorLinterOn} from '@/js/consts';
+import {$rootCL} from '@/js/dom';
 import {subscribe} from '@/js/prefs';
 import CompactHeader, {toggleSticky} from './compact-header';
 import editor, {scrollInfo} from './editor';

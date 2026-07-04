@@ -6,7 +6,7 @@
  * which also happens before the first paint unless the browser "yields", but that's abnormal
  * and not even a problem in the most popular case of using system dark/light mode.
  */
-import {$create} from './dom';
+import {$create, $root} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
 import {onMessage} from './msg';
 import {swController} from './msg-init';

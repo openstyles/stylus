@@ -1,5 +1,5 @@
 import {pFavicons, pFaviconsGray, pManageNewUi, pManageNewUiTargets} from '@/js/consts';
-import {$$remove, $create, $toggleClasses} from '@/js/dom';
+import {$$remove, $create, $root, $toggleClasses} from '@/js/dom';
 import {getCssMediaRuleByName} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import {__values, subscribe} from '@/js/prefs';

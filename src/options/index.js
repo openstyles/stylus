@@ -1,7 +1,7 @@
 import '@/js/dom-init';
 import '@/js/browser';
 import {kBadFavs, pKeepAlive} from '@/js/consts';
-import {$create} from '@/js/dom';
+import {$create, $root, $rootCL} from '@/js/dom';
 import {setupConditionalPrefs, setupLivePrefs} from '@/js/dom-prefs';
 import {getEventKeyName, messageBox, setInputValue} from '@/js/dom-util';
 import {template} from '@/js/localization';

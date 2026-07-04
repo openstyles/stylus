@@ -10,7 +10,7 @@ const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const {DEV, MV3, SRC, CM_PACKAGE_PATH, ROOT, nukeHtmlSpaces} = require('./util');
 const {RawEnvPlugin} = require('./wp-raw-patch-plugin');
 const {ALIASES, CSS, DST, FS_CACHE, SHIM, JS, VARS, RAW_VARS, SEP_ESC, SRC_ESC} =
-  require('./wp-config-vars');
+  require('./webpack.vars');
 const patchCodemirror = require('./wp-patch-codemirror');
 const patchLESS = require('./wp-patch-less');
 
@@ -82,22 +82,25 @@ const [terserOwn, terserVendor] = [true, false].map(isOwn => new TerserPlugin({
   [isOwn ? 'exclude' : 'include']: /^less|codemirror|csslint|parserlib|beautify|jsonlint|webdav/,
   extractComments: false,
   parallel: 4,
-  terserOptions: {
+  minify: isOwn ? TerserPlugin.terserMinify : TerserPlugin.swcMinify,
+  [isOwn ? 'terserOptions' : 'minimizerOptions']: {
     ecma: MV3 ? 2024 : 2017,
     compress: {
-      builtins_ecma: MV3 ? 2024 : 2017,
-      builtins_pure: true,
       /** Used in own code but also in cm/*.js that goes into codemirror.js */
-      global_defs: Object.fromEntries(Object.entries(ALIASES.funcs).map(e => ['@' + e[0], e[1]])),
+      global_defs: Object.fromEntries(ALIASES.map(e => ['@' + e[0], e[1]])),
       join_vars: !isOwn,
-      lhs_constants: !isOwn,
       pure_getters: true,
       reduce_funcs: false,
       sequences: !isOwn,
       unsafe_arrows: isOwn,
       passes: 2, // adds one second but drops debugging artifacts like 0; in place if __.DEBUGLOG
+      ...isOwn && {
+        builtins_ecma: MV3 ? 2024 : 2017,
+        builtins_pure: true,
+        lhs_constants: !isOwn,
+      },
     },
-    output: {
+    format: {
       ascii_only: false,
       beautify: isOwn, // line numbers in bug reports + no delay in devtools to auto-prettify
       indent_level: 2,
@@ -105,8 +108,10 @@ const [terserOwn, terserVendor] = [true, false].map(isOwn => new TerserPlugin({
     },
     mangle: {
       keep_classnames: true,
-      keep_fnames: /^(?!(__)?webpack|onScriptComplete)/i,
-      reserved: isOwn ? new Set() : null,
+      ...isOwn && {
+        keep_fnames: /^(?!(__)?webpack|onScriptComplete)/i,
+        reserved: isOwn ? new Set() : null,
+      },
     },
   },
 }));
@@ -114,13 +119,14 @@ const [terserOwn, terserVendor] = [true, false].map(isOwn => new TerserPlugin({
 /**
  * @return {import('webpack/types').Configuration}
  */
-const getBaseConfig = ({vars} = {}) => ({
+const getBaseConfig = ({entry, vars} = {}) => ({
   mode: DEV ? 'development' : 'production',
   devServer: false,
   output: {
     path: DST,
     filename: '[name].js',
     publicPath: '/',
+    iife: false,
     assetModuleFilename: m => m.filename.split('src/')[1] || m,
     cssFilename: CSS + '[name][ext]',
     cssChunkFilename: CSS + '[name][ext]',
@@ -129,12 +135,12 @@ const getBaseConfig = ({vars} = {}) => ({
     type: 'filesystem',
     buildDependencies: {
       config: [__filename],
-      codemirror: ['codemirror'],
     },
     compression: 'gzip',
   },
   // infrastructureLogging: {debug: /webpack\.cache/},
   module: {
+    noParse: /[\\/](stylelint|stylus-lang-bundle|less|parserlib|csslint|jsonlint)(\.min)?\.js$/,
     parser: {
       'javascript/auto': {node: false},
       'javascript/esm': {node: false},
@@ -162,6 +168,7 @@ const getBaseConfig = ({vars} = {}) => ({
     alias: {
       '@': SRC,
     },
+    cache: true,
     fallback: {
       'fs': SHIM + 'null.js',
       'path': SHIM + 'path.js',
@@ -177,10 +184,10 @@ const getBaseConfig = ({vars} = {}) => ({
     vars && new RawEnvPlugin(...vars),
     new webpack.ids.NamedChunkIdsPlugin({context: SRC + JS}),
     new InlineConstantExportsPlugin([/[/\\](consts|themer|sync-util)\.js$/]),
+    +process.env.PROFILE && new webpack.debug.ProfilingPlugin({
+      outputPath: __dirname + `/../webpack-profile-${entry}.json`,
+    }),
   ].filter(Boolean),
-  stats: {
-    // optimizationBailout: true,
-  },
 });
 
 /**
@@ -218,7 +225,7 @@ function augment(ovr, base, vars) {
     const mSrc = /@\/(content)?/.exec(Object.values(ovr.entry));
     if (mSrc)
       vars = [{...VARS, ...vars}, {...RAW_VARS}];
-    base = getBaseConfig({vars});
+    base = getBaseConfig({entry: entry.join('-'), vars});
     base.devtool = DEV && (mSrc?.[1] ? 'inline-source-map' : 'source-map');
   } else {
     base = {...base};

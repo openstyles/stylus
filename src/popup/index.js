@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import {kAboutBlank, kPopup, pPopupTogglerExpanded} from '@/js/consts';
-import {$create} from '@/js/dom';
+import {$create, $rootCL} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-prefs';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';

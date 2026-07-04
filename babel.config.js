@@ -9,7 +9,6 @@ module.exports = {
     noDocumentAll: true,
     noIncompleteNsImportDetection: true,
     noNewArrows: true,
-    privateFieldsAsSymbols: true,
   },
   presets: [
     ['@babel/preset-env', {

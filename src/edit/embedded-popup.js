@@ -1,5 +1,5 @@
 import {extraKeys} from '@/cm';
-import {$create} from '@/js/dom';
+import {$create, $root, $rootCL} from '@/js/dom';
 import {getEventKeyName} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
 import {actionPopupUrl} from '@/js/urls';

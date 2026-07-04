@@ -1,4 +1,5 @@
 import {UCD} from '@/js/consts';
+import {$root} from '@/js/dom';
 import {headerWidth} from '@/js/header-resizer';
 import * as prefs from '@/js/prefs';
 import {t} from '@/js/util';

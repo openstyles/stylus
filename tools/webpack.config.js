@@ -1,24 +1,25 @@
 'use strict';
 
 const fs = require('fs');
-const fse = require('fs-extra');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackProcessingPlugin = require('html-webpack-processing-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const {RawEnvPlugin} = require('./tools/wp-raw-patch-plugin');
+const {RawEnvPlugin} = require('./wp-raw-patch-plugin');
 const {
   nukeHtmlSpaces, transESM2var, transSourceMap, BUILD, DEV, HMR, FLAVOR, MANIFEST, MV3, SRC,
-} = require('./tools/util');
-const augment = require('./tools/wp-config-base');
+} = require('./util');
+const augment = require('./webpack.base');
 const {
   CSS, JS, SHIM, OUTPUT_MODULE, SEP_ESC, SRC_ESC, THEME_NAMES, THEME_PATH, CM_PATH, DST, ALIASES,
   VARS, DEBUG, GITHUB_ACTIONS,
-} = require('./tools/wp-config-vars');
+} = require('./webpack.vars');
 
 global.localStorage = {}; // workaround for node 25 and HtmlWebpackPlugin's `...global`
-if (!DEV) fse.emptydirSync(DST);
+if (!DEV && fs.existsSync(DST))
+  for (const file of fs.readdirSync(DST))
+    fs.rmSync(DST + file, {recursive: true});
 
 const {PUBLISH} = process.env;
 const PAGE_BG = MV3 ? 'background/sw' : 'background';
@@ -43,12 +44,12 @@ const RESOLVE_VIA_SHIM = {
   ],
 };
 const MAX_CHUNKNAME_LEN = 24; // in Windows, path+name is limited to 260 chars
-const INTRO = '"use strict"; { const global = self, window = global';
-const INTRO_ALIASES = [
-  ...Object.entries(ALIASES.vars).map(([k, v]) => `${k}=${v}`),
-  ...Object.entries(DEV ? ALIASES.funcs : []).map(([k, v]) => `${k}=${v}.bind(document)`),
-].join(', ');
-const addWrapper = (banner = INTRO + ';', footer = '}', test = /\.js$/) => [
+const ALIASES_STR = `${
+  DEV ? ', ' + ALIASES.map(([k, v]) => `${k}=${v}.bind(document)`).join(', ') : ''
+};\n`;
+const INTRO = `"use strict";(()=>{ const global=this`;
+const INTRO_ALIASES = INTRO + ALIASES_STR;
+const addWrapper = (banner = INTRO, footer = '})()', test = /\.js$/) => [
   new webpack.BannerPlugin({raw: true, test, banner}),
   new webpack.BannerPlugin({raw: true, test, banner: footer, footer: true}),
 ];
@@ -67,7 +68,7 @@ function getChunkFileName({chunk}) {
 }
 
 function makeLibrary(entry, name, vars) {
-  let cfg = augment({
+  return augment({
     entry,
     output: {
       path: DST + JS,
@@ -77,21 +78,19 @@ function makeLibrary(entry, name, vars) {
         export: name[0] === '*' ? undefined : 'default',
       },
     },
-    plugins: addWrapper('"use strict";(()=>{const global=self,window=global;', '})()'),
+    plugins: addWrapper(INTRO + ',window=this;'),
   }, undefined, vars);
-  cfg = augment({output: {iife: false}}, cfg);
-  return cfg;
 }
 
 function makeContentScript(name) {
-  // (!) `global` must be `this` because in Firefox it's not equal to `window` or `self`
-  const intro = `"use strict"; this["${name}"]!==1&&(()=>{ this["${name}"]=1; const global=this, ${
-    INTRO_ALIASES
-  };\n`;
   return augment({
     entry: '@/content/' + name,
-    output: {path: DST + JS, iife: false},
-    plugins: addWrapper(intro, '})()'),
+    output: {path: DST + JS},
+    // (!) `global` must be `this` because in Firefox it's not equal to `window` or `self`
+    plugins: addWrapper(
+      '"use strict";' +
+      `this["${name}"]!==1&&(()=>{` +
+      `this["${name}"]=1; const global=this` + ALIASES_STR),
   });
 }
 
@@ -186,7 +185,7 @@ module.exports = [
       }, {
         IS_BG: MV3 ? 'false' : '(global._bg === true)',
       }),
-      ...addWrapper(INTRO + ', ' + INTRO_ALIASES + ';'),
+      ...addWrapper(INTRO_ALIASES),
       new MiniCssExtractPlugin({
         filename: getChunkFileName.bind([CSS, '.css']),
         chunkFilename: getChunkFileName.bind([CSS, '.css']),
@@ -273,7 +272,7 @@ module.exports = [
     },
     plugins: [
       new RawEnvPlugin({ENTRY: OFFSCREEN}),
-      ...addWrapper(INTRO + ', ' + INTRO_ALIASES + ';'),
+      ...addWrapper(INTRO_ALIASES),
       new HtmlWebpackPlugin({
         chunks: [OFFSCREEN],
         filename: OFFSCREEN + '.html',

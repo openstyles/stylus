@@ -29,19 +29,12 @@ const OUTPUT_MODULE = {
   },
   experiments: {outputModule: true},
 };
-const ALIASES = {
-  funcs: {
-    $: 'document.querySelector',
-    $$: 'document.querySelectorAll',
-    $id: 'document.getElementById',
-    $tag: 'document.createElement',
-  },
-  vars: {
-    document: 'global.document',
-    $root: 'document.documentElement',
-    $rootCL: '$root.classList',
-  },
-};
+const ALIASES = Object.entries({
+  $: 'document.querySelector',
+  $$: 'document.querySelectorAll',
+  $id: 'document.getElementById',
+  $tag: 'document.createElement',
+});
 const MIRROR_PREFIX = 'http://_/';
 const VARS = {
   API: 'API', // hiding the global from IDE

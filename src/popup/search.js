@@ -1,5 +1,5 @@
 import {kStyleIdPrefix, UCD} from '@/js/consts';
-import {$create, $toggleDataset} from '@/js/dom';
+import {$create, $rootCL, $toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-prefs';
 import {showSpinner} from '@/js/dom-util';
 import {breakWord, formatDate, template} from '@/js/localization';

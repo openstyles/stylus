@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import {kNone, kSidebar, pSync} from '@/js/consts';
-import {$create, $toggleDataset} from '@/js/dom';
+import {$create, $root, $toggleDataset} from '@/js/dom';
 import {setupLiveDetails, setupLivePrefs} from '@/js/dom-prefs';
 import {animateElement} from '@/js/dom-util';
 import {onMessage} from '@/js/msg';

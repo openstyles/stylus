@@ -316,8 +316,6 @@ module.exports = [
         $: false,
         $$: false,
         $id: false,
-        $root: false,
-        $rootCL: false,
         $tag: false,
       },
       sourceType: 'module',

@@ -1,3 +1,4 @@
+import {$root} from '@/js/dom';
 import * as prefs from './prefs';
 
 export let headerWidth;

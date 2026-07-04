@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import {kStyleIdPrefix, kTabOvr, pPatchCsp, UCD} from '@/js/consts';
-import {$create, $toggleClasses} from '@/js/dom';
+import {$create, $rootCL, $toggleClasses} from '@/js/dom';
 import {splitLongTooltips} from '@/js/dom-on-load';
 import {sanitizeHtml, template} from '@/js/localization';
 import {API} from '@/js/msg-api';

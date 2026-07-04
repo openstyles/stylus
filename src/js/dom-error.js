@@ -1,4 +1,4 @@
-import {$create} from '@/js/dom';
+import {$create, $root} from '@/js/dom';
 import {ownRoot} from '@/js/urls';
 import {t} from '@/js/util';
 import {MF} from '@/js/util-webext';

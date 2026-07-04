@@ -1,6 +1,6 @@
 import {CodeMirror, extraKeys, THEME_KEY} from '@/cm';
 import {pKeyMap} from '@/js/consts';
-import {$create, $createFragment} from '@/js/dom';
+import {$create, $createFragment, $root} from '@/js/dom';
 import {getEventKeyName, messageBox, moveFocus} from '@/js/dom-util';
 import {tHTML} from '@/js/localization';
 import {createPortProxy} from '@/js/port';

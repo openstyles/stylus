@@ -1,4 +1,5 @@
 import {kExclusions, kInclusions, kOverridden, kTabOvr} from '@/js/consts';
+import {$root} from '@/js/dom';
 import {moveFocus} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';

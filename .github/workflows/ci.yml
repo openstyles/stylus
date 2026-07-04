@@ -31,12 +31,16 @@ jobs:
           node-version-file: 'package.json'
 
       - run: pnpm install --ignore-scripts # ignore postinstall hook
-      - run: pnpm test
+
+      - name: Test & Build
+        run: pnpm run-p test build-${{matrix.build}}
         if: ${{matrix.build == 'chrome-mv3'}}
+
+      - name: Build
+        run: pnpm build-${{matrix.build}}
+        if: ${{matrix.build != 'chrome-mv3'}}
+
       - run: echo "_REV=$(git describe --abbrev=7)" >> $GITHUB_ENV
-
-      - run: pnpm build-${{matrix.build}}
-
       - name: upload "${{matrix.build}}" to github
         uses: actions/upload-artifact@v7
         with:

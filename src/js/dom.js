@@ -7,6 +7,8 @@ for (const {prototype} of [Document, DocumentFragment, Element]) {
   prototype.$$ = prototype.querySelectorAll;
 }
 
+export const $root = document.documentElement;
+export const $rootCL = $root.classList;
 export const cssFieldSizing = __.MV3 || CSS.supports('field-sizing', 'content');
 const detachments = new WeakMap();
 const getObjectType = /*@__PURE__*/Object.call.bind({}.toString);

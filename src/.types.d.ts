@@ -226,8 +226,6 @@ declare interface StyleEntryElement<T=StyleObj> extends HTMLElement {
 declare var $: typeof document.querySelector;
 declare var $$: typeof document.querySelectorAll;
 declare var $id: typeof document.getElementById;
-declare var $root: typeof document.documentElement;
-declare var $rootCL: typeof document.documentElement.classList;
 declare var $tag: typeof document.createElement;
 declare var on: typeof EventTarget.prototype.addEventListener;
 declare var off: typeof EventTarget.prototype.removeEventListener;

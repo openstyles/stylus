@@ -21,14 +21,15 @@ export class MessageBox {
   /** @type {boolean} */
   paused;
   // privates
-  #blockScroll;
-  #moving;
-  #resolve;
-  #resolveAsClosed;
-  #clickX;
-  #clickY;
-  #offsetX = 0;
-  #offsetY = 0;
+  // TODO: switch to # when minimum_chrome_version>=84 && strict_min_version>=90
+  _blockScroll;
+  _moving;
+  _resolve;
+  _resolveAsClosed;
+  _clickX;
+  _clickY;
+  _offsetX = 0;
+  _offsetY = 0;
   /**
    * @typedef MessageBoxParams
    * @prop {String} title
@@ -54,12 +55,12 @@ export class MessageBox {
     blockScroll,
   }) {
     if (buttons2) buttons.push(...buttons2);
-    this.#blockScroll = blockScroll;
+    this._blockScroll = blockScroll;
     this.el = $create('#message-box', {className});
     this.el.appendChild($tag('div')).append(
       $create('#message-box-title.ellipsis', {on: {mousedown: this}}, title),
       $create('#message-box-close-icon',
-        {on: {click: this.#resolveAsClosed = this.#resolveWith.bind(this, {button: -1})}},
+        {on: {click: this._resolveAsClosed = this._resolveWith.bind(this, {button: -1})}},
         $create('i.i-close')),
       this.el._body =
       $create('#message-box-contents', tHTML(contents)),
@@ -67,7 +68,7 @@ export class MessageBox {
       $create('#message-box-buttons', buttons.filter(Boolean).map((btn, buttonIndex) => {
         if (btn.localName !== 'button') btn = $create('button', btn);
         btn.buttonIndex = buttonIndex;
-        btn.on('click', this.#resolveWith.bind(this, {button: buttonIndex}));
+        btn.on('click', this._resolveWith.bind(this, {button: buttonIndex}));
         return btn;
       })),
     );
@@ -88,9 +89,9 @@ export class MessageBox {
     const el = this.el;
     document.body.appendChild(el);
     window.on('keydown', this, true);
-    if (this.#blockScroll) {
+    if (this._blockScroll) {
       window.on('scroll', this, {passive: false});
-      this.#blockScroll = {x: scrollX, y: scrollY};
+      this._blockScroll = {x: scrollX, y: scrollY};
     }
     if (el.matches('.note'))
       el.on('click', this);
@@ -107,16 +108,16 @@ export class MessageBox {
     if (typeof onshow === 'function')
       onshow.call(this, el);
     return new Promise(resolve => {
-      this.#resolve = resolve;
+      this._resolve = resolve;
     });
   }
 
   async close(isAnimated) {
-    if (!this.#resolve) // re-entry while waiting for closing animation
+    if (!this._resolve) // re-entry while waiting for closing animation
       return;
     if (this.el.contains(document.activeElement))
       this.originalFocus.focus();
-    this.#resolve = this.originalFocus = null;
+    this._resolve = this.originalFocus = null;
     window.off('keydown', this, true);
     window.off('scroll', this);
     window.off('mouseup', this);
@@ -129,10 +130,10 @@ export class MessageBox {
     this.el.remove();
   }
 
-  #resolveWith(value) {
-    if (!this.#resolve) // re-entry while waiting for closing animation
+  _resolveWith(value) {
+    if (!this._resolve) // re-entry while waiting for closing animation
       return;
-    setTimeout(this.#resolve, 0, value);
+    setTimeout(this._resolve, 0, value);
     this.close(true);
   }
 
@@ -141,16 +142,16 @@ export class MessageBox {
     if (this.paused)
       return;
     switch (evt.type) {
-      case 'click': return evt.target === this.el && this.#resolveAsClosed();
-      case 'keydown': return this.#onKey(evt);
-      case 'mousedown': return this.#onMouseDown(evt);
-      case 'mousemove': return this.#onMouseMove(evt);
-      case 'mouseup': return this.#onMouseUp(evt);
-      case 'scroll': return this.#onScroll(evt);
+      case 'click': return evt.target === this.el && this._resolveAsClosed();
+      case 'keydown': return this._onKey(evt);
+      case 'mousedown': return this._onMouseDown(evt);
+      case 'mousemove': return this._onMouseMove(evt);
+      case 'mouseup': return this._onMouseUp(evt);
+      case 'scroll': return this._onScroll(evt);
     }
   }
 
-  #onKey(evt) {
+  _onKey(evt) {
     const {key, shiftKey, ctrlKey, altKey, metaKey, target} = evt;
     if (shiftKey && key !== 'Tab' || ctrlKey || altKey || metaKey) {
       return;
@@ -172,47 +173,47 @@ export class MessageBox {
       default:
         return;
     }
-    this.#resolveWith(key === 'Enter' ? {enter: true} : {esc: true});
+    this._resolveWith(key === 'Enter' ? {enter: true} : {esc: true});
   }
 
-  #onMouseDown(evt) {
+  _onMouseDown(evt) {
     if (evt.button)
       return;
-    if (!this.#moving) {
+    if (!this._moving) {
       window.on('mouseup', this, {passive: true});
       window.on('mousemove', this, {passive: true});
-      this.#moving = true;
+      this._moving = true;
     }
     if (!this.el.style.padding && this.el.matches('.note, .center, .center-dialog')) {
       const b = this.el.firstChild.getBoundingClientRect();
       this.el.style.padding = `${b.y | 0}px 0 0 ${b.x | 0}px`;
     }
-    this.#clickX = evt.x - this.#offsetX;
-    this.#clickY = evt.y - this.#offsetY;
+    this._clickX = evt.x - this._offsetX;
+    this._clickY = evt.y - this._offsetY;
   }
 
   /** @param {MouseEvent} evt */
-  #onMouseMove(evt) {
+  _onMouseMove(evt) {
     if (!evt.buttons) {
-      this.#onMouseUp();
+      this._onMouseUp();
       return;
     }
     this.el.firstChild.style.transform = `translate(${
-      this.#offsetX = clamp(evt.x, 30, innerWidth - 30) - this.#clickX
+      this._offsetX = clamp(evt.x, 30, innerWidth - 30) - this._clickX
     }px,${
-      this.#offsetY = clamp(evt.y, 30, innerHeight - 30) - this.#clickY
+      this._offsetY = clamp(evt.y, 30, innerHeight - 30) - this._clickY
     }px)`;
   }
 
-  #onMouseUp(evt) {
+  _onMouseUp(evt) {
     if (evt && evt.button !== 0) return;
     window.off('mouseup', this);
     window.off('mousemove', this);
-    this.#moving = false;
+    this._moving = false;
   }
 
-  #onScroll() {
-    scrollTo(this.#blockScroll.x, this.#blockScroll.y);
+  _onScroll() {
+    scrollTo(this._blockScroll.x, this._blockScroll.y);
   }
 }
 

@@ -1,5 +1,6 @@
 *.zip
 *.tmp*
+webpack-profile*.json
 .DS_Store
 desktop.ini
 /.eslintcache

@@ -1,6 +1,6 @@
 import {CodeMirror, extraKeys} from '@/cm';
 import {kCodeMirror, pFavicons} from '@/js/consts';
-import {$create} from '@/js/dom';
+import {$create, $root} from '@/js/dom';
 import {messageBox, setInputValue} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';

@@ -1,11 +1,6 @@
 allowBuilds:
+  '@swc/core': true
   ttf2woff2: true
-
-minimumReleaseAgeExclude:
-  - ws@8.21.0
-  - js-yaml@4.1.2
-  - '@babel/core@7.29.1'
-  - uuid@11.1.1
 
 neverBuiltDependencies:
   - csslint-mod
