@@ -18,7 +18,9 @@ $powerOverlap: 4px; /* must be >= 1px (transparent edge) */
   --hover-icon: var(--c10);
   --hover-disabled: var(--c40);
   scrollbar-width: none; /* suppressing the redundant overall scrollbar */
-  width: fit-content;
+  &:not(.sidebar) {
+    width: fit-content;
+  }
 }
 :root.touch {
   --inner-padding: 25px;
