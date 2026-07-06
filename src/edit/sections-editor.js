@@ -364,35 +364,38 @@ export default function SectionsEditor() {
   }
 
   function showMozillaFormat() {
-    const popup = showCodeMirrorPopup(t('styleToMozillaFormatTitle'), '', {
-      readOnly: true,
-      value: editor.getValue(),
-    });
-    popup.codebox.execCommand('selectAll');
+    const value = editor.getValue();
+    const popup = showCodeMirrorPopup(
+      t('styleToMozillaFormatTitle'),
+      t('styleToMozillaFormatHelp'),
+      {readOnly: true, value});
+    const contents = popup._contents;
+    const cm = popup.codebox;
+    const copy = () => {
+      navigator.clipboard.writeText(value);
+      helpPopup.close();
+    };
+    contents.append($create('.buttons', [
+      $create('button', {onclick: copy}, t('copy')),
+      $create('button', {onclick: helpPopup.close}, t('confirmClose')),
+    ]));
+    cm.execCommand('selectAll');
   }
 
   function showMozillaFormatImport(text, newSections) {
-    const popup = showCodeMirrorPopup(t('styleFromMozillaFormatPrompt'),
-      $create('.buttons', [
-        $create('button', {
-          name: 'import-replace',
-          textContent: t('importReplaceLabel'),
-          title: 'Ctrl-Shift-Enter:\n' + t('importReplaceTooltip'),
-          onclick: () => doImport({replaceOldStyle: true}),
-        }),
-        $create('button', {
-          name: 'import-append',
-          textContent: t('importAppendLabel'),
-          title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
-          onclick: doImport,
-        }),
-      ]),
-      {
-        readOnly: !!text,
-      });
+    const popup = showCodeMirrorPopup(t('styleFromMozillaFormatPrompt'), '', {readOnly: !!text});
     const contents = popup._contents;
     const cm = popup.codebox;
-    contents.insertBefore(cm.display.wrapper, contents.firstElementChild);
+    contents.append($create('.buttons', [
+      $create('button', {
+        title: 'Ctrl-Shift-Enter:\n' + t('importReplaceTooltip'),
+        onclick: () => doImport({replaceOldStyle: true}),
+      }, t('importReplaceLabel')),
+      $create('button', {
+        title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
+        onclick: doImport,
+      }, t('importAppendLabel')),
+    ]));
     cm.focus();
     cm.on('changes', () => {
       popup.classList.toggle('ready', !cm.isBlank());
