@@ -25,6 +25,7 @@ async function onNavigation(navType, data) {
   if (!__.B_FIREFOX &&
     // https://crbug.com/40365717 listener is called twice with identical data
     CHROME <= 143 && data.timeStamp === prevData.timeStamp && deepEqual(data, prevData)
+    || data.documentLifecycle === 'prerender'
   ) {
     return;
   }
