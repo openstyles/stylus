@@ -52,24 +52,23 @@
           </a>
         </div>
       </section>
-      <section id="actions">
-        <div class="split-btn">
+      <section id="actions" class="wrap">
+        <div class="split-btn" id="save">
           <button id="save-button" i18n="styleSaveLabel" data-hotkey-tooltip="save" disabled></button
           ><button class="split-btn-pedal usercss-only" i18n="menu-tpl:saveAsTemplate"></button>
         </div>
-        <button id="beautify" i18n="styleBeautify" class="hide-if-sticky"></button>
-        <button id="testRE" i18n="+genericTest, title:appliesRegexpOption" hidden></button>
         <a id="cancel-button" i18n="title:styleCancelEditLabel" tabindex="0">
-          <i class=i-undo></i>
+          <i class=i-manage></i>
         </a>
+        <a id="beautify" i18n="title:styleBeautify" tabindex="0">
+          <i class=i-beautify></i>
+        </a>
+        <a id="testRE" i18n="title:appliesRegexpOption" tabindex="0" hidden></a>
         <a tabindex="0" id="from-mozilla" i18n="title:importLabel" class="sectioned-only hide-if-sticky">
           <i class="i-import"></i>
         </a>
         <a tabindex="0" id="to-mozilla" i18n="title:exportLabel" class="sectioned-only hide-if-sticky">
           <i class="i-export"></i>
-        </a>
-        <a tabindex="0" data-cmd="note" i18n="title:styleToMozillaFormatHelp" class="sectioned-only hide-if-sticky">
-          <i class=i-info></i>
         </a>
       </section>
       <div id="details-wrapper">

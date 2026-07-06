@@ -47,6 +47,13 @@ label ~ .icon {
     margin-bottom: $pad;
     flex-wrap: wrap;
   }
+  #save {
+    max-width: calc(100% - var(--pedal-w, 0px));
+  }
+  .usercss #save-button + button {
+    --pedal-w: 20px;
+    width: var(--pedal-w);
+  }
   #publish[open],
   #details-wrapper details:not([open]) {
     flex: 0 0 auto;
