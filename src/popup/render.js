@@ -72,7 +72,7 @@ export function reSort(entries) {
 }
 
 /**
- * @param {chrome.webNavigation.GetAllFrameResultDetails} frame
+ * @param {browser.webNavigation._GetAllFramesReturnDetails} frame
  * @param {number} index - provided by forEach
  */
 export function createWriterElement(frame, index) {

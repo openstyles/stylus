@@ -188,7 +188,7 @@ async function prepareStyles(req) {
   }]);
 }
 
-/** @param {chrome.webRequest.WebResponseHeadersDetails} req */
+/** @param {browser.webRequest._OnHeadersReceivedDetails} req */
 function modifyHeaders(req) {
   const key = req2key(req);
   const data = toSend[key]; if (!data) return;
@@ -300,7 +300,7 @@ function flushState() {
   }
 }
 
-/** @param {chrome.webRequest.WebRequestBodyDetails} req */
+/** @param {browser.webRequest._OnBeforeRequestDetails} req */
 function openNamedStyle(req) {
   if (!req.url.includes('?')) { // skipping our usercss installer
     chrome.tabs.update(req.tabId, {url: 'edit.html?id=' + req.url.split('#')[1]});

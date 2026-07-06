@@ -228,7 +228,7 @@ function refreshStaleBadges() {
   staleBadges.clear();
 }
 
-/** @param {chrome.browserAction.TabIconDetails} data */
+/** @param {browser.action._SetIconDetails} data */
 async function setIcon(data) {
   if (hasCanvas == null) {
     const url = MF_ICON_PATH + ICON_SIZES[0] + MF_ICON_EXT;
@@ -248,12 +248,12 @@ async function setIcon(data) {
   browserAction.setIcon(data).catch(NOP);
 }
 
-/** @param {chrome.browserAction.BadgeTextDetails} data */
+/** @param {browser.action._SetBadgeTextDetails} data */
 function setBadgeText(data) {
   browserAction.setBadgeText(data).catch(NOP);
 }
 
-/** @param {chrome.browserAction.BadgeBackgroundColorDetails} data */
+/** @param {browser.action._SetBadgeBackgroundColorDetails} data */
 function setBadgeBackgroundColor(data) {
   browserAction.setBadgeBackgroundColor(data).catch(NOP);
 }

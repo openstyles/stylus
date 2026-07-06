@@ -84,7 +84,7 @@ export async function openManager(opts = {}) {
  * @param {number} [_.openerTabId] defaults to the active tab
  * @param {Boolean} [_.active=true] `true` to activate the tab
  * @param {Boolean|null} [_.currentWindow=true] `null` to check all windows
- * @param {chrome.windows.CreateData} [_.newWindow] creates a new window with these params if specified
+ * @param {browser.windows._CreateCreateData} [_.newWindow] creates a new window with these params
  * @param {boolean} [_.newTab] `true` to force a new tab instead of switching to an existing tab
  * @returns {Promise<chrome.tabs.Tab>} Promise -> opened/activated tab
  */
