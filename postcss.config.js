@@ -8,7 +8,7 @@ const kPostcssNested = 'postcss-nested';
 const plugins = [
   'postcss-import',
   'postcss-simple-vars',
-  !nesting && kPostcssNested, // see 'nesting-rules' comment
+  kPostcssNested, // see 'nesting-rules' comment
   ['postcss-preset-env', {
     browsers: getBrowserlist(),
     features: {
@@ -24,10 +24,9 @@ const plugins = [
     },
   }],
 ].filter(Boolean);
-const cfg = {plugins};
-const cfgNoNesting = nesting && {plugins: plugins.filter(p => p !== kPostcssNested)};
+const cfgUnnest = {plugins};
+let cfgNest;
 
-module.exports = !nesting ? cfg :
-  ctx => ctx.file.endsWith('global-dark.css') // ::-webkit-scrollbar can't be nested
-    ? cfgNoNesting
-    : cfg;
+module.exports = !nesting ? cfgUnnest
+  : ctx => ctx.file.endsWith('global-dark.css') ? cfgUnnest // ::-webkit-scrollbar can't be nested
+    : (cfgNest ||= {plugins: plugins.filter(p => p !== kPostcssNested)});
