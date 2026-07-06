@@ -21,9 +21,6 @@ const wrappedDoc = !__.B_CHROME && (FF && document.wrappedJSObject || document);
 const assDoc = !__.B_CHROME && FF && !IDBIndex.prototype.getAllRecords
   ? wrappedDoc // can't directly access ASS in Firefox < 153 (detecting via feature for reliability)
   : document;
-// styles are out of order if any of these elements is injected between them
-// except `style` on our own page as it contains overrides
-const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !__.ENTRY && 'style', 'link']);
 const docRewriteObserver = !__.ENTRY && RewriteObserver(updateRoot);
 const docRootObserver = RootObserver(restoreOrder);
 const toSafeChar = c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20);
@@ -360,10 +357,17 @@ function restoreOrder(mutations) {
     bad = true;
   } else {
     let i = 0;
+    let tag;
     while (el) {
       if (i < list.length && el === list[i].el) {
         i++;
-      } else if (ORDERED_TAGS.has(el.localName)) {
+      } else if ((tag = el.localName) && (
+        // styles are out of order if any of these elements is injected between them
+        tag === 'link' ? el.relList.contains('stylesheet') :
+          tag === 'head' || tag === 'body' || tag === 'frameset' ||
+          /* allow overrides on own pages */ !__.ENTRY && tag === 'style' ||
+          el.firstElementChild && el.querySelector('style, link[rel~="stylesheet"]')
+      )) {
         bad = true;
         break;
       }
