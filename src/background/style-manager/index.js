@@ -243,7 +243,7 @@ export function getSectionsByUrl(url, {id, init, dark} = {}) {
   && init !== pStyleViaXhr
   && (v = td[kUrl])
   && (v = v[0]) !== url
-  && v.split('#', 1)[0] === url.split('#', 1)[0]) {
+  && v?.split('#', 1)[0] === url.split('#', 1)[0]) {
     /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
        so we'll use the real URL reported by webNavigation API.
        TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
