@@ -180,7 +180,8 @@ export function apply({cfg, sections}, isReplace) {
   if (isEnabled) {
     if (!isTransitionPatched)
       applyTransitionPatch(sections);
-    if ((__.B_FIREFOX || __.B_ANY && FF) && assV2 && old && !isReplace && sections.length === 1) {
+    if ((__.B_FIREFOX || __.B_ANY && FF) && assV2 && old && !isReplace && sections.length === 1
+    && ~assIndexOf(assDoc[kAss], old.el)) {
       // TODO: remove when Firefox fixes #2123
       assDoc[kAss] = assDoc[kAss]; // eslint-disable-line no-self-assign
     } else {
