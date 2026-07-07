@@ -192,7 +192,7 @@ function initState({initReplace} = {}) {
     if (rxStr || text && !stateRX) {
       rxStr = stringAsRegExpStr(text);
       rxStr = new RegExp(
-        stateLooseSpaces ? rxStr.replace(/\s+/, '\\s+') : rxStr,
+        stateLooseSpaces ? rxStr.replace(/\s+/g, '\\s+') : rxStr,
         string2regexpFlags);
       stateRX = rxStr;
     }
