@@ -1,4 +1,4 @@
-import {kAboutBlank} from '@/js/consts';
+import {kAboutBlank, pPatchCsp} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
 import {deepEqual, NOP} from '@/js/util';
@@ -36,6 +36,8 @@ async function onNavigation(navType, data) {
   if (navType === kCommitted) {
     if (url.startsWith(ownRoot))
       (ownPagesCommitted[url] ??= []).push(tabId);
+    else if (td)
+      delete td[pPatchCsp];
   } else if (td) {
     const {frameId: f} = data;
     const {documentId: d, frameType} = data;
