@@ -85,25 +85,23 @@ export const patchCspMetaTag = reqId => {
   const decoder = new TextDecoder('utf-8');
   const encoder = new TextEncoder();
   let chunks = [];
-  let str = '';
-  let body;
+  let text = '';
   filter.ondata = ({data}) => {
-    if (!chunks || !body) {
-      str += decoder.decode(data, {stream: true});
-    }
-    if (!body && (body = /<body\W/i.test(str))) {
-      if (str !== (str = str.replace(rxMetaCSP, patchCspMetaTagReplacer))) {
-        chunks = null;
+    if (chunks) {
+      chunks.push(data);
+      text += decoder.decode(data, {stream: true});
+      if (/<body\W/i.test(text)) {
+        if (text !== (text = text.replace(rxMetaCSP, patchCspMetaTagReplacer)))
+          chunks = [encoder.encode(text + decoder.decode())];
+        chunks.forEach(filter.write, filter);
+        chunks = text = null;
       }
+    } else {
+      filter.write(data);
     }
-    chunks?.push(data);
   };
   filter.onstop = () => {
-    if (!chunks) {
-      filter.write(encoder.encode(str));
-    } else {
-      chunks.forEach(filter.write, filter);
-    }
+    chunks?.forEach(filter.write, filter);
     filter.close();
   };
 };

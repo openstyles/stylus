@@ -102,8 +102,7 @@ async function setup(_, OFF) {
   if (curOFF !== OFF) {
     curOFF = OFF;
     // in MV3 onBeforeRequest also wakes up the background script earlier to avoid FOUC
-    toggleListener(chrome.webRequest.onBeforeRequest, !OFF, prepareStyles, WR_FILTER,
-      (__.B_FIREFOX || __.B_ANY && FIREFOX) ? ['blocking'] : []);
+    toggleListener(chrome.webRequest.onBeforeRequest, !OFF, prepareStyles, WR_FILTER);
     toggleListener(chrome.webRequest.onHeadersReceived, !OFF, modifyHeaders, WR_FILTER, !OFF && [
       'responseHeaders',
       (WRBTest ? await WRBTest : WRB) && 'blocking',
@@ -121,10 +120,6 @@ async function prepareStyles(req) {
   const key = tabId + ':' + frameId;
   const xhrOn = __values[pStyleViaXhr]
     && (!(v = optionSites[pStyleViaXhr]) || isOptionSite(v, url));
-  const cspOn = (__.B_FIREFOX || __.B_ANY && FIREFOX) && __values[pPatchCsp]
-    && (!(v = optionSites[pPatchCsp]) || isOptionSite(v, url));
-  if (cspOn)
-    patchCspMetaTag(req.requestId);
   __.DEBUGLOG('prepareStyles', key, req);
   if (__.MV3 && xhrOn && colorScheme.isSystem() && !tabMan.someInjectable())
     await colorScheme.refreshSystemDark();
@@ -200,6 +195,12 @@ function modifyHeaders(req) {
     && (!(v = optionSites[pPatchCsp]) || isOptionSite(v, req.url));
   let csp = (__.B_FIREFOX || __.B_ANY && FIREFOX || cspOn)
     && findHeader(responseHeaders, 'content-security-policy');
+  if (cspOn && (__.B_FIREFOX || __.B_ANY && FIREFOX)
+    && (v = findHeader(responseHeaders, kContentType))
+    && /^text\/html|^application\/xhtml/i.test(v.value) // only HTML-based pages process <meta>
+  ) {
+    patchCspMetaTag(req.requestId);
+  }
   if (csp) {
     const m = (v = csp.value).match(rxNONCE);
     if (m) tabMan.set(req.tabId, 'nonce', req.frameId, payload.cfg.nonce = m[1]);
@@ -283,6 +284,12 @@ async function removeTemporaryTab(tabId) {
   }
 }
 
+/**
+ * @param {browser.webRequest.HttpHeaders} headers
+ * @param {string} name
+ * @param {string} [value]
+ * @return {browser.webRequest.HttpHeaders[number]}
+ */
 export function findHeader(headers, name, value) {
   for (const h of headers) {
     if (h.name.toLowerCase() === name && (value == null || h.value === value)) {
