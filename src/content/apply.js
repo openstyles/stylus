@@ -13,7 +13,7 @@ const clone = __.ENTRY
   : !FF && (val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val);
 const {parent} = window;
 const isFrameSameOrigin = isFrame && !!frameElement;
-const isFrameNoUrl = isFrameSameOrigin && location.protocol === 'about:';
+const isFrameNoUrl = isFrameSameOrigin && !location.host;
 
 /** Polyfill for documentId in Firefox and Chrome pre-106 */
 const instanceId = (FF || !__.MV3 && !CSS.supports('top', '1ic')) && Math.random() || 0;
@@ -43,11 +43,10 @@ let xo;
 let matchUrl;
 if (!isFrameNoUrl) {
   matchUrl = location.href;
-} else { // a same-origin about:blank iframe, let's use the parent's URL without a hash
-  let wnd = parent;
-  while ((matchUrl = wnd.location.href.split('#')[0]).startsWith('about:') && wnd.frameElement) {
-    wnd = wnd.parent;
-  }
+} else { // a same-origin about: or blob: iframe, let's use the parent's URL without a hash
+  let p = parent;
+  while (!p.location.host && p.frameElement) p = p.parent;
+  matchUrl = p.location.href.split('#', 1)[0]; // use the parent's URL without a hash
 }
 if (!FF) {
   global[Symbol.for('xo')] = (el, cb) => {
