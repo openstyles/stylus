@@ -35,13 +35,6 @@ label ~ .icon {
     margin-left: $pad;
     margin-right: $pad;
   }
-  #details-wrapper {
-    max-height: 100%;
-    h2 {
-      max-width: calc(var(--header-width) - 2*$pad);
-      font-size: 16px;
-    }
-  }
   #basic-info {
     margin-top: $pad025;
     margin-bottom: $pad;
@@ -58,15 +51,32 @@ label ~ .icon {
   #details-wrapper details:not([open]) {
     flex: 0 0 auto;
   }
-  #details-wrapper > details {
-    &[open] {
-      min-height: 8em;
+  #details-wrapper {
+    overflow-y: hidden;
+    h2 {
+      max-width: calc(var(--header-width) - 2*$pad);
+      font-size: 16px;
     }
-    &[open]:not(:last-child) {
-      margin-bottom: $pad05;
+    > details {
+      &[open] {
+        min-height: 8em;
+        overflow-y: auto;
+        position: relative;
+        > summary {
+          top: 0;
+          position: sticky;
+          background: var(--header-bg);
+        }
+      }
+      &[open]:not(:last-child) {
+        margin-bottom: $pad05;
+      }
+      &:last-child {
+        padding-bottom: $pad;
+      }
     }
-    &:last-child {
-      padding-bottom: $pad;
-    }
+  }
+  #sections-list {
+    flex: 1 1;
   }
 }

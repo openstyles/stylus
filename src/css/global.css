@@ -44,6 +44,7 @@
   --accent-4: hsl(180, 32%, 77%);
   --accent-5: hsl(180, 20%, 85%);
   --gold1: gold;
+  --header-bg: var(--c97);
   --red1: hsl(0, 70%, 45%);
   --zebra: hsla(0, 0%, 50%, 0.05);
   --100dvh: 100dvh;
@@ -423,7 +424,7 @@ html:not(.all-disabled) {
 
 #header {
   overflow-wrap: break-word;
-  background-color: var(--c97);
+  background-color: var(--header-bg);
   box-shadow: 0 0 10px rgba(0, 0, 0, .25);
 }
 

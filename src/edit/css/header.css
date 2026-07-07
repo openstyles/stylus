@@ -54,9 +54,6 @@ h1 {
   flex-grow: 1;
   margin-top: $pad05;
   > details {
-    &[open] {
-      overflow-y: auto;
-    }
     > summary {
       align-items: center;
       white-space: nowrap;
