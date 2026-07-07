@@ -124,7 +124,8 @@ function getStylesViaXhr() {
     // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
     const url = !isXml && 'blob:' + runtime.getURL(blobId);
     document.cookie = `${ownId}=1; max-age=0; SameSite=Lax`; // remove our cookie
-    if (!url) return;
+    if (!url || isFrameSameOrigin && frameElement.tagName === 'FRAME')
+      return;
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url, false); // synchronous
     xhr.send();
