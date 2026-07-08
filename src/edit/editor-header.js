@@ -13,6 +13,7 @@ export default function EditorHeader() {
   setupLiveDetails();
   setupLivePrefs();
   setupConditionalPrefs();
+  $('#header').on('wheel', headerOnScroll, {passive: true});
   window.on('load', () => {
     prefs.subscribe(pKeyMap, showHotkeyInTooltip, true);
     window.on('showHotkeyInTooltip', showHotkeyInTooltip);
@@ -35,6 +36,22 @@ function findKeyForCommand(command, map) {
     }
   }
   return '';
+}
+
+/** @param {WheelEvent & {target: HTMLElement}} evt */
+function headerOnScroll({target: el, deltaY, deltaMode, shiftKey}) {
+  while (el !== this && (el = el.parentElement)) {
+    if (el.scrollHeight > el.clientHeight) { // scrollable element
+      return;
+    }
+  }
+  el = editor.isUsercss
+    ? editor.cm.display.scroller
+    : document.scrollingElement;
+  el.scrollTop +=
+    deltaMode === 1/*DOM_DELTA_LINE*/ ? deltaY * editor.cm.defaultTextHeight() :
+    deltaMode === 2/*DOM_DELTA_PAGE*/ || shiftKey ? Math.sign(deltaY) * el.clientHeight :
+    deltaY/*DOM_DELTA_PIXEL*/;
 }
 
 function initNameArea() {

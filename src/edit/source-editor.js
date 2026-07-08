@@ -27,7 +27,6 @@ export default function SourceEditor() {
   let saving;
   let updateTocFocusPending;
 
-  $id('header').on('wheel', headerOnScroll);
   $id('save-button').on('split-btn', saveTemplate);
 
   const cmpPos = CodeMirror.cmpPos;
@@ -81,6 +80,7 @@ export default function SourceEditor() {
 
   /** @namespace Editor */
   Object.assign(editor, {
+    cm,
     loading: false,
     replaceStyle,
     updateMeta,
@@ -304,22 +304,6 @@ export default function SourceEditor() {
       i = 0;
     }
     cm.jumpToPos(mozSections[(i + dir + num) % num].start);
-  }
-
-  function headerOnScroll({target, deltaY, deltaMode, shiftKey}) {
-    while ((target = target.parentElement)) {
-      if (deltaY < 0 && target.scrollTop ||
-          deltaY > 0 && target.scrollTop + target.clientHeight < target.scrollHeight) {
-        return;
-      }
-    }
-    cm.display.scroller.scrollTop +=
-      // WheelEvent.DOM_DELTA_LINE
-      deltaMode === 1 ? deltaY * cm.defaultTextHeight() :
-      // WheelEvent.DOM_DELTA_PAGE
-      deltaMode === 2 || shiftKey ? Math.sign(deltaY) * cm.display.scroller.clientHeight :
-      // WheelEvent.DOM_DELTA_PIXEL
-      deltaY;
   }
 
   function onCursorActivity() {

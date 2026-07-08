@@ -44,7 +44,9 @@ export default function SectionsEditor() {
   prefs.subscribe(pFavicons, (key, val) => {
     if (val) iconize(sections.map(sec => sec.targetsEl));
   });
-
+  Object.defineProperty(editor, 'cm', {
+    get: () => sections.find(s => !s.removed).cm,
+  });
   /** @namespace Editor */
   Object.assign(editor, {
 
