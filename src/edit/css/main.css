@@ -61,6 +61,7 @@ label ~ .icon {
       &[open] {
         min-height: 8em;
         overflow-y: auto;
+        overscroll-behavior-y: contain;
         position: relative;
         > summary {
           top: 0;

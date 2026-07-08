@@ -19,6 +19,7 @@ input:disabled + span {
   padding: var(--child-gap);
   overflow-wrap: break-word;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
   z-index: 100;
 }
 .header {

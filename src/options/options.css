@@ -39,6 +39,7 @@ body {
 main {
   background: var(--bg);
   overflow-y: auto;
+  overscroll-behavior-y: contain;
   @media (min-width: $docMin2W) {
     columns: 2;
     column-gap: 0;

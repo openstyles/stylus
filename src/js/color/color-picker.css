@@ -388,6 +388,7 @@
     margin: 0 var(--margin) var(--margin);
     min-height: calc(var(--swatch-size) - 4px);
     overflow-y: auto;
+    overscroll-behavior-y: contain;
     box-sizing: content-box;
   }
   .colorview-swatch {

@@ -633,6 +633,7 @@ button i {
   }
   > p:last-child {
     overflow-y: auto;
+    overscroll-behavior-y: contain;
     max-height: 50vh;
     > del {
       display: block;
