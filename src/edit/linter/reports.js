@@ -12,7 +12,7 @@ lintingUpdatedListeners.add((annotationsNotSorted, annotations, cm) => {
     table = createTable(cm);
     tables.set(cm, table);
     const container = $('.lint-report-container');
-    const nextSibling = findNextSibling(cm);
+    const nextSibling = container.firstChild && !editor.isUsercss ? findNextSibling(cm) : null;
     container.insertBefore(table.element, nextSibling && tables.get(nextSibling).element);
   }
   table.updateCaption();
@@ -53,14 +53,9 @@ function updateCount() {
 }
 
 function findNextSibling(cm) {
-  const editors = editor.getEditors();
-  let i = editors.indexOf(cm) + 1;
-  while (i < editors.length) {
-    if (tables.has(editors[i])) {
-      return editors[i];
-    }
-    i++;
-  }
+  for (let secs = editor.sections, i = secs.indexOf(cm.editorSection) + 1, v; i < secs.length; i++)
+    if (!(v = secs[i]).init && tables.has(v = v.cm))
+      return v;
 }
 
 function createTable(cm) {

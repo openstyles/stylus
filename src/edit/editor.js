@@ -20,6 +20,8 @@ let wasDirty = false;
 
 /**
  * @type Editor
+ * @prop {number} [lineHeight]
+ * @prop {boolean} [loading]
  * @prop {UsercssTemplate} template
  * @prop {{find: string, replace: string, icase: boolean}} state
  * @namespace Editor
@@ -27,7 +29,6 @@ let wasDirty = false;
 const editor = self.editor = {
   dirty,
   isUsercss: false,
-  loading: true,
   msg: false,
   /** @type {'customName'|'name'} */
   nameTarget: 'name',
@@ -58,7 +59,7 @@ const editor = self.editor = {
     sticky,
     scrollY,
     /** @type {EditorScrollInfo[]} */
-    cms: editor.getEditors().map(cm => /** @namespace EditorScrollInfo */({
+    cms: editor.getEditors(true).map((cm, i) => cm ? /**@namespace EditorScrollInfo*/{
       bookmarks: (cm.state.sublimeBookmarks || []).map(b => b.find()).filter(Boolean),
       focus: cm.hasFocus(),
       height: cm.display.wrapper.style.height.replace('100vh', ''),
@@ -66,7 +67,7 @@ const editor = self.editor = {
       scroll: mapObj(cm.doc, null, ['scrollLeft', 'scrollTop']),
       sel: [cm.doc.sel.ranges, cm.doc.sel.primIndex],
       viewTo: cm.display.viewTo,
-    })),
+    } : editor.sections[i].si),
   }),
 
   async save() {

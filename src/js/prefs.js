@@ -1,9 +1,9 @@
 /** Don't use this file in content script context! */
 import {
-  k_busy, kBadFavs, kNone, pDisableAll, pEditorLinter, pEditorLinterOn, pEditorTheme,
-  pExposeIframes, pFavicons, pFaviconsGray, pKeyMap, pLintReportDelay, pLivePreview, pManageNewUi,
-  pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pPopupTogglerExpanded, pStyleViaASS,
-  pStyleViaXhr, pSync, pUrlInstaller, STORAGE_KEY,
+  k_busy, kBadFavs, kNone, pArrowKeysTraverse, pDisableAll, pEditorLinter, pEditorLinterOn,
+  pEditorTheme, pExposeIframes, pFavicons, pFaviconsGray, pKeyMap, pLintReportDelay, pLivePreview,
+  pManageNewUi, pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pPopupTogglerExpanded,
+  pStyleViaASS, pStyleViaXhr, pSync, pUrlInstaller, STORAGE_KEY,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {swController} from './msg-init'; // also installs API handler for own pages
@@ -127,7 +127,7 @@ const defaults = {
   // "Delete" item in context menu for browsers that don't have it
   'editor.contextDelete': false,
   'editor.selectByTokens': true,
-  'editor.arrowKeysTraverse': true,
+  [pArrowKeysTraverse]: true,
   'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
   'editor.autosaveDraft': 10, // seconds
   [pLivePreview]: true,

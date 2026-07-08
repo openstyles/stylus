@@ -59,7 +59,6 @@ label ~ .icon {
     }
     > details {
       &[open] {
-        min-height: 8em;
         overflow-y: auto;
         overscroll-behavior-y: contain;
         position: relative;
@@ -78,6 +77,6 @@ label ~ .icon {
     }
   }
   #sections-list {
-    flex: 1 1;
+    flex-shrink: 10;
   }
 }

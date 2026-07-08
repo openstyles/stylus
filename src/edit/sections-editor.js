@@ -1,5 +1,5 @@
 import {CodeMirror, extraKeys} from '@/cm';
-import {kCodeMirror, pFavicons} from '@/js/consts';
+import {kCodeMirror, pArrowKeysTraverse, pFavicons} from '@/js/consts';
 import {$create, $root} from '@/js/dom';
 import {messageBox, setInputValue} from '@/js/dom-util';
 import {template} from '@/js/localization';
@@ -15,16 +15,23 @@ import EditorSection from './sections-editor-section';
 import {helpPopup, rerouteHotkeys, showCodeMirrorPopup, worker} from './util';
 
 export default function SectionsEditor() {
-  const {style, /** @type DirtyReporter */dirty} = editor;
+  const {style, /** @type {DirtyReporter} */dirty} = editor;
   const container = $id('sections');
   /** @type {EditorSection[]} */
   const sections = [];
+  const liveSections = [];
+  const getLineHeight = () => liveSections.find(s => !s.init).cm.defaultTextHeight();
   const xo = new IntersectionObserver(refreshOnViewListener, {rootMargin: '100%'});
+  const reifySection = /** @type {ProxyHandler} */ {
+    get(obj, i) {
+      const sec = this.src[i];
+      return (obj[i] = sec.init ? sec.create() : sec.cm);
+    },
+  };
   let INC_ID = 0; // an increment id that is used by various object to track the order
+  let arrayProps;
+  /** @type {EditorSection[]} */
   let sectionOrder = '';
-  let headerOffset; // in compact mode the header is at the top so it reduces the available height
-  let cmExtrasHeight; // resize grip + borders
-  let upDownJumps;
 
   updateMeta();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
@@ -32,9 +39,8 @@ export default function SectionsEditor() {
   $id('from-mozilla').on('click', () => showMozillaFormatImport());
   document.on('wheel', scrollEntirePageOnCtrlShift, {passive: false});
   extraKeys['Shift-Ctrl-Wheel'] = 'scrollWindow';
-  prefs.subscribe('editor.arrowKeysTraverse', (_, val) => {
-    for (const {cm} of sections) handleKeydownSetup(cm, val);
-    upDownJumps = val;
+  prefs.subscribe(pArrowKeysTraverse, (_, val) => {
+    for (const s of sections) s.toggleTraverse(val);
   }, true);
   prefs.subscribe('editor.targetsFirst', (_, val) => {
     for (const sec of sections) {
@@ -44,24 +50,49 @@ export default function SectionsEditor() {
   prefs.subscribe(pFavicons, (key, val) => {
     if (val) iconize(sections.map(sec => sec.targetsEl));
   });
-  Object.defineProperty(editor, 'cm', {
-    get: () => sections.find(s => !s.removed).cm,
-  });
+  container.moveBefore ||= container.insertBefore;
+
   /** @namespace Editor */
   Object.assign(editor, {
 
-    sections,
+    cm: {defaultTextHeight: getLineHeight},
+    sections: liveSections,
 
     closestVisible,
     importOnPaste,
     updateMeta,
 
-    getEditors() {
-      return sections.filter(s => !s.removed).map(s => s.cm);
+    /** @return {EditorSection[] & {lazy?: true}} */
+    getEditors(liveOnly) {
+      if (liveOnly)
+        return liveSections.map(s => !s.init && s.cm);
+      let lazy;
+      const res = Array(liveSections.length);
+      for (let i = 0, sec; i < liveSections.length; i++) {
+        sec = sections[i];
+        if (sec.init) lazy = true;
+        else res[i] = sec.cm;
+      }
+      if (lazy) {
+        if (!arrayProps) {
+          arrayProps = Object.getOwnPropertyDescriptors(Array.prototype);
+          delete arrayProps.length;
+        }
+        Object.setPrototypeOf(res, new Proxy([], {...reifySection, src: [...liveSections]}));
+        Object.defineProperties(res, arrayProps);
+        res.lazy = true;
+      }
+      return res;
+    },
+
+    getEditorSibling(cm, direction) {
+      return liveSections[(
+        liveSections.indexOf(cm.editorSection) + direction + liveSections.length
+      ) % liveSections.length].cm; // creates the editor if lazy
     },
 
     getEditorTitle(cm) {
-      const index = editor.getEditors().indexOf(cm) + 1;
+      const index = liveSections.indexOf(cm.editorSection) + 1;
       return {
         textContent: `#${index}`,
         title: `${t('sectionCode')} ${index}`,
@@ -74,7 +105,7 @@ export default function SectionsEditor() {
     },
 
     getSearchableInputs(cm) {
-      const sec = sections.find(s => s.cm === cm);
+      const sec = cm.editorSection;
       return sec ? sec.targets.map(a => a.valueEl).filter(Boolean) : [];
     },
 
@@ -83,21 +114,19 @@ export default function SectionsEditor() {
     },
 
     jumpToEditor(i) {
-      const {cm} = sections[i] || {};
-      if (cm) {
-        editor.scrollToEditor(cm);
-        cm.focus();
-      }
+      const {cm} = liveSections[i] || {};
+      editor.scrollToEditor(cm);
+      cm.focus();
     },
 
     nextEditor(cm, upDown) {
-      return !upDown || cm !== findLast(sections, s => !s.removed).cm
+      return !upDown || cm.editorSection !== liveSections[liveSections.length - 1]
         ? nextPrevEditor(cm, 1, upDown)
         : null;
     },
 
     prevEditor(cm, upDown) {
-      return !upDown || cm !== sections.find(s => !s.removed).cm
+      return !upDown || cm.editorSection !== liveSections[0]
         ? nextPrevEditor(cm, -1, upDown)
         : null;
     },
@@ -148,64 +177,18 @@ export default function SectionsEditor() {
 
   return initSections(style.sections);
 
-  /** @param {EditorSection} section */
-  function fitToContent(section) {
-    const {cm, cm: {display: {wrapper, sizer}}} = section;
-    if (cm.display.renderedView) {
-      resize();
-    } else {
-      cm.on('update', resize);
-    }
-
-    function resize() {
-      let contentHeight = sizer.offsetHeight;
-      if (contentHeight < cm.defaultTextHeight()) {
-        return;
-      }
-      if (headerOffset == null) {
-        headerOffset = Math.ceil(container.getBoundingClientRect().top + scrollY);
-      }
-      if (cmExtrasHeight == null) {
-        cmExtrasHeight = wrapper.offsetHeight - wrapper.clientHeight; // borders
-      }
-      contentHeight += cmExtrasHeight;
-      cm.off('update', resize);
-      const cmHeight = wrapper.offsetHeight;
-      const appliesToHeight = Math.min(section.el.offsetHeight - cmHeight, window.innerHeight / 2);
-      const maxHeight = Math.floor(window.innerHeight - headerOffset - appliesToHeight);
-      const fit = Math.min(contentHeight, maxHeight);
-      if (Math.abs(fit - cmHeight) > 1) {
-        cm.setSize(null, fit);
-      }
-    }
-  }
-
   function fitToAvailableSpace() {
-    const lastSectionBottom = container.getBoundingClientRect().bottom;
+    const lastSectionBottom = Math.ceil(container.getBoundingClientRect().bottom);
     const delta = Math.floor((window.innerHeight - lastSectionBottom) / sections.length);
     if (delta > 1) {
-      sections.forEach(({cm}) => {
-        cm.setSize(null, cm.display.lastWrapHeight + delta);
+      sections.forEach(s => {
+        if (!s.init) s.cm.setSize(null, s.cm.display.lastWrapHeight + delta);
       });
     }
   }
 
   function genId() {
     return INC_ID++;
-  }
-
-  function setGlobalProgress(done, total) {
-    const progressElement = $id('global-progress') ||
-      total && document.body.appendChild($create('#global-progress'));
-    if (total) {
-      const progress = (done / Math.max(done, total) * 100).toFixed(1);
-      progressElement.style.borderLeftWidth = progress + 'vw';
-      setTimeout(() => {
-        progressElement.title = progress + '%';
-      });
-    } else {
-      progressElement.remove();
-    }
   }
 
   /**
@@ -216,7 +199,7 @@ export default function SectionsEditor() {
    */
   function closestVisible(el) {
     // closest editor should have at least 2 lines visible
-    const lineHeight = sections[0].cm.defaultTextHeight();
+    const lineHeight = getLineHeight();
     const margin = 2 * lineHeight;
     const cm = el instanceof CodeMirror ? el :
       el instanceof Node && getAssociatedEditor(el) || getLastActivatedEditor();
@@ -300,43 +283,8 @@ export default function SectionsEditor() {
     }
   }
 
-  function findLast(arr, match) {
-    for (let i = arr.length - 1; i >= 0; i--) {
-      if (match(arr[i])) {
-        return arr[i];
-      }
-    }
-  }
-
-  function handleKeydown(event) {
-    if (event.shiftKey || event.altKey || event.metaKey ||
-        event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
-      return;
-    }
-    let pos;
-    let cm = this[kCodeMirror];
-    const {line, ch} = cm.getCursor();
-    if (event.key === 'ArrowUp') {
-      cm = line === 0 && editor.prevEditor(cm, true);
-      pos = cm && [cm.doc.size - 1, ch];
-    } else {
-      cm = line === cm.doc.size - 1 && editor.nextEditor(cm, true);
-      pos = cm && [0, 0];
-    }
-    if (cm) {
-      cm.setCursor(...pos);
-      event.preventDefault();
-      event.stopPropagation();
-    }
-  }
-
-  function handleKeydownSetup(cm, state) {
-    cm.display.wrapper[state ? 'on' : 'off']('keydown', handleKeydown, true);
-  }
-
   function nextPrevEditor(cm, direction, upDown) {
-    const editors = editor.getEditors();
-    cm = editors[(editors.indexOf(cm) + direction + editors.length) % editors.length];
+    cm = editor.getEditorSibling(cm, direction);
     editor.scrollToEditor(cm, upDown);
     cm.focus();
     return cm;
@@ -344,15 +292,10 @@ export default function SectionsEditor() {
 
   function getLastActivatedEditor() {
     let result;
-    for (const section of sections) {
-      if (section.removed) {
-        continue;
-      }
+    for (const s of liveSections)
       // .lastActive is initiated by codemirror-factory
-      if (!result || section.cm.lastActive > result.lastActive) {
-        result = section.cm;
-      }
-    }
+      if (!result || !s.init && s.cm.lastActive > result.lastActive)
+        result = s.cm;
     return result;
   }
 
@@ -462,19 +405,19 @@ export default function SectionsEditor() {
 
   function updateSectionOrder() {
     const oldOrder = sectionOrder;
-    const validSections = sections.filter(s => !s.removed);
-    sectionOrder = validSections.map(s => s.id).join(',');
+    sectionOrder = liveSections.map(s => s.id).join(',');
     dirty.modify('sectionOrder', oldOrder, sectionOrder);
-    container.dataset.sectionCount = validSections.length;
+    container.dataset.sectionCount = liveSections.length;
     linterMan.refreshReport();
     editor.updateToc();
   }
 
   /** @returns {StyleObj} */
   function getModel() {
-    return Object.assign({}, style, {
-      sections: sections.filter(s => !s.removed).map(s => s.getModel()),
-    });
+    return {
+      ...style,
+      sections: liveSections.map(s => s.getModel()),
+    };
   }
 
   function updateMeta() {
@@ -491,8 +434,8 @@ export default function SectionsEditor() {
     si = scrollInfo,
   } = {}) {
     if (replace) {
-      sections.forEach(s => s.remove());
-      sections.length = 0;
+      for (const s of liveSections) s.remove();
+      liveSections.length = sections.length = 0;
       container.textContent = '';
     }
     if (si.cms && si.cms.length === src.length) {
@@ -507,6 +450,7 @@ export default function SectionsEditor() {
     let forceRefresh = true;
     let y = 0;
     let tPrev;
+    editor.loading = dirty.paused = !keepDirty;
     for (let i = 0, iSec = sections.length; i < src.length; i++, iSec++) {
       const now = performance.now();
       if (!tPrev) {
@@ -518,27 +462,24 @@ export default function SectionsEditor() {
       }
       if (si) forceRefresh = y < si.scrollY2 && (y += si.cms[i].parentHeight) > si.scrollY;
       insertSectionAfter(src[i], null, forceRefresh, si && si.cms[i]);
-      setGlobalProgress(i, src.length);
-      if (!keepDirty) dirty.clear();
       if (iSec === focusOn) setTimeout(editor.jumpToEditor, 0, iSec);
     }
-    if (!si || si.cms.every(cm => !cm.height)) {
+    if (!si || si.cms.every(cm => !cm?.height)) {
       requestAnimationFrame(fitToAvailableSpace); // avoids FOUC, unlike IntersectionObserver
     }
+    if (!forceRefresh) updateSectionOrder();
     container.style.removeProperty('height');
-    setGlobalProgress();
-    editor.loading = false;
+    editor.loading = dirty.paused = false;
   }
 
   /** @param {EditorSection} section */
   function removeSection(section) {
-    if (sections.every(s => s.removed || s === section)) {
+    if (liveSections.length === 1) {
       // TODO: hide remove button when `#sections[data-section-count=1]`
       throw new Error('Cannot remove last section');
     }
     if (section.cm.isBlank()) {
-      const index = sections.indexOf(section);
-      sections.splice(index, 1);
+      sections.splice(sections.indexOf(section), 1);
       section.el.remove();
       section.remove();
       section.destroy();
@@ -556,6 +497,7 @@ export default function SectionsEditor() {
       section.el.prepend(del);
       section.remove();
     }
+    liveSections.splice(liveSections.indexOf(section), 1);
     dirty.remove(section, section);
     updateSectionOrder();
     livePreview();
@@ -579,63 +521,56 @@ export default function SectionsEditor() {
     if (!init) {
       init = {code: '', urlPrefixes: ['https://example.com/']};
     }
+    forceRefresh ||= base;
     const section = new EditorSection(init, genId, si);
-    const {cm} = section;
     const {code} = init;
-    const index = base ? sections.indexOf(base) + 1 : sections.length;
-    sections.splice(index, 0, section);
+    sections.splice(base ? sections.indexOf(base) + 1 : sections.length, 0, section);
+    liveSections.splice(base ? liveSections.indexOf(base) + 1 : liveSections.length, 0, section);
     container.insertBefore(section.el, base ? base.el.nextSibling : null);
-    refreshOnView(cm, {code, force: base || forceRefresh});
-    registerEvents(section);
-    if ((!si || !si.height) && (!base || code)) {
+    if (forceRefresh) {
       // Fit a) during startup or b) when the clone button is clicked on a section with some code
-      fitToContent(section);
+      section.fit = (!si || !si.height) && (!base || !!code);
+      refreshOnViewNow(section);
+    } else {
+      xo.observe(section.el);
     }
     if (base) {
-      cm.focus();
-      editor.scrollToEditor(cm);
+      section.cm.focus();
+      editor.scrollToEditor(section.cm);
     }
-    if (upDownJumps) {
-      handleKeydownSetup(cm, true);
+    if (forceRefresh) {
+      updateSectionOrder();
+      livePreview();
     }
-    updateSectionOrder();
-    livePreview();
   }
 
-  /** @param {EditorSection} section */
-  function moveSectionUp(section) {
-    const index = sections.indexOf(section);
-    if (index === 0) {
+  /** @param {EditorSection} section
+   * @param {-1 | 1} dir */
+  function moveSection(section, dir) {
+    let index = sections.indexOf(section);
+    if (index === dir < 0 ? 0 : sections.length - 1) {
       return;
     }
-    container.insertBefore(section.el, sections[index - 1].el);
-    sections[index] = sections[index - 1];
-    sections[index - 1] = section;
+    container.moveBefore(section.el, sections[index + (dir < 0 ? -1 : 2)]?.el);
+    sections[index] = sections[index + dir];
+    sections[index + dir] = section;
+    index = liveSections.indexOf(section);
+    liveSections[index] = liveSections[index + dir];
+    liveSections[index + dir] = section;
     updateSectionOrder();
     editor.scrollToEditor(section.cm);
   }
 
-  /** @param {EditorSection} section */
-  function moveSectionDown(section) {
-    const index = sections.indexOf(section);
-    if (index === sections.length - 1) {
-      return;
-    }
-    container.insertBefore(sections[index + 1].el, section.el);
-    sections[index] = sections[index + 1];
-    sections[index + 1] = section;
-    updateSectionOrder();
-    editor.scrollToEditor(section.cm);
-  }
-
-  /** @param {EditorSection} section */
-  function registerEvents(section) {
-    const {el} = section;
+  /**
+   * @param {EditorSectionElement} el
+   * @param {EditorSection} section
+   */
+  function registerEvents(el, section) {
     el.$('.remove-section').onclick = () => removeSection(section);
     el.$('.add-section').onclick = () => insertSectionAfter(undefined, section);
     el.$('.clone-section').onclick = () => insertSectionAfter(section.getModel(), section);
-    el.$('.move-section-up').onclick = () => moveSectionUp(section);
-    el.$('.move-section-down').onclick = () => moveSectionDown(section);
+    el.$('.move-section-up').onclick = () => moveSection(section, -1);
+    el.$('.move-section-down').onclick = () => moveSection(section, 1);
   }
 
   function importOnPaste(cm, event, text) {
@@ -648,35 +583,26 @@ export default function SectionsEditor() {
     }
   }
 
-  function refreshOnView(cm, {code, force} = {}) {
-    if (code) {
-      linterMan.enableForEditor(cm, code);
-    }
-    if (force) {
-      refreshOnViewNow(cm);
-    } else {
-      xo.observe(cm.display.wrapper);
-    }
-  }
-
   /** @param {IntersectionObserverEntry[]} entries */
   function refreshOnViewListener(entries) {
     for (const e of entries) {
       const r = e.intersectionRatio && e.intersectionRect;
       if (r) {
-        xo.unobserve(e.target);
-        const cm = e.target[kCodeMirror];
-        if (r.bottom > 0 && r.top < window.innerHeight) {
-          refreshOnViewNow(cm);
+        const el = /**@type{EditorSectionElement}*/e.target;
+        const section = el.me;
+        xo.unobserve(el);
+        registerEvents(el, section);
+        if (r.bottom > 0 && r.top < innerHeight) {
+          refreshOnViewNow(section);
         } else {
-          setTimeout(refreshOnViewNow, 0, cm);
+          setTimeout(refreshOnViewNow, 0, section);
         }
       }
     }
   }
 
-  async function refreshOnViewNow(cm) {
-    linterMan.enableForEditor(cm);
-    cm.refresh();
+  /** @param {EditorSection} section */
+  async function refreshOnViewNow(section) {
+    if (section.init) section.create(true);
   }
 }

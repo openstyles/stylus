@@ -14,7 +14,10 @@ export default function DirtyReporter() {
   };
   /** @namespace DirtyReporter */
   return {
+    data,
     add(obj, value) {
+      if (this.paused)
+        return;
       const wasDirty = data.size > 0;
       const saved = data.get(obj);
       if (!saved) {
@@ -46,6 +49,8 @@ export default function DirtyReporter() {
       return data.size > 0;
     },
     modify(obj, oldValue, newValue) {
+      if (this.paused)
+        return;
       const wasDirty = data.size > 0;
       const saved = data.get(obj);
       if (!saved) {

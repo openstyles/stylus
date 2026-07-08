@@ -89,6 +89,7 @@ export const mimeLESS = 'text/x-less';
 //#endregion
 
 //#region prefs
+export const pArrowKeysTraverse = 'editor.arrowKeysTraverse';
 export const pDisableAll = 'disableAll';
 export const pEditorLinter = 'editor.linter';
 export const pEditorLinterOn = pEditorLinter + '.on';

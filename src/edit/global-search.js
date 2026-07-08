@@ -47,6 +47,8 @@ let stateCmStart;
 let stateCursorOptions;
 let stateDialog;
 let stateEditors;
+/** @type {EditorSection[]} */
+let lazyEditors;
 let stateInput2;
 let stateInput;
 let stateMarker;
@@ -217,6 +219,7 @@ function initState({initReplace} = {}) {
     stateCm);
   const cmExtra = $('body > :not(#sections) .CodeMirror');
   stateEditors = cmExtra ? [cmExtra[kCodeMirror]] : editor.getEditors();
+  lazyEditors = stateEditors.lazy && editor.sections;
 }
 
 function doSearch({
@@ -237,8 +240,9 @@ function doSearch({
     stateFind && doSearchInEditors({cmStart, canAdvance, inApplies}) || {};
   if (!foundInCode) clearMarker();
   if (!found) makeTargetVisible(null);
-  const radiateFrom = foundInCode ? index : stateEditors.indexOf(cmStart);
-  setupOverlay(radiateArray(stateEditors, radiateFrom));
+  const radiateFrom = foundInCode ? index :
+    lazyEditors ? lazyEditors.indexOf(cmStart.editorSection) : 0;
+  setupOverlay(radiateArray(radiateFrom));
   enableReplaceButtons(foundInCode);
   if (stateFind) {
     const firstSuccessfulSearch = foundInCode && !stateNumFound;
@@ -256,7 +260,7 @@ function doSearchInEditors({cmStart, canAdvance, inApplies}) {
   const BOF = {line: 0, ch: 0};
   const EOF = getEOF(cmStart);
 
-  const start = stateEditors.indexOf(cmStart);
+  const start = lazyEditors ? lazyEditors.indexOf(cmStart.editorSection) : 0;
   const total = stateEditors.length;
   let i = 0;
   let wrapAround = 0;
@@ -276,6 +280,9 @@ function doSearchInEditors({cmStart, canAdvance, inApplies}) {
 
   for (; i < total + wrapAround; i++) {
     index = (start + i * (reverse ? -1 : 1) + total) % total;
+    if (lazyEditors && (cm = lazyEditors[index]).init
+    && !(stateRX ? stateRX.test(cm.init.code) : cm.init.code.includes(stateFind)))
+      continue;
     cm = stateEditors[index];
     if (i) {
       pos = !reverse ? BOF : {line: cm.doc.size, ch: 0};
@@ -357,11 +364,23 @@ function doReplace() {
 function doReplaceAll() {
   initState({initReplace: true});
   clearMarker();
-  const generations = new Map(stateEditors.map(cm => [cm, cm.changeGeneration()]));
-  const found = stateEditors.filter(cm => doReplaceInEditor({cm, all: true}));
+  const found = [];
+  const generations = [];
+  for (let cm of lazyEditors || stateEditors) {
+    if (lazyEditors) {
+      if (cm.init && !(stateRX ? !stateRX.test(cm.init.code) : !cm.init.code.includes(stateFind)))
+        continue;
+      cm = cm.cm;
+    }
+    const gen = cm.history.generation;
+    if (doReplaceInEditor({cm, all: true})) {
+      generations.push([cm, gen]);
+      found.push(cm);
+    }
+  }
   if (found.length) {
     stateLastFind = null;
-    stateUndoHistory.push(found.map(cm => [cm, generations.get(cm)]));
+    stateUndoHistory.push(generations);
     enableUndoButton(true);
     doSearch({canAdvance: false});
   }
@@ -443,10 +462,11 @@ function setupOverlay(queue, debounced) {
 
   let canContinue = true;
   while (queue.length && canContinue) {
-    const cm = queue.shift();
-    if (!document.body.contains(cm.display.wrapper)) {
+    let cm = queue.shift();
+    if (lazyEditors)
+      cm = !(/**@type{EditorSection}*/cm).init && cm.cm;
+    if (!cm || !document.body.contains(cm.display.wrapper))
       continue;
-    }
 
     const cmState = getStateSafe(cm);
     const query = stateRX2;
@@ -677,8 +697,7 @@ function getEOF(cm) {
 }
 
 function getNextEditor(cm, step = 1) {
-  const editors = stateEditors;
-  return editors[(editors.indexOf(cm) + step + editors.length) % editors.length];
+  return lazyEditors ? editor.getEditorSibling(cm, step) : cm;
 }
 
 // sets the editor to start the search in
@@ -748,7 +767,12 @@ function showTally(num, numApplies) {
   if (!stateTally) return;
   if (num === undefined) {
     num = 0;
-    for (const cm of stateEditors) {
+    for (let cm of lazyEditors || stateEditors) {
+      if (lazyEditors) {
+        if ((/**@type{EditorSection}*/cm).init)
+          continue;
+        cm = cm.cm;
+      }
       const {annotate, overlay} = getStateSafe(cm);
       num +=
         annotate?.matches?.length ||
@@ -823,9 +847,11 @@ function restoreWindowScrollPos({immediately = true} = {}) {
 }
 
 // produces [i, i+1, i-1, i+2, i-2, i+3, i-3, ...]
-function radiateArray(arr, focalIndex) {
+function radiateArray(focalIndex) {
+  const arr = lazyEditors || stateEditors;
+  if (focalIndex < 0 || focalIndex >= arr.length)
+    return arr;
   const focus = arr[focalIndex];
-  if (!focus) return arr;
   const result = [focus];
   const len = arr.length;
   for (let i = 1; i < len; i++) {

@@ -81,7 +81,6 @@ export default function SourceEditor() {
   /** @namespace Editor */
   Object.assign(editor, {
     cm,
-    loading: false,
     replaceStyle,
     updateMeta,
     closestVisible: () => cm,
