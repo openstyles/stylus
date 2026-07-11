@@ -2,7 +2,6 @@
 
 /************ embedded popup for simple-window editor ************/
 #popup-iframe {
-  max-height: 600px;
   position: fixed;
   right: 0;
   top: 0;
@@ -10,6 +9,7 @@
   border: none;
   background: var(--bg);
   box-shadow: 0 0 30px var(--fg);
+  transition: opacity .25s;
   &:not([data-loaded]) {
     opacity: 0;
   }

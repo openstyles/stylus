@@ -179,10 +179,6 @@ module.exports = [
       'no-restricted-globals': [2, 'name', 'event'],
       'no-restricted-imports': [0],
       'no-restricted-modules': [2, 'domain', 'freelist', 'smalloc', 'sys'],
-      'no-restricted-syntax': [2, 'WithStatement', {
-        selector: 'MemberExpression > Identifier.property[name="isIntersecting"]',
-        message: 'Requires Chrome 58+. Please use intersectionRatio instead.',
-      }],
       'no-return-assign': [2, 'except-parens'],
       'no-return-await': [2],
       'no-script-url': [2],

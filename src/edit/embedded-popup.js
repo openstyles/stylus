@@ -9,10 +9,13 @@ import {MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
 export default function EmbeddedPopup() {
   const ID = 'popup-iframe';
   const POPUP_HOTKEY = 'Shift-Ctrl-Alt-S';
-  /** @type {HTMLIFrameElement} */
-  let frame;
+  let /** @type {HTMLIFrameElement} */ frame;
+  let /** @type {HTMLBodyElement} */ fBody;
   let isLoaded;
-  let scrollbarWidth;
+  let /** @type {Window} */ fw;
+  let /** @type {HTMLElement} */ sensor;
+  let /** @type {MutationObserver} */ mo;
+  let /** @type {IntersectionObserver} */ xo;
 
   const btn = $create('img', {
     id: 'popup-button',
@@ -39,54 +42,49 @@ export default function EmbeddedPopup() {
   function embedPopup() {
     if ($id(ID)) return;
     isLoaded = false;
-    scrollbarWidth = 0;
     frame = $create('iframe', {
       id: ID,
       src: actionPopupUrl,
-      height: 600,
       width: prefs.__values.popupWidth,
       onload: initFrame,
     });
     window.on('mousedown', removePopup);
+    window.on('resize', onEditorResized);
     document.body.appendChild(frame);
   }
 
   function initFrame() {
     frame = this;
     frame.focus();
-    const pw = frame.contentWindow;
-    const body = pw.document.body;
-    pw.on('keydown', removePopupOnEsc);
-    pw.close = removePopup;
-    new pw.IntersectionObserver(onIntersect).observe(body.appendChild(
-      $create('div', {style: 'height: 1px; marginTop: -1px;'})
-    ));
-    new pw.MutationObserver(onMutation).observe(body, {
+    fw = frame.contentWindow;
+    fBody = fw.document.body;
+    onEditorResized();
+    fw.on('keydown', removePopupOnEsc);
+    fw.close = removePopup;
+    sensor ||= $create('div', {style: 'height: 1px; margin-top: 0px;'});
+    xo = new IntersectionObserver(onIntersect, {threshold: [0, 1]});
+    xo.observe(fBody.appendChild(sensor));
+    mo = new fw.MutationObserver(onMutation);
+    mo.observe(fBody, {
       attributes: true,
       attributeFilter: ['style'],
     });
   }
 
-  function onMutation() {
-    const body = frame.contentDocument.body;
-    const bs = body.style;
-    const w = parseFloat(bs.minWidth || bs.width) + (scrollbarWidth || 0);
-    const h = parseFloat(bs.minHeight || body.offsetHeight);
-    if (frame.width - w) frame.width = w;
-    if (frame.height - h) frame.height = h;
+  function onEditorResized() {
+    fBody.style.maxHeight = innerHeight + 'px';
   }
 
-  function onIntersect([e]) {
-    const pw = frame.contentWindow;
-    const el = pw.document.scrollingElement;
-    const h = e.intersectionRatio && !pw.scrollY ? el.offsetHeight : el.scrollHeight;
-    const hasSB = h > el.offsetHeight;
-    const {width} = e.boundingClientRect;
-    frame.height = h;
-    if (!hasSB !== !scrollbarWidth || frame.width - width) {
-      scrollbarWidth = hasSB ? width - el.offsetWidth : 0;
-      frame.width = width + scrollbarWidth;
-    }
+  function onMutation() {
+    frame.width = fBody.clientWidth + 'px';
+    onIntersect();
+  }
+
+  function onIntersect() {
+    frame.height = Math.max(
+      sensor.getBoundingClientRect().y | 0,
+      sensor.nextSibling && fBody.clientHeight || 0,
+    );
     if (!isLoaded) {
       isLoaded = true;
       frame.dataset.loaded = '';
@@ -94,9 +92,12 @@ export default function EmbeddedPopup() {
   }
 
   function removePopup() {
-    frame = null;
+    mo.disconnect();
+    xo.disconnect();
+    mo = xo = frame = null;
     $id(ID)?.remove();
     window.off('mousedown', removePopup);
+    window.off('resize', onEditorResized);
   }
 
   function removePopupOnEsc(e) {

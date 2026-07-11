@@ -28,7 +28,7 @@ export let windowId;
 export let isBlocked;
 let prevHeight = Math.max(innerHeight, 150);
 
-if (!isFullscreenPopup)
+if (!isFullscreenPopup && window === top)
   window.on('resize', onWindowResize);
 
 (async function init(data, port) {
