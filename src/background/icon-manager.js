@@ -92,6 +92,8 @@ export function updateIconBadge(styleIds, lazyBadge, iid) {
   const {tab: {id: tabId}, TDM} = this.sender;
   const frameId = TDM > 0 ? 0 : this.sender.frameId;
   const value = styleIds.length ? styleIds.map(Number) : undefined;
+  if (tabId == null)
+    return;
   tabSet(tabId, kStyleIds, frameId, value);
   if (iid) tabSet(tabId, 'iid', frameId, (!__.MV3 || value) && iid);
   debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
