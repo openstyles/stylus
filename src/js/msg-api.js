@@ -54,7 +54,8 @@ export function apiSendProxyDebugLog(path, args) {
 export async function apiSendProxy({name: path}, thisObj, args) {
   if (__.DEBUG) apiSendProxyDebugLog(path, args);
   // Non-cloneable event is passed when doing `elem.onclick = API.foo`
-  if (args[0] instanceof Event) args[0] = 'Event';
+  if (__.ENTRY === true && args[0] instanceof Event)
+    args[0] = 'Event';
   const localErr = new Error();
   const msg = {data: {method: kInvokeAPI, path, args}, TDM};
   for (let res, err, retry = 0; retry < (__.MV3 ? 1 : 2); retry++) {
