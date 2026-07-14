@@ -10,7 +10,7 @@ let toBroadcast;
 let toBroadcastCfg;
 let toBroadcastUpdStyles;
 const OLD = Symbol('old');
-const channel = new BroadcastChannel('sw');
+const channel = __.MV3 && new BroadcastChannel('sw');
 
 export function broadcast(data, cfg) {
   toBroadcast ??= (setTimeout(doBroadcast), []);
@@ -63,7 +63,11 @@ async function doBroadcast() {
 }
 
 export function broadcastExtension(data, multi) {
-  channel.postMessage({id: 1, args: [data, {}, multi, /*broadcast*/true]});
+  if (__.MV3) {
+    channel.postMessage({id: 1, args: [data, {}, multi, /*broadcast*/true]});
+  } else {
+    browser.runtime.sendMessage({data, multi, broadcast: true});
+  }
 }
 
 function patchStyles(styleUpdates, tabOverrides) {

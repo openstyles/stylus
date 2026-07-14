@@ -24,7 +24,7 @@ const swExec = __.MV3 && __.ENTRY !== 'sw' &&
 const workerApiPrefix = 'worker.';
 let workerProxy;
 export let bg = __.IS_BG ? self : !__.MV3 && chrome.extension.getBackgroundPage();
-if (!__.IS_BG) {
+if (__.MV3 && !__.IS_BG) {
   initRemotePort.call(_execute, {ports: [new BroadcastChannel('sw')]}, /*silent*/true);
 }
 
