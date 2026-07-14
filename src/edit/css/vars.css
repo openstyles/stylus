@@ -11,3 +11,9 @@ $targetGapY: 2px;
   --pad075: .75rem;
   --pad: 1rem; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
 }
+:root.touch {
+  --pad025: .5rem;
+  --pad05: 1rem;
+  --pad075: 1.5rem;
+  --pad: 2rem;
+}
