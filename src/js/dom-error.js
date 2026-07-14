@@ -73,11 +73,14 @@ function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params *
   if (el) {
     el.dataset.num = (+el.dataset.num || 1) + 1;
   } else {
-    el = elEntry.cloneNode(true);
+    a = err.stack;
+    // errors without stack are for user's content like meta
+    el = a ? elEntry.cloneNode(true) : $tag('b');
     elError.append(el);
-    el.$('pre').textContent = err.stack?.replace(msg, '').replace(/^(?!\s)/gm, '  ') || '';
-    el.$('a').hidden = !err.stack; // errors without stack are for user's content like meta
-    el = el.$('span');
+    if (a) {
+      el.$('pre').textContent = a.replace(msg, '').replace(/^(?!\s)/gm, '  ') || '';
+      el = el.$('span');
+    }
     el.innerText = msg;
   }
   $root.appendChild(elError);

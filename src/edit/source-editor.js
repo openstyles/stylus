@@ -261,8 +261,10 @@ export default function SourceEditor() {
       line = pos[1] - 1;
       ch = pos[2] - 1;
     }
-    if (!pos || saving)
+    if (!pos || saving) {
+      err.stack = '';
       showUnhandledError(err);
+    }
     if (!pos)
       return;
     pvErr.title = str;
