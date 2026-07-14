@@ -365,9 +365,7 @@ export default function SectionsEditor() {
         const code = text || cm.getValue().trim();
         const meta = getMetaComment(code);
         if (!meta.match(/[\r\n]\s*@preprocessor\s+\S/) ||
-            await messageBox.confirm(
-              t('importPreprocessor'), 'pre-line',
-              t('importPreprocessorTitle'))
+          await messageBox.alert(t('importPreprocessor'))
         ) {
           let name;
           newSections ||= await worker.extractSections(code);

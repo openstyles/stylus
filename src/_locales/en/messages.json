@@ -540,10 +540,7 @@
     "description": "Label for the button to import a style (editor) or all styles (style manager)"
   },
   "importPreprocessor": {
-    "message": "Style with a <@preprocessor> won't work in the classic mode. You can switch the editor to UserCSS mode: 1) open the style manager, 2) enable \"as UserCSS\" checkbox, 3) click \"Write new style\"\n\nImport now anyway?"
-  },
-  "importPreprocessorTitle": {
-    "message": "Potential problem due to @preprocessor"
+    "message": "Code that depends on <@preprocessor> won't work because this style wasn't created in <UserCSS> mode."
   },
   "importReplaceLabel": {
     "message": "Overwrite style",
