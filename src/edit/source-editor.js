@@ -137,6 +137,17 @@ export default function SourceEditor() {
     livePreview();
     metaCompiler(changes).then(!linterOn && spoofLinter);
   });
+  CodeMirror.commands.foldAll = cm2 => {
+    const {curOp} = cm2;
+    if (!curOp) cm2.startOperation();
+    let line = 0;
+    cm.eachLine(lh => {
+      if (!/@-moz-document/i.test(lh.text))
+        cm.foldCode({line, ch: 0}, {scanUp: false}, 'fold');
+      line++;
+    });
+    if (!curOp) cm2.endOperation();
+  };
   setTimeout(linterMan.enableForEditor, 0, cm, initialCode, /*force=*/true);
   if (!$isTextInput()) {
     cm.focus();
