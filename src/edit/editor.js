@@ -138,31 +138,26 @@ const editor = self.editor = {
   },
 
   updateToc(added) {
-    const {sections} = editor;
+    const liveSections = editor.sections;
+    const sections = editor.sectionsRaw || liveSections;
     if (!toc.el) {
       toc.el = $id('toc');
       toc.elDetails = toc.el.closest('details');
       toc.title = $id('toc-title').dataset;
     }
-    let num = 0;
-    for (const sec of sections) num += !sec.removed;
-    if ((+toc.title.num || 1) !== num) {
-      if (num > 1) {
-        toc.title.num = num;
-      } else {
-        delete toc.title.num;
-      }
-    }
+    toc.title.num = liveSections.length;
     if (!toc.elDetails.open) return;
     if (!added) added = sections;
     const first = sections.indexOf(added[0]);
     const elFirst = toc.el.children[first];
     if (first >= 0 && (!added.focus || !elFirst)) {
       for (let el = elFirst, i = first; i < sections.length; i++) {
-        const entry = sections[i].tocEntry;
+        /** @type {MozSection|EditorSection} */
+        const sec = sections[i];
+        const entry = sec.tocEntry;
         if (!deepEqual(entry, toc[i])) {
           if (!el) el = toc.el.appendChild($create('li', {tabIndex: 0}));
-          el.tabIndex = entry.removed ? -1 : 0;
+          el.tabIndex = sec.removed ? -1 : 0;
           toc[i] = Object.assign({}, entry);
           const s = el.textContent = clipString(entry.label) || (
             entry.target == null

@@ -19,6 +19,7 @@ export default function SectionsEditor() {
   const container = $id('sections');
   /** @type {EditorSection[]} */
   const sections = [];
+  /** @type {EditorSection[]} */
   const liveSections = [];
   const getLineHeight = () => liveSections.find(s => !s.init).cm.defaultTextHeight();
   const xo = new IntersectionObserver(refreshOnViewListener, {rootMargin: '100%'});
@@ -57,6 +58,7 @@ export default function SectionsEditor() {
 
     cm: {defaultTextHeight: getLineHeight},
     sections: liveSections,
+    sectionsRaw: sections,
 
     closestVisible,
     importOnPaste,
@@ -434,7 +436,7 @@ export default function SectionsEditor() {
     si = scrollInfo,
   } = {}) {
     if (replace) {
-      for (const s of liveSections) s.remove();
+      for (const s of liveSections) s.toggle();
       liveSections.length = sections.length = 0;
       container.textContent = '';
     }
@@ -481,7 +483,7 @@ export default function SectionsEditor() {
     if (section.cm.isBlank()) {
       sections.splice(sections.indexOf(section), 1);
       section.el.remove();
-      section.remove();
+      section.toggle();
       section.destroy();
     } else {
       const lines = [];
@@ -495,7 +497,7 @@ export default function SectionsEditor() {
       del.$('button').onclick = () => restoreSection(section);
       del.title = title;
       section.el.prepend(del);
-      section.remove();
+      section.toggle();
     }
     liveSections.splice(liveSections.indexOf(section), 1);
     dirty.remove(section, section);
@@ -506,7 +508,7 @@ export default function SectionsEditor() {
   /** @param {EditorSection} section */
   function restoreSection(section) {
     section.elDel.remove();
-    section.restore();
+    section.toggle(true);
     updateSectionOrder();
     livePreview();
   }

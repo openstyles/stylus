@@ -25,7 +25,10 @@ let cmExtrasHeight; // resize grip + borders
  * @typedef {HTMLElement} EditorSectionElement
  * @prop {EditorSection} me
  */
-/** @prop {EditorSectionElement} el */
+/**
+ * @prop {EditorSectionElement} el
+ * @prop {HTMLElement} [elDel]
+ */
 export default class EditorSection {
   /**
    * @param {StyleSection} sectionData
@@ -33,7 +36,7 @@ export default class EditorSection {
    * @param {EditorScrollInfo} [si]
    */
   constructor(sectionData, genId, si) {
-    const me = this; // for tocEntry.removed
+    const me = this;
     const el = me.el = template.section.cloneNode(true);
     const elLabel = me.elLabel = el.$('.code-label');
     const elTargets = this.elTargets = tplAppliesTo.cloneNode(true);
@@ -49,12 +52,7 @@ export default class EditorSection {
     me.si = si;
     me.targets = /** @type {SectionTarget[]} */ [];
     me.targetsListEl = el.$(C_LIST);
-    me.tocEntry = {
-      label: '',
-      get removed() {
-        return me.removed; // using `me` because of different `this`
-      },
-    };
+    me.tocEntry = {label: ''};
     for (const propName in TO_CSS) {
       const arr = sectionData[propName];
       const cssName = TO_CSS[propName];
@@ -114,11 +112,12 @@ export default class EditorSection {
     return res;
   }
 
-  remove() {
-    linterMan.disableForEditor(this.cm);
-    this.el.classList.add('removed');
-    this.removed = true;
-    this.targets.forEach(_ => _.remove());
+  toggle(restore) {
+    (restore ? linterMan.enableForEditor : linterMan.disableForEditor)(this.cm);
+    this.el.classList.toggle('removed', !restore);
+    this.removed = this.tocEntry.removed = !restore;
+    this.targets.forEach(t => restore ? t.restore() : t.remove());
+    if (restore) this.cm.refresh();
   }
 
   render() {
@@ -127,14 +126,6 @@ export default class EditorSection {
 
   destroy() {
     cmFactory.destroy(this.cm);
-  }
-
-  restore() {
-    linterMan.enableForEditor(this.cm);
-    this.el.classList.remove('removed');
-    this.removed = false;
-    this.targets.forEach(_ => _.restore());
-    this.cm.refresh();
   }
 
   updateTocEntry(origin, sec = this) {
@@ -149,7 +140,7 @@ export default class EditorSection {
     }
     if (!te.label) {
       const first = sec.targets[0];
-      const target = first.type ? first.value : null;
+      const target = first?.type ? first.value : null;
       if (te.target !== target) {
         te.target = target;
         changed = true;
