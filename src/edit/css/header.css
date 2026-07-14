@@ -34,13 +34,6 @@ h1 {
 #url:not([href^="http"]) {
   display: none;
 }
-#testRE {
-  font: bold 18px/1 var(--family);
-  cursor: default;
-  &::after {
-    content: '.*?';
-  }
-}
 #editor\.livePreview\.delay {
   field-sizing: content;
   padding-left: $pad05;
