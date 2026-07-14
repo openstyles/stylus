@@ -31,13 +31,16 @@
     content-visibility: auto;
     contain-intrinsic-block-size: auto var(--input-height);
   }
-  .sectioned:not(.compact-layout) & {
+  .normal-layout & {
     > * {
       margin-right: $pad;
     }
     > :not(.applies-to) {
       margin-left: var(--padL);
     }
+  }
+  .normal-layout.popup-window &:first-child > .applies-to {
+    margin-right: calc($pad * 2 + 16px);
   }
   &:nth-child(n + 2) {
     border-top: 1px dotted var(--c80);

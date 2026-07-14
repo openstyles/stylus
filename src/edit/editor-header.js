@@ -60,7 +60,7 @@ function initNameArea() {
   const isCustomName = editor.style.updateUrl || editor.isUsercss;
   editor.nameTarget = isCustomName ? 'customName' : 'name';
   nameEl.placeholder = t(editor.isUsercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
-  nameEl.title = isCustomName ? t('customNameHint') : '';
+  nameEl.title = isCustomName ? t('customNameHint') : t('styleName');
   nameEl.on('input', () => {
     editor.updateName(true);
     resetEl.hidden = !editor.style.customName;

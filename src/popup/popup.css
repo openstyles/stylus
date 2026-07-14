@@ -723,7 +723,7 @@ a:hover i {
   }
 }
 .i-manage {
-  font-size: 18px;
+  font-size: 20px; /* native pixel-perfect size */
 }
 #find-styles-btn ~ .split-btn-menu {
   @media (max-height: 130px) {

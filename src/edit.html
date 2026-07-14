@@ -57,24 +57,22 @@
           <button id="save-button" i18n="styleSaveLabel" data-hotkey-tooltip="save" disabled></button
           ><button class="split-btn-pedal usercss-only" i18n="menu-tpl:saveAsTemplate"></button>
         </div>
-        <a id="cancel-button" i18n="title:styleCancelEditLabel" tabindex="0">
-          <i class=i-manage></i>
-        </a>
+        <button id="cancel-button" i18n="openManage" class="i i-manage"></button>
         <a id="beautify" i18n="title:styleBeautify" tabindex="0">
           <i class=i-beautify></i>
         </a>
         <a id="testRE" i18n="title:appliesRegexpOption" tabindex="0" hidden></a>
-        <a tabindex="0" id="from-mozilla" i18n="title:importLabel" class="sectioned-only hide-if-sticky">
+        <a tabindex="0" id="from-mozilla" i18n="title:importLabel" class="sectioned-only">
           <i class="i-import"></i>
         </a>
-        <a tabindex="0" id="to-mozilla" i18n="title:exportLabel" class="sectioned-only hide-if-sticky">
+        <a tabindex="0" id="to-mozilla" i18n="title:exportLabel" class="sectioned-only">
           <i class="i-export"></i>
         </a>
       </section>
       <div id="details-wrapper">
         <details id="general" class="ignore-pref-if-compact"
                  data-pref="editor.general.expanded">
-          <summary><h2 i18n="general" data-icon="‖"></h2></summary>
+          <summary><h2 i18n="general" class="i i-config-aux"></h2></summary>
           <main>
             <label id="enabled-label"
                    i18n="+styleEnabledLabel, title:toggleStyle"
@@ -115,15 +113,15 @@
         </details>
         <details id="options" class="settings ignore-pref-if-compact"
                  data-pref="editor.options.expanded">
-          <summary><h2 i18n="editorSettings" data-icon="s"></h2></summary>
+          <summary><h2 i18n="editorSettings" class="i i-config-editor"></h2></summary>
         </details>
         <details id="styleOpts" class="settings ignore-pref-if-compact"
                  data-pref="editor.options.style.expanded">
-          <summary><h2 i18n="styleSettings" data-icon="S"></h2></summary>
+          <summary><h2 i18n="styleSettings" class="i i-config-doc"></h2></summary>
         </details>
         <details id="publish" data-pref="editor.publish.expanded"
                  class="ignore-pref-if-compact hide-if-new">
-          <summary><h2 i18n="publish" data-icon="@"></h2></summary>
+          <summary><h2 i18n="publish" class="i i-share"></h2></summary>
           <main>
             <a id="usw-url" href="https://userstyles.world" target="_blank">&nbsp;</a>
             <p>

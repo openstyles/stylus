@@ -10,7 +10,7 @@ export let sticky;
 export default function CompactHeader() {
   // Set up mini-header on scroll
   const {isUsercss} = editor;
-  const elHeader = $create('div', {
+  const sensor = $create('div', {
     style: important(`
       top: 0;
       height: 1px;
@@ -21,16 +21,16 @@ export default function CompactHeader() {
   const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
   const xoRoot = isUsercss ? scroller : undefined;
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
-  const elIconized = $$('[data-icon]');
+  const elIconized = $$('#header .i');
   $('#new-as').onclick = () => {
     if (!editor.style.id && !editor.dirty.isDirty()) {
       location.reload();
     }
   };
-  scroller.appendChild(elHeader);
+  scroller.appendChild(sensor);
   mqCompact(val => {
     if (val) {
-      xo.observe(elHeader);
+      xo.observe(sensor);
     } else {
       xo.disconnect();
     }

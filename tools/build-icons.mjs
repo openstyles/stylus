@@ -10,8 +10,8 @@ import util from './util.js';
 
 process.stdout.write('Creating icons font: ');
 
-const ERRORS = [];
-const SVG_MAP = [];
+const errors = [];
+const svgMap = {__proto__: null};
 const {SRC} = util;
 const SVG_DIR = SRC + 'icons/';
 const CSS_FILE = SRC + 'css/global.css';
@@ -32,8 +32,9 @@ for (const file of glob.globSync(SVG_DIR + '*.svg')) {
   const name = path.basename(file).split('.')[0];
   const text = fs.readFileSync(file, 'utf8');
   const char = text.match(/<svg[^>]*?\sid="\s*([^\s"]+)\s*"/)?.[1];
-  if (!char) {
-    ERRORS.push(name);
+  const old = svgMap[char];
+  if (!char || old) {
+    errors.push(name + (old ? `: "${char}" is already used by ${old}` : ''));
     continue;
   }
   process.stdout.write(char);
@@ -43,7 +44,7 @@ for (const file of glob.globSync(SVG_DIR + '*.svg')) {
   const glyph = stream.Readable.from([scaled]);
   glyph.metadata = {name, file, unicode: [char]};
   fontStream.write(glyph);
-  SVG_MAP.push([name, char]);
+  svgMap[char] = name;
 }
 fontStream.end();
 
@@ -60,12 +61,13 @@ function convert() {
     new RegExp(c.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&') + '.*\\s*', 'g'));
   const LF = cssText.match(/\r?\n/)[0];
 
-  const glyphs = SVG_MAP
-    .map(([name, char]) => CSS_ICON.replaceAll('$NAME', name).replaceAll('$CHAR', char))
+  const chars = Object.keys(svgMap);
+  const glyphs = chars
+    .map(char => CSS_ICON.replaceAll('$NAME', svgMap[char]).replaceAll('$CHAR', char))
     .join(LF);
 
-  const range = SVG_MAP
-    .map(([, char]) => 'U+' + char.charCodeAt(0).toString(16))
+  const range = chars
+    .map(char => 'U+' + char.charCodeAt(0).toString(16))
     .sort()
     .join(',');
 
@@ -83,7 +85,7 @@ function convert() {
 
   fs.writeFileSync(CSS_FONT, ttf2woff2(Buffer.from(ttf.buffer)));
 
-  console.log(` (${SVG_MAP.length})`, ERRORS[0]
-    ? chalk.red(`and ${ERRORS.length} with no id skipped:\n  `) + ERRORS.join('\n  ')
+  console.log(` (${chars.length})`, errors[0]
+    ? chalk.red(`and ${errors.length} with no id skipped:\n  `) + errors.join('\n  ')
     : chalk.green('OK'));
 }

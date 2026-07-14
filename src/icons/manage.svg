@@ -1,6 +1,3 @@
-<!-- MIT https://icon-sets.iconify.design/eos-icons/cluster-management-outlined/ -->
-<svg id="m" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <path d="m22.69 18.37l1.14-1l-1-1.73l-1.45.49a3.7 3.7 0 0 0-1.08-.63L20 14h-2l-.3 1.49a3.7 3.7 0 0 0-1.08.63l-1.45-.49l-1 1.73l1.14 1a3.3 3.3 0 0 0 0 1.26l-1.14 1l1 1.73l1.45-.49a3.7 3.7 0 0 0 1.08.63L18 24h2l.3-1.49a3.7 3.7 0 0 0 1.08-.63l1.45.49l1-1.73l-1.14-1a3.4 3.4 0 0 0 0-1.27M19 21a2 2 0 1 1 2-2a2.006 2.006 0 0 1-2 2m4-10H1V1h22ZM3 9h18V3H3Zm10-4H4v2h9Zm3 0a1 1 0 1 0 1 1a1 1 0 0 0-1-1m3 0a1 1 0 1 0 1 1a1 1 0 0 0-1-1" />
-  <path d="M12.294 21H3v-6h10.26a7 7 0 0 1 2.148-2H1v10h12.26a7 7 0 0 1-.966-2" />
-  <path d="M4 19h8a7 7 0 0 1 .294-2H4Z" />
+<svg id="m" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+  <path d="M6,6H2V2h4V6z M3,5h2V3H3V5z M12,6H8V2h4V6z M9,5h2V3H9V5z M18,6h-4V2h4V6z M15,5h2V3h-2V5z M6,12H2V8h4V12z M3,11h2V9H3V11z M12,12H8V8h4V12z M9,11h2V9H9V11z M18,12h-4V8h4V12z M15,11h2V9h-2V11z M6,18H2v-4h4V18z M3,17h2v-2H3V17z M12,18H8v-4h4V18z M9,17h2v-2H9V17z M18,18h-4v-4h4V18z M15,17h2v-2h-2V17z" />
 </svg>

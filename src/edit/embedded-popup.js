@@ -1,5 +1,5 @@
 import {extraKeys} from '@/cm';
-import {$create, $root, $rootCL} from '@/js/dom';
+import {$create, $rootCL} from '@/js/dom';
 import {getEventKeyName} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
 import {actionPopupUrl} from '@/js/urls';
@@ -22,9 +22,8 @@ export default function EmbeddedPopup() {
     title: t('optionsCustomizePopup') + '\n' + POPUP_HOTKEY,
     onclick: embedPopup,
   });
-  $root.appendChild(btn);
+  $('#header').append(btn);
   $rootCL.add('popup-window');
-  document.body.appendChild(btn);
   // Adding a dummy command to show in keymap help popup
   extraKeys[POPUP_HOTKEY] = 'openStylusPopup';
 

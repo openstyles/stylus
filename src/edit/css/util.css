@@ -15,17 +15,23 @@
   }
 }
 #popup-button {
-  position: fixed;
-  right: $pad05;
-  top: calc((2 * $pad05 + var(--input-height) - 16px) / 2); /* #header's min height */
+  position: absolute;
+  right: 12px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
   z-index: 1000;
   cursor: pointer;
   transition: filter .25s;
   &:hover {
     filter: drop-shadow(0 0 3px hsl(180, 70%, 50%));
   }
-  .usercss:not(.compact-layout) & {
-    right: 24px;
+  html:not(.compact-layout) & {
+    top: $pad;
+    right: $pad;
+    bottom: auto;
+    position: fixed;
+    margin: 0 !important;
   }
 }
 
