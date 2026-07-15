@@ -90,7 +90,7 @@ const editor = self.editor = {
     if (hide != null) $id('testRE').hidden = hide;
   },
 
-  toggleStyle(enabled = !style.enabled) {
+  toggleStyle(cm, enabled = !style.enabled) {
     $id('enabled').checked = enabled;
     editor.updateEnabledness(enabled);
   },

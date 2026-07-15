@@ -34,7 +34,7 @@ function handleExternalUpdate(style, reason, editorId) {
   }
   if (reason === 'toggle') {
     if (editor.dirty.isDirty()) {
-      editor.toggleStyle(style.enabled);
+      editor.toggleStyle(null, style.enabled);
       // live preview is invoked by toggleStyle
     } else {
       Object.assign(editor.style, style);
