@@ -39,9 +39,8 @@ export default function CompactHeader() {
   });
 
   /** @param {IntersectionObserverEntry[]} entries */
-  function onScrolled(entries) {
-    sticky = !entries.pop().intersectionRatio;
-    if (!isUsercss) scroller.style.paddingTop = sticky ? h.offsetHeight + 'px' : '';
+  function onScrolled([e]) {
+    sticky = !e.intersectionRatio;
     toggleSticky(sticky);
   }
 }

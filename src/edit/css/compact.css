@@ -10,6 +10,7 @@
     flex: 0;
     height: unset;
     width: 100%;
+    position: sticky;
     overflow: visible;
     border-right: none;
     border-bottom: 1px dashed var(--c65);
