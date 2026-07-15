@@ -2,6 +2,7 @@ import '@/js/dom-init';
 import {pEditorLinter, pEditorLinterOn} from '@/js/consts';
 import {$rootCL} from '@/js/dom';
 import {subscribe} from '@/js/prefs';
+import {addEditorCommands} from './codemirror-factory';
 import CompactHeader, {toggleSticky} from './compact-header';
 import editor, {scrollInfo} from './editor';
 import EditorHeader from './editor-header';
@@ -30,6 +31,7 @@ import './css/index.css';
 
   editor.dirty.onChange(editor.updateDirty);
   subscribe([pEditorLinter, pEditorLinterOn], linterPrefSubscriber, true);
+  addEditorCommands();
   CompactHeader();
   // enabling after init to prevent flash of validation failure on an empty name
   $id('name').required = !uc;

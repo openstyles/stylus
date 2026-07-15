@@ -17,6 +17,7 @@ import {rerouteHotkeys} from './util';
 //#region Factory
 
 const cms = new Set();
+const cmCommands = CodeMirror.commands;
 const cmDefaults = CodeMirror.defaults;
 const cmFactory = {
 
@@ -122,7 +123,7 @@ const prefKeys = prefs.knownKeys.filter(k =>
   k !== 'editor.colorpicker' && // handled in colorpicker-helper.js
   k !== 'editor.arrowKeysTraverse' && // handled in sections-editor.js
   prefToCmOpt(k) in CodeMirror.defaults);
-const {insertTab, insertSoftTab} = CodeMirror.commands;
+const {insertTab, insertSoftTab} = cmCommands;
 (async () => {
   if (!__.MV3 || !swController)
     await prefs.ready;
@@ -134,7 +135,7 @@ const {insertTab, insertSoftTab} = CodeMirror.commands;
       cm.setOption('indentUnit', Number(value));
     },
     'editor.indentWithTabs'(cm, value) {
-      CodeMirror.commands.insertTab = value ? insertTab : insertSoftTab;
+      cmCommands.insertTab = value ? insertTab : insertSoftTab;
     },
     'editor.matchHighlight'(cm, value) {
       const showToken = value === 'token' && /[#.\-\w]/;
@@ -211,7 +212,7 @@ const lazyOpt = {
 //#endregion
 //#region Commands
 
-Object.assign(CodeMirror.commands, {
+Object.assign(cmCommands, {
   commentSelection(cm) {
     cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
   },
@@ -230,13 +231,14 @@ Object.assign(CodeMirror.commands, {
     }
   },
 });
-for (const cmd of [
-  'nextEditor',
-  'prevEditor',
-  'save',
-  'toggleStyle',
-]) {
-  CodeMirror.commands[cmd] = (...args) => editor[cmd](...args);
+
+export function addEditorCommands() {
+  for (const cmd of [
+    'nextEditor',
+    'prevEditor',
+    'save',
+    'toggleStyle',
+  ]) cmCommands[cmd] = editor[cmd];
 }
 
 function plusMinusOne(delta, cm, pos = cm.getCursor(), inOp) {
@@ -366,8 +368,8 @@ for (const k of ['clear', 'attachLine', 'detachLine']) {
   };
 }
 for (const name of ['prevBookmark', 'nextBookmark']) {
-  const cmdFn = CodeMirror.commands[name];
-  CodeMirror.commands[name] = cm => {
+  const cmdFn = cmCommands[name];
+  cmCommands[name] = cm => {
     cm.setSelection = cm.jumpToPos;
     cmdFn(cm);
     delete cm.setSelection;
