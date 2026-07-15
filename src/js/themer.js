@@ -15,6 +15,7 @@ import {actionPopupUrl} from './urls';
 import {MF_ICON_EXT, MF_ICON_PATH} from './util-webext';
 import '@/css/global.css';
 import '@/css/global-dark.css';
+import '@/css/scrollbar-chrome-dark.css';
 
 export const onDarkChanged = new Set();
 export const MEDIA_ON = 'screen';

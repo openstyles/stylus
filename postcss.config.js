@@ -28,5 +28,6 @@ const cfgUnnest = {plugins};
 let cfgNest;
 
 module.exports = !nesting ? cfgUnnest
-  : ctx => ctx.file.endsWith('global-dark.css') ? cfgUnnest // ::-webkit-scrollbar can't be nested
+  // ::-webkit-scrollbar can't be nested
+  : ctx => ctx.file.endsWith('scrollbar-chrome-dark.css') ? cfgUnnest
     : (cfgNest ||= {plugins: plugins.filter(p => p !== kPostcssNested)});

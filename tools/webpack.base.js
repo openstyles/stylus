@@ -7,7 +7,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const InlineConstantExportsPlugin = require('@automattic/webpack-inline-constant-exports-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
-const {DEV, MV3, SRC, CM_PACKAGE_PATH, ROOT, nukeHtmlSpaces} = require('./util');
+const {BUILD, DEV, MV3, SRC, CM_PACKAGE_PATH, ROOT, nukeHtmlSpaces} = require('./util');
 const {RawEnvPlugin} = require('./wp-raw-patch-plugin');
 const {ALIASES, CSS, DST, FS_CACHE, SHIM, JS, VARS, RAW_VARS, SEP_ESC, SRC_ESC} =
   require('./webpack.vars');
@@ -184,6 +184,8 @@ const getBaseConfig = ({entry, vars} = {}) => ({
     vars && new RawEnvPlugin(...vars),
     new webpack.ids.NamedChunkIdsPlugin({context: SRC + JS}),
     new InlineConstantExportsPlugin([/[/\\](consts|themer|sync-util)\.js$/]),
+    (MV3 || BUILD === 'firefox') &&
+      new webpack.NormalModuleReplacementPlugin(/scrollbar-chrome-dark\.css$/, 'data:text/css,'),
     +process.env.PROFILE && new webpack.debug.ProfilingPlugin({
       outputPath: __dirname + `/../webpack-profile-${entry}.json`,
     }),
