@@ -62,10 +62,15 @@
     background-color: var(--bg) !important;
     border: 0;
   }
-  ::-webkit-scrollbar {
-    width: 17px;
-    height: 17px;
-    background: var(--bg);
+  * {
+    scrollbar-color: var(--c75) var(--bg);
+  }
+  @supports selector(::-webkit-scrollbar-thumb) {
+    ::-webkit-scrollbar {
+      width: 17px;
+      height: 17px;
+      background: var(--bg);
+    }
   }
   ::-webkit-scrollbar-corner {
     background: var(--bg);
@@ -172,9 +177,6 @@
     }
     textarea {
       border: 1px solid var(--c65);
-    }
-    * {
-      scrollbar-color: var(--c75) var(--bg);
     }
   }
 }
