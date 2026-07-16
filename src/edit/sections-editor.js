@@ -548,7 +548,7 @@ export default function SectionsEditor() {
    * @param {-1 | 1} dir */
   function moveSection(section, dir) {
     let index = sections.indexOf(section);
-    if (index === dir < 0 ? 0 : sections.length - 1) {
+    if (index === (dir < 0 ? 0 : sections.length - 1)) {
       return;
     }
     container.moveBefore(section.el, sections[index + (dir < 0 ? -1 : 2)]?.el);
@@ -559,18 +559,20 @@ export default function SectionsEditor() {
     liveSections[index + dir] = section;
     updateSectionOrder();
     editor.scrollToEditor(section.cm);
+    section.cm.focus();
   }
 
-  /**
-   * @param {EditorSectionElement} el
-   * @param {EditorSection} section
-   */
-  function registerEvents(el, section) {
-    el.$('.remove-section').onclick = () => removeSection(section);
-    el.$('.add-section').onclick = () => insertSectionAfter(undefined, section);
-    el.$('.clone-section').onclick = () => insertSectionAfter(section.getModel(), section);
-    el.$('.move-section-up').onclick = () => moveSection(section, -1);
-    el.$('.move-section-down').onclick = () => moveSection(section, 1);
+  /** @param {UIEvent} evt */
+  function onActionClick(evt) {
+    const el = evt.target;
+    const section = (/**@type{EditorSectionElement}*/el.closest('.section')).me;
+    switch (el.classList.item(0)) {
+      case 'remove-section': return removeSection(section);
+      case 'add-section': return insertSectionAfter(undefined, section);
+      case 'clone-section': return insertSectionAfter(section.getModel(), section);
+      case 'move-section-up': return moveSection(section, -1);
+      case 'move-section-down': return moveSection(section, 1);
+    }
   }
 
   function importOnPaste(cm, event, text) {
@@ -591,7 +593,6 @@ export default function SectionsEditor() {
         const el = /**@type{EditorSectionElement}*/e.target;
         const section = el.me;
         xo.unobserve(el);
-        registerEvents(el, section);
         if (r.bottom > 0 && r.top < innerHeight) {
           refreshOnViewNow(section);
         } else {
@@ -603,6 +604,9 @@ export default function SectionsEditor() {
 
   /** @param {EditorSection} section */
   async function refreshOnViewNow(section) {
-    if (section.init) section.create(true);
+    if (section.init) {
+      section.create(true);
+      section.el.$('.edit-actions').on('click', onActionClick);
+    }
   }
 }
