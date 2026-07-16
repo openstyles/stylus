@@ -54,6 +54,8 @@ export function create(url, cache, maybe, tabOvr) {
           name: style.customName || style.name,
           [kTabOvr]: forced,
         });
+      } else {
+        cache.delete(id);
       }
     } else {
       cache.delete(id);
