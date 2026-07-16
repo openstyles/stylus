@@ -11,7 +11,7 @@ import {iconize} from './applies-to';
 import editor, {scrollInfo} from './editor';
 import * as linterMan from './linter';
 import livePreview from './live-preview';
-import EditorSection from './sections-editor-section';
+import EditorSection, {ACTIONS} from './sections-editor-section';
 import {helpPopup, rerouteHotkeys, showCodeMirrorPopup, worker} from './util';
 
 export default function SectionsEditor() {
@@ -52,6 +52,11 @@ export default function SectionsEditor() {
     if (val) iconize(sections.map(sec => sec.targetsEl));
   });
   container.moveBefore ||= container.insertBefore;
+  ACTIONS['remove-section'] = removeSection;
+  ACTIONS['add-section'] = section => insertSectionAfter(undefined, section);
+  ACTIONS['clone-section'] = section => insertSectionAfter(section.getModel(), section);
+  ACTIONS['move-section-up'] = moveSection.bind(null, -1);
+  ACTIONS['move-section-down'] = moveSection.bind(null, 1);
 
   /** @namespace Editor */
   Object.assign(editor, {
@@ -544,9 +549,11 @@ export default function SectionsEditor() {
     }
   }
 
-  /** @param {EditorSection} section
-   * @param {-1 | 1} dir */
-  function moveSection(section, dir) {
+  /**
+   * @param {-1 | 1} dir
+   * @param {EditorSection} section
+   */
+  function moveSection(dir, section) {
     let index = sections.indexOf(section);
     if (index === (dir < 0 ? 0 : sections.length - 1)) {
       return;
@@ -560,19 +567,6 @@ export default function SectionsEditor() {
     updateSectionOrder();
     editor.scrollToEditor(section.cm);
     section.cm.focus();
-  }
-
-  /** @param {UIEvent} evt */
-  function onActionClick(evt) {
-    const el = evt.target;
-    const section = (/**@type{EditorSectionElement}*/el.closest('.section')).me;
-    switch (el.classList.item(0)) {
-      case 'remove-section': return removeSection(section);
-      case 'add-section': return insertSectionAfter(undefined, section);
-      case 'clone-section': return insertSectionAfter(section.getModel(), section);
-      case 'move-section-up': return moveSection(section, -1);
-      case 'move-section-down': return moveSection(section, 1);
-    }
   }
 
   function importOnPaste(cm, event, text) {
@@ -604,9 +598,6 @@ export default function SectionsEditor() {
 
   /** @param {EditorSection} section */
   async function refreshOnViewNow(section) {
-    if (section.init) {
-      section.create(true);
-      section.el.$('.edit-actions').on('click', onActionClick);
-    }
+    if (section.init) section.create(true);
   }
 }

@@ -21,6 +21,8 @@ import {helpPopup, trimCommentLabel} from './util';
 let headerOffset; // in compact mode the header is at the top so it reduces the available height
 let cmExtrasHeight; // resize grip + borders
 
+/** @type {{[name: string]: (section: EditorSection) => any}} */
+export const ACTIONS = {__proto__: null};
 /**
  * @typedef {HTMLElement} EditorSectionElement
  * @prop {EditorSection} me
@@ -86,6 +88,8 @@ export default class EditorSection {
     cm.setSize = EditorSection.onSetSize;
     this.changeGeneration = cm.changeGeneration();
     this.removed = false;
+    // using `handleEvent` implicitly
+    el.$('.edit-actions').on('click', this);
     elTargets.on('change', this);
     elTargets.on('input', this);
     elTargets.on('click', this);
@@ -204,19 +208,21 @@ export default class EditorSection {
 
   /**
    * Used by addEventListener implicitly
-   * @param {MouseEvent} evt
+   * @param {UIEvent} evt
    */
   handleEvent(evt) {
     const el = evt.target;
-    const cls = el.classList;
-    const trgEl = el.closest(C_ITEM);
-    const trg = /** @type {SectionTarget} */ trgEl && trgEl.me;
+    const cls = el.classList.item(0);
+    const actionFn = ACTIONS[cls];
+    const trg = !actionFn && el.closest(C_ITEM)?.me;
     let tmp;
     switch (evt.type) {
       case 'click':
-        if (cls.contains('add-applies-to')) {
+        if (actionFn) {
+          actionFn(this);
+        } else if (cls === 'add-applies-to') {
           this.addTarget(trg.type, '', trg).el.$(C_VALUE).focus();
-        } else if (cls.contains('remove-applies-to')) {
+        } else if (cls === 'remove-applies-to') {
           this.removeTarget(trg);
         } else if (!this.ati && (tmp = el.closest('label'))) {
           const chk = template[kEditorSettings].$('#editor\\.targetsFirst');
