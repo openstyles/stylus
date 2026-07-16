@@ -428,10 +428,7 @@
     "message": "匯入"
   },
   "importPreprocessor": {
-    "message": "以一個 <@preprocessor> 進行風格設定在經典模式下無法運作。您可以將編輯器切換到 UserCSS 模式：1）開啟風格管理員，2）啟用「作為 UserCSS」核取方塊，3）點選「撰寫新風格」\n\n現在要進行匯入嗎？"
-  },
-  "importPreprocessorTitle": {
-    "message": "@preprocessor 引起的潛在問題"
+    "message": "依賴 <@preprocessor> 的程式碼無法運作，因為此樣式不是在 <UserCSS> 模式中建立的。"
   },
   "importReplaceLabel": {
     "message": "覆蓋樣式"

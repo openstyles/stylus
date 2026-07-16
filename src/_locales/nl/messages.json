@@ -396,12 +396,6 @@
   "importLabel": {
     "message": "Importeren"
   },
-  "importPreprocessor": {
-    "message": "Stijlen met een <@preprocessor> werken niet in de klassieke modus. U kunt de editor omschakelen naar UserCSS-modus: 1) open de stijlbeheerder, 2) vink het selectievakje ‘als UserCSS’ aan, 3) klik op ‘Nieuwe stijl schrijven’\n\nToch nu importeren?"
-  },
-  "importPreprocessorTitle": {
-    "message": "Mogelijk probleem vanwege @preprocessor"
-  },
   "importReplaceLabel": {
     "message": "Stijl overschrijven"
   },

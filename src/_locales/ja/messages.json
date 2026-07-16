@@ -389,12 +389,6 @@
   "importLabel": {
     "message": "インポート"
   },
-  "importPreprocessor": {
-    "message": "<@preprocessor>を含むスタイルは、クラシックモードでは機能しません。エディタをUserCSSモードにしてください : 1) スタイルマネージャを開きます, 2)「UserCSSとして」チェックボックスをONにします, 3)「新スタイルを作成」をクリックします\n\nとにかくインポートしますか？"
-  },
-  "importPreprocessorTitle": {
-    "message": "@preprocessorの潜在的な問題"
-  },
   "importReplaceLabel": {
     "message": "スタイルを上書き"
   },

@@ -369,12 +369,6 @@
   "importLabel": {
     "message": "Importér"
   },
-  "importPreprocessor": {
-    "message": "Stile med en <@preprocessor> fungerer ikke i klassisk tilstand. Du kan skifte til UserCSS-tilstand ved at: 1) åbne stiladministratoren, 2) krydse af for 'som UserCSS', 3) klikke på 'Skriv ny stil'\n\nImportér nu alligevel?"
-  },
-  "importPreprocessorTitle": {
-    "message": "Potentielt problem grundet @preprocessor"
-  },
   "importReplaceLabel": {
     "message": "Overskriv stil"
   },

@@ -422,10 +422,7 @@
     "message": "Importuj"
   },
   "importPreprocessor": {
-    "message": "Styl z <@preprocessor> nie będzie działać w trybie klasycznym. Możesz przełączyć edytor w tryb UserCSS: 1) otwórz menedżer stylów, 2) zaznacz pole wyboru „jako UserCSS”, 3) kliknij „Napisz nowy styl”\n\nCzy mimo to zaimportować teraz?"
-  },
-  "importPreprocessorTitle": {
-    "message": "Potencjalny problem związany z @preprocessor"
+    "message": "Kod zależny od <@preprocessor> nie będzie działał, ponieważ ten styl nie został utworzony w trybie <UserCSS>."
   },
   "importReplaceLabel": {
     "message": "Nadpisz styl"

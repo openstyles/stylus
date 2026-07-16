@@ -427,12 +427,6 @@
   "importLabel": {
     "message": "استيراد"
   },
-  "importPreprocessor": {
-    "message": "النمط الذي يحتوي على <@preprocessor> لن يعمل في الوضع الكلاسيكي. يمكنك تبديل المحرر إلى وضع UserCSS: 1) افتح مدير الأنماط، 2) فعّل خانة الاختيار \"كـ UserCSS\"، 3) انقر على \"كتابة نمط جديد\"\n\nهل تريد الاستيراد على أي حال الآن؟"
-  },
-  "importPreprocessorTitle": {
-    "message": "مشكلة محتملة بسبب @preprocessor"
-  },
   "importReplaceLabel": {
     "message": "الكتابة فوق النمط"
   },

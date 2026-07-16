@@ -373,12 +373,6 @@
   "importLabel": {
     "message": "Importar"
   },
-  "importPreprocessor": {
-    "message": "Estilos com <@preprocessor> não irão funcionar no modo clássico. Você pode trocar o editor para o modo UserCSS: 1) abre o gerenciador de estilos, 2) ative a caixa \"como UserCSS\", 3) clique \"Escrever novo estilo\"\n\nDeseja importar mesmo assim?"
-  },
-  "importPreprocessorTitle": {
-    "message": "Possível problema causado pelo @preprocessor"
-  },
   "importReplaceLabel": {
     "message": "Sobrescrever estilo"
   },

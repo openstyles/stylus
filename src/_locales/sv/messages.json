@@ -309,9 +309,6 @@
   "importLabel": {
     "message": "Importera"
   },
-  "importPreprocessorTitle": {
-    "message": "Potentiellt problem på grund av @preprocessor"
-  },
   "importReplaceLabel": {
     "message": "Ersätt stil"
   },

@@ -427,12 +427,6 @@
   "importLabel": {
     "message": "导入"
   },
-  "importPreprocessor": {
-    "message": "带有 <@preprocessor> 样式无法当前的经典模式下使用。\n您可以将编辑器切换到 UserCSS 模式。\n1) 打开样式管理器；2) 勾选「以 UserCSS」勾选框；3) 点击「编写新样式」\n\n仍然导入吗？"
-  },
-  "importPreprocessorTitle": {
-    "message": "潜在问题之 @preprocessor 预处理"
-  },
   "importReplaceLabel": {
     "message": "覆盖替换导入"
   },

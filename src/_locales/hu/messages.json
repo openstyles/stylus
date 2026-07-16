@@ -385,12 +385,6 @@
   "importLabel": {
     "message": "Importálás"
   },
-  "importPreprocessor": {
-    "message": "Egy stílus <@preprocessor> nem fog működni a hagyományos módban. Át tudja állítani a szerkesztőt UserCSS módra a következőképpen: 1.) Nyissa meg a stíluskezelőt, 2.) pipálja be a „UserCSS-ként” jelölőnégyzetet, majd 3.) kattintson erre: \"Új stílus írása\".\n\nBe akarja tölteni mindenképpen?"
-  },
-  "importPreprocessorTitle": {
-    "message": "Lehetséges probléma a @preprocesszor miatt"
-  },
   "importReplaceLabel": {
     "message": "Stílus felülírása"
   },

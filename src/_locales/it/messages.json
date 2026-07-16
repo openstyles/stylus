@@ -356,9 +356,6 @@
   "importLabel": {
     "message": "Importa"
   },
-  "importPreprocessorTitle": {
-    "message": "Potenziali problemi a causa di @preprocessor"
-  },
   "importReplaceLabel": {
     "message": "Sovrascrivi stile"
   },

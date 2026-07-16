@@ -394,12 +394,6 @@
   "importLabel": {
     "message": "Імпорт"
   },
-  "importPreprocessor": {
-    "message": "Стиль з <@preprocessor> не працює в класичному режимі. Ви можете переключити редактор у режим UserCSS: 1) відкрийте менеджер стилів, 2) увімкніть прапорець \"як UserCSS\", 3) клацніть \"Написати новий стиль\"\n\nВсе одно імпортувати зараз?"
-  },
-  "importPreprocessorTitle": {
-    "message": "Потенційна проблема через @preprocessor"
-  },
   "importReplaceLabel": {
     "message": "Замінити стиль"
   },
