@@ -80,7 +80,13 @@ function setupBadFavsDetector(tabId) {
     if (host && !badFavs.has(host)) {
       badFavs.add(host);
       debounce(API.prefsDB.put, 250, [...badFavs], kBadFavs);
-      for (const v of chrome.extension.getViews()) v[kBadFavs]?.add(host);
+      for (const v of chrome.extension.getViews()) {
+        if (v[kBadFavs]) {
+          v[kBadFavs].add(host);
+          for (const img of v.document.$$(`img[src="${e.url}"]`))
+            img.removeAttribute('src');
+        }
+      }
     }
   };
   const filter = {
