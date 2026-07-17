@@ -83,7 +83,7 @@
     "message": "点击卸载"
   },
   "cm_arrowKeysTraverse": {
-    "message": "箭头键↑↓可切换片段"
+    "message": "使用箭头键↑↓换行时可跨越片段"
   },
   "cm_autoCloseBrackets": {
     "message": "自动补全括号与引号"
@@ -125,7 +125,7 @@
     "message": "双击选中 CSS 字段"
   },
   "cm_selectByTokensTooltip": {
-    "message": "可被双击选中的 CSS 字段示例：.foo-bar-2  #aabbcc  0.32  !important\n禁用时：仅选中以符号分隔的单词（按 \\w+ 匹配）\n\n译注：启用时，Sublime 键盘映射下，可使用 Ctrl+D 临时恢复为选择单词。"
+    "message": "可被双击选中的 CSS 字段示例：.foo-bar-2  #aabbcc  0.32  !important\n禁用时：仅选中以符号分隔的单词（按 \\w+ 匹配）\n　\n译注：启用后，仍可使用快捷键选择单词，例如 Sublime 键盘映射下，可使用 Ctrl+D（命令名称：selectNextOccurrence）选择单词。"
   },
   "cm_smartIndent": {
     "message": "智能缩进"
@@ -427,6 +427,9 @@
   "importLabel": {
     "message": "导入"
   },
+  "importPreprocessor": {
+    "message": "由于此样式未使用 <UserCSS> 模式创建，使用 <@preprocessor> 的代码将无法生效。\n译注：请尝试新建一个空白 UserCSS 样式，将此样式导出，再导入到那个 UserCSS 样式。"
+  },
   "importReplaceLabel": {
     "message": "覆盖替换导入"
   },
@@ -577,7 +580,7 @@
     "message": "过滤器"
   },
   "manageMinColumnWidth": {
-    "message": "px 最小列宽（9999 px 停用多列模式）"
+    "message": "px - 最小列宽（9999 px 停用多列模式）"
   },
   "manageNewUI": {
     "message": "表格布局"
@@ -595,7 +598,7 @@
     "message": "只显示本地创建的样式"
   },
   "manageOnlyLocalTooltip": {
-    "message": "（不是从 userstyles.org 页面安装的样式）"
+    "message": "（不是从 userstyles.org 等页面在线安装的样式）"
   },
   "manageOnlyNonUsercss": {
     "message": "只显示非 UserCSS 样式"
@@ -829,7 +832,7 @@
     "message": "选项"
   },
   "optionCompactWidth": {
-    "message": "px 窗口宽度 ≤ N px 时，使用紧凑 UI 布局"
+    "message": "px - 窗口宽度 ≤ N px 时，使用紧凑 UI 布局"
   },
   "optionConfigSidePanel": {
     "message": "UserCSS 配置"
@@ -903,7 +906,7 @@
     "message": "高级设置"
   },
   "optionsAdvancedAutoSwitchSchemeBySystem": {
-    "message": "按系统偏好设置"
+    "message": "跟随系统设置"
   },
   "optionsAdvancedAutoSwitchSchemeByTime": {
     "message": "按夜间时间"
@@ -915,10 +918,10 @@
     "message": "向编辑器右键菜单添加“删除”"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "通过 <html[stylus-iframe]> 确定 <iframe> 父页面"
+    "message": "通过 <html[stylus-iframe]> 暴露 <iframe> 的父页面"
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "在每个 iframe 中为 html 元素设置 stylus-iframe 属性，暴露顶层网站的域名。\n\n可用于编写包含或排除特定网站上的 iframe 的 CSS，例如：\n\n/* 针对推特的 iframe 隐藏 h1 元素 */\nhtml[stylus-iframe$$=“twitter.com”] h1 { display:none }\n\nhtml:not([stylus-iframe]) { /* 不应用于 iframe 的样式 */ }\n\n译注：具体实现参考 https://github.com/openstyles/stylus/blob/bb26734a5424954b621b2580051ad3ff47567fe6/src/content/apply.js#L220"
+    "message": "为每个 iframe 的 <html> 元素设置 <stylus-iframe> 属性，暴露其顶层网站的域名。\n\n可用于编写包含或排除特定网站上的 iframe 的 CSS，例如：\n\n</* 仅对显示在推特上的 iframe 隐藏 h1 元素 */\nhtml[stylus-iframe$$=“twitter.com”] h1 { display:none }\n\nhtml:not([stylus-iframe]) { /* 不应用于任何 iframe 的样式 */ }>\n\n译注：具体实现参考 https://github.com/openstyles/stylus/blob/bb26734a5424954b621b2580051ad3ff47567fe6/src/content/apply.js#L220"
   },
   "optionsAdvancedExposeStyleName": {
     "message": "暴露样式名称"
@@ -930,7 +933,7 @@
     "message": "启用 <CSP> 补丁以使样式资源生效"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "如果在带有严格 <CSP>（<Content-Security-Policy>）规则的网站上无法加载样式中包含的图像或字体，请启用此设置。启用此设置将放宽 <CSP> 限制，从而允许加载必要的样式内容。\n\n⚠此选项仅适用于了解潜在安全隐患的高级用户，并且用户需要自行承担监控被允许内容的责任。请阅读有关「基于 CSS 的攻击」的更多信息，以妥善决定。\n\n另请注意，如果另一个已安装的扩展首先修改了网络响应，则不能保证此选项一定会生效。"
+    "message": "如果在带有严格 <CSP>（<Content-Security-Policy>）规则的网站上无法加载样式中包含的图像或字体，请启用此设置。启用此设置将放宽 <CSP> 限制，从而允许加载必要的样式内容。\n\n⚠ 此选项仅适用于了解潜在安全隐患的高级用户，并且用户需要自行承担监控被允许内容的责任。请阅读有关「基于 CSS 的攻击」的更多信息，以妥善决定。\n\n另请注意，如果另一个已安装的扩展首先修改了网络响应，则不能保证此选项一定会生效。"
   },
   "optionsAdvancedSites": {
     "message": "…仅在匹配的网站上"
@@ -957,7 +960,7 @@
     "message": "计数器角标"
   },
   "optionsCustomizeIcon": {
-    "message": "工具栏图标风格"
+    "message": "工具栏图标"
   },
   "optionsCustomizePopup": {
     "message": "弹出框"
@@ -981,7 +984,7 @@
     "message": "浅色浏览器主题"
   },
   "optionsPopupWidth": {
-    "message": "px 弹出框宽度"
+    "message": "px - 弹出框宽度"
   },
   "optionsReset": {
     "message": "重置所有选项为默认值"
@@ -1054,7 +1057,7 @@
     "message": "用户名"
   },
   "optionsUpdateInterval": {
-    "message": "每隔 N 小时 自动检测更新（0 为禁用）"
+    "message": "小时 - 每隔 N 小时自动检查更新（0 为禁用）"
   },
   "optionsUrlInstaller": {
     "message": "在任意网站上启用 UserCSS 样式安装器"
@@ -1127,7 +1130,7 @@
     "message": "在新窗口中打开编辑器"
   },
   "popupOpenEditInWindowTooltip": {
-    "message": "可以通过将编辑器标签页拖出为单独窗口来启用，将被拖出的编辑器标签页拖入其他窗口即可禁用。"
+    "message": "将编辑器标签页拖出为单独窗口时自动启用，\n将编辑器标签页拖入到其他窗口时自动禁用。\n\n译注：\n从样式管理器中打开的编辑器也受此设置影响。\n可开启下面的“窗口不带工具栏与­标签页”设置，\n不显示标签页，来避免上述自动启用/禁用行为。"
   },
   "popupSidePanelOpenHint": {
     "message": "右键点击：在侧栏中打开"
@@ -1193,7 +1196,7 @@
     "message": "反馈此 bug"
   },
   "restoreTemplate": {
-    "message": "恢复默认模板。\n\n（不会改变当前打开的编辑器页面）"
+    "message": "恢复默认模板。\n\n（不会改变当前打开的编辑器页面。）"
   },
   "saveAsTemplate": {
     "message": "保存为模板"
