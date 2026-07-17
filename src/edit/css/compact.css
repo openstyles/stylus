@@ -63,6 +63,12 @@
     overflow: hidden;
     padding: 1px; /* to fit the focus outline on the input */
   }
+  #enabled-label {
+    order: -1;
+    input {
+      margin-left: $pad025;
+    }
+  }
   #name {
     field-sizing: content;
     min-width: 5em;

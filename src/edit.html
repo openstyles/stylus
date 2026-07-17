@@ -30,6 +30,10 @@
     <div id="header" class="dvh100">
       <section id="basic-info">
         <h1 class="ellipsis hide-if-compact"></h1>
+        <label id="enabled-label" i18n="title:toggleStyle" data-hotkey-tooltip="toggleStyle">
+          <input type="checkbox" id="enabled">
+          <span class="hide-if-compact" i18n="styleEnabledLabel"></span>
+        </label>
         <a id="url" target="_blank" class="icon" i18n="title:externalHomepage">
           <i class=i-external></i>
         </a>
@@ -76,11 +80,6 @@
                  data-pref="editor.general.expanded">
           <summary><h2 i18n="general" class="i i-config-aux"></h2></summary>
           <main>
-            <label id="enabled-label"
-                   i18n="+styleEnabledLabel, title:toggleStyle"
-                   data-hotkey-tooltip="toggleStyle">
-              <input type="checkbox" id="enabled">
-            </label>
             <span class="hide-if-new">
               <label i18n="+previewLabel, title:previewTooltip">
                 <input type="checkbox" id="editor.livePreview">

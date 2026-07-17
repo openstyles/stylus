@@ -1,6 +1,7 @@
 @import 'vars.css';
 
 #header {
+  $infoGap: $pad05;
   width: var(--header-width);
   overflow: hidden;
   position: fixed;
@@ -11,7 +12,8 @@
   flex-direction: column;
 }
 h1 {
-  margin: 0;
+  width: 0; /* keeping it visible to ensure same height allocation as in the manager */
+  margin: 0 calc(-1 * $infoGap) 0 0;
 }
 /* basic info */
 #basic-info,
@@ -19,7 +21,7 @@ h1 {
 #actions {
   display: flex;
   align-items: center;
-  gap: $pad05;
+  gap: $infoGap;
 }
 #basic-info-name {
   flex: 1;

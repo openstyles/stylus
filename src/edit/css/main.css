@@ -17,9 +17,11 @@
   }
 }
 
-label .icon,
-label ~ .icon {
-  margin-left: .5rem;
+#details-wrapper {
+  label .icon,
+  label ~ .icon {
+    margin-left: .5rem;
+  }
 }
 
 @keyframes highlight {
