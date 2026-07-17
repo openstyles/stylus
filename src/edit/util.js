@@ -1,5 +1,5 @@
 import {CodeMirror, extraKeys, THEME_KEY} from '@/cm';
-import {pKeyMap} from '@/js/consts';
+import {pEditorBeautifyHotkey, pEditorToggleHotkey, pKeyMap} from '@/js/consts';
 import {$create, $createFragment, $root} from '@/js/dom';
 import {getEventKeyName, messageBox, moveFocus} from '@/js/dom-util';
 import {tHTML} from '@/js/localization';
@@ -8,6 +8,11 @@ import * as prefs from '@/js/prefs';
 import {clipString, t} from '@/js/util';
 import {workerPath} from '@/js/urls';
 import editor from './editor';
+
+export const HOTKEYS = {
+  [pEditorBeautifyHotkey]: 'beautify',
+  [pEditorToggleHotkey]: 'toggleStyle',
+};
 
 export const helpPopup = {
   SEL: '#help-popup',
@@ -180,6 +185,15 @@ export function createHotkeyInput(prefId, {buttons = true, onDone}) {
       e.stopPropagation();
     }
   }
+}
+
+export function openHotkeyPopup(evt) {
+  evt.preventDefault();
+  const bounds = this.getBoundingClientRect();
+  const input = createHotkeyInput(this.dataset.pref, {onDone: helpPopup.close});
+  const popup = helpPopup.show(t('helpKeyMapHotkey'), input);
+  popup.style = `top: ${bounds.bottom}px; left: ${bounds.left}px; right: auto;`;
+  popup.$('input').focus();
 }
 
 /**

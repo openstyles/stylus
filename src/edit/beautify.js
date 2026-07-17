@@ -1,4 +1,4 @@
-import {CodeMirror, extraKeys} from '@/cm';
+import {CodeMirror} from '@/cm';
 import {$create} from '@/js/dom';
 import {moveFocus} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
@@ -13,18 +13,6 @@ CodeMirror.commands.beautify = cm => {
   const isPerSection = cm.display.wrapper.parentElement.contains(document.activeElement);
   beautify(isPerSection ? [cm] : editor.getEditors(), false);
 };
-
-prefs.subscribe('editor.beautify.hotkey', (_key, value) => {
-  for (const [key, cmd] of Object.entries(extraKeys)) {
-    if (cmd === 'beautify') {
-      delete extraKeys[key];
-      break;
-    }
-  }
-  if (value) {
-    extraKeys[value] = 'beautify';
-  }
-}, true);
 
 /**
  * @param {CodeMirror[]} scope

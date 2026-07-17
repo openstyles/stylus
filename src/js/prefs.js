@@ -1,9 +1,10 @@
 /** Don't use this file in content script context! */
 import {
-  k_busy, kBadFavs, kNone, pArrowKeysTraverse, pDisableAll, pEditorLinter, pEditorLinterOn,
-  pEditorTheme, pExposeIframes, pFavicons, pFaviconsGray, pKeyMap, pLintReportDelay, pLivePreview,
-  pManageNewUi, pManageNewUiTargets, pOpenEditInWindow, pPatchCsp, pPopupTogglerExpanded,
-  pStyleViaASS, pStyleViaXhr, pSync, pUrlInstaller, STORAGE_KEY,
+  k_busy, kBadFavs, kNone, pArrowKeysTraverse, pDisableAll, pEditorBeautifyHotkey,
+  pEditorColorpickerHotkey, pEditorLinter, pEditorLinterOn, pEditorTheme, pEditorToggleHotkey,
+  pEditorToggleSave, pExposeIframes, pFavicons, pFaviconsGray, pKeyMap, pLintReportDelay,
+  pLivePreview, pManageNewUi, pManageNewUiTargets, pOpenEditInWindow, pPatchCsp,
+  pPopupTogglerExpanded, pStyleViaASS, pStyleViaXhr, pSync, pUrlInstaller, STORAGE_KEY,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {swController} from './msg-init'; // also installs API handler for own pages
@@ -115,7 +116,9 @@ const defaults = {
     space_around_combinator: true,
     space_around_cmp: false,
   },
-  'editor.beautify.hotkey': '',
+  [pEditorBeautifyHotkey]: '',
+  [pEditorToggleHotkey]: 'Alt-Enter',
+  [pEditorToggleSave]: false,
   [pEditorLinter]: 'csslint',     // 'csslint' or 'stylelint'
   [pEditorLinterOn]: true,
   [pLintReportDelay]: 500,  // lint report update delay, ms
@@ -139,7 +142,7 @@ const defaults = {
   // #DEAD or #beef
   'editor.colorpicker.hexUppercase': 0,
   // default hotkey
-  'editor.colorpicker.hotkey': '',
+  [pEditorColorpickerHotkey]: '',
   // last color
   'editor.colorpicker.color': '',
   'editor.colorpicker.maxHeight': 300,

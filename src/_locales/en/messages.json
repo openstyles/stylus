@@ -1889,6 +1889,10 @@
     "message": "Toggle style",
     "description": "Label for the checkbox to enable/disable a style"
   },
+  "toggleStyleSave": {
+    "message": "Save when toggling via hotkey",
+    "description": "Label for the checkbox in the editor"
+  },
   "toggleStylesHeading": {
     "message": "Toggle styles"
   },

@@ -43,7 +43,6 @@ export * from './themes';
 
 export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
   // independent of current keyMap; some are implemented only for the edit page
-  'Alt-Enter': 'toggleStyle',
   'Alt-PageDown': 'nextEditor',
   'Alt-PageUp': 'prevEditor',
   'Alt-Home': 'showCurrentLineAtTop',

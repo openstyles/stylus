@@ -9,7 +9,7 @@ import * as prefs from '@/js/prefs';
 import {debounce, t, tryURL} from '@/js/util';
 import editor from './editor';
 import {keymapHelp} from './keymap-help';
-import {createHotkeyInput, helpPopup} from './util';
+import {openHotkeyPopup} from './util';
 
 // TODO: allow the user to customize which options are always shown
 // TODO: decide which options are shown by default
@@ -180,16 +180,7 @@ function EditorSettings(ui) {
     $create('option', {value: 'default'}, t('defaultTheme')),
     ...Object.keys(THEMES).map(s => $create('option', s)),
   ]);
-
-  ui.$('#colorpicker-settings').onclick = function (event) {
-    event.preventDefault();
-    const bounds = this.getBoundingClientRect();
-    const input = createHotkeyInput('editor.colorpicker.hotkey', {onDone: helpPopup.close});
-    const popup = helpPopup.show(t('helpKeyMapHotkey'), input);
-    popup.style = `top: ${bounds.bottom}px; left: ${bounds.left}px; right: auto;`;
-    popup.$('input').focus();
-  };
-
+  ui.$('#colorpicker-settings').onclick = openHotkeyPopup;
   setupLivePrefs(ui);
   ui.$('#keyMap-help').onclick = keymapHelp;
 }

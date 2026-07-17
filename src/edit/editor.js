@@ -1,5 +1,6 @@
-import {kPopup} from '@/js/consts';
+import {kPopup, pEditorToggleSave} from '@/js/consts';
 import {$create, $rootCL} from '@/js/dom';
+import {__values} from '@/js/prefs';
 import {clipString, deepEqual, mapObj, sessionStore, t} from '@/js/util';
 import {sticky} from './compact-header';
 import DirtyReporter from './dirty-reporter';
@@ -23,6 +24,7 @@ let wasDirty = false;
  * @prop {number} [lineHeight]
  * @prop {boolean} [loading]
  * @prop {UsercssTemplate} template
+ * @prop {boolean} [toggling]
  * @prop {{find: string, replace: string, icase: boolean}} state
  * @namespace Editor
  */
@@ -92,7 +94,7 @@ const editor = self.editor = {
 
   toggleStyle(cm, enabled = !style.enabled) {
     $id('enabled').checked = enabled;
-    editor.updateEnabledness(enabled);
+    editor.updateEnabledness(enabled, cm && __values[pEditorToggleSave]);
   },
 
   updateClass() {
@@ -103,6 +105,8 @@ const editor = self.editor = {
   },
 
   updateDirty() {
+    if (!wasDirty && editor.toggling)
+      return;
     const isDirty = dirty.isDirty();
     if (wasDirty !== isDirty) {
       wasDirty = isDirty;
@@ -112,10 +116,15 @@ const editor = self.editor = {
     editor.updateTitle();
   },
 
-  updateEnabledness(enabled) {
+  updateEnabledness(enabled, autosave) {
+    if (autosave) editor.toggling = true;
     dirty.modify('enabled', style.enabled, enabled);
     style.enabled = enabled;
     livePreview();
+    if (autosave) {
+      editor.toggling = false;
+      editor.save();
+    }
   },
 
   updateName(isUserInput) {

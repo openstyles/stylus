@@ -1,4 +1,5 @@
 import '@/js/dom-init';
+import {extraKeys} from '@/cm';
 import {pEditorLinter, pEditorLinterOn} from '@/js/consts';
 import {$rootCL} from '@/js/dom';
 import {subscribe} from '@/js/prefs';
@@ -15,6 +16,7 @@ import SectionsEditor from './sections-editor';
 import SourceEditor from './source-editor';
 import './colorpicker-helper';
 import USWIntegration from './usw-integration';
+import {HOTKEYS, openHotkeyPopup} from './util';
 import './windowed-mode';
 import './css/index.css';
 
@@ -37,6 +39,7 @@ import './css/index.css';
   $id('name').required = !uc;
   $id('save-button').onclick = editor.save;
   $id('cancel-button').onclick = editor.cancel;
+  $('#toggle-save a').onclick = openHotkeyPopup;
   $('#lint-help').onclick = showLintHelp;
   $('#linter-settings').onclick =
   $('#lint .config').onclick = showLintConfig;
@@ -60,4 +63,13 @@ import './css/index.css';
   }
   elToc.onclick = e =>
     editor.jumpToEditor([].indexOf.call(elToc.children, e.target));
+  subscribe(Object.keys(HOTKEYS), (id, val) => {
+    for (const key in extraKeys) {
+      if (extraKeys[key] === HOTKEYS[id]) {
+        delete extraKeys[key];
+        break;
+      }
+    }
+    if (val) extraKeys[val] = HOTKEYS[id];
+  }, true);
 })();
