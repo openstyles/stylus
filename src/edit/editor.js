@@ -1,5 +1,6 @@
 import {kPopup, pEditorToggleSave} from '@/js/consts';
 import {$create, $rootCL} from '@/js/dom';
+import {API} from '@/js/msg-api';
 import {__values} from '@/js/prefs';
 import {clipString, deepEqual, mapObj, sessionStore, t} from '@/js/util';
 import {sticky} from './compact-header';
@@ -72,10 +73,10 @@ const editor = self.editor = {
     } : editor.sections[i].si),
   }),
 
-  async save() {
+  save() {
     if (dirty.isDirty()) {
       editor.msg ||= {editorId: performance.now() + Math.random()};
-      await editor.saveImpl();
+      return editor.saveImpl();
     }
   },
 
@@ -94,7 +95,7 @@ const editor = self.editor = {
 
   toggleStyle(cm, enabled = !style.enabled) {
     $id('enabled').checked = enabled;
-    editor.updateEnabledness(enabled, cm && __values[pEditorToggleSave]);
+    editor.updateEnabledness(enabled, cm && __values[pEditorToggleSave], !cm);
   },
 
   updateClass() {
@@ -105,8 +106,6 @@ const editor = self.editor = {
   },
 
   updateDirty() {
-    if (!wasDirty && editor.toggling)
-      return;
     const isDirty = dirty.isDirty();
     if (wasDirty !== isDirty) {
       wasDirty = isDirty;
@@ -116,14 +115,18 @@ const editor = self.editor = {
     editor.updateTitle();
   },
 
-  updateEnabledness(enabled, autosave) {
-    if (autosave) editor.toggling = true;
-    dirty.modify('enabled', style.enabled, enabled);
+  updateEnabledness(enabled, autosave, external) {
+    if (enabled === style.enabled)
+      return;
+    if (autosave || external || style.id) {
+      dirty.clear('enabled');
+    } else {
+      dirty.modify('enabled', style.enabled, enabled);
+    }
     style.enabled = enabled;
     livePreview();
-    if (autosave) {
-      editor.toggling = false;
-      editor.save();
+    if ((!autosave || !editor.save()) && style.id) {
+      API.styles.toggle(style.id, enabled);
     }
   },
 
