@@ -36,6 +36,13 @@ h1 {
 #url:not([href^="http"]) {
   display: none;
 }
+#usercss-docs {
+  mask: url("../../icon/usercss.svg") no-repeat center / contain;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  background: currentColor;
+}
 #editor\.livePreview\.delay {
   field-sizing: content;
   padding-left: $pad05;
