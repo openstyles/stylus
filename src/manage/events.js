@@ -100,9 +100,9 @@ async function edit(event, entry) {
       ? url + (url.includes('?') ? '&' : '?') + kPopup + '=1'
       : url;
   } else if (browserWindows && key === 'Shift-MouseL') {
-    API.openEditor({id: entry.styleId});
+    API.tabs.openEditor({id: entry.styleId});
   } else {
-    API.openURL({
+    API.tabs.open({
       url,
       index: ownTab.index + 1,
       active: key === 'Shift-MouseM' || key === 'Shift-Ctrl-MouseL',
@@ -130,7 +130,7 @@ export async function openLink(event) {
   if (getEventKeyName(event) !== 'Shift-MouseL') {
     event.preventDefault(); // Prevent FF from double-handling the event
     const {index} = await getOwnTab();
-    API.openURL({
+    API.tabs.open({
       url: event.target.closest('a').href,
       index: index + 1,
       active: !event.ctrlKey || event.shiftKey,

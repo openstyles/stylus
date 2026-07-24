@@ -49,7 +49,7 @@ export const ignoreChromeError = () => chrome.runtime.lastError;
 export const openDashboard = (mgr, side, close, where) =>
   browserSidebar && (side || __values[mgr ? pSideManager : pSideOptions])
     ? openSidebar(mgr ? 'manage.html?' + new URLSearchParams(mgr) : 'options.html', close, where)
-    : API.openManager(mgr || {options: true}).then(close);
+    : API.tabs.openManager(mgr || {options: true}).then(close);
 
 /**
  * @param {string} path

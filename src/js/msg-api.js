@@ -8,17 +8,18 @@ export const FF = !__.B_CHROME && (
 export const rxIgnorableError = /(R)eceiving end does not exist|The message (port|channel) closed|moved into back\/forward cache/;
 
 export const apiHandler = !__.IS_BG && {
-  get: (obj, key) => (obj[key] ??= new Proxy(
-    Object.defineProperty(() => {}, 'name', {value: obj.name ? obj.name + '.' + key : key}),
-    apiHandler)),
+  get: (me, key, instance) => (instance[key] = !me.name
+    ? Object.create(new Proxy({name: key}, apiHandler))
+    : apiHandler.apply.bind(null, me.name + '.' + key)
+  ),
   apply: apiSendProxy,
 };
 /** @typedef {{}} API */
 /** @type {API} */
 export const API = global[__.API] = __.IS_BG
   ? {}
-  : new Proxy({name: ''}, apiHandler);
-export const isFrame = !__.IS_BG && window !== top;
+  : Object.create(new Proxy({name: ''}, apiHandler));
+export const isFrame = !__.IS_BG && (!__.ENTRY || __.ENTRY === true) && window !== top;
 export let isTab;
 
 export let bgReadySignal;
@@ -30,7 +31,7 @@ export let TDM = __.ENTRY === 'offscreen' ? 1
     : !__.IS_BG && document.prerendering ? -1 : 1;
 
 if (__.ENTRY !== true) {
-  isTab = !__.ENTRY;
+  if (!__.ENTRY) isTab = true;
 } else if (__.MV3 && (isTab = global[__.CLIENT_DATA])) {
   isTab = isTab.tabId >= 0;
 } else if (new URLSearchParams(location.search).has(kSidebar)) {
@@ -51,7 +52,7 @@ export function apiSendProxyDebugLog(path, args) {
     ...(isFrame ? ['FRAME:', document] : []));
 }
 
-export async function apiSendProxy({name: path}, thisObj, args) {
+export async function apiSendProxy(path, ...args) {
   if (__.DEBUG) apiSendProxyDebugLog(path, args);
   // Non-cloneable event is passed when doing `elem.onclick = API.foo`
   if (__.ENTRY === true && args[0] instanceof Event)
@@ -60,7 +61,7 @@ export async function apiSendProxy({name: path}, thisObj, args) {
   const msg = {data: {method: kInvokeAPI, path, args}, TDM};
   for (let res, err, retry = 0; retry < (__.MV3 ? 1 : 2); retry++) {
     try {
-      if (__.MV3 || FF) {
+      if (__.MV3 || __.ENTRY === true/*loads browser.js*/) {
         res = await (__.MV3 ? chrome : browser).runtime.sendMessage(msg);
       } else {
         res = await new Promise((resolve, reject) =>

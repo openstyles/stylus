@@ -17,7 +17,7 @@ let toUpload;
 export const clientData = !__.IS_BG && (
   __.MV3 && swController
     ? makePropertyPopProxy(global[__.CLIENT_DATA])
-    : global[__.CLIENT_DATA] = API.setClientData(describeClient()).then(data => {
+    : global[__.CLIENT_DATA] = API.util.setClientData(describeClient()).then(data => {
       if (data.err) onerror(data.err);
       data = makePropertyPopProxy(data);
       setBadFavs(data);
@@ -270,7 +270,7 @@ export const unsubscribe = (keys, fn) => {
 };
 
 function upload() {
-  API.setPrefs(toUpload);
+  API.prefs.set(toUpload);
   toUpload = null;
 }
 

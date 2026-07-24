@@ -592,7 +592,7 @@ async function fetchIndexJob([url, prefix, transform]) {
   };
   for (let triesLeft = 3; triesLeft--;) {
     try {
-      const res = transform(JSON.parse(await API.download(url, {port: prefix})));
+      const res = transform(JSON.parse(await API.util.download(url, {port: prefix})));
       for (const v of res) v.i = `${prefix}-${v.i}`;
       if (!index) {
         index = res;

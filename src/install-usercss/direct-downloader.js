@@ -12,7 +12,7 @@ export default function DirectDownloader(url) {
     const code = !__.MV3
       && (__.B_CHROME || __.B_ANY && CHROME)
       && CHROME < 99 && url.startsWith('file:') // old Chrome can't fetch file://
-      ? await API.download(url, opts)
+      ? await API.util.download(url, opts)
       : await fetchText(url, opts);
     if (oldCode !== code) {
       oldCode = code;

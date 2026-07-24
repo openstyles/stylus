@@ -66,7 +66,7 @@ export function broadcastExtension(data, multi) {
   if (__.MV3) {
     channel.postMessage({id: 1, args: [data, {}, multi, /*broadcast*/true]});
   } else {
-    browser.runtime.sendMessage({data, multi, broadcast: true});
+    unwrap(browser.runtime.sendMessage({data, multi, broadcast: true}));
   }
 }
 

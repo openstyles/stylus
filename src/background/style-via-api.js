@@ -1,4 +1,5 @@
 import '@/js/browser';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {isEmptyObj, NOP} from '@/js/util';
 import {webNavigation} from '@/js/util-webext';
@@ -32,7 +33,7 @@ export default function initStyleViaApi() {
   const cache = new Map();
   let observingTabs = false;
 
-  return /** @namespace API */ {
+  Object.assign(API.util, {
     async styleViaAPI(request) {
       try {
         const fn = ACTIONS[request.method];
@@ -41,7 +42,7 @@ export default function initStyleViaApi() {
         maybeToggleObserver();
       }
     },
-  };
+  });
 
   function updateCount(request, sender) {
     const {tab, frameId} = sender;

@@ -12,8 +12,8 @@ import {getOwnTab, ownTab} from './util-webext';
 const needsTab = {
   __proto__: null,
   'styles.getSectionsByUrl': 0,
-  updateIconBadge: 1,
-  styleViaAPI: 1,
+  'styles.updateIconBadge': 1,
+  'util.styleViaAPI': 1,
 };
 const navSW = __.MV3 && __.ENTRY !== 'sw' && navigator.serviceWorker;
 export const swController = __.MV3 && __.ENTRY !== 'sw' && navSW.controller;
@@ -28,7 +28,7 @@ if (__.MV3 && !__.IS_BG) {
   initRemotePort.call(_execute, {ports: [new BroadcastChannel('sw')]}, /*silent*/true);
 }
 
-async function invokeAPI({name: path}, _thisObj, args) {
+async function invokeAPI(path, ...args) {
   if (__.DEBUG) apiSendProxyDebugLog(path, args);
   // Non-cloneable event is passed when doing `elem.onclick = API.foo`
   if (args[0] instanceof Event) args[0] = 'Event';
@@ -55,12 +55,12 @@ if (__.MV3) {
     apiHandler.apply = invokeAPI;
   }
 } else if (!__.IS_BG) {
-  apiHandler.apply = async (fn, thisObj, args) => {
+  apiHandler.apply = async (...params) => {
     // Orion's getBackgroundPage can return `undefined` instead of `Promise`
     bg ??= await browser.runtime.getBackgroundPage?.()?.catch(NOP) || false;
     const exec = bg && (bg[k_msgExec] || await bg[k_busy])
       ? invokeAPI
       : apiSendProxy;
-    return exec(fn, thisObj, args);
+    return exec(...params);
   };
 }

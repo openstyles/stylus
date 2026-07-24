@@ -10,7 +10,7 @@ import {bgBusy, onTabUrlChange, WRB} from './common';
 import download from './download';
 import {findHeader} from './style-via-webrequest';
 import {tabCache, set as tabSet} from './tab-manager';
-import {openURL} from './tab-util';
+import {openTab} from './tab-util';
 
 const installCodeCache = {};
 const MIME = 'mime';
@@ -138,7 +138,7 @@ async function openInstallerPage(tabId, url, {code, inTab} = {}) {
   const newUrl = makeInstallerUrl(url);
   if (inTab) {
     const tab = await browser.tabs.get(tabId);
-    return openURL({
+    return openTab({
       url: `${newUrl}&tabId=${tabId}`,
       active: tab.active,
       index: tab.index + 1,

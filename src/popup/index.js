@@ -126,7 +126,7 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
   }
 
   for (let t2 = performance.now() + 1000; performance.now() < t2;) {
-    if (await API.pingTab(tabId)) {
+    if (await API.tabs.ping(tabId)) {
       blockPopup(false);
       return;
     }

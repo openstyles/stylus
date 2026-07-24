@@ -1,5 +1,4 @@
 import {CACHE_DB, DB, kContentType, kInjectionOrder, STATE_DB, STORAGE_KEY, UCD} from '@/js/consts';
-import {API} from '@/js/msg-api';
 import {chromeLocal} from '@/js/storage-util';
 import {CHROME} from '@/js/ua';
 import {deepMerge, sleep, sleep0} from '@/js/util';
@@ -68,11 +67,6 @@ export const draftsDB = getDbProxy(DRAFTS_DB);
 export const prefsDB = getDbProxy(STORAGE_KEY);
 /** @type {IDBObjectStoreMany} */
 export const stateDB = __.MV3 && getDbProxy(STATE_DB, {store: 'kv'});
-
-Object.assign(API, /** @namespace API */ {
-  draftsDB,
-  prefsDB,
-});
 
 async function cachedExec(dbName, cmd, a, b) {
   const hub = dataCache[dbName] ??= {};

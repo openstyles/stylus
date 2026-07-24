@@ -64,7 +64,7 @@ function addEventLogger() {
   const patched = new WeakSet();
   const handler = {
     get(obj, k, instance) {
-      let val = obj[k];
+      let val = obj._[k];
       if (val && typeof val === 'object' && !patched.has(val)) {
         patched.add(val);
         let hasEvents, evt, fn;
@@ -78,16 +78,16 @@ function addEventLogger() {
             hasEvents = true;
           }
         }
-        if (!hasEvents) val = Object.create(new Proxy(val, handler));
+        if (!hasEvents) val = Object.create(new Proxy({_: val}, handler));
       }
       instance[k] = val;
       return val;
     },
   };
-  const patchedChrome = global.chrome = Object.create(new Proxy(chrome, handler));
+  const patchedChrome = global.chrome = Object.create(new Proxy({_: chrome}, handler));
   global.browser = chrome === browser
     ? patchedChrome
-    : Object.create(new Proxy(browser, handler));
+    : Object.create(new Proxy({_: browser}, handler));
 }
 
 function patchEventListener(obj, name, fn) {

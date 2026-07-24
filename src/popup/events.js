@@ -174,7 +174,7 @@ export async function openEditor(event, entry, button) {
   if (browserSidebar && (button === 2 || __values[pSideEditor])) {
     return openSidebar('edit.html' + params, close, {tabId});
   }
-  await API.openEditor(params);
+  await API.tabs.openEditor(params);
   if (!isSidebar)
     close();
 }
@@ -221,7 +221,7 @@ export async function openStyleFinder(event, entry, button) {
 export async function openURLandHide(event) {
   event.preventDefault();
   const tab = await getActiveTab();
-  await API.openURL({
+  await API.tabs.open({
     url: this.href || this.dataset.href,
     index: tab && tab.index + 1,
   });

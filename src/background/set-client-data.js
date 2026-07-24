@@ -1,5 +1,4 @@
 import {kBadFavs, kEditorScrollInfo, kEditorState, kPopup, pEditorTheme, UCD} from '@/js/consts';
-import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
 import {FIREFOX} from '@/js/ua';
@@ -63,14 +62,6 @@ const PROVIDERS = {
     [kPopup]: dataHub.pop(kPopup) || makePopupData(),
   }),
 };
-
-/** @namespace API */
-Object.assign(API, {
-  saveScroll(id, info) {
-    if (__.MV3) stateDB.put(info, kEditorScrollInfo + id);
-    else dataHub.set(kEditorScrollInfo + id, info);
-  },
-});
 
 export default async function setClientData({
   dark: pageDark,

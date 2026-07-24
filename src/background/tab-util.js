@@ -42,7 +42,7 @@ export async function openEditor(params) {
   u.search = usp;
   for (let tab, retry = 0; retry < (wndPos ? 2 : 1); ++retry) {
     try {
-      tab = tab || await openURL({
+      tab = tab || await openTab({
         url: `${u}`,
         currentWindow: null,
         newWindow: wnd && Object.assign({}, wndPopup, !ffBug && !retry && wndPos),
@@ -68,7 +68,7 @@ export async function openManager(opts = {}) {
   let tab = same || tabs[0];
   if (!tab) {
     prefsDB.get(kBadFavs); // prime the cache to avoid flicker/delay when opening the page
-    tab = await openURL({url, newTab: true});
+    tab = await openTab({url, newTab: true});
   } else if (!same) {
     await sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url, opts)});
   }
@@ -88,7 +88,7 @@ export async function openManager(opts = {}) {
  * @param {boolean} [_.newTab] `true` to force a new tab instead of switching to an existing tab
  * @returns {Promise<chrome.tabs.Tab>} Promise -> opened/activated tab
  */
-export async function openURL({
+export async function openTab({
   url,
   index,
   openerTabId,

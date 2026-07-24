@@ -182,7 +182,7 @@ function onClick(event) {
     el._source.focus();
   } else if ((el = el.closest('a'))) {
     event.preventDefault();
-    API.openURL({
+    API.tabs.open({
       url: el.href || el.textContent,
       currentWindow: null,
     });

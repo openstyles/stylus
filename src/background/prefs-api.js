@@ -8,11 +8,6 @@ import {bgBusy, bgPreInit} from './common';
  * WARNING for bg context: properties of object type are direct references into `values`!
  * In non-bg contexts this is correctly deep-copied by msg.js::API. */
 export const nondefaults = {};
-export const setPrefs = data => {
-  for (const k in data)
-    prefs.set(k, data[k]);
-};
-
 const updateStorage = () => chromeSync.set({[STORAGE_KEY]: nondefaults});
 
 prefs.set._bgSet = (key, val) => {

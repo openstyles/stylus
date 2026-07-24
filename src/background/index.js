@@ -15,10 +15,9 @@ import {setSystemDark} from './color-scheme';
 import {bgBusy, bgInit, bgPreInit, dataHub} from './common';
 import reinjectContentScripts from './content-scripts';
 import initContextMenus from './context-menus';
-import {draftsDB, mirrorStorage, prefsDB} from './db';
+import {draftsDB, mirrorStorage, prefsDB, stateDB} from './db';
 import download from './download';
-import {refreshIconsWhenReady, updateIconBadge} from './icon-manager';
-import {setPrefs} from './prefs-api';
+import {refreshIconsWhenReady} from './icon-manager';
 import setClientData from './set-client-data';
 import * as styleMan from './style-manager';
 import {inferHomepages} from './style-manager/fixer';
@@ -27,7 +26,7 @@ import initStyleViaApi from './style-via-api';
 import './style-via-webrequest';
 import * as syncMan from './sync-manager';
 import * as tabMan from './tab-manager';
-import {openEditor, openManager, openURL} from './tab-util';
+import {openEditor, openManager, openTab} from './tab-util';
 import * as updateMan from './update-manager';
 import * as usercssMan from './usercss-manager';
 import * as usoApi from './uso-api';
@@ -35,39 +34,34 @@ import * as uswApi from './usw-api';
 import {worker} from './util';
 
 Object.assign(API, /** @namespace API */ {
-
-  //#region API data/db/info
-
   data: {
     get: dataHub.get.bind(dataHub),
     has: dataHub.has.bind(dataHub),
   },
-
-  //#endregion
-  //#region API misc actions
-
-  download,
-  openEditor,
-  openManager,
-  openURL,
-  pingTab,
-  setClientData,
-  setPrefs,
-  setSystemDark,
-  updateIconBadge,
-
-  //#endregion
-  //#region API namespaced actions
-
+  draftsDB,
+  prefs: {
+    set(data) {
+      for (const k in data) prefs.set(k, data[k]);
+    },
+  },
+  prefsDB,
+  state: {
+    set: (key, val) => void (__.MV3 ? stateDB.put(val, key) : dataHub.set(key, val)),
+  },
   styles: styleMan,
   sync: syncMan,
   tabs: {
+    openEditor,
+    openManager,
+    open: openTab,
+    ping: pingTab,
     get: tabMan.get,
     set(tabId, ...args) {
       // `undefined` cannot be sent via JSON-based messaging in Chrome
       // TODO: remove this when minimum_chrome_version >= version that implements structured clone
-      if (args[args.length - 1]?.undef === tabId)
+      if (args[args.length - 1]?.undef === tabId) {
         args[args.length - 1] = undefined;
+      }
       tabMan.set(tabId ?? this.sender.tab?.id, ...args);
     },
   },
@@ -75,10 +69,15 @@ Object.assign(API, /** @namespace API */ {
   usercss: usercssMan,
   uso: usoApi,
   usw: uswApi,
-
-  //#endregion
-
-}, (__.B_FIREFOX || __.B_ANY && FIREFOX) && initStyleViaApi(), __.DEV && {worker});
+  util: {
+    download,
+    setClientData,
+    setSystemDark,
+  },
+}, __.DEV && {worker});
+if (__.B_FIREFOX || __.B_ANY && FIREFOX) {
+  initStyleViaApi();
+}
 
 //#region Events
 

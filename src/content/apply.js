@@ -72,7 +72,7 @@ onMessage.set(applyOnMessage, true);
 addEventListener(kPageShow, onBFCache);
 
 async function init() {
-  if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
+  if (isUnstylable) return API.util.styleViaAPI({method: 'styleApply'});
   let data;
   if (__.ENTRY) {
     data = (data = global[__.CLIENT_DATA])
@@ -94,7 +94,7 @@ function initMQ() {
   if (!isFrameSameOrigin) {
     mqDark.onchange = ({matches: m}) => {
       if (m !== own.cfg.dark)
-        API.setSystemDark(own.cfg.dark = m);
+        API.util.setSystemDark(own.cfg.dark = m);
     };
   }
 }
@@ -140,7 +140,7 @@ function applyOnMessage(req, sender, multi) {
     return;
   }
   if (isUnstylable && /^(style|urlChanged)/.test(req.method)) {
-    API.styleViaAPI(req);
+    API.util.styleViaAPI(req);
     return;
   }
   const {style} = req;
@@ -210,7 +210,7 @@ function updateConfig({cfg}) {
 
 function updateDisableAll() {
   if (isUnstylable) {
-    API.styleViaAPI({method: 'injectorConfig', cfg: {off: own.cfg.off}});
+    API.util.styleViaAPI({method: 'injectorConfig', cfg: {off: own.cfg.off}});
   } else if (!own.sections && !own.cfg.off) {
     if (!offscreen) init();
   } else {
@@ -234,10 +234,10 @@ function updateCount() {
   let ids, str;
   if (TDM < 0 || !isTab) return;
   if (isFrame && lazyBadge && performance.now() > 1000) lazyBadge = false;
-  if (isUnstylable) API.styleViaAPI({method: 'updateCount'});
+  if (isUnstylable) API.util.styleViaAPI({method: 'updateCount'});
   else if (!throttled
   && throttledCount !== (str = (ids = [...styleInjector.table.keys()]).join(','))) {
-    API.updateIconBadge(ids, lazyBadge, instanceId);
+    API.styles.updateIconBadge(ids, lazyBadge, instanceId);
     throttledCount = str;
   }
 }

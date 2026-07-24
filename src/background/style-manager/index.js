@@ -24,6 +24,7 @@ import {
   setOrderImpl, styleMap, stylePreviewMap, toggleSiteOvrImpl,
 } from './util';
 
+export {updateIconBadge} from '../icon-manager';
 export * from '../style-search-db';
 export {getById as get, matchOverrides};
 

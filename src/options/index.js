@@ -47,7 +47,7 @@ $id('manage').onclick = () => {
   if (top === window) {
     closeOrGoBack();
   } else {
-    API.openManager();
+    API.tabs.openManager();
   }
 };
 $id('manage.newUI.favicons').onclick = () => {
@@ -58,7 +58,7 @@ $id('shortcuts').onclick = () => {
     if (!browser.commands?.openShortcutSettings?.())
       customizeHotkeys();
   } else {
-    API.openURL({
+    API.tabs.open({
       url: `${OPERA ? 'opera://settings' : 'chrome://extensions'}/configureCommands`,
     });
   }

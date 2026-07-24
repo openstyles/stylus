@@ -1,4 +1,4 @@
-import {kCodeMirror, pOpenEditInWindow} from '@/js/consts';
+import {kCodeMirror, kEditorScrollInfo, pOpenEditInWindow} from '@/js/consts';
 import {saveWindowPosition} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import {sessionStore, t} from '@/js/util';
@@ -9,7 +9,7 @@ import {isWindowed} from './windowed-mode';
 window.on('beforeunload', e => {
   if (isWindowed)
     sessionStore.windowPos = JSON.stringify(saveWindowPosition(pOpenEditInWindow) || {});
-  API.saveScroll(editor.style.id, editor.makeScrollInfo());
+  API.state.set(kEditorScrollInfo + editor.style.id, editor.makeScrollInfo());
   const activeElement = document.activeElement;
   if (activeElement) {
     // blurring triggers 'change' or 'input' event if needed

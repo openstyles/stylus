@@ -397,7 +397,7 @@ async function importFromString(jsonString) {
       ...stats.codeOnly.ids,
       ...stats.added.ids,
     ];
-    await API.setPrefs(oldPrefs); // must be done before removing/importing to set sync option
+    await API.prefs.set(oldPrefs); // must be done before removing/importing to set sync option
     await API.styles.removeMany(newIds);
     await API.styles.importMany(newIds.map(oldStylesById.get, oldStylesById).filter(Boolean));
     await API.styles.setOrder(oldOrder);
