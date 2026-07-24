@@ -61,7 +61,7 @@ const DEBUG_MODE = {
   LIFE: 4,
 };
 const RAW_VARS = {
-  DEBUG: DEBUG || '0',
+  DEBUG: DEBUG ? '1' : '0',
   DEBUGLOG: (DEBUG ? '' : 'null&&') + 'console.log',
   DEBUGPORT: (+DEBUG & DEBUG_MODE.PORT ? '' : 'null&&') + 'console.log',
   DEBUGTRACE: (DEBUG ? '' : 'null&&') + 'console.trace',
