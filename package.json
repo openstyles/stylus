@@ -60,7 +60,7 @@
     "ttf2woff2": "^8.0.1",
     "webpack": "5.107.2",
     "webpack-bundle-analyzer": "^5.3.0",
-    "webpack-dev-server": "^5.2.5"
+    "webpack-dev-server": "^5.2.6"
   },
   "scripts": {
     "lint": "eslint . --cache",
