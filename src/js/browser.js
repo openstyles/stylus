@@ -17,53 +17,44 @@ if (__.MV3) {
     tabs: ['connect'],
   };
   const promisify = function (fn, ...args) {
-    let res;
     let resolve, reject;
     // Saving the local callstack before making an async call
     const localErr = new Error();
-    try {
-      args.push((...results) => {
-        const {lastError} = chrome.runtime;
-        if (lastError) {
-          localErr.message = lastError.message;
-          reject(localErr);
-        } else {
-          /* Some callbacks have 2 parameters so we're resolving as an array in that case.
-             For example, chrome.runtime.requestUpdateCheck and chrome.webRequest.onAuthRequired */
-          resolve(results.length <= 1 ? results[0] : results);
-        }
-      });
-      fn.apply(this, args);
-      res = new Promise((...rr) => ([resolve, reject] = rr));
-    } catch (err) {
-      if (!err.message.includes('No matching signature')) {
-        throw err;
+    fn.call(this, ...args, (...results) => {
+      const {lastError} = chrome.runtime;
+      if (lastError) {
+        localErr.message = lastError.message;
+        reject(localErr);
+      } else {
+        /* Some callbacks have 2 parameters so we're resolving as an array in that case.
+           For example, chrome.runtime.requestUpdateCheck and chrome.webRequest.onAuthRequired */
+        resolve(results.length <= 1 ? results[0] : results);
       }
-      args.pop();
-      res = fn.apply(this, args);
-    }
-    return res;
-  };
-  const proxify = (src, srcName, target, key) => {
-    let res = src[key];
-    if (res && typeof res === 'object') {
-      res = createProxy(res, key);
-    } else if (typeof res === 'function' && key.endsWith('Listener') && __.DEBUG) {
-      res = patchEventListener(src, key, res);
-    } else if (typeof res === 'function') {
-      res = (srcName.startsWith('on') ? directEvents : directMethods[srcName] || []).includes(key)
-        ? res.bind(src)
-        : promisify.bind(src, res);
-    }
-    target[key] = res;
-    return res;
-  };
-  const createProxy = (src, srcName) =>
-    new Proxy({}, {
-      get(target, key) {
-        return target[key] || proxify(src, srcName, target, key);
-      },
     });
+    return new Promise((ok, ko) => {
+      resolve = ok;
+      reject = ko;
+    });
+  };
+  const proxyHandler = {
+    get({src, name}, key, instance) {
+      let res = src[key];
+      if (key.startsWith('on')) {
+        // We only use listener methods in an event object, copying it as-is
+      } else if (res && typeof res === 'object') {
+        res = createProxy(res, key);
+      } else if (typeof res === 'function' && key.endsWith('Listener') && __.DEBUG) {
+        res = patchEventListener(src, key, res);
+      } else if (typeof res === 'function') {
+        res = (name.startsWith('on') ? directEvents : directMethods[name] || []).includes(key)
+          ? res.bind(src)
+          : promisify.bind(src, res);
+      }
+      instance[key] = res;
+      return res;
+    },
+  };
+  const createProxy = (src, name = '') => Object.create(new Proxy({src, name}, proxyHandler));
   global.browser = createProxy(chrome);
 } else if (__.DEBUG) {
   addEventLogger();
@@ -72,7 +63,7 @@ if (__.MV3) {
 function addEventLogger() {
   const patched = new WeakSet();
   const handler = {
-    get(obj, k) {
+    get(obj, k, instance) {
       let val = obj[k];
       if (val && typeof val === 'object' && !patched.has(val)) {
         patched.add(val);
@@ -87,8 +78,9 @@ function addEventLogger() {
             hasEvents = true;
           }
         }
-        if (!hasEvents) val = new Proxy(val, handler);
+        if (!hasEvents) val = Object.create(new Proxy(val, handler));
       }
+      instance[k] = val;
       return val;
     },
   };
