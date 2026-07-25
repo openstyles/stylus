@@ -45,7 +45,7 @@
     "mini-css-extract-plugin": "^2.10.2",
     "npm-run-all2": "^9.0.2",
     "only-allow": "^1.2.2",
-    "postcss": "^8.5.16",
+    "postcss": "^8.5.18",
     "postcss-calc": "^10.1.1",
     "postcss-import": "^16.1.1",
     "postcss-loader": "^8.2.1",
