@@ -2,6 +2,19 @@ allowBuilds:
   '@swc/core': true
   ttf2woff2: true
 
+minimumReleaseAgeExclude:
+  - js-yaml@4.3.0
+  - tar@7.5.18
+  - tar@7.5.19
+  - tar@7.5.17
+  - shell-quote@1.8.5
+  - svgo@4.0.2
+  - fast-uri@4.1.1
+  - fast-uri@4.0.1
+  - tar@7.5.21
+  - postcss@8.5.18
+  - brace-expansion@5.0.8
+
 neverBuiltDependencies:
   - csslint-mod
 
@@ -20,3 +33,14 @@ overrides:
   "@babel/plugin-transform-modules-systemjs@>=7.12.0 <=7.29.3": ">=7.29.4"
   "ttf2woff2>node-gyp": "^12.3.0"
   uuid@<11.1.1: ^11.1.1
+  brace-expansion@<=5.0.7: ^5.0.8
+  fast-uri@>=4.0.0 <4.0.1: ^4.0.1
+  fast-uri@>=4.0.0 <=4.1.0: ^4.1.1
+  js-yaml@>=4.0.0 <4.3.0: ^4.3.0
+  postcss@<=8.5.17: ^8.5.18
+  shell-quote@<=1.8.4: ^1.8.5
+  svgo@>=4.0.0 <4.0.2: ^4.0.2
+  tar@<=7.5.16: ^7.5.17
+  tar@<=7.5.17: ^7.5.18
+  tar@<=7.5.18: ^7.5.19
+  tar@<=7.5.20: ^7.5.21
