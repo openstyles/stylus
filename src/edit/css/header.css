@@ -11,10 +11,6 @@
   display: flex;
   flex-direction: column;
 }
-h1 {
-  width: 0; /* keeping it visible to ensure same height allocation as in the manager */
-  margin: 0 calc(-1 * $infoGap) 0 0;
-}
 /* basic info */
 #basic-info,
 #basic-info-name,

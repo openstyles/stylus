@@ -29,7 +29,7 @@
   <template data-id="body"><!-- https://crbug.com/1288447 -->
     <div id="header" class="dvh100">
       <section id="basic-info">
-        <h1 class="ellipsis hide-if-compact"></h1>
+        <h1 class="ellipsis hide-if-compact" hidden></h1>
         <label id="enabled-label" i18n="title:toggleStyle" data-hotkey-tooltip="toggleStyle">
           <input type="checkbox" id="enabled">
           <span class="hide-if-compact" i18n="styleEnabledLabel"></span>
@@ -48,6 +48,14 @@
         <a class="icon" id="preview-error" target="_blank" hidden>
           <i class="i-caution red1"></i>
         </a>
+        <label id="new-as" class="flex i">
+          <input type="checkbox" id="newStyleAsUsercss">
+          <span i18n="newStyleAsUserCSS"></span>
+          <a class=icon tabindex="0" data-cmd="note" style="margin: -2px 0 0 .5em"
+             i18n="title:newStyleAsUserCSSHint">
+            <i class=i-info></i>
+          </a>
+        </label>
         <div id="basic-info-name">
           <input id="name" spellcheck="false">
           <a id="reset-name" i18n="title:customNameResetHint" tabindex="0" hidden>
@@ -85,14 +93,6 @@
               </label>
               <input id="editor.livePreview.delay" type="number" min="0" max="9" step="0.1">s
             </span>
-            <label id="new-as" class="flex">
-              <input type="checkbox" id="newStyleAsUsercss">
-              <span i18n="newStyleAsUserCSS"></span>
-              <a class=icon tabindex="0" data-cmd="note" style="margin-top: -2px"
-                 i18n="title:newStyleAsUserCSSHint">
-                <i class=i-info></i>
-              </a>
-            </label>
             <label id="disableAll-label"
                    i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
               <input id="disableAll" type="checkbox">
