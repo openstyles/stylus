@@ -59,6 +59,7 @@
   }
   #basic-info-name {
     order: -1;
+    min-width: 10em;
     max-width: 100%;
     overflow: hidden;
     padding: 1px; /* to fit the focus outline on the input */
@@ -71,7 +72,7 @@
   }
   #name {
     field-sizing: content;
-    min-width: 5em;
+    max-width: 100%;
   }
   #cancel-button {
     background: none;
