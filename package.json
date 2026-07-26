@@ -22,6 +22,7 @@
     "@babel/core": "^8.0.1",
     "@babel/plugin-transform-runtime": "^8.0.1",
     "@babel/preset-env": "^8.0.2",
+    "@swc/core": "^1.15.43",
     "@types/codemirror": "^5.60.17",
     "@types/firefox-webext-browser": "^143.0.0",
     "@types/webpack": "^5.28.5",
@@ -59,8 +60,7 @@
     "terser-webpack-plugin": "^5.6.1",
     "ttf2woff2": "^8.0.1",
     "webpack": "5.107.2",
-    "webpack-bundle-analyzer": "^5.3.0",
-    "webpack-dev-server": "^5.2.5"
+    "webpack-bundle-analyzer": "^5.3.0"
   },
   "scripts": {
     "lint": "eslint . --cache",
@@ -73,7 +73,6 @@
     "build-firefox": "node tools/build.js",
     "build-icons": "node tools/build-icons.mjs",
     "build-mv2": "node tools/build.js # MV2 UNIVERSAL",
-    "serve-chrome-mv3": "node tools/build.js",
     "watch-chrome": "node tools/build.js",
     "watch-chrome-mv3": "node tools/build.js",
     "watch-firefox": "node tools/build.js",
