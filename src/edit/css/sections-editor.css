@@ -131,20 +131,27 @@
   pointer-events: auto !important; /* FF bug */
 }
 
+$gripH: 6px;
+$gripSpan: calc($gripH + 1px);
 .resize-grip {
   position: absolute;
   display: block;
-  height: 6px;
+  height: $gripH;
   content: "";
   left: 0;
   right: 0;
-  bottom: 0;
   z-index: 9;
   cursor: n-resize;
   background-color: inherit;
-  border-top-width: 1px;
-  border-top-style: solid;
-  border-top-color: inherit;
+  border: inherit;
+  &[data-top] {
+    top: 0;
+    border-width: 0 0 1px 0;
+  }
+  &:not([data-top]) {
+    bottom: 0;
+    border-width: 1px 0 0 0;
+  }
   &::after {
     content: "";
     bottom: 2px;
@@ -162,18 +169,18 @@
   .CodeMirror-scroll {
     height: auto !important;;
     position: absolute !important;
-    top: 0;
+    top: $gripH;
     left: 0;
     right: 0;
-    bottom: 6px; /* resize-grip height */
+    bottom: $gripH;
   }
   .CodeMirror-vscrollbar {
-    margin-bottom: 7px; /* make space for resize-grip */
+    margin-top: $gripSpan;
+    margin-bottom: $gripSpan;
   }
-  .CodeMirror-hscrollbar {
-    bottom: 7px; /* make space for resize-grip */
-  }
+  .CodeMirror-hscrollbar,
   .CodeMirror-scrollbar-filler {
-    bottom: 7px; /* make space for resize-grip */
+    top: $gripSpan;
+    bottom: $gripSpan;
   }
 }

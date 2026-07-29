@@ -2,7 +2,7 @@ import {CodeMirror} from '@/cm';
 import {
   kCodeMirror, kEditorSettings, pArrowKeysTraverse, pFavicons, pLintReportDelay,
 } from '@/js/consts';
-import {$toggleDataset} from '@/js/dom';
+import {$root, $rootCL, $toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-prefs';
 import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
@@ -369,57 +369,70 @@ class ResizeGrip {
   constructor(cm) {
     const wrapper = this.wrapper = cm.display.wrapper;
     const el = template.resizeGrip.cloneNode(true);
+    const elTop = el.cloneNode(true);
+    elTop.me = el.me = this;
+    elTop.dataset.top = '';
     wrapper.classList.add('resize-grip-enabled');
-    wrapper.appendChild(el);
+    wrapper.append(el, elTop);
     this.cm = cm;
     this.lastClickTime = 0;
     this.lastHeight = 0;
     this.minHeight = 0;
     this.lastY = 0;
-    el.on('mousedown', {me: this, handleEvent: ResizeGrip.onMouseDown});
-    this.onResize = {me: this, handleEvent: ResizeGrip.resize};
-    this.onStop = {me: this, handleEvent: ResizeGrip.resizeStop};
+    this.dir = 1;
+    elTop.on('mousedown', this);
+    el.on('mousedown', this);
   }
 
-  static onMouseDown(evt) {
-    const me = /** @type {ResizeGrip} */ this.me;
-    me.lastHeight = me.wrapper.offsetHeight;
-    me.lastY = evt.clientY;
+  /** @param {MouseEvent} evt */
+  handleEvent(evt) {
+    switch (evt.type) {
+      case 'mousedown': this.onMouseDown(evt); break;
+      case 'mousemove': this.onMouseMove(evt); break;
+      case 'mouseup': this.onMouseUp(evt); break;
+    }
+  }
+
+  onMouseDown(evt) {
     if (evt.button !== 0) {
       return;
     }
     evt.preventDefault();
-    if (Date.now() - me.lastClickTime < 500) {
-      me.lastClickTime = 0;
-      me.toggleSectionHeight();
+    this.lastHeight = this.wrapper.offsetHeight;
+    this.lastY = evt.y;
+    if (Date.now() - this.lastClickTime < 500) {
+      this.lastClickTime = 0;
+      this.toggleSectionHeight();
       return;
     }
-    me.lastClickTime = Date.now();
-    me.minHeight = me.cm.defaultTextHeight() +
+    this.lastClickTime = Date.now();
+    this.minHeight = this.cm.defaultTextHeight() +
       /* .CodeMirror-lines padding */
-      me.cm.display.lineDiv.offsetParent.offsetTop +
+      this.cm.display.lineDiv.offsetParent.offsetTop +
       /* borders */
-      me.wrapper.offsetHeight - me.wrapper.clientHeight;
-    document.body.classList.add('resizing-v');
-    document.on('mousemove', me.onResize);
-    document.on('mouseup', me.onStop);
+      this.wrapper.offsetHeight - this.wrapper.clientHeight;
+    this.dir = 'top' in evt.target.dataset ? -1 : 1;
+    $rootCL.add('resizing-v');
+    document.on('mousemove', this);
+    document.on('mouseup', this);
   }
 
-  static resize(evt) {
-    const me = /** @type {ResizeGrip} */ this.me;
-    const height = Math.max(me.minHeight, me.lastHeight + evt.clientY - me.lastY);
-    if (height !== me.lastHeight) {
-      me.cm.setSize(null, height);
-      me.lastHeight = height;
-      me.lastY = evt.clientY;
+  /** @param {MouseEvent} evt */
+  onMouseMove(evt) {
+    const height = Math.max(this.minHeight, this.lastHeight + (evt.y - this.lastY) * this.dir);
+    const delta = height - this.lastHeight;
+    if (delta) {
+      this.cm.setSize(null, height);
+      this.lastHeight = height;
+      this.lastY = evt.y;
+      if (this.dir < 0) $root.scrollBy(0, delta);
     }
   }
 
-  static resizeStop() {
-    const me = /** @type {ResizeGrip} */ this.me;
-    document.off('mouseup', me.onStop);
-    document.off('mousemove', me.onResize);
-    document.body.classList.remove('resizing-v');
+  onMouseUp() {
+    document.off('mouseup', this);
+    document.off('mousemove', this);
+    $rootCL.remove('resizing-v');
   }
 
   toggleSectionHeight() {
