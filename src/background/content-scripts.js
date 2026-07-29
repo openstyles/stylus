@@ -52,7 +52,7 @@ export default async function reinjectContentScripts(targetTab) {
         : trackBusyTab(tab.id, true)
     );
     if (targetTab) {
-      return res && res[0] && !res[0].message /* no error */ && res[0].frameId === 0;
+      return res && res[0] && (!__.MV3 || !res[0].message /* no error */ && res[0].frameId === 0);
     }
   }
 

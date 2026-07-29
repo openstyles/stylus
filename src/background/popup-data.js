@@ -9,7 +9,7 @@ import {pingTab} from './broadcast';
 import {bgBusy} from './common';
 import reinjectContentScripts from './content-scripts';
 import {getByUrl} from './style-manager';
-import {set as tabSet, tabCache} from './tab-manager';
+import {tabCache} from './tab-manager';
 import {waitForTabUrl} from './tab-util';
 
 /** @type {Map<number,Set<chrome.runtime.Port>>} tabs can have popup & popup-in-sidebar */
@@ -54,10 +54,7 @@ export default async function makePopupData(tabId) {
   const td = tabCache[tabId] || false;
   const isOwn = url.startsWith(ownRoot);
   const [
-    ping0 = __.MV3 && !td[kPopup] && (
-      tabSet(tabId, kPopup, true),
-      await reinjectContentScripts(tab)
-    ),
+    ping0 = (__.MV3 || !__.B_CHROME && FIREFOX >= 153) && (await reinjectContentScripts(tab)),
     frames,
   ] = await Promise.all([
     isOwn

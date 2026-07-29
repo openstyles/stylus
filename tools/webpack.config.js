@@ -90,7 +90,8 @@ function makeContentScript(name) {
     plugins: addWrapper(
       '"use strict";' +
       `this["${name}"]!==1&&(()=>{` +
-      `this["${name}"]=1; const global=this` + ALIASES_STR),
+      `this["${name}"]=1; const global=this` + ALIASES_STR,
+      '})();1'/*truthy result for executeScript in reinjectContentScripts*/),
   });
 }
 
