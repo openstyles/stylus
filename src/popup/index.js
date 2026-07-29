@@ -152,9 +152,13 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
     ].filter(Boolean).join('\n');
     info.$('span').textContent = t('unreachableAMO');
   }
-  // Chrome "Allow access to file URLs" in chrome://extensions message
-  if ((el = tabUrl.startsWith('file:') ? 'unreachableFileHint' : OPERA && 'unreachableOpera')) {
-    info.append($create('div', t(el)));
+  let fileHint = tabUrl.startsWith('file:')
+    ? (!FIREFOX || FIREFOX >= 153) && 'unreachableFileHint'
+    : OPERA && 'unreachableOpera';
+  if (fileHint) {
+    fileHint = t(fileHint);
+    if (FIREFOX) fileHint = fileHint.replace('chrome://extensions', 'about:addons');
+    info.append($create('div', fileHint));
   }
   $rootCL.add(UNREACHABLE);
   $('.blocked-info').replaceWith(info);
