@@ -235,7 +235,7 @@
     "message": "更新日期"
   },
   "dbError": {
-    "message": "使用 Stylus 資料庫時出現錯誤。你想訪問可能包含解決辦法的網頁嗎？"
+    "message": "使用 Stylus 資料庫時出現錯誤"
   },
   "defaultTheme": {
     "message": "預設"

@@ -205,7 +205,7 @@
     "message": "Data da atualização"
   },
   "dbError": {
-    "message": "Ocorreu um erro ao utilizar a base de dados do Stylus. Queres visitar uma página Web com possíveis soluções?"
+    "message": "Ocorreu um erro ao utilizar a base de dados do Stylus"
   },
   "defaultTheme": {
     "message": "predefinição"

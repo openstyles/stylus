@@ -182,7 +182,7 @@
     "message": "Datumet uppdaterat"
   },
   "dbError": {
-    "message": "Ett fel inträffades vid hanteringen av Stylus-databasen. Skulle du vilja besöka en sida med eventuella lösningar?"
+    "message": "Ett fel inträffades vid hanteringen av Stylus-databasen"
   },
   "defaultTheme": {
     "message": "standard"

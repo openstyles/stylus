@@ -9,7 +9,7 @@
     "message": "透明度"
   },
   "appliesAdd": {
-    "message": "添加"
+    "message": "添加新章节"
   },
   "appliesDisplay": {
     "message": "应用于：$applies$",
@@ -104,7 +104,7 @@
     "message": "键盘映射"
   },
   "cm_lineWrapping": {
-    "message": "换行显示过长的行"
+    "message": "自动换行"
   },
   "cm_linter": {
     "message": "检查 CSS"
@@ -235,7 +235,7 @@
     "message": "更新日期"
   },
   "dbError": {
-    "message": "访问 Stylus 数据库时发生了一个错误。您想访问含有可能的解决方案的网页吗？"
+    "message": "访问 Stylus 数据库时发生了一个错误"
   },
   "defaultTheme": {
     "message": "默认"
@@ -428,7 +428,7 @@
     "message": "导入"
   },
   "importPreprocessor": {
-    "message": "由于此样式未使用 <UserCSS> 模式创建，使用 <@preprocessor> 的代码将无法生效。\n　\n译注：请尝试新建一个空白 UserCSS 样式，将此样式导出，再导入到那个 UserCSS 样式。"
+    "message": "由于此样式未使用 <UserCSS> 模式创建，使用 <@preprocessor> 的代码将无法生效。\n译注：请尝试新建一个空白 UserCSS 样式，将此样式导出，再导入到那个 UserCSS 样式。"
   },
   "importReplaceLabel": {
     "message": "覆盖替换导入"
@@ -479,7 +479,7 @@
     "message": "安装样式"
   },
   "installButtonInstalled": {
-    "message": "样式已安装"
+    "message": "样式安装完成"
   },
   "installButtonReinstall": {
     "message": "重新安装样式"
@@ -525,7 +525,7 @@
     }
   },
   "linterCSSLintSettings": {
-    "message": "（规则级别：0 = 禁用; 1 =  警告; 2 = 错误）"
+    "message": "（设置规则为：0 = 禁用; 1 =  警告; 2 = 错误）"
   },
   "linterConfigPopupTitle": {
     "message": "设置 $linter$ 规则",
@@ -556,7 +556,7 @@
     "message": "想要恢复意外的重置，在文本框中按下 Ctrl-Z （或 Cmd-Z）"
   },
   "linterRulesLink": {
-    "message": "查看文档（规则列表）"
+    "message": "查看完整的规则清单"
   },
   "liveReloadAfterInstall": {
     "message": "安装后实时加载"
@@ -921,7 +921,7 @@
     "message": "通过 <html[stylus-iframe]> 暴露 <iframe> 的父页面"
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "为每个 iframe 的 <html> 元素设置 <stylus-iframe> 属性，暴露其顶层网站的域名。\n　\n可用于编写包含或排除特定网站上的 iframe 的 CSS，例如：\n　\n</* 仅对显示在推特上的 iframe 隐藏 h1 元素 */\nhtml[stylus-iframe$$=“twitter.com”] h1 { display:none }\n\nhtml:not([stylus-iframe]) { /* 不应用于任何 iframe 的样式 */ }>\n　\n译注：具体实现参考 https://github.com/openstyles/stylus/blob/bb26734a5424954b621b2580051ad3ff47567fe6/src/content/apply.js#L220"
+    "message": "为每个 iframe 的 <html> 元素设置 <stylus-iframe> 属性，暴露其顶层网站的域名。\n\n可用于编写包含或排除特定网站上的 iframe 的 CSS，例如：\n\n</* 仅对显示在推特上的 iframe 隐藏 h1 元素 */\nhtml[stylus-iframe$$=“twitter.com”] h1 { display:none }\n\nhtml:not([stylus-iframe]) { /* 不应用于任何 iframe 的样式 */ }>\n\n译注：具体实现参考 https://github.com/openstyles/stylus/blob/bb26734a5424954b621b2580051ad3ff47567fe6/src/content/apply.js#L220"
   },
   "optionsAdvancedExposeStyleName": {
     "message": "暴露样式名称"
@@ -939,7 +939,7 @@
     "message": "…仅在匹配的网站上"
   },
   "optionsAdvancedSitesNote": {
-    "message": "<abc.com> 单个网站。\n<*.abc.com> 网站 + 子域名。\n<-m.abc.com> 使用 \"-\" 前缀排除网站。\n<*> 所有网站（用于将匹配改为排除）。\n<#abc.com> 因含有无效符号而被忽略（译注：可用作注释）。\n<*://abc.*/xyz> 简单的通配符匹配，也被称为 glob 模式匹配。\n<https://abc.com/xyz> 完整 URL。\n　\n每项之间使用空格或换行符分隔。内容文本会在以下情况时自动保存：在输入框中按下 Ctrl-S 或 ⌘S，或点击输入框外部，或关闭选项窗口。"
+    "message": "<abc.com> 单个网站。\n<*.abc.com> 网站 + 子域名。\n<-m.abc.com> 使用 \"-\" 前缀排除网站。\n<*> 所有网站（用于将匹配改为排除）。\n<#abc.com> 因含有无效符号而被忽略（译注：可用作注释）。\n<*://abc.*/xyz> 简单的通配符匹配，也被称为 glob 模式匹配。\n<https://abc.com/xyz> 完整 URL。\n\n每项之间使用空格或换行符分隔。内容文本会在以下情况时自动保存：在输入框中按下 Ctrl-S 或 ⌘S，或点击输入框外部，或关闭选项窗口。"
   },
   "optionsAdvancedStyleViaASS": {
     "message": "‌利用 <adoptedStyleSheets> 绕过 <CSP> 的 <style-src> 限制"
@@ -1130,7 +1130,7 @@
     "message": "在新窗口中打开编辑器"
   },
   "popupOpenEditInWindowTooltip": {
-    "message": "将编辑器标签页拖出为单独窗口时自动启用，\n将编辑器标签页拖入到其他窗口时自动禁用。\n　\n译注：\n从样式管理器中打开的编辑器也受此设置影响。\n可开启下面的“窗口不带工具栏与­标签页”设置，\n不显示标签页，来避免上述自动启用/禁用行为。"
+    "message": "将编辑器标签页拖出为单独窗口时自动启用，\n将编辑器标签页拖入到其他窗口时自动禁用。\n\n译注：\n从样式管理器中打开的编辑器也受此设置影响。\n可开启下面的“窗口不带工具栏与­标签页”设置，\n不显示标签页，来避免上述自动启用/禁用行为。"
   },
   "popupSidePanelOpenHint": {
     "message": "右键点击：在侧栏中打开"
@@ -1516,7 +1516,7 @@
     "message": "访问以下网站时，包含（并<br>）或排除此样式："
   },
   "styleToMozillaFormatHelp": {
-    "message": "Mozilla 格式的样式代码可提交至 userstyles.org，并可在 Firefox 的经典版 Stylish 插件中使用\n　\n译注：导入时，只要复制含有 “@-moz-document ....” 的样式代码后，即可直接粘贴到编辑器。粘贴后会自动弹出导入对话框，选择要覆盖还是追加。"
+    "message": "Mozilla 格式的样式代码可提交至 userstyles.org，并可在 Firefox 的经典版 Stylish 插件中使用\n\n译注：导入时，只要复制含有 “@-moz-document ....” 的样式代码后，即可直接粘贴到编辑器，会自动弹出导入对话框，便捷导入"
   },
   "styleToMozillaFormatTitle": {
     "message": "Mozilla 格式的样式"
@@ -1531,7 +1531,7 @@
     "message": "Stylus 不能在此类页面上工作"
   },
   "stylusUnavailableForURLdetails": {
-    "message": "出于安全，浏览器禁止扩展影响其内置页面（例如 chrome://version 、Chrome 61 起的新标签页、about:addons 等等）以及其他扩展的页面。各浏览器也限制拓展介入到其官方扩展商店页面，例如 Chrome 应用商店、Firefox 附加组件。"
+    "message": "出于安全，浏览器禁止扩展影响其内置页（ chrome://version 、Chrome61新标签页、about:addons 等等）\n以及其他扩展页。也被限制介入到官方扩展商店页面 如Chrome应用店、Firefox附加组件。"
   },
   "syncError": {
     "message": "同步失败"

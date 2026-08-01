@@ -10,6 +10,7 @@ import {ownPagesCommitted} from './navigation-manager';
 import makePopupData from './popup-data';
 import {nondefaults} from './prefs-api';
 import * as styleMan from './style-manager';
+import {badStyles} from './style-manager/init';
 import * as syncMan from './sync-manager';
 import {loadTemplate} from './usercss-template';
 
@@ -44,6 +45,7 @@ const PROVIDERS = {
           query,
           mode: sp.get('searchMode') || prefs.__values['manage.searchMode'],
         }),
+      badStyles: badStyles.length && badStyles,
       // JSON.parse in the receiver is faster than JS parsing of a huge literal object
       styles: __.MV3 ? JSON.stringify(styles) : styles,
       sync: syncMan.getStatus(true),

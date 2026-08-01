@@ -1,6 +1,7 @@
 import '@/js/dom-init';
 import {kNone, kSidebar, pSync} from '@/js/consts';
 import {$create, $root, $toggleDataset} from '@/js/dom';
+import showUnhandledError from '@/js/dom-error';
 import {setupLiveDetails, setupLivePrefs} from '@/js/dom-prefs';
 import {animateElement} from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
@@ -23,6 +24,7 @@ import '@/css/target-site.css';
 
 (async () => {
   const data = __.MV3 && swController ? prefs.clientData : await prefs.clientData;
+  const {badStyles} = data;
   const selectorOpts = '#manage-options-button, #sync-styles';
   setupLiveDetails();
   setupLivePrefs();
@@ -38,6 +40,10 @@ import '@/css/target-site.css';
   router.makeToggle('#update-history-button', 'update-history', UpdateHistory);
   router.update();
   showStyles(__.MV3 ? JSON.parse(data.styles || '[]') : data.styles || [], data.ids);
+  if (badStyles) {
+    showUnhandledError(`${t('dbError')} (${badStyles.length} ${t('importReportLegendInvalid')})`);
+    console.log(badStyles);
+  }
   initSyncButton(data.sync || {});
   import('./import-export');
 })();

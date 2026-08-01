@@ -298,7 +298,7 @@
     "description": "Option text for the user to sort the style by last update date"
   },
   "dbError": {
-    "message": "An error has occurred using the Stylus database. Would you like to visit a web page with possible solutions?",
+    "message": "An error has occurred using the Stylus database",
     "description": "Prompt when a DB error is encountered"
   },
   "defaultTheme": {

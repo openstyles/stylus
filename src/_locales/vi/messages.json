@@ -226,7 +226,7 @@
     "message": "Ngày cập nhật"
   },
   "dbError": {
-    "message": "Đã xảy ra lỗi khi sử dụng cơ sở dữ liệu Stylus. Bạn có muốn truy cập một trang web với các giải pháp khả thi không?"
+    "message": "Đã xảy ra lỗi khi sử dụng cơ sở dữ liệu Stylus"
   },
   "defaultTheme": {
     "message": "mặc định"

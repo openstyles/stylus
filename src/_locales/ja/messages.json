@@ -197,7 +197,7 @@
     "message": "更新日"
   },
   "dbError": {
-    "message": "Stylusのデータベース使用中にエラーが発生しました。考えられる解決策を記載したWebページを開きますか？"
+    "message": "Stylusのデータベース使用中にエラーが発生しました"
   },
   "defaultTheme": {
     "message": "デフォルト"

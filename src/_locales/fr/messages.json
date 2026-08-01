@@ -216,7 +216,7 @@
     "message": "Date de mise à jour"
   },
   "dbError": {
-    "message": "Une erreur s'est produite dans la base de donnée de Stylus. Voulez-vous visiter une page web avec les solutions possibles ?"
+    "message": "Une erreur s'est produite dans la base de donnée de Stylus"
   },
   "defaultTheme": {
     "message": "défaut"

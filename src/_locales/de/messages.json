@@ -191,7 +191,7 @@
     "message": "Updatedatum"
   },
   "dbError": {
-    "message": "Ein Fehler ist beim Verwenden der Stylus-Datenbank aufgetreten. Willst Du eine Webseite mit möglichen Lösungen besuchen?"
+    "message": "Ein Fehler ist beim Verwenden der Stylus-Datenbank aufgetreten"
   },
   "defaultTheme": {
     "message": "Standard"

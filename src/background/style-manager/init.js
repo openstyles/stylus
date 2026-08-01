@@ -1,4 +1,4 @@
-import {DB, kInjectionOrder, kResolve, STORAGE_KEY} from '@/js/consts';
+import {DB, kInjectionOrder, kResolve, STORAGE_KEY, UCD} from '@/js/consts';
 import {onConnect, onDisconnect} from '@/js/msg';
 import {styleJSONseemsValid} from '@/js/style-util';
 import {NOP} from '@/js/util';
@@ -7,8 +7,13 @@ import * as colorScheme from '../color-scheme';
 import {bgInit, onSchemeChange} from '../common';
 import {db, draftsDB, execMirror, prefsDB} from '../db';
 import './init';
+import {buildCode} from '../usercss-manager';
 import {fixKnownProblems} from './fixer';
 import {broadcastStyleUpdated, setOrderImpl, storeInMap, styleMap, stylePreviewMap} from './util';
+
+export const badStyles = [];
+const rxVarsAndImport = /^:root\s*{\s+--[\s\S].*?@import\s/i;
+const hasVarsAndImport = ({code}) => rxVarsAndImport.test(code);
 
 bgInit.push(initStyleMap);
 
@@ -57,20 +62,24 @@ async function initStyleMap() {
     orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder).catch(console.error);
   if (!styles.length)
     styles = await execMirror(DB, 'getAll').catch(console.error) || styles;
-  for (let style of styles) {
-    const fix = fixKnownProblems(style, true);
-    if (fix instanceof Promise) try {
-      style = await fix;
-    } catch (err) {
-      console.warn(err, style); // TODO: expose in UI
-      continue;
+  for (const style of styles) {
+    let err;
+    try {
+      fixKnownProblems(style, true);
+      err = (!Array.isArray(style.sections) ||
+        /* @import must precede `vars` that we add at beginning */
+        style[UCD]?.vars && style.sections.some(hasVarsAndImport)
+      ) && (
+        !style.sourceCode && 'No sourceCode' ||
+        !await buildCode(style) // throws on errors
+      ) || !styleJSONseemsValid(style) && 'No name/code';
+    } catch (e) {
+      err = e;
     }
-    if (styleJSONseemsValid(style)) {
-      storeInMap(style);
-    } else {
-      console.warn('Ignoring damaged style in DB', style); // TODO: expose in UI
-    }
+    if (err) badStyles.push([err, style]);
+    else storeInMap(style);
   }
+  if (badStyles.length) console.warn(badStyles);
   setOrderImpl(orderFromDb, {store: false});
   __.DEBUGLOG('styleMan init done');
 }

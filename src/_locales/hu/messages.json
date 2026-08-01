@@ -220,7 +220,7 @@
     "message": "Frissítés dátuma"
   },
   "dbError": {
-    "message": "Hiba történt a Stylus adatbázisának használatakor. Szeretnéd meglátogatni a lehetséges megoldásokat tartalmazó weboldalt?"
+    "message": "Hiba történt a Stylus adatbázisának használatakor"
   },
   "defaultTheme": {
     "message": "alapértelmezett"

@@ -200,7 +200,7 @@
     "message": "Data aggiornata"
   },
   "dbError": {
-    "message": "Si è verificato un errore durante l'utilizzo del database Stylus. Vuoi visitare una pagina web con le possibili soluzioni?"
+    "message": "Si è verificato un errore durante l'utilizzo del database Stylus"
   },
   "defaultTheme": {
     "message": "predefinito"

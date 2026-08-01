@@ -198,7 +198,7 @@
     "message": "Opdateringsdato"
   },
   "dbError": {
-    "message": "En fejl opstod ved brug af Stylus-databasen. Vil du besøge en webside med mulige løsninger?"
+    "message": "En fejl opstod ved brug af Stylus-databasen"
   },
   "defaultTheme": {
     "message": "standard"

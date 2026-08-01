@@ -210,7 +210,7 @@
     "message": "Bijwerkdatum"
   },
   "dbError": {
-    "message": "Er is een fout opgetreden bij het gebruiken van de Stylus-database. Wilt u een webpagina met mogelijke oplossingen bezoeken?"
+    "message": "Er is een fout opgetreden bij het gebruiken van de Stylus-database"
   },
   "defaultTheme": {
     "message": "standaard"

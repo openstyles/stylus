@@ -232,7 +232,7 @@
     "message": "Data aktualizacji"
   },
   "dbError": {
-    "message": "Podczas używania bazy danych Stylus wystąpił błąd. Czy chcesz odwiedzić stronę internetową z możliwymi rozwiązaniami?"
+    "message": "Podczas używania bazy danych Stylus wystąpił błąd"
   },
   "defaultTheme": {
     "message": "domyślny"

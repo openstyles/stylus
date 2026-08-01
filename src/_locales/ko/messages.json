@@ -191,7 +191,7 @@
     "message": "변경된 날짜"
   },
   "dbError": {
-    "message": "Stylus 데이터베이스를 사용하던 중 오류가 발생했습니다. 해결 방법 안내 웹페이지를 여시겠습니까?"
+    "message": "Stylus 데이터베이스를 사용하던 중 오류가 발생했습니다"
   },
   "defaultTheme": {
     "message": "기본"

@@ -179,7 +179,7 @@
     "message": "Datum aktualizace"
   },
   "dbError": {
-    "message": "Nastala chyba při používání Stylus databáze. Chcete navštívit webovou stránku s možnými řešeními?"
+    "message": "Nastala chyba při používání Stylus databáze"
   },
   "defaultTheme": {
     "message": "výchozí"

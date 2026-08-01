@@ -1,8 +1,6 @@
-import {UCD} from '@/js/consts';
 import * as URLS from '@/js/urls';
 import {isEmptyObj, sleep} from '@/js/util';
 import * as syncMan from '../sync-manager';
-import * as usercssMan from '../usercss-manager';
 import {save} from '.';
 import {updateSections} from './cache';
 import {broadcastStyleUpdated, styleMap, storeInMap} from './util';
@@ -24,9 +22,6 @@ const MISSING_PROPS = {
   name: style => `ID: ${style.id}`,
   _id: makeRandomUUID,
 };
-
-const rxVarsAndImport = /^:root\s*{\s+--[\s\S].*?@import\s/i;
-const hasVarsAndImport = ({code}) => rxVarsAndImport.test(code);
 
 /**
  * @param {StyleObj} style
@@ -81,18 +76,6 @@ export function fixKnownProblems(style, revive) {
   if (`${style.url}${style.installationUrl}`.includes('https://33kk.github.io/uso-archive/')) {
     delete style.url;
     delete style.installationUrl;
-  }
-  if (revive && (
-    !Array.isArray(v = style.sections) && (v = 0, true) ||
-    /* @import must precede `vars` that we add at beginning */
-    style[UCD]?.vars && v.some(hasVarsAndImport)
-  )) {
-    if (!v && !style.sourceCode) {
-      style.customName = 'Damaged style #' + style.id;
-      style.sections = [{code: '/* No sections or sourceCode */'}];
-      return style;
-    }
-    return usercssMan.buildCode(style);
   }
   return res && style;
 }

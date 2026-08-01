@@ -155,7 +155,7 @@
     "message": "Data updatării"
   },
   "dbError": {
-    "message": "O eroare în baza de date a apărut. Doriți să vizitați pagina web pentru o soluție?"
+    "message": "O eroare în baza de date a apărut"
   },
   "deleteStyleConfirm": {
     "message": "Sunteți sigur că doriți să ștergeți această temă?"

@@ -199,7 +199,7 @@
     "message": "Fecha de actualización"
   },
   "dbError": {
-    "message": "Ocurrió un error con la base de datos de Stylus. ¿Deseas visitar una página web con posibles soluciones?"
+    "message": "Ocurrió un error con la base de datos de Stylus"
   },
   "defaultTheme": {
     "message": "predeterminado"

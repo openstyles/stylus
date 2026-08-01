@@ -185,7 +185,7 @@
     "message": "Uuendamise kuupäev"
   },
   "dbError": {
-    "message": "Stylus'i andmebaasi uuendamisel esines viga. Kas soovid külastada võimalike lahendustega veebilehte?"
+    "message": "Stylus'i andmebaasi uuendamisel esines viga"
   },
   "defaultTheme": {
     "message": "vaikimisi"

@@ -176,7 +176,7 @@
     "message": "Güncelleme tarihi"
   },
   "dbError": {
-    "message": "Stylus veritabanı kullanılırken bir hata oluştu. Olası çözümler içeren bir web sayfasını ziyaret etmek ister misiniz?"
+    "message": "Stylus veritabanı kullanılırken bir hata oluştu"
   },
   "defaultTheme": {
     "message": "öntanımlı"
