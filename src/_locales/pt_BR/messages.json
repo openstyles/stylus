@@ -97,6 +97,9 @@
   "cm_lineWrapping": {
     "message": "Quebra de linha"
   },
+  "cm_linter": {
+    "message": "Validar CSS"
+  },
   "cm_matchHighlight": {
     "message": "Destacar"
   },
@@ -248,14 +251,23 @@
   "editStyleLabel": {
     "message": "Editar"
   },
+  "editTargetsFirst": {
+    "message": "Mostrar alvos antes do código"
+  },
   "editorSettings": {
     "message": "Configurações do editor"
   },
   "emptyCode": {
     "message": "As seções de estilo deste URL estão vazias"
   },
+  "emptyStyle": {
+    "message": "Estilo está vazio"
+  },
   "enableStyleLabel": {
     "message": "Ativar"
+  },
+  "exclude": {
+    "message": "Excluir"
   },
   "exportCompatible": {
     "message": "Exportar (modo de compatibilidade)"
@@ -295,11 +307,17 @@
   "filteredStylesAllHidden": {
     "message": "Filtros aplicados não correspondem a nenhum estilo"
   },
+  "find": {
+    "message": "Procurar"
+  },
   "findStyles": {
     "message": "Encontrar estilos"
   },
   "findStylesOnline": {
     "message": "Clique para encontrar estilos online."
+  },
+  "general": {
+    "message": "Geral"
   },
   "genericAdd": {
     "message": "Adicionar"
@@ -388,6 +406,9 @@
   "importReportLegendInvalid": {
     "message": "inválidos pulados"
   },
+  "importReportLegendOrphans": {
+    "message": "estilos instalados que não estão no backup"
+  },
   "importReportLegendUpdatedBoth": {
     "message": "tiveram o meta e código atualizados"
   },
@@ -411,6 +432,9 @@
   },
   "importStyles": {
     "message": "Importar estilos"
+  },
+  "include": {
+    "message": "Incluir"
   },
   "installButton": {
     "message": "Instalar estilo"
@@ -543,6 +567,9 @@
   "manageStyles": {
     "message": "Gerenciar estilos"
   },
+  "masterSwitch": {
+    "message": "Interruptor mestre"
+  },
   "menuShowBadge": {
     "message": "Mostrar a contagem de estilos ativados"
   },
@@ -559,6 +586,9 @@
         "content": "$1"
       }
     }
+  },
+  "meta_invalidSelectEmptyOptions": {
+    "message": "@var select inválido: a lista de opções está vazia"
   },
   "meta_invalidString": {
     "message": "Espera-se um texto entre aspas"
@@ -584,6 +614,9 @@
         "content": "$1"
       }
     }
+  },
+  "meta_missingEOT": {
+    "message": "Esperavam-se dados EOT"
   },
   "meta_missingMandatory": {
     "message": "Metadata obrigatório não encontrado: $keys$",
@@ -621,11 +654,17 @@
   "numberedLine": {
     "message": "Linha:"
   },
+  "openAsPopupWindow": {
+    "message": "...sem barras de ferramentas e abas"
+  },
   "openManage": {
     "message": "Gerenciar estilos instalados"
   },
   "openOptions": {
     "message": "Opções"
+  },
+  "optionKeepAlive": {
+    "message": "Duração do cache de estilos"
   },
   "optionTargetIconsNote": {
     "message": "O Stylus usa um serviço externo $SRV$",
@@ -990,8 +1029,20 @@
   "syncStorageErrorSaving": {
     "message": "O valor não pode ser guardado. Tente reduzir a quantidade de texto."
   },
+  "toggleCurrentTab": {
+    "message": "Ativar na aba atual"
+  },
   "toggleStyle": {
     "message": "Alternar estilo"
+  },
+  "toggleStylesHeading": {
+    "message": "Ativar estilos"
+  },
+  "toggleStylesPerm": {
+    "message": "permanentemente"
+  },
+  "toggleStylesTab": {
+    "message": "apenas nesta aba"
   },
   "undo": {
     "message": "Desfazer"
