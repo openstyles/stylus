@@ -401,7 +401,7 @@ export async function setOrder(value) {
 
 /** @returns {Promise<void>} */
 export async function toggle(id, enabled) {
-  const style = styleMap.get(id) || {};
+  const style = styleMap.get(id);
   if (!style)
     return 0;
   style.enabled = !!enabled;
