@@ -58,10 +58,11 @@ async function initStyleMap() {
     prefsDB.get(kInjectionOrder),
     db.getAll(),
   ]);
+  let mirror;
   if (!orderFromDb)
     orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder).catch(console.error);
-  if (!styles.length)
-    styles = await execMirror(DB, 'getAll').catch(console.error) || styles;
+  if (!styles.length && (mirror = await execMirror(DB, 'getAll').catch(console.error)))
+    styles = mirror;
   for (const style of styles) {
     let err;
     try {
@@ -80,6 +81,7 @@ async function initStyleMap() {
     else storeInMap(style);
   }
   if (badStyles.length) console.warn(badStyles);
+  if (mirror?.length) setTimeout(db.putMany, 100, mirror);
   setOrderImpl(orderFromDb, {store: false});
   __.DEBUGLOG('styleMan init done');
 }
