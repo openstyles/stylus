@@ -367,7 +367,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       $toggleDataset(el, 'type', type);
       if (!type || elType.disabled)
         elType.disabled = !type;
-      elVal.focus = focusRegexp;
+      elVal._reveal = reveal;
       editor.toggleRegexp(elVal, type);
     }
     return res;
@@ -425,9 +425,11 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     f.value.clear();
   }
 
-  function focusRegexp() {
-    if (!cm.display.lineDiv.contains(this)) cm.jumpToPos(getSectionFor(this).start);
-    Object.getPrototypeOf(this).focus.apply(this, arguments);
+  function reveal() {
+    if (!cm.display.lineDiv.contains(this)) {
+      // clicked in regexp tester UI for a part of code that's not rendered currently
+      cm.jumpToPos(getSectionFor(this).start);
+    }
   }
 
   function fromDoubleslash(s) {

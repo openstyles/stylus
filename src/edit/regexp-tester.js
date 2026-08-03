@@ -179,6 +179,7 @@ async function update() {
 function onClick(event) {
   let el = event.target;
   if (el._source) {
+    el._source._reveal?.();
     el._source.focus();
   } else if ((el = el.closest('a'))) {
     event.preventDefault();
