@@ -1,6 +1,5 @@
-import {kBadFavs, kEditorScrollInfo, kEditorState, kPopup, pEditorTheme, UCD} from '@/js/consts';
+import {kBadFavs, kEditorScrollInfo, kPopup, pEditorTheme, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
-import {chromeLocal} from '@/js/storage-util';
 import {FIREFOX} from '@/js/ua';
 import {fetchText, NOP} from '@/js/util';
 import {isDark, setSystemDark} from './color-scheme';
@@ -26,7 +25,6 @@ const PROVIDERS = {
       style,
       isUsercss,
       si: style && (__.MV3 ? stateDB.get(siKey) : dataHub.get(siKey)),
-      state: chromeLocal.getValue(kEditorState),
       template: isUsercss && loadTemplate(),
       theme: v = prefs.__values[pEditorTheme],
       themeText: v !== prefs.__defaults[pEditorTheme] && (

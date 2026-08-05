@@ -1,6 +1,8 @@
 import {loadCmTheme} from '@/cm';
+import {kEditorState} from '@/js/consts';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
+import {chromeLocal} from '@/js/storage-util';
 import {FROM_CSS} from '@/js/style-util';
 import {clipString, sessionStore, tryURL, urlParams} from '@/js/util';
 import editor, {scrollInfo} from './editor';
@@ -15,7 +17,10 @@ export const loading = __.MV3 && swController
   ? loadStyle(prefs.clientData)
   : prefs.clientData.then(loadStyle);
 
-export const loadingLazy = import(/* webpackChunkName: "edit-lazy" */'./load-lazy-ui');
+chromeLocal.getValue(kEditorState).then(val => {
+  editor.state = val;
+  import(/* webpackChunkName: "edit-lazy" */'./load-lazy-ui');
+});
 
 /** @param {StylusClientData} clientData */
 function loadStyle({style, si, theme, themeText, ...props}) {

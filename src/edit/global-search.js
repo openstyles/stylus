@@ -6,7 +6,6 @@ import {template} from '@/js/localization';
 import {chromeLocal} from '@/js/storage-util';
 import {debounce, RX_MAYBE_REGEXP, stringAsRegExpStr, t, tryRegExp} from '@/js/util';
 import editor from './editor';
-import {loading} from './load-style';
 import './css/search.css';
 
 //region Constants and state
@@ -876,12 +875,8 @@ function writeStorage() {
 
 //endregion
 
-(async () => {
-  if (loading)
-    await loading;
-  ({
-    find: stateFind = stateFind,
-    replace: stateReplace = stateReplace,
-    icase: stateIcase = stateIcase,
-  } = editor.state || {});
-})();
+({
+  find: stateFind = stateFind,
+  replace: stateReplace = stateReplace,
+  icase: stateIcase = stateIcase,
+} = editor.state || {}); // this module runs when editor.state is set
