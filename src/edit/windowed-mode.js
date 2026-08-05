@@ -3,7 +3,7 @@ import {kPopup, pOpenEditInWindow} from '@/js/consts';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
-import {sessionStore, tryJSONparse, urlParams} from '@/js/util';
+import {NOP, sessionStore, tryJSONparse, urlParams} from '@/js/util';
 import {browserWindows, getOwnTab, ownTab} from '@/js/util-webext';
 import editor from './editor';
 import EmbeddedPopup from './embedded-popup';
@@ -15,7 +15,7 @@ if (browserWindows) {
   delete sessionStore.windowPos;
   // resize the window on 'undo close'
   if (pos && pos.left != null) {
-    browserWindows.update(browserWindows.WINDOW_ID_CURRENT, pos);
+    browserWindows.update(-2 /*WINDOW_ID_CURRENT*/, pos).catch(NOP);
   }
 }
 
@@ -48,7 +48,7 @@ async function onTabAttached(tabId, info) {
   const openEditInWindow = win.tabs.length === 1;
   // FF-only because Chrome retardedly resets the size during dragging
   if (openEditInWindow && (__.B_FIREFOX || __.B_ANY && FIREFOX)) {
-    browserWindows.update(info.newWindowId, prefs.__values['windowPosition']);
+    browserWindows.update(info.newWindowId, prefs.__values['windowPosition']).catch(NOP);
   }
   prefs.set(pOpenEditInWindow, openEditInWindow);
 }
