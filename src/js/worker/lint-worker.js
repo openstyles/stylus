@@ -117,6 +117,8 @@ const LintWorkerAPI = {
     stylelint ||= loadStylelint(mode);
     for (const r in config.rules)
       if (!stylelint.rules[r]) delete config.rules[r];
+    if (mode === 'stylus')
+      code = '{}' + code; // fixes https://github.com/stylus/postcss-styl/issues/20
     const {results: [res]} = await stylelint.lint({
       code, config,
       customSyntax: stylelint.syntax[mode],
