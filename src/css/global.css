@@ -102,6 +102,7 @@ button {
   font: inherit;
   font-size: 13px;
   line-height: 1.2;
+  height: var(--input-height);
   color: var(--fg);
   background: linear-gradient(var(--c95), var(--c90));
   transition: background-color .1s, border-color .1s;
@@ -500,11 +501,11 @@ body {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   &::after {
-    --side: 4px;
+    $side: 4px;
     content: '';
-    border: var(--side) solid transparent;
+    border: $side solid transparent;
+    border-top: calc($side * 1.3) solid currentColor;
     display: inline-block;
-    border-top: calc(var(--side) * 1.3) solid currentColor;
     vertical-align: text-bottom;
   }
   .split-btn.active & {
