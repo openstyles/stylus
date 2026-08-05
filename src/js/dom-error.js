@@ -11,7 +11,13 @@ let elEntry;
 window.onerror = window.onunhandledrejection = showUnhandledError;
 
 function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params */) {
-  err = err.reason || err; // for onunhandledrejection
+  b = err.reason; // for onunhandledrejection
+  if (b) {
+    // postcss-styl is very borked https://github.com/openstyles/stylus/issues/2198
+    if (!__.DEV && /atruleImpl.*?stylelint\.js/.test(b.stack))
+      return;
+    err = b;
+  }
   if (!elError) {
     elError = $create('#unhandledError', [
       $create('a', {title: t('copy'), tabIndex: 0}, $create('i.i-copy')),
