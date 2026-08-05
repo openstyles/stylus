@@ -54,7 +54,7 @@ function showUnhandledError(a, b, c, d, err = a /* window.onerror has 5 params *
       }
       target.href = url;
       target.disabled = false;
-      if (evt.button < 2) target.click();
+      if (evt.button < 2) open(url, '_blank');
     };
     elError.onclick = evt => {
       const {target} = evt;
