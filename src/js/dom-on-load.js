@@ -6,7 +6,7 @@ import {
 import {sanitizeHtml} from './localization';
 import {onMessage} from './msg';
 import * as prefs from './prefs';
-import {CHROME, FIREFOX} from './ua';
+import {FIREFOX} from './ua';
 import {installUsercss} from './urls';
 import {clamp, debounce, t, tryURL} from './util';
 
@@ -36,10 +36,10 @@ window.on('load', () => {
   splitLongTooltips();
   addTooltipsToEllipsized();
   // Removing transition-suppressor rule
-  if (__.B_FIREFOX || !__.MV3 && __.B_ANY && (!CHROME || CHROME < 93)) {
+  if (!__.MV3 && !__.B_FIREFOX) {
     nextSheet: for (const sheet of document.styleSheets) {
       for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {
-        if (/#\\1\s?transition-suppressor/.test(rule.cssText)) {
+        if (/#transition-suppressor/.test(rule.cssText)) {
           sheet.deleteRule(i);
           break nextSheet;
         }

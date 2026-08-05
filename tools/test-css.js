@@ -8,25 +8,10 @@ const postcss = require('postcss');
 const {SRC} = require('./util');
 
 (async () => {
-  testGlobalCss();
   await testParserlibOnFiles();
   console.log(chalk.green('CSS tests OK'));
   process.exit(0);
 })();
-
-function fail(what, str) {
-  console.log('\r' + chalk.bgRed(what + ' FAILED\n') + str);
-  process.exit(1);
-}
-
-function testGlobalCss() {
-  const css = fs.readFileSync(SRC + 'css/global.css', {encoding: 'utf8'});
-  const RX_SUPPRESSOR = /[^{}]+#\\1\s?transition-suppressor[^{}]+{\s*transition:\s*none\s*!\s*important/i;
-  const RX_COMMENT = /\/\*([^*]+|\*(?!\/))*(\*\/|$)/g;
-  if (!RX_SUPPRESSOR.test(css.replace(RX_COMMENT, ''))) {
-    fail('global.css', chalk.red('missing the transition suppressor rule'));
-  }
-}
 
 async function testParserlibOnFiles() {
   let pc, pcPlugins, m, err;

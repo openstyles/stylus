@@ -81,9 +81,7 @@ const moduleRules = [
 const [terserOwn, terserVendor] = [true, false].map(isOwn => new TerserPlugin({
   [isOwn ? 'exclude' : 'include']: /^less|codemirror|csslint|parserlib|beautify|jsonlint|webdav/,
   extractComments: false,
-  parallel: 4,
-  minify: isOwn ? TerserPlugin.terserMinify : TerserPlugin.swcMinify,
-  [isOwn ? 'terserOptions' : 'minimizerOptions']: {
+  terserOptions: {
     ecma: MV3 ? 2024 : 2017,
     compress: {
       /** Used in own code but also in cm/*.js that goes into codemirror.js */
@@ -156,9 +154,9 @@ const getBaseConfig = ({entry, vars} = {}) => ({
       terserVendor,
       new CssMinimizerPlugin({
         minimizerOptions: {
-          preset: ['default', {
-            calc: false, // breaks clamp()
-            minifyParams: false, // breaks our @media for dark and new-ui
+          preset: ['lite', {
+            minifySelectors: true,
+            normalizeWhitespace: false,
           }],
         },
       }),
@@ -183,9 +181,11 @@ const getBaseConfig = ({entry, vars} = {}) => ({
     // new webpack.debug.ProfilingPlugin({outputPath: DST + '.profile.json'}),
     vars && new RawEnvPlugin(...vars),
     new webpack.ids.NamedChunkIdsPlugin({context: SRC + JS}),
-    new InlineConstantExportsPlugin([/[/\\](consts|themer|sync-util)\.js$/]),
+    new InlineConstantExportsPlugin([/[/\\](consts|dom-themer|sync-util)\.js$/]),
     (MV3 || BUILD === 'firefox') &&
       new webpack.NormalModuleReplacementPlugin(/scrollbar-chrome-dark\.css$/, 'data:text/css,'),
+    (MV3 || BUILD === 'firefox') &&
+      new webpack.NormalModuleReplacementPlugin(/transition-suppressor\.css$/, 'data:text/css,'),
     +process.env.PROFILE && new webpack.debug.ProfilingPlugin({
       outputPath: __dirname + `/../webpack-profile-${entry}.json`,
     }),

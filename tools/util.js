@@ -56,7 +56,7 @@ function getBrowserTargets() {
 
 function getBrowserlist() {
   return getBrowserTargets()
-    .map(([name, ver]) => ver && `${name} >= ${parseFloat(ver)}`);
+    .map(([name, ver]) => `${name} >= ${parseFloat(ver)}`);
 }
 
 function transESM2var(buf, from) {

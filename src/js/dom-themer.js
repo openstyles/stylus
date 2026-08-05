@@ -1,6 +1,4 @@
 /**
- * This file must be loaded in a <script> tag placed after all the <link> tags
- * that contain dark themes so that the stylesheets are loaded by the time this script runs.
  * The CSS must use `@media screen and (prefers-color-scheme: dark), dark {}` that also works
  * in old browsers and ensures CSS loads before the first paint, then we toggle the media here,
  * which also happens before the first paint unless the browser "yields", but that's abnormal
@@ -13,9 +11,6 @@ import {swController} from './msg-init';
 import {clientData} from './prefs';
 import {actionPopupUrl} from './urls';
 import {MF_ICON_EXT, MF_ICON_PATH} from './util-webext';
-import '@/css/global.css';
-import '@/css/global-dark.css';
-import '@/css/scrollbar-chrome-dark.css';
 
 export const onDarkChanged = new Set();
 export const MEDIA_ON = 'screen';

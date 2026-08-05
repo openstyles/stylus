@@ -12,7 +12,7 @@ const {
 } = require('./util');
 const augment = require('./webpack.base');
 const {
-  CSS, JS, SHIM, OUTPUT_MODULE, SEP_ESC, SRC_ESC, THEME_NAMES, THEME_PATH, CM_PATH, DST, ALIASES,
+  CSS, JS, SHIM, OUTPUT_MODULE, SEP_ESC, THEME_NAMES, THEME_PATH, CM_PATH, DST, ALIASES,
   VARS, DEBUG, GITHUB_ACTIONS,
 } = require('./webpack.vars');
 
@@ -168,13 +168,14 @@ module.exports = [
             enforce: true,
           },
           ...Object.fromEntries([
-            [2, 'color', `^${SRC_ESC}js/color/`],
-            [1, 'common', `^${SRC_ESC}(content|js)/|/lz-string(-unsafe)?/`],
+            [2, 'color', `^${SRC}js/color/`],
+            [1, 'common', `^${SRC}(css|content|js)/|/lz-string(-unsafe)?/`],
           ].map(([priority, name, test]) => [name, {
             test: test instanceof RegExp ? test :
-              new RegExp(String.raw`(${test.replaceAll('/', SEP_ESC)}).*\.(css|js|html)$`),
+              new RegExp(String.raw`(${test.replaceAll(/[/\\]/g, SEP_ESC)}).*\.(css|js|html)$`),
             name,
             priority,
+            enforce: true,
           }])),
         },
       },

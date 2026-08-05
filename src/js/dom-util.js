@@ -4,7 +4,6 @@ import {$create, $toggleDataset} from './dom';
 export {default as configDialog} from './dlg/config-dialog'; // must precede message-box
 import * as messageBox from './dlg/message-box';
 import * as prefs from './prefs';
-import '@/css/spinner.css';
 
 export {messageBox};
 

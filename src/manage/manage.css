@@ -1,4 +1,3 @@
-/* postcss-simple-vars */
 $pad: 16px;
 $pad05: calc(0.5 * $pad);
 $summaryX: calc($pad - 3px);

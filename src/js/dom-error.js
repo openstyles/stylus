@@ -2,7 +2,6 @@ import {$create, $root} from '@/js/dom';
 import {ownRoot} from '@/js/urls';
 import {t} from '@/js/util';
 import {MF} from '@/js/util-webext';
-import '@/css/dom-error.css';
 
 export default showUnhandledError;
 export let elError;

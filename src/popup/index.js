@@ -6,14 +6,13 @@ import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
-import {isDark, onDarkChanged} from '@/js/themer';
+import {isDark, onDarkChanged} from '@/js/dom-themer';
 import {CHROME, FIREFOX, MAC, MOBILE, OPERA} from '@/js/ua';
 import {clamp, isSidebar, sleep0, t, urlParams} from '@/js/util';
 import {getActiveTab, ignoreChromeError} from '@/js/util-webext';
 import {openStyleFinder, pSideFinder, selUnstylable} from './events';
 import {initHotkeys} from './hotkeys';
 import {createWriterElement, showStyles, updateStateIcon} from './render';
-import '@/css/onoffswitch.css';
 import './popup.css';
 
 const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';

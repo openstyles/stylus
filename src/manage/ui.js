@@ -4,7 +4,7 @@ import {getCssMediaRuleByName} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import {__values, subscribe} from '@/js/prefs';
 import {renderTargetIcons} from '@/js/target-icons';
-import {MEDIA_OFF, MEDIA_ON} from '@/js/themer';
+import {MEDIA_OFF, MEDIA_ON} from '@/js/dom-themer';
 import {favicon} from '@/js/urls';
 import {debounce} from '@/js/util';
 import {createTargetsElement, favsBusy, partEntry, showStyles} from './render';

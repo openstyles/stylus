@@ -1,4 +1,3 @@
-/* postcss-simple-vars */
 $pad: var(--outer-padding);
 $pad05: calc($pad / 2);
 $padToEntryH: calc((var(--entry-h) - var(--font-size)) / 2);

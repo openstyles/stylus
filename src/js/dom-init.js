@@ -1,3 +1,10 @@
+// importing global CSS in stable order for mini-css-extract-plugin
+import '@/css/global.css';
+import '@/css/global-dark.css';
+import '@/css/dom-error.css';
+import '@/css/scrollbar-chrome-dark.css';
+import '@/css/spinner.css';
+import '@/css/transition-suppressor.css';
 import {kSidebar, pFavicons, pFaviconsGray} from '@/js/consts';
 import {isTab} from '@/js/msg-api';
 import {isSidebar} from '@/js/util';
@@ -9,8 +16,8 @@ import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
 import './dom-error';
 import './dom-on-load';
+import './dom-themer';
 import './msg-init';
-import './themer';
 import './util-webext';
 import '@/content/apply'; // must run after msg (swaps `API`) and util-webext (exposes _deepCopy)
 

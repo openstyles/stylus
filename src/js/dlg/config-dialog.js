@@ -9,7 +9,6 @@ import * as prefs from '@/js/prefs';
 import {clamp, debounce, deepCopy, isSidebar, NOP, t} from '@/js/util';
 import {MOBILE} from '@/js/ua';
 import './config-dialog.css';
-import '@/css/onoffswitch.css';
 
 /**
  * @param {StyleObj|number} style
