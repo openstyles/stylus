@@ -49,15 +49,18 @@
 
       <div class="block sync-options">
         <h2 i18n="optionsCustomizeSync"></h2>
-        <div class="items swap">
-          <label class="no-stretch">
-            <p class="sync-status"></p>
-            <div class="select-wrapper">
-              <select class="cloud-name">
-                <option value="none" i18n="optionsSyncNone"></option>
-              </select>
-            </div>
-          </label>
+        <div class="flex wrap center-items no-stretch" style="gap:1em">
+          <div class="select-wrapper">
+            <select class="cloud-name">
+              <option value="none" i18n="optionsSyncNone"></option>
+            </select>
+          </div>
+          <div class="actions">
+            <button class="connect"></button>
+            <button class="sync-now" i18n="optionsSyncSyncNow"></button>
+            <button class="sync-login" i18n="optionsSyncLogin"></button>
+          </div>
+          <div class="sync-status"></div>
           <table class="drive-options" data-drive="webdav">
             <tr>
               <td i18n="optionsSyncUrl"></td>
@@ -72,11 +75,6 @@
               <td><input type="password" data-option="password"></td>
             </tr>
           </table>
-          <div class="actions">
-            <button class="connect"></button>
-            <button class="sync-now" i18n="optionsSyncSyncNow"></button>
-            <button class="sync-login" i18n="optionsSyncLogin"></button>
-          </div>
         </div>
       </div>
 

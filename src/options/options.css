@@ -285,9 +285,6 @@ a.icon {
 }
 
 .sync-status {
-  padding-left: 1em;
-  box-sizing: border-box;
-  overflow-wrap: break-word;
   &::first-letter {
     text-transform: uppercase;
   }
@@ -311,9 +308,6 @@ a.icon {
     line-height: 1.5;
   }
 }
-.sync-options:not([data-enabled]) .actions {
+.sync-options:not([data-enabled]) > div > :not(.select-wrapper) {
   display: none;
-}
-.sync-options .actions button {
-  margin-top: .5em;
 }
