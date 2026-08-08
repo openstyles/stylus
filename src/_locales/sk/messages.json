@@ -1,0 +1,1688 @@
+{
+  "addStyleLabel": {
+    "message": "Napísať nový štýl"
+  },
+  "addStyleTitle": {
+    "message": "Pridať štýl"
+  },
+  "alphaChannel": {
+    "message": "Priehľadnosť"
+  },
+  "appliesAdd": {
+    "message": "Pridať"
+  },
+  "appliesDisplay": {
+    "message": "Platí pre: $applies$",
+    "placeholders": {
+      "applies": {
+        "content": "$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix": {
+    "message": "a ďalšie"
+  },
+  "appliesDomainOption": {
+    "message": "URL adresy na doméne"
+  },
+  "appliesHelp": {
+    "message": "Pomocou ovládacích prvkov „Platí pre“ obmedzte, na ktoré URL adresy sa vzťahuje kód v tejto sekcii."
+  },
+  "appliesLabel": {
+    "message": "Platí pre"
+  },
+  "appliesLineWidgetLabel": {
+    "message": "Zobraziť informáciu „Platí pre“"
+  },
+  "appliesLineWidgetWarning": {
+    "message": "Nefunguje s minifikovaným CSS"
+  },
+  "appliesRegexpOption": {
+    "message": "URL adresy zodpovedajúce regulárnemu výrazu"
+  },
+  "appliesRemove": {
+    "message": "Odstrániť"
+  },
+  "appliesRemoveError": {
+    "message": "Posledný záznam „platí pre“ nemožno odstrániť"
+  },
+  "appliesToEverything": {
+    "message": "Všetko"
+  },
+  "appliesUrlOption": {
+    "message": "URL adresa"
+  },
+  "appliesUrlPrefixOption": {
+    "message": "URL adresy začínajúce na"
+  },
+  "applyAllUpdates": {
+    "message": "Použiť všetky aktualizácie"
+  },
+  "author": {
+    "message": "Autor"
+  },
+  "backup": {
+    "message": "Záloha"
+  },
+  "backupReminder": {
+    "message": "<b>Štýly sa môžu stratiť</b> kvôli výpadku napájania, chybe v prehliadači alebo osobnému omylu.<hr><b>Zálohujte si dáta:</b> buď nastavte „Synchronizáciu do cloudu“ v možnostiach, alebo po každej väčšej zmene ručne kliknite na tlačidlo exportu, prípadne (odporúčané) nastavte automatickú zálohu všetkých vašich dát pomocou vyhradenej aplikácie."
+  },
+  "checkAllUpdates": {
+    "message": "Skontrolovať aktualizácie všetkých štýlov"
+  },
+  "checkAllUpdatesForce": {
+    "message": "Skontrolovať znova, žiadny štýl som neupravil!"
+  },
+  "checkForUpdate": {
+    "message": "Skontrolovať aktualizáciu"
+  },
+  "checkingForUpdate": {
+    "message": "Kontroluje sa..."
+  },
+  "clickToUninstall": {
+    "message": "Kliknutím odinštalujete"
+  },
+  "cm_arrowKeysTraverse": {
+    "message": "Šípky ↑↓ prechádzajú sekcie"
+  },
+  "cm_autoCloseBrackets": {
+    "message": "Automaticky uzatvárať zátvorky a úvodzovky"
+  },
+  "cm_autoCloseBracketsTooltip": {
+    "message": "Automaticky doplní uzatváraciu zátvorku pri napísaní otváracej z ()[]{}''\"\""
+  },
+  "cm_autocompleteOnTyping": {
+    "message": "Automatické dopĺňanie počas písania"
+  },
+  "cm_colorpicker": {
+    "message": "Nástroj na výber farby pre CSS farby"
+  },
+  "cm_indentWithTabs": {
+    "message": "Použiť tabulátory s inteligentným odsadením"
+  },
+  "cm_keyMap": {
+    "message": "Mapa klávesov"
+  },
+  "cm_lineWrapping": {
+    "message": "Zalamovanie textu"
+  },
+  "cm_linter": {
+    "message": "Overiť CSS"
+  },
+  "cm_matchHighlight": {
+    "message": "Zvýrazňovanie"
+  },
+  "cm_matchHighlightSelection": {
+    "message": "Iba výber"
+  },
+  "cm_matchHighlightToken": {
+    "message": "Token pod kurzorom"
+  },
+  "cm_resizeGripHint": {
+    "message": "Dvojklikom maximalizujete/obnovíte výšku"
+  },
+  "cm_selectByTokens": {
+    "message": "Dvojklik vyberie tokeny"
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Príklady tokenov: .foo-bar-2 #aabbcc 0.32 !important\nAk je vypnuté: vyberú sa slová oddelené interpunkciou."
+  },
+  "cm_smartIndent": {
+    "message": "Použiť inteligentné odsadenie"
+  },
+  "cm_tabSize": {
+    "message": "Veľkosť tabulátora"
+  },
+  "cm_theme": {
+    "message": "Téma"
+  },
+  "colorpickerPaletteHint": {
+    "message": "Kliknutím pravým tlačidlom na vzorku prepnete medzi jej zdrojovými riadkami"
+  },
+  "colorpickerSwitchFormatTooltip": {
+    "message": "Prepínanie formátov: HEX -> RGB -> HSL.\nShift-klik pre opačný smer.\nTaktiež cez klávesy PgUp (PageUp), PgDn (PageDown)."
+  },
+  "colorpickerTooltip": {
+    "message": "Otvoriť výber farby"
+  },
+  "configOnChange": {
+    "message": "pri zmene"
+  },
+  "configOnChangeTooltip": {
+    "message": "Automaticky uložiť a použiť zmeny"
+  },
+  "configureStyle": {
+    "message": "Konfigurovať"
+  },
+  "configureStyleOnHomepage": {
+    "message": "Konfigurovať na domovskej stránke"
+  },
+  "confirmCancel": {
+    "message": "Zrušiť"
+  },
+  "confirmClose": {
+    "message": "Zavrieť"
+  },
+  "confirmDefault": {
+    "message": "Použiť predvolené"
+  },
+  "confirmDelete": {
+    "message": "Odstrániť"
+  },
+  "confirmDiscardChanges": {
+    "message": "Zahodiť zmeny?"
+  },
+  "confirmNo": {
+    "message": "Nie"
+  },
+  "confirmOK": {
+    "message": "OK"
+  },
+  "confirmSave": {
+    "message": "Uložiť"
+  },
+  "confirmStop": {
+    "message": "Zastaviť"
+  },
+  "confirmYes": {
+    "message": "Áno"
+  },
+  "copy": {
+    "message": "Kopírovať do schránky"
+  },
+  "customNameHint": {
+    "message": "Sem zadajte vlastný názov na premenovanie štýlu v rozhraní bez prerušenia jeho aktualizácií"
+  },
+  "customNameResetHint": {
+    "message": "Prestať používať vlastný názov, prepnúť na pôvodný názov štýlu"
+  },
+  "dateAbbrDay": {
+    "message": "$value$d",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrHour": {
+    "message": "$value$h",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrMonth": {
+    "message": "$value$m",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$r",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateInstalled": {
+    "message": "Dátum inštalácie"
+  },
+  "dateUpdated": {
+    "message": "Dátum aktualizácie"
+  },
+  "dbError": {
+    "message": "Vyskytla sa chyba pri používaní databázy Stylus"
+  },
+  "defaultTheme": {
+    "message": "predvolená"
+  },
+  "deleteStyleConfirm": {
+    "message": "Naozaj chcete odstrániť tento štýl?"
+  },
+  "deleteStyleLabel": {
+    "message": "Odstrániť"
+  },
+  "description": {
+    "message": "Prerobte si web pomocou Stylus, správcu používateľských štýlov. Stylus umožňuje jednoducho inštalovať témy a vzhľady pre mnohé obľúbené stránky."
+  },
+  "disableAllStyles": {
+    "message": "Vypnúť všetky štýly"
+  },
+  "disableAllStylesOff": {
+    "message": "Štýly sú vypnuté"
+  },
+  "disableStyleLabel": {
+    "message": "Vypnúť"
+  },
+  "draftAction": {
+    "message": "Zvoľte „Áno“ na načítanie tohto konceptu alebo „Nie“ na jeho zahodenie."
+  },
+  "draftTitle": {
+    "message": "Obnovenie konceptu, vytvorené $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "dragDropMessage": {
+    "message": "Presunutím zálohovacieho súboru kamkoľvek na túto stránku ho importujete."
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Súbor nainštalujete jeho pustením na lištu kariet (miesto, kde sa zobrazujú názvy kariet)."
+  },
+  "editDeleteText": {
+    "message": "Odstrániť"
+  },
+  "editGotoLine": {
+    "message": "Prejsť na riadok (alebo riadok:stĺpec)"
+  },
+  "editStyleHeading": {
+    "message": "Upraviť štýl"
+  },
+  "editStyleLabel": {
+    "message": "Upraviť"
+  },
+  "editTargetsFirst": {
+    "message": "Zobraziť ciele pred kódom"
+  },
+  "editorSettings": {
+    "message": "Nastavenia editora"
+  },
+  "emptyCode": {
+    "message": "Sekcie štýlu pre túto URL adresu sú prázdne"
+  },
+  "emptyStyle": {
+    "message": "Štýl je prázdny"
+  },
+  "enableStyleLabel": {
+    "message": "Zapnúť"
+  },
+  "exclude": {
+    "message": "Vylúčiť"
+  },
+  "exportCompatible": {
+    "message": "Exportovať (kompatibilný režim)"
+  },
+  "exportLabel": {
+    "message": "Exportovať"
+  },
+  "exportStyles": {
+    "message": "Exportovať štýly"
+  },
+  "externalFeedback": {
+    "message": "Spätná väzba"
+  },
+  "externalHomepage": {
+    "message": "Domovská stránka"
+  },
+  "externalLink": {
+    "message": "Externý odkaz"
+  },
+  "externalSupport": {
+    "message": "Podpora"
+  },
+  "externalUsercssDocument": {
+    "message": "Dokumentácia pre UserCSS"
+  },
+  "filteredStyles": {
+    "message": "Zobrazených $numShown$ z $numTotal$",
+    "placeholders": {
+      "numTotal": {
+        "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
+      }
+    }
+  },
+  "filteredStylesAllHidden": {
+    "message": "Aktuálne použité filtre nezodpovedajú žiadnemu štýlu"
+  },
+  "find": {
+    "message": "Nájsť"
+  },
+  "findStyles": {
+    "message": "Nájsť štýly"
+  },
+  "findStylesOnline": {
+    "message": "Kliknutím nájdete štýly online."
+  },
+  "general": {
+    "message": "Všeobecné"
+  },
+  "genericAdd": {
+    "message": "Pridať"
+  },
+  "genericClone": {
+    "message": "Duplikovať"
+  },
+  "genericDescription": {
+    "message": "Popis"
+  },
+  "genericDisabledLabel": {
+    "message": "Vypnuté"
+  },
+  "genericEnabledLabel": {
+    "message": "Zapnuté"
+  },
+  "genericError": {
+    "message": "Chyba"
+  },
+  "genericHistoryLabel": {
+    "message": "História"
+  },
+  "genericMaximum": {
+    "message": "maximum"
+  },
+  "genericMinimum": {
+    "message": "minimum"
+  },
+  "genericNext": {
+    "message": "Ďalej"
+  },
+  "genericPrevious": {
+    "message": "Späť"
+  },
+  "genericResetLabel": {
+    "message": "Obnoviť"
+  },
+  "genericSize": {
+    "message": "Veľkosť"
+  },
+  "genericTest": {
+    "message": "Test"
+  },
+  "genericTitle": {
+    "message": "Názov"
+  },
+  "genericUnknown": {
+    "message": "Neznáme"
+  },
+  "gettingStyles": {
+    "message": "Načítavajú sa všetky štýly..."
+  },
+  "headerResizerHint": {
+    "message": "Podržte Shift na zmenu veľkosti iba pre tento typ rozhrania, t. j. editor, správca, inštalátor"
+  },
+  "helpAlt": {
+    "message": "Pomocník"
+  },
+  "helpKeyMapCommand": {
+    "message": "Zadajte názov príkazu"
+  },
+  "helpKeyMapHotkey": {
+    "message": "Stlačte klávesovú skratku"
+  },
+  "importAppendLabel": {
+    "message": "Pripojiť k štýlu"
+  },
+  "importAppendTooltip": {
+    "message": "Pripojí importovaný štýl k aktuálnemu štýlu"
+  },
+  "importLabel": {
+    "message": "Importovať"
+  },
+  "importPreprocessor": {
+    "message": "Kód závislý od <@preprocessor> nebude fungovať, pretože tento štýl nebol vytvorený v režime <UserCSS>."
+  },
+  "importReplaceLabel": {
+    "message": "Prepísať štýl"
+  },
+  "importReplaceTooltip": {
+    "message": "Zahodí obsah aktuálneho štýlu a prepíše ho importovaným štýlom"
+  },
+  "importReportLegendAdded": {
+    "message": "pridané"
+  },
+  "importReportLegendIdentical": {
+    "message": "vynechané ako identické"
+  },
+  "importReportLegendInvalid": {
+    "message": "vynechané ako neplatné"
+  },
+  "importReportLegendOrphans": {
+    "message": "nainštalované štýly, ktoré nie sú v zálohe"
+  },
+  "importReportLegendUpdatedBoth": {
+    "message": "aktualizované metaúdaje aj kód"
+  },
+  "importReportLegendUpdatedCode": {
+    "message": "aktualizovaný kód"
+  },
+  "importReportLegendUpdatedMeta": {
+    "message": "aktualizované metaúdaje"
+  },
+  "importReportTitle": {
+    "message": "Import štýlov dokončený"
+  },
+  "importReportUnchanged": {
+    "message": "Nič sa nezmenilo."
+  },
+  "importReportUndone": {
+    "message": "štýlov vrátených späť"
+  },
+  "importReportUndoneTitle": {
+    "message": "Import bol vrátený späť"
+  },
+  "importStyles": {
+    "message": "Importovať štýly"
+  },
+  "include": {
+    "message": "Zahrnúť"
+  },
+  "installButton": {
+    "message": "Inštalovať štýl"
+  },
+  "installButtonInstalled": {
+    "message": "Štýl je nainštalovaný"
+  },
+  "installButtonReinstall": {
+    "message": "Preinštalovať štýl"
+  },
+  "installButtonUpdate": {
+    "message": "Aktualizovať štýl"
+  },
+  "installUpdate": {
+    "message": "Inštalovať aktualizáciu"
+  },
+  "installUpdateFrom": {
+    "message": "Štýl sa momentálne aktualizuje z $url$",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "installUpdateFromLabel": {
+    "message": "Kontrolovať aktualizácie"
+  },
+  "license": {
+    "message": "Licencia"
+  },
+  "linkGetHelp": {
+    "message": "Získať pomoc"
+  },
+  "linkGetShareStyles": {
+    "message": "Získať a zdieľať štýly"
+  },
+  "linkGetStyles": {
+    "message": "Získať štýly"
+  },
+  "linkStylusWiki": {
+    "message": "Wiki"
+  },
+  "linkTranslate": {
+    "message": "Preložiť"
+  },
+  "linterCSSLintIncompatible": {
+    "message": "CSSLint nepodporuje preprocesor $preprocessorname$",
+    "placeholders": {
+      "preprocessorname": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterCSSLintSettings": {
+    "message": "(Nastavte pravidlo ako: 0 = vypnuté; 1 = upozornenie; 2 = chyba)"
+  },
+  "linterConfigPopupTitle": {
+    "message": "Nastaviť konfiguráciu pravidiel $linter$",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterConfigTooltip": {
+    "message": "Kliknutím nakonfigurujete tento linter"
+  },
+  "linterIssues": {
+    "message": "Problémy"
+  },
+  "linterIssuesHelp": {
+    "message": "Tieto problémy boli zistené nástrojom $link$:",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterJSONError": {
+    "message": "Neplatný formát JSON"
+  },
+  "linterResetMessage": {
+    "message": "Ak chcete vrátiť späť náhodné obnovenie, stlačte Ctrl-Z (alebo Cmd-Z) v textovom poli"
+  },
+  "linterRulesLink": {
+    "message": "Zobraziť úplný zoznam pravidiel"
+  },
+  "liveReloadAfterInstall": {
+    "message": "Živé obnovenie po inštalácii"
+  },
+  "liveReloadError": {
+    "message": "Pri sledovaní súboru sa vyskytla chyba"
+  },
+  "liveReloadInstallHint": {
+    "message": "Ponechajte túto kartu otvorenú, aby sa štýl automaticky aktualizoval pri externých zmenách."
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Ponechajte otvorenú túto aj pôvodnú kartu, aby sa štýl automaticky aktualizoval pri externých zmenách."
+  },
+  "liveReloadLabel": {
+    "message": "Živé obnovenie"
+  },
+  "manageFaviconsGray": {
+    "message": "Odfarbené"
+  },
+  "manageFilters": {
+    "message": "Filtre"
+  },
+  "manageMinColumnWidth": {
+    "message": "Minimálna šírka stĺpca (v pixeloch; 9999 vypne viacstĺpcový režim)"
+  },
+  "manageNewUI": {
+    "message": "Tabuľkové rozloženie"
+  },
+  "manageOnlyDisabled": {
+    "message": "Iba vypnuté štýly"
+  },
+  "manageOnlyEnabled": {
+    "message": "Iba zapnuté štýly"
+  },
+  "manageOnlyExternal": {
+    "message": "Iba externé štýly"
+  },
+  "manageOnlyLocal": {
+    "message": "Iba lokálne vytvorené štýly"
+  },
+  "manageOnlyLocalTooltip": {
+    "message": "(štýly, ktoré neboli nainštalované zo stránky userstyles.org)"
+  },
+  "manageOnlyNonUsercss": {
+    "message": "Iba štýly, ktoré nie sú UserCSS"
+  },
+  "manageOnlyUpdates": {
+    "message": "Iba s aktualizáciami alebo problémami"
+  },
+  "manageOnlyUsercss": {
+    "message": "Iba štýly UserCSS"
+  },
+  "manageStyles": {
+    "message": "Spravovať štýly"
+  },
+  "masterSwitch": {
+    "message": "Hlavný vypínač"
+  },
+  "menuShowBadge": {
+    "message": "Zobraziť počet aktívnych štýlov"
+  },
+  "meta_invalidCheckboxDefault": {
+    "message": "Neplatné @var checkbox: hodnota musí byť 0 alebo 1"
+  },
+  "meta_invalidColor": {
+    "message": "Neplatné @var color: $color$ nie je farba",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidNumber": {
+    "message": "Očakávané číslo"
+  },
+  "meta_invalidRange": {
+    "message": "Neplatné @var $type$: hodnota musí byť číslo alebo pole",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeDefault": {
+    "message": "Neplatné @var $type$: predvolená hodnota je null",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMax": {
+    "message": "Neplatné @var $type$: predvolená hodnota je väčšia ako maximum",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMin": {
+    "message": "Neplatné @var $type$: predvolená hodnota je menšia ako minimum",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMultipleUnits": {
+    "message": "Neplatné @var $type$: je definovaných viacero jednotiek",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeStep": {
+    "message": "Neplatné @var $type$: hodnota nie je násobkom kroku",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeTooManyValues": {
+    "message": "Neplatné @var $type$: pole obsahuje príliš veľa položiek",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeUnits": {
+    "message": "Neplatné @var $type$: „$units$“ nie je platná jednotka",
+    "placeholders": {
+      "units": {
+        "content": "$2"
+      },
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeValue": {
+    "message": "Neplatné @var $type$: položky v poli musia byť číslo, reťazec alebo null",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidSelect": {
+    "message": "Neplatné @var select: predvolená hodnota musí byť pole alebo objekt"
+  },
+  "meta_invalidSelectEmptyOptions": {
+    "message": "Neplatné @var select: zoznam možností je prázdny"
+  },
+  "meta_invalidSelectLabel": {
+    "message": "Neplatné @var select: popisok možnosti je prázdny"
+  },
+  "meta_invalidSelectMultipleDefaults": {
+    "message": "Neplatné @var select: je definovaných viacero predvolených možností"
+  },
+  "meta_invalidSelectNameDuplicated": {
+    "message": "Neplatné @var select: názov možnosti sa opakuje"
+  },
+  "meta_invalidSelectValue": {
+    "message": "Neplatné @var select: hodnoty v poli/objekte musia byť reťazec"
+  },
+  "meta_invalidSelectValueMismatch": {
+    "message": "Neplatné @var select: hodnota sa nenachádza v zozname možností"
+  },
+  "meta_invalidString": {
+    "message": "Očakávaný reťazec v úvodzovkách"
+  },
+  "meta_invalidURLProtocol": {
+    "message": "Neplatný protokol URL adresy. Povolené sú iba http a https: $protocol$",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidVersion": {
+    "message": "Neplatné číslo verzie"
+  },
+  "meta_invalidWord": {
+    "message": "Očakávané slovo"
+  },
+  "meta_missingChar": {
+    "message": "Očakávané znaky: $chars$",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingEOT": {
+    "message": "Očakávané údaje EOT"
+  },
+  "meta_missingMandatory": {
+    "message": "Chýbajú povinné metaúdaje: $keys$",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownJSONLiteral": {
+    "message": "Neplatný JSON: $literal$ nie je platný literál JSON",
+    "placeholders": {
+      "literal": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMeta": {
+    "message": "Neznáme metaúdaje: $key$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMetaTypo": {
+    "message": "Možno @$keyOk$? Neznáme metaúdaje: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_unknownPreprocessor": {
+    "message": "Neznámy @preprocessor: $preprocessor$",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Neznámy typ @$varkey$: $vartype$",
+    "placeholders": {
+      "vartype": {
+        "content": "$2"
+      },
+      "varkey": {
+        "content": "$1"
+      }
+    }
+  },
+  "newStyleAsUserCSS": {
+    "message": "Napísať nový štýl ako UserCSS"
+  },
+  "newStyleAsUserCSSHint": {
+    "message": "Prepnutie tejto možnosti tiež zmení aktuálny štýl v editore, ak je nový, t. j. práve vytvorený a ešte neupravený ani neuložený."
+  },
+  "noStylesForSite": {
+    "message": "Pre túto stránku nie sú nainštalované žiadne štýly."
+  },
+  "numberedLine": {
+    "message": "Riadok:"
+  },
+  "openAsPopupWindow": {
+    "message": "...bez panelov nástrojov a kariet"
+  },
+  "openManage": {
+    "message": "Spravovať"
+  },
+  "openOptions": {
+    "message": "Možnosti"
+  },
+  "optionCompactWidth": {
+    "message": "Maximálna šírka okna pre kompaktné rozloženie (v pixeloch)"
+  },
+  "optionConfigSidePanel": {
+    "message": "Konfigurácia UserCSS"
+  },
+  "optionFOUC": {
+    "message": "Štýly sa aplikujú neskoro?"
+  },
+  "optionFOUCMV2": {
+    "message": "Zvážte zapnutie „$optInst$“.",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionFOUCMV3": {
+    "message": "Zvážte zapnutie „$optInst$“ a zvýšenie „$optCache$“.",
+    "placeholders": {
+      "optInst": {
+        "content": "$1"
+      },
+      "optCache": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionKeepAlive": {
+    "message": "Doba trvania vyrovnávacej pamäte štýlov"
+  },
+  "optionKeepAlive2": {
+    "message": "(v minútach, -1 = bez obmedzenia)"
+  },
+  "optionKeepAliveIdle": {
+    "message": "...aj keď je prehliadač neaktívny"
+  },
+  "optionKeepAliveNote": {
+    "message": "Zvýšte túto hodnotu, ak sa vám pri otváraní stránky po dlhšej neaktivite prehliadača krátko zobrazuje nenaštýlovaný obsah (FOUC).\n\n-1 = predvolené správanie ManifestV2 (bez obmedzenia).\n0 = predvolené správanie ManifestV3 (pol minúty).\n\nVyrovnávacia pamäť zaberá 30 MB alebo viac RAM, ale jej opätovné vytvorenie môže trvať príliš dlho a spôsobiť FOUC v závislosti od stránky, rýchlosti siete, počtu štýlov, veľkosti RAM a výkonu procesora."
+  },
+  "optionSidePanelActions": {
+    "message": "Bočný panel pre akcie vyskakovacieho okna"
+  },
+  "optionSidePanelActionsHint": {
+    "message": "Akcie, ktoré sa majú otvoriť v bočnom paneli pri použití vyskakovacieho okna v štandardnom režime (možnosť „$optPopup$“ nie je zapnutá).\n\nMôžete tiež kliknúť pravým tlačidlom alebo podržať príslušné tlačidlo vo vyskakovacom okne.",
+    "placeholders": {
+      "optPopup": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionSidePanelNumberHint": {
+    "message": "1..99: minimálny počet položiek,\n0: vždy bočný panel,\n-1: vždy vyskakovacie okno."
+  },
+  "optionSidePanelPopup": {
+    "message": "Otvoriť vyskakovacie okno v bočnom paneli"
+  },
+  "optionTargetIcons": {
+    "message": "Ikony cieľových stránok"
+  },
+  "optionTargetIconsNote": {
+    "message": "Stylus používa externú službu $SRV$",
+    "placeholders": {
+      "SRV": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionTargetNum": {
+    "message": "Počet cieľových stránok"
+  },
+  "optionsAdvanced": {
+    "message": "Rozšírené"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "Podľa nastavenia systému"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "Podľa nočného času:"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Vypnuté. Nastavenie tmavého/svetlého režimu v štýloch sa ignoruje."
+  },
+  "optionsAdvancedContextDelete": {
+    "message": "Pridať „Odstrániť“ do kontextovej ponuky editora"
+  },
+  "optionsAdvancedExposeIframes": {
+    "message": "Sprístupniť <iframe> cez <html[stylus-iframe]>"
+  },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "Sprístupní doménu hlavnej stránky v každom iframe.\nUmožňuje písať CSS špecifické pre iframe, napríklad:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "Sprístupniť názov štýlu"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "Sprístupní názov štýlu na stránke, aby sa uľahčilo ladenie štýlov v nástrojoch pre vývojárov. Pre aplikovanie nového nastavenia znova načítajte karty."
+  },
+  "optionsAdvancedPatchCsp": {
+    "message": "Upraviť <CSP> tak, aby povoľovalo prostriedky štýlu"
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "Zapnite toto, ak štýly obsahujú obrázky alebo písma, ktoré sa nedajú načítať na stránkach s prísnym <CSP> (<Content-Security-Policy>).\n\nZapnutím tohto nastavenia sa uvoľnia obmedzenia <CSP>, čo umožní načítanie potrebného obsahu štýlu. Táto možnosť je určená iba pre pokročilých používateľov, ktorí rozumejú možným bezpečnostným dôsledkom a preberajú zodpovednosť za sledovanie obsahu, ktorý takto povoľujú. Viac informácií o útokoch založených na CSS nájdete na internete.\n\nTaktiež majte na pamäti, že toto nastavenie nemusí fungovať, ak iné nainštalované rozšírenie upraví sieťovú odpoveď skôr."
+  },
+  "optionsAdvancedSites": {
+    "message": "...iba na zodpovedajúcich stránkach"
+  },
+  "optionsAdvancedSitesNote": {
+    "message": "<abc.com> jedna stránka.\n<*.abc.com> stránka + subdomény.\n<-m.abc.com> vylúčenie pomocou predpony „-“.\n<*> všetky stránky (užitočné s vylúčeniami).\n<#abc.com> ignorované kvôli neplatnému znaku.\n<*://abc.*/xyz> jednoduchý glob vzor.\n<https://abc.com/xyz> úplná URL adresa.\nZáznamy sa oddeľujú medzerou alebo novým riadkom. Text sa automaticky uloží po stlačení Ctrl-S alebo ⌘S vo vstupnom poli, kliknutí mimo poľa alebo zatvorení možností."
+  },
+  "optionsAdvancedStyleViaASS": {
+    "message": "Obísť <CSP> <style-src> pomocou <adoptedStyleSheets>"
+  },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "Režim okamžitého vloženia"
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "Zapnite toto, ak sa vám pri prehliadaní krátko zobrazuje nenaštýlovaný obsah (FOUC), čo je obzvlášť viditeľné pri tmavých témach pri otváraní stránky.\n\nTáto možnosť používa interne „zastaraný“ synchrónny XMLHttpRequest na získanie vyrovnávacej pamäte rozšírenia na pozadí, t. j. nejde o sieťovú požiadavku, takže vplyv na výkon je zanedbateľný."
+  },
+  "optionsBadgeDisabled": {
+    "message": "Farba pozadia pri vypnutí"
+  },
+  "optionsBadgeNormal": {
+    "message": "Farba pozadia"
+  },
+  "optionsCustomizeBadge": {
+    "message": "Odznak na ikone na paneli nástrojov"
+  },
+  "optionsCustomizeIcon": {
+    "message": "Ikona na paneli nástrojov"
+  },
+  "optionsCustomizePopup": {
+    "message": "Vyskakovacie okno"
+  },
+  "optionsCustomizeSync": {
+    "message": "Synchronizácia do cloudu"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Aktualizácie"
+  },
+  "optionsHeading": {
+    "message": "Možnosti"
+  },
+  "optionsIconAuto": {
+    "message": "Podľa tmavého/svetlého režimu"
+  },
+  "optionsIconDark": {
+    "message": "Tmavé témy prehliadača"
+  },
+  "optionsIconLight": {
+    "message": "Svetlé témy prehliadača"
+  },
+  "optionsPopupWidth": {
+    "message": "Šírka vyskakovacieho okna (v pixeloch)"
+  },
+  "optionsReset": {
+    "message": "Obnoviť možnosti na predvolené hodnoty"
+  },
+  "optionsResetButton": {
+    "message": "Obnoviť možnosti"
+  },
+  "optionsStylusThemes": {
+    "message": "Kliknite na ikonu Stylus na paneli nástrojov prehliadača na ktorejkoľvek stránke Stylus vrátane tejto a potom kliknite na „Nájsť štýly“"
+  },
+  "optionsSyncConnect": {
+    "message": "Pripojiť"
+  },
+  "optionsSyncDisconnect": {
+    "message": "Odpojiť"
+  },
+  "optionsSyncLogin": {
+    "message": "Prihlásiť sa"
+  },
+  "optionsSyncNone": {
+    "message": "Žiadne"
+  },
+  "optionsSyncPassword": {
+    "message": "Heslo"
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Pripojené"
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Pripája sa..."
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Odpojené"
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Odpája sa..."
+  },
+  "optionsSyncStatusPull": {
+    "message": "Sťahuje sa štýl $loaded$ z $total$",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Nahráva sa štýl $loaded$ z $total$",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusRelogin": {
+    "message": "Relácia vypršala, prihláste sa znova."
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Synchronizuje sa..."
+  },
+  "optionsSyncSyncNow": {
+    "message": "Synchronizovať teraz"
+  },
+  "optionsSyncUrl": {
+    "message": "URL adresa"
+  },
+  "optionsSyncUsername": {
+    "message": "Používateľské meno"
+  },
+  "optionsUpdateInterval": {
+    "message": "Interval automatickej aktualizácie štýlov v hodinách (0 = vypnuté)"
+  },
+  "optionsUrlInstaller": {
+    "message": "Otvoriť inštalátor pre štýly UserCSS na ktorejkoľvek stránke"
+  },
+  "optionsUrlInstallerNote": {
+    "message": "Zapnite to, ak chcete inštalovať z ktorejkoľvek stránky, keď sú splnené tieto podmienky:\n1) URL adresa končí na <.user.css> alebo <.user.less> alebo <.user.styl>,\n2) URL adresa smeruje na čistý textový obsah štýlu (zvyčajne nazývaný „raw“), t. j. nie na HTML webovú stránku.\n\nVypnite to, ak chcete obmedziť inštalácie iba na vyhradené galérie štýlov:\n$LIST$.",
+    "placeholders": {
+      "LIST": {
+        "content": "$1"
+      }
+    }
+  },
+  "overwriteFileExport": {
+    "message": "Chcete prepísať existujúci súbor?"
+  },
+  "paginationCurrent": {
+    "message": "Aktuálna stránka"
+  },
+  "paginationEstimated": {
+    "message": "Odhadovaný počet stránok"
+  },
+  "paginationNext": {
+    "message": "Ďalšia stránka"
+  },
+  "paginationPrevious": {
+    "message": "Predchádzajúca stránka"
+  },
+  "paginationTotal": {
+    "message": "Celkový počet stránok"
+  },
+  "parseUsercssError": {
+    "message": "Stylusu sa nepodarilo spracovať UserCSS:"
+  },
+  "popupAutoResort": {
+    "message": "Znova zoradiť štýly vo vyskakovacom okne po prepnutí"
+  },
+  "popupBorders": {
+    "message": "Pridať biele okraje po stranách"
+  },
+  "popupBordersTooltip": {
+    "message": "Užitočné pre tmavé témy v novom Chrome, keďže už nekreslí bočné okraje"
+  },
+  "popupHotkeysInfo": {
+    "message": "<1>-<9>, <0>, aj na numerickej klávesnici - prepne n-tý štýl (0 je 10)\n<A>-<Z> prepne prvý štýl, ktorého názov začína na dané písmeno\n<Shift> otvorí editor namiesto prepnutia\n<+> zapne uvedené štýly\n<–> vypne uvedené štýly\n<*> a <`> (spätný apostrof) - prepne pôvodne zapnuté štýly; nevzťahuje sa na neskôr zapnuté štýly, kým je vyskakovacie okno otvorené, takže po testovaní môžete obnoviť pôvodný výber: jednoducho vypnite všetko a potom prepnite, t. j. <–> <*>\nViac informácií na wiki"
+  },
+  "popupHotkeysInfoMenu": {
+    "message": "Podržte <Enter> (alebo <▤>) a stlačte číslicu na otvorenie ponuky príslušného štýlu."
+  },
+  "popupHotkeysInfoSide": {
+    "message": "Kliknutím pravým tlačidlom alebo podržaním na tlačidle akcie ho vynútene otvoríte v bočnom paneli. Predvolené správanie môžete zmeniť v možnostiach 🞂 $side$.",
+    "placeholders": {
+      "side": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupHotkeysInfoTab": {
+    "message": "Prepínajte štýly iba pre aktuálnu kartu (1) kliknutím pravým tlačidlom alebo podržaním na zaškrtávacom políčku štýlu, (2) kliknutím na názov štýlu pri podržaní <Alt>, alebo (3) pomocou klávesnice, napr. <Alt-1> pre štýl č. 1, čísla sú zobrazené pri pravom okraji."
+  },
+  "popupHotkeysTooltip": {
+    "message": "Kliknutím zobrazíte dostupné klávesové skratky"
+  },
+  "popupManageSiteStyles": {
+    "message": "Spravovať štýly stránky"
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Ponuka akcií"
+  },
+  "popupOpenEditInWindow": {
+    "message": "Otvoriť editor v novom okne"
+  },
+  "popupOpenEditInWindowTooltip": {
+    "message": "Zapne sa aj odpojením karty editora od okna prehliadača,\na vypne sa pripojením jedinej karty editora do iného okna."
+  },
+  "popupSidePanelOpenHint": {
+    "message": "Kliknutie pravým tlačidlom: v bočnom paneli"
+  },
+  "popupStylesFirst": {
+    "message": "Štýly pred príkazmi"
+  },
+  "prefShowBadge": {
+    "message": "Počet aktívnych štýlov pre aktuálnu stránku"
+  },
+  "preferScheme": {
+    "message": "Predvoľba tmavého/svetlého režimu"
+  },
+  "preferSchemeAlways": {
+    "message": "Momentálne ignorované (štýl sa aplikuje vždy), pretože globálny tmavý/svetlý režim je vypnutý"
+  },
+  "preferSchemeDark": {
+    "message": "Tmavý"
+  },
+  "preferSchemeLight": {
+    "message": "Svetlý"
+  },
+  "preferSchemeNone": {
+    "message": "Žiadny (vždy aplikovaný)"
+  },
+  "previewLabel": {
+    "message": "Živý náhľad"
+  },
+  "previewTooltip": {
+    "message": "Dočasne aplikuje zmeny bez uloženia.\nUložte štýl, aby sa zmeny stali trvalými."
+  },
+  "publish": {
+    "message": "Publikovať"
+  },
+  "publishPush": {
+    "message": "Odoslať aktualizáciu"
+  },
+  "publishReconnect": {
+    "message": "Skúste sa odpojiť a znova publikovať"
+  },
+  "publishRetry": {
+    "message": "Stylus sa stále pokúša publikovať tento štýl, ale ak nevidíte žiadnu aktivitu prihlásenia ani vyskakovacie okno, môžete to skúsiť znova. Skúsiť teraz?"
+  },
+  "publishStyle": {
+    "message": "Publikovať štýl"
+  },
+  "publishUsw": {
+    "message": "Používa sa <userstyles.world>"
+  },
+  "reload": {
+    "message": "Znova načítať"
+  },
+  "replace": {
+    "message": "Nahradiť"
+  },
+  "replaceAll": {
+    "message": "Nahradiť všetko"
+  },
+  "replaceWith": {
+    "message": "Nahradiť za"
+  },
+  "reportBug": {
+    "message": "Nahlásiť chybu"
+  },
+  "restoreTemplate": {
+    "message": "Obnoviť predvolenú šablónu.\n\n(Aktuálne otvorené stránky editora sa nezmenia.)"
+  },
+  "saveAsTemplate": {
+    "message": "Uložiť ako šablónu"
+  },
+  "saved": {
+    "message": "Uložené"
+  },
+  "search": {
+    "message": "Hľadať"
+  },
+  "searchCaseSensitive": {
+    "message": "Rozlišovať veľkosť písmen"
+  },
+  "searchGlobalStyles": {
+    "message": "Hľadať aj v globálnych štýloch"
+  },
+  "searchGlobalStylesHint": {
+    "message": "Zahŕňa štýly, ktoré sa vzťahujú na všetky stránky, ak názov obsahuje hľadaný text alebo aktuálnu stránku"
+  },
+  "searchLooseSpaces": {
+    "message": "Medzera zodpovedá ľubovoľnému počtu medzier"
+  },
+  "searchNumberOfResults": {
+    "message": "Počet zhôd"
+  },
+  "searchNumberOfResults2": {
+    "message": "Počet zhôd v kóde a hodnotách „platí pre“"
+  },
+  "searchRegexp": {
+    "message": "Použite syntax /re/ pre hľadanie regulárnym výrazom"
+  },
+  "searchResultInstallCount": {
+    "message": "Celkový počet inštalácií"
+  },
+  "searchResultNoneFound": {
+    "message": "Pre túto stránku sa nenašli žiadne štýly."
+  },
+  "searchResultNotMatching": {
+    "message": "Štýl je nainštalovaný, ale nevzťahuje sa na aktuálnu URL adresu stránky."
+  },
+  "searchResultNotMatchingNote": {
+    "message": "Skúste požiadať autora tohto používateľského štýlu, aby pridal URL adresu.\n\nMôžete tiež otvoriť štýl v správcovi štýlov a upraviť ho sami,\nale majte na pamäti, že to vypne automatické aktualizácie tohto štýlu."
+  },
+  "searchResultRating": {
+    "message": "Hodnotenie"
+  },
+  "searchResultUpdated": {
+    "message": "Aktualizované"
+  },
+  "searchResultWeeklyCount": {
+    "message": "Týždenné inštalácie"
+  },
+  "searchStyleQueryHint": {
+    "message": "Hľadať názvy štýlov (rozlišuje veľkosť písmen, ak je použité veľké písmeno):\nniekoľko slov - všetky tieto slová v ľubovoľnom poradí\n\"nejaká fráza\" - presne táto fráza bez úvodzoviek\n/foo.*bar/i - regulárny výraz bez medzier (použite \\s namiesto nich)"
+  },
+  "searchStylesAll": {
+    "message": "Všetko"
+  },
+  "searchStylesCode": {
+    "message": "Kód CSS"
+  },
+  "searchStylesHelp": {
+    "message": "</> alebo <Ctrl-F> presunie kurzor do vyhľadávacieho poľa.\nPredvolený režim je hľadanie obyčajného textu pre všetky slová oddelené medzerou v ľubovoľnom poradí.\nPresné slová: obaľte dopyt do dvojitých úvodzoviek, napr. <\".header ~ div\">\nRegulárne výrazy: zahrňte lomítka a príznaky, napr. </body.*?\\ba\\b/i>\n„Podľa URL“ vo výbere rozsahu: nájde štýly, ktoré sa vzťahujú na úplne zadanú URL adresu, napr. https://www.example.org/\n„Metaúdaje“ vo výbere rozsahu: hľadá v názvoch, špecifikátoroch „platí pre“, inštalačnej URL adrese, aktualizačnej URL adrese a celom bloku metaúdajov pre štýly UserCSS."
+  },
+  "searchStylesMatchUrl": {
+    "message": "Podľa URL"
+  },
+  "searchStylesMeta": {
+    "message": "Metaúdaje"
+  },
+  "searchStylesName": {
+    "message": "Názov"
+  },
+  "sectionAdd": {
+    "message": "Pridať ďalšiu sekciu"
+  },
+  "sectionCode": {
+    "message": "Kód"
+  },
+  "sectionRemove": {
+    "message": "Odstrániť sekciu"
+  },
+  "sectionRestore": {
+    "message": "Obnoviť odstránenú sekciu"
+  },
+  "sectionUserCSS": {
+    "message": "Sekciovaný editor nepodporuje syntax UserCSS.\nMôžete ju použiť v novom štýle:\n1. kliknite na tlačidlo Exportovať v tomto editore, skopírujte text,\n2. vytvorte nový štýl v správcovi štýlov alebo vo vyskakovacom okne,\n3. zapnite „[x] $optUserCSS$“,\n4. vložte skopírovaný text, čím prepíšete predvolenú šablónu,\n5. uložte nový štýl, vypnite alebo odstráňte starý štýl.",
+    "placeholders": {
+      "optUserCSS": {
+        "content": "$1"
+      }
+    }
+  },
+  "sections": {
+    "message": "Sekcie"
+  },
+  "settings": {
+    "message": "Nastavenia"
+  },
+  "shortcuts": {
+    "message": "Klávesové skratky"
+  },
+  "shortcutsNote": {
+    "message": "Definujte klávesové skratky"
+  },
+  "shortcutsNoteFF": {
+    "message": "Vo Firefoxe 66+ môžete ručne otvoriť vstavané rozhranie skratiek:\n1) kliknite pravým tlačidlom na ikonu Stylus na paneli nástrojov a zvoľte „Spravovať“\n(prípadne otvorte about:addons cez hlavnú ponuku alebo Ctrl-Shift-A),\n2) na otvorenej stránke kliknite na ikonu ozubeného kolieska vpravo hore,\n3) zvoľte „Spravovať skratky rozšírení“.\n\nSkratky môžete prispôsobiť aj tu."
+  },
+  "sitesNoteRe": {
+    "message": "</\\w+://(abc|def)\\.com/(?!xyz).*/> regulárny výraz, ktorý musí pokrývať celú URL adresu, napr. príklad obsahuje <\\w://> pre <https://> a <.*> pre cestu za doménou. 2) Nie je potrebné nikde escapovať </>. 3) Nie je potrebné výraz ukotvovať, keďže sa to robí interne cez <^(abc)$$>."
+  },
+  "sortDateNewestFirst": {
+    "message": "najnovšie prvé"
+  },
+  "sortDateOldestFirst": {
+    "message": "najstaršie prvé"
+  },
+  "sortLabel": {
+    "message": "Zvoľte spôsob zoradenia nainštalovaných štýlov"
+  },
+  "sortLabelTitleAsc": {
+    "message": "Názov vzostupne"
+  },
+  "sortLabelTitleDesc": {
+    "message": "Názov zostupne"
+  },
+  "sortStylesHelp": {
+    "message": "Zvoľte typ zoradenia, ktorý sa má použiť na nainštalované položky, v rozbaľovacej ponuke zoradenia. Predvolené nastavenie použije vzostupné zoradenie (A až Z) podľa názvov položiek. Zoradenia v skupine „Názov zostupne“ použijú zostupné zoradenie (Z až A) podľa názvu.\nExistujú aj ďalšie predvoľby, ktoré umožňujú zoradiť položky podľa viacerých kritérií. Predstavte si to ako zoradenie tabuľky podľa viacerých stĺpcov, pričom každá kategória vo výbere (medzi znamienkami plus) predstavuje stĺpec, resp. skupinu.\nNapríklad ak je nastavenie „Zapnuté (najprv) + Názov“, položky sa zoradia tak, že všetky zapnuté položky budú na začiatku zoznamu, a potom sa na zapnuté aj vypnuté položky samostatne aplikuje vzostupné zoradenie názvu (A až Z)."
+  },
+  "sortStylesHelpTitle": {
+    "message": "Obsah zoradenia"
+  },
+  "styleAssetsCSP": {
+    "message": "Nižšie uvedené prostriedky štýlu boli zablokované webovou stránkou, zapnutím možnosti „$CSP$“ ich môžete povoliť:",
+    "placeholders": {
+      "CSP": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleBadRegexp": {
+    "message": "Regulárny výraz je neplatný."
+  },
+  "styleBeautify": {
+    "message": "Skrášliť"
+  },
+  "styleBeautifyHint": {
+    "message": "Tip: kliknutím pravým tlačidlom na tlačidlo „Skrášliť“ alebo pomocou klávesovej skratky definovanej nižšie skrášlite kód bez zobrazenia tohto panela"
+  },
+  "styleBeautifyIndentConditional": {
+    "message": "Odsadiť @media, @supports"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Zachovať nové riadky"
+  },
+  "styleCancelEditLabel": {
+    "message": "Späť na správcu štýlov"
+  },
+  "styleChangesNotSaved": {
+    "message": "Vykonali ste zmeny v tomto štýle bez ich uloženia."
+  },
+  "styleEditor": {
+    "message": "Editor štýlov"
+  },
+  "styleEnabledLabel": {
+    "message": "Zapnuté"
+  },
+  "styleForceApplied": {
+    "message": "Vynútene aplikované cez „$INC$“ v nastaveniach štýlu",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleForceAppliedTab": {
+    "message": "Vynútene aplikované pre aktuálnu kartu v ponuke štýlu"
+  },
+  "styleForceTab": {
+    "message": "Iba aktuálna karta"
+  },
+  "styleFromMozillaFormatError": {
+    "message": "Import z formátu Mozilla zlyhal"
+  },
+  "styleFromMozillaFormatPrompt": {
+    "message": "Vložte kód vo formáte Mozilla"
+  },
+  "styleInjectionImportance": {
+    "message": "Prepnúť dôležitosť štýlu"
+  },
+  "styleInjectionOrder": {
+    "message": "Poradie vkladania štýlov"
+  },
+  "styleInjectionOrderHint": {
+    "message": "Presunutím a pustením štýlu zmeníte jeho pozíciu. Štýly sa vkladajú postupne v poradí uvedenom nižšie, takže štýl nižšie v zozname môže prepísať skoršie štýly."
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "Dôležité štýly uvedené nižšie sa vkladajú vždy ako posledné, aby mohli prepísať akékoľvek novo nainštalované štýly. Kliknutím na značku štýlu prepnete jeho dôležitosť."
+  },
+  "styleInstallFailed": {
+    "message": "Inštalácia používateľského štýlu zlyhala!\n$error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallOverwrite": {
+    "message": "„$stylename$“ je už nainštalovaný. Prepísať?\nVerzia: $oldVersion$ -> $newVersion$",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
+      "newVersion": {
+        "content": "$3"
+      },
+      "oldVersion": {
+        "content": "$2"
+      }
+    }
+  },
+  "styleManager": {
+    "message": "Správca štýlov"
+  },
+  "styleMissingName": {
+    "message": "Zadajte názov"
+  },
+  "styleName": {
+    "message": "Názov štýlu"
+  },
+  "styleNotAppliedExcluded": {
+    "message": "Vylúčené cez „$EXC$“ v nastaveniach štýlu",
+    "placeholders": {
+      "EXC": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleNotAppliedExcludedTab": {
+    "message": "Vylúčené pre aktuálnu kartu v ponuke štýlu"
+  },
+  "styleNotAppliedOverridden": {
+    "message": "Vaše nastavenie „$INC$“ v nastaveniach štýlu prepisuje pôvodné stránky štýlu",
+    "placeholders": {
+      "INC": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleNotAppliedRegexpProblemTooltip": {
+    "message": "Štýl sa neaplikoval kvôli nesprávnemu použitiu „regexp()“"
+  },
+  "styleNotAppliedSchemeDark": {
+    "message": "Tento štýl sa aplikuje iba v tmavom režime"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Tento štýl sa aplikuje iba v svetlom režime"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "Tmavý/svetlý režim"
+  },
+  "styleRegexpInvalidExplanation": {
+    "message": "Niektoré pravidlá „regexp()“ sa vôbec nepodarilo skompilovať."
+  },
+  "styleRegexpPartialExplanation": {
+    "message": "Tento štýl používa čiastočne zhodné regulárne výrazy v rozpore so <a>špecifikáciou CSS4 @document</a>, ktorá vyžaduje úplnú zhodu URL adresy. Dotknuté sekcie CSS neboli na stránke aplikované. Tento štýl bol pravdepodobne vytvorený v Stylish for Chrome, ktorý nesprávne kontroluje pravidlá „regexp()“ už od prvej verzie (známa chyba)."
+  },
+  "styleRegexpProblemTooltip": {
+    "message": "Počet sekcií, ktoré sa neaplikovali kvôli nesprávnemu použitiu „regexp()“"
+  },
+  "styleRegexpTestFull": {
+    "message": "Zodpovedajúce karty"
+  },
+  "styleRegexpTestInvalid": {
+    "message": "Neplatné regulárne výrazy vynechané"
+  },
+  "styleRegexpTestNone": {
+    "message": "Žiadne zodpovedajúce karty"
+  },
+  "styleRegexpTestNote": {
+    "message": "Poznámka: vo vstupnom poli regulárneho výrazu použite jedno \\ na escapovanie, ktoré sa automaticky prevedie na \\\\ v kóde štýlu podľa špecifikácie pre reťazce v úvodzovkách v CSS."
+  },
+  "styleRegexpTestNoteStar": {
+    "message": "Ak má vzor zodpovedať ako predpona, pridajte na koniec <.*>, napríklad <https?://(www\\.)?foo\\.com/(one|two).*>"
+  },
+  "styleRegexpTestPartial": {
+    "message": "Nezhoduje sa úplne, preto vynechané"
+  },
+  "styleRegexpTestTitle": {
+    "message": "Zoznam zodpovedajúcich otvorených kariet (kliknutím na URL adresu prepnete na danú kartu)"
+  },
+  "styleSaveLabel": {
+    "message": "Uložiť"
+  },
+  "styleSettings": {
+    "message": "Nastavenia štýlu"
+  },
+  "styleSitesExclude": {
+    "message": "Osobné vylúčené stránky"
+  },
+  "styleSitesInclude": {
+    "message": "Osobné zahrnuté stránky"
+  },
+  "styleSitesIncludeNote": {
+    "message": "Stránky, na ktorých je tento štýl zapnutý na vašom osobnom zariadení, buď pridané k stránkam definovaným štýlom, alebo použité namiesto nich, v závislosti od zaškrtávacieho políčka. Užitočné pre externé štýly, ktoré by ste nemali upravovať, aby ste zachovali ich automatické aktualizácie. Upozorňujeme, že vo viacsekciových štýloch sú pre vašu pridanú stránku zapnuté všetky sekcie, aj tie, ktoré boli určené pre konkrétne stránky pôvodnej stránky."
+  },
+  "styleSitesIncludeOvr": {
+    "message": "prepísať štýl"
+  },
+  "styleSitesMatchingRules": {
+    "message": "Vaše osobné pravidlá stránok, ktoré zodpovedajú aktuálnej URL adrese.\nPredpona „+“ znamená zahrnutia.\nPredpona „-“ znamená vylúčenia."
+  },
+  "styleSitesPopupEdit": {
+    "message": "Upravte úplný zoznam osobných stránok v „Nastaveniach štýlu“ v editore"
+  },
+  "styleSitesPopupHeading": {
+    "message": "Zahrnúť (a <br>) alebo vylúčiť štýl pri návšteve:"
+  },
+  "styleToMozillaFormatHelp": {
+    "message": "Kód vo formáte Mozilla je možné odoslať na userstyles.org a použiť s klasickým Stylish pre Firefox"
+  },
+  "styleToMozillaFormatTitle": {
+    "message": "Štýl vo formáte Mozilla"
+  },
+  "styleUpdateDiscardChanges": {
+    "message": "Štýl bol zmenený mimo editora. Chcete štýl znova načítať?"
+  },
+  "styleUpdateUrlLabel": {
+    "message": "Aktualizačná URL adresa"
+  },
+  "stylusUnavailableForURL": {
+    "message": "Stylus nefunguje na stránkach ako táto."
+  },
+  "stylusUnavailableForURLdetails": {
+    "message": "Z bezpečnostných dôvodov prehliadač zakazuje rozšíreniam ovplyvňovať jeho vstavané stránky (napríklad chrome://version, štandardnú stránku novej karty od Chrome 61, about:addons a podobne), ako aj stránky iných rozšírení. Každý prehliadač tiež obmedzuje prístup k svojmu vlastnému obchodu s rozšíreniami (napríklad Chrome Web Store alebo AMO)."
+  },
+  "syncError": {
+    "message": "Synchronizácia zlyhala"
+  },
+  "syncErrorLock": {
+    "message": "Databáza sa už používa. Platnosť zámku vyprší o $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "syncErrorRelogin": {
+    "message": "Synchronizácia zlyhala. Skúste sa znova prihlásiť v možnostiach Stylus."
+  },
+  "syncStorageErrorSaving": {
+    "message": "Hodnotu sa nepodarilo uložiť. Skúste zmenšiť množstvo textu."
+  },
+  "toggleCurrentTab": {
+    "message": "Prepnúť aktuálnu kartu"
+  },
+  "toggleStyle": {
+    "message": "Prepnúť štýl"
+  },
+  "toggleStylesHeading": {
+    "message": "Prepnúť štýly"
+  },
+  "toggleStylesHint": {
+    "message": "Prepne pôvodne zapnuté štýly, rovnako ako <✱>"
+  },
+  "toggleStylesPerm": {
+    "message": "natrvalo"
+  },
+  "toggleStylesTab": {
+    "message": "iba na tejto karte"
+  },
+  "undo": {
+    "message": "Späť"
+  },
+  "undoGlobal": {
+    "message": "Vrátiť späť vo všetkých sekciách"
+  },
+  "unreachableAMO": {
+    "message": "Firefox zakazuje prístup k tejto stránke."
+  },
+  "unreachableAMOHint": {
+    "message": "Ak chcete povoliť prístup, otvorte <about:config>, kliknite pravým tlačidlom do zoznamu, zvoľte „New“, potom „Boolean“, vložte <privacy.resistFingerprinting.block_mozAddonManager> a kliknite na OK, <true>, OK, a znova načítajte stránku <addons.mozilla.org>."
+  },
+  "unreachableCSP": {
+    "message": "Skúste zapnúť „$optCSP$“ v možnostiach Stylus.",
+    "placeholders": {
+      "optCSP": {
+        "content": "$1"
+      }
+    }
+  },
+  "unreachableContentScript": {
+    "message": "Nepodarilo sa komunikovať so stránkou. Skúste kartu znova načítať."
+  },
+  "unreachableFileHint": {
+    "message": "Stylus môže pristupovať k URL adresám file:// iba ak zapnete príslušné zaškrtávacie políčko pre rozšírenie Stylus na stránke chrome://extensions."
+  },
+  "unreachableMozSiteHint": {
+    "message": "Vo Firefoxe 60 a novšom musíte odstrániť túto doménu z <extensions.webextensions.restrictedDomains> v <about:config>."
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Iba Firefox 59 a novší je možné nastaviť tak, aby povolil rozšíreniam WebExtensions pridávať prvky štýlu na stránkach chránených <CSP>, ako je táto."
+  },
+  "unreachableOpera": {
+    "message": "Používatelia Opery: ak je toto vaša vyhľadávacia stránka, zapnite si prosím „[x] Allow access to search page results“ v ponuke ⭕ 🞂 Extensions 🞂 Extensions 🞂 Stylus."
+  },
+  "updateAllCheckSucceededNoUpdate": {
+    "message": "Nenašli sa žiadne aktualizácie."
+  },
+  "updateAllCheckSucceededSomeEdited": {
+    "message": "Niektoré aktualizovateľné štýly neboli skontrolované, aby sa predišlo strate možných lokálnych úprav. Aktualizácie je možné vynútiť individuálnou kontrolou alebo spustením ďalšej kontroly pre všetky štýly (lokálne úpravy budú prepísané)."
+  },
+  "updateCheckFailBadResponseCode": {
+    "message": "Aktualizácia zlyhala: server odpovedal kódom $code$.",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "updateCheckFailServerUnreachable": {
+    "message": "Aktualizácia zlyhala: server je nedostupný."
+  },
+  "updateCheckHistory": {
+    "message": "História kontrol aktualizácií"
+  },
+  "updateCheckManualUpdateForce": {
+    "message": "Inštalovať aktualizáciu (lokálne úpravy budú prepísané)"
+  },
+  "updateCheckManualUpdateHint": {
+    "message": "Vynútená aktualizácia prepíše všetky lokálne úpravy."
+  },
+  "updateCheckSkippedLocallyEdited": {
+    "message": "Tento štýl bol upravený lokálne."
+  },
+  "updateCheckSkippedMaybeLocallyEdited": {
+    "message": "Tento štýl mohol byť upravený lokálne."
+  },
+  "updateCheckSucceededNoUpdate": {
+    "message": "Štýl je aktuálny."
+  },
+  "updateCompleted": {
+    "message": "Aktualizácia dokončená."
+  },
+  "usercssAvoidOverwriting": {
+    "message": "Zmeňte prosím hodnotu @name alebo @namespace, aby ste predišli prepísaniu existujúceho štýlu."
+  },
+  "usercssConfigIncomplete": {
+    "message": "Štýl bol aktualizovaný alebo odstránený po zobrazení konfiguračného dialógu. Tieto premenné neboli uložené, aby sa predišlo poškodeniu metaúdajov štýlu:"
+  },
+  "usercssEditorNamePlaceholder": {
+    "message": "Zadajte @name v kóde"
+  },
+  "usercssReplaceTemplateConfirmation": {
+    "message": "Nahradiť predvolenú šablónu pre nové štýly UserCSS aktuálnym kódom?"
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Sem vložte kód..."
+  },
+  "versionInvalidOlder": {
+    "message": "Verzia je staršia ako nainštalovaný štýl."
+  },
+  "webRequestBlockingMV3Note": {
+    "message": "Vyžaduje oprávnenie webRequestBlocking, ktoré je možné v ManifestV3 zapnúť jedným z týchto spôsobov:\n\n 1) Exportujte zálohu, nastavte politiku $policyName$ pre id tohto rozšírenia „$id$“, reštartujte prehliadač, počkajte na nainštalovanie rozšírenia, importujte zálohu v správcovi štýlov a voliteľne pripnite ikonu na panel nástrojov.\n\n 2) Upravte príkazový riadok v ikone alebo spúšťači prehliadača: pridajte medzeru a $cmd$",
+    "placeholders": {
+      "policyName": {
+        "content": "$1"
+      },
+      "id": {
+        "content": "$2"
+      },
+      "cmd": {
+        "content": "$3"
+      }
+    }
+  },
+  "writeStyleFor": {
+    "message": "Napísať štýl pre: "
+  },
+  "writeStyleForURL": {
+    "message": "túto URL adresu"
+  }
+}
