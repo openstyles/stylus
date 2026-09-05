@@ -39,9 +39,10 @@ export function showStyles({frames}) {
     if (isBlocked && !i) continue; // skip a blocked main frame
     const frame = frames[i];
     for (let fs of frame.styles || []) {
-      const id = fs.style.id;
-      if (!entries.has(id)) {
-        fs = Object.assign(fs.style, fs);
+      const {style} = fs;
+      const id = style?.id;
+      if (id && !entries.has(id)) {
+        fs = Object.assign(style, fs);
         fs.frameUrl = !i ? '' : frame.url;
         entries.set(id, createStyleElement(fs));
       }
