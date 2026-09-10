@@ -10,9 +10,9 @@
     "codemirror": "5.65.20",
     "csslint-mod": "github:openstyles/csslint-mod#semver:v1.0.15",
     "db-to-cloud": "^0.8.1",
-    "less": "^4.9.0",
+    "less": "^4.9.1",
     "lz-string-unsafe": "1.4.4-fork-1",
-    "stylelint-bundle": "github:openstyles/stylelint-bundle#semver:17.13.0-stylus-v2",
+    "stylelint-bundle": "17.15.0",
     "stylus-lang-bundle": "github:openstyles/stylus-lang-bundle#semver:0.64.0-umd-bundle-v3",
     "usercss-meta": "^0.12.0",
     "webext-launch-web-auth-flow": "^0.1.2"
