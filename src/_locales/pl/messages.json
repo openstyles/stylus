@@ -1269,6 +1269,9 @@
   "searchStylesMatchUrl": {
     "message": "Według adresu URL"
   },
+  "searchStylesMatchUrlError": {
+    "message": "Oczekiwanie w pełni określonego adresu URL, takiego jak https://www.example.org/"
+  },
   "searchStylesMeta": {
     "message": "Metadane"
   },

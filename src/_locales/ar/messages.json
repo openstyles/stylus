@@ -106,6 +106,14 @@
   "cm_lineWrapping": {
     "message": "التفاف النص"
   },
+  "cm_lineWrappingOff": {
+    "message": "$length$تم اكتشاف سطر طويل، وتم تعطيل التفاف النص لضمان عدم تعطل المتصفح أو توقفه عن العمل.",
+    "placeholders": {
+      "length": {
+        "content": "$1"
+      }
+    }
+  },
   "cm_linter": {
     "message": "مدقق CSS"
   },
@@ -426,6 +434,9 @@
   },
   "importLabel": {
     "message": "استيراد"
+  },
+  "importPreprocessor": {
+    "message": "لن يعمل الكود الذي يعتمد على <@preprocessor> لأن هذا النمط لم يتم إنشاؤه في<UserCSS> الوضع."
   },
   "importReplaceLabel": {
     "message": "الكتابة فوق النمط"
@@ -1266,6 +1277,9 @@
   },
   "searchStylesMatchUrl": {
     "message": "حسب عنوان URL"
+  },
+  "searchStylesMatchUrlError": {
+    "message": "أتوقع عنوان URL محددًا بالكامل مثل https://www.example.org/"
   },
   "searchStylesMeta": {
     "message": "بيانات التعريف"

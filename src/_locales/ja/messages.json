@@ -1237,6 +1237,9 @@
   "searchStylesMatchUrl": {
     "message": "URLによる"
   },
+  "searchStylesMatchUrlError": {
+    "message": "完全な形式のURLが期待されています (例. https://www.example.org/ )"
+  },
   "searchStylesMeta": {
     "message": "メタデータ"
   },

@@ -1272,6 +1272,9 @@
   "searchStylesMatchUrl": {
     "message": "按 URL"
   },
+  "searchStylesMatchUrlError": {
+    "message": "預期會收到一個完整格式的網址，例如 https://www.example.org/"
+  },
   "searchStylesMeta": {
     "message": "詮釋資料"
   },
