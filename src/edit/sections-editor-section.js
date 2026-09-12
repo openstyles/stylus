@@ -106,6 +106,8 @@ export default class EditorSection {
   }
 
   getModel() {
+    if (this.init)
+      return this.init;
     /** @type {StyleSection} */
     const res = {code: this.cm.getValue()};
     for (const {type, value} of this.targets) {
