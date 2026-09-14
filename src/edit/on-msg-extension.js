@@ -43,20 +43,20 @@ function handleExternalUpdate(style, reason, editorId) {
     editor.updateMeta?.();
     return;
   }
-  (replaceQueue ??= []).push([style, reason]);
+  (replaceQueue ??= []).push([style.id, reason]);
   replacing = replacing
     ? replacing.then(onReplaced, onReplaced)
     : onReplaced();
 }
 
 async function onReplaced() {
-  let [style, reason] = replaceQueue.shift();
-  style = await API.styles.getCore({id: style.id, src: true, vars: true});
+  const [id, reason] = replaceQueue.shift();
+  const style = await API.styles.get(id);
   if (!style)
     return;
   if (reason === 'config') {
     for (const key in editor.style)
-      if (key !== 'sourceCode' && key !== 'sections' && !(key in style))
+      if (!(key in style))
         delete editor.style[key];
     delete style.name;
     delete style.enabled;
