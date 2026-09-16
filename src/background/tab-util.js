@@ -100,6 +100,9 @@ export async function openTab({
   if (!url.includes('://')) {
     url = chrome.runtime.getURL(url);
   }
+  if (!((index ?? -1) >= 0)) { // using ! to check for NaN
+    index = undefined;
+  }
   let tab = !newTab && (await browser.tabs.query({url: url.split('#')[0], currentWindow}))[0];
   if (tab) {
     return activateTab(tab, {

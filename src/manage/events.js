@@ -6,7 +6,7 @@ import {
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {renderTargetIcons} from '@/js/target-icons';
-import {sessionStore, t, urlParams} from '@/js/util';
+import {isSidebar, sessionStore, t, urlParams} from '@/js/util';
 import {browserWindows, getOwnTab} from '@/js/util-webext';
 import {filterAndAppend, showFiltersStats} from './filters';
 import {createStyleElement, createTargetsElement, updateTotal} from './render';
@@ -94,7 +94,7 @@ async function edit(event, entry) {
   event.stopPropagation();
   const key = getEventKeyName(event);
   const url = entry.$('[href]').href;
-  const ownTab = await getOwnTab();
+  const ownTab = !isSidebar && await getOwnTab();
   if (key === 'MouseL') {
     location = sessionStore['manageStylesHistory' + ownTab.id] = urlParams.has(kPopup)
       ? url + (url.includes('?') ? '&' : '?') + kPopup + '=1'
@@ -104,7 +104,7 @@ async function edit(event, entry) {
   } else {
     API.tabs.open({
       url,
-      index: ownTab.index + 1,
+      index: ownTab ? ownTab.index + 1 : -1,
       active: key === 'Shift-MouseM' || key === 'Shift-Ctrl-MouseL',
     });
   }
@@ -129,10 +129,9 @@ export async function openLink(event) {
   // Not handling Shift-click - the built-in 'open in a new window' command
   if (getEventKeyName(event) !== 'Shift-MouseL') {
     event.preventDefault(); // Prevent FF from double-handling the event
-    const {index} = await getOwnTab();
     API.tabs.open({
       url: event.target.closest('a').href,
-      index: index + 1,
+      index: isSidebar ? -1 : (await getOwnTab()).index + 1,
       active: !event.ctrlKey || event.shiftKey,
     });
   }

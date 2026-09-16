@@ -220,10 +220,9 @@ export async function openStyleFinder(event, entry, button) {
  */
 export async function openURLandHide(event) {
   event.preventDefault();
-  const tab = await getActiveTab();
   await API.tabs.open({
     url: this.href || this.dataset.href,
-    index: tab && tab.index + 1,
+    index: isSidebar ? -1 : (await getActiveTab()).index + 1,
   });
   if (!isSidebar)
     close();
