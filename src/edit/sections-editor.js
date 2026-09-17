@@ -439,26 +439,27 @@ export default function SectionsEditor() {
     keepDirty = false,
     si = scrollInfo,
   } = {}) {
+    let forceRefresh = true;
+    let scrollY1, scrollY2, tPrev;
     if (replace) {
       for (const s of liveSections) s.toggle();
       liveSections.length = sections.length = 0;
       container.textContent = '';
     }
-    if (si.cms && si.cms.length === src.length) {
-      si.scrollY2 = si.scrollY + window.innerHeight;
-      container.style.height = si.scrollY2 + 'px';
-      scrollTo(0, si.scrollY);
+    if (si.cms?.length === src.length) {
+      scrollY1 = si.scrollY;
+      scrollY2 = scrollY1 + innerHeight;
+      container.style.height = scrollY2 + 'px';
+      scrollTo(0, scrollY1);
       // only restore focus if it's the first CM to avoid derpy quirks
-      focusOn = si.cms[0].focus && 0;
+      focusOn = si.cms[0]?.focus && 0;
     } else {
       si = null;
     }
-    let forceRefresh = true;
-    let y = 0;
-    let tPrev;
     editor.loading = dirty.paused = !keepDirty;
-    for (let i = 0, iSec = sections.length; i < src.length; i++, iSec++) {
+    for (let i = 0, y = 0, iSec = sections.length; i < src.length; i++, iSec++) {
       const now = performance.now();
+      const secsi = si && si.cms[i];
       if (!tPrev) {
         tPrev = now;
       } else if (now - tPrev > 100) {
@@ -466,8 +467,8 @@ export default function SectionsEditor() {
         forceRefresh = false;
         await sleep0();
       }
-      if (si) forceRefresh = y < si.scrollY2 && (y += si.cms[i].parentHeight) > si.scrollY;
-      insertSectionAfter(src[i], null, forceRefresh, si && si.cms[i]);
+      if (si) forceRefresh = y < scrollY2 && (y += secsi?.parentHeight || 0) > scrollY1;
+      insertSectionAfter(src[i], null, forceRefresh, secsi);
       if (iSec === focusOn) setTimeout(editor.jumpToEditor, 0, iSec);
     }
     if (!si || si.cms.every(cm => !cm?.height)) {
