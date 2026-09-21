@@ -17,9 +17,7 @@
 #popup-button {
   position: absolute;
   right: 12px;
-  top: 0;
-  bottom: 0;
-  margin: auto;
+  top: calc($pad05 + (var(--input-height) - 16px)/2 + 1px);
   z-index: 1000;
   cursor: pointer;
   transition: filter .25s;
@@ -29,9 +27,7 @@
   html:not(.compact-layout) & {
     top: $pad;
     right: $pad;
-    bottom: auto;
     position: fixed;
-    margin: 0 !important;
   }
 }
 
