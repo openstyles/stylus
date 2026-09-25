@@ -80,7 +80,7 @@ const onCmBeforeChange = (cm, {text}) => {
   (text ? text.some : cm.eachLine).call(text || cm, line => {
     line = (text ? line : line.text).length;
     if (line > max) {
-      const el = $('#lineWrapping-label + a', template[kEditorSettings]);
+      const el = template[kEditorSettings].$('#lineWrapping-label + a');
       el.hidden = false;
       el.title = t('cm_lineWrappingOff', [Math.round(line / 1000)]);
       el.parentElement.on('change', evt => !evt.target.checked && (el.hidden = true), {once: true});
