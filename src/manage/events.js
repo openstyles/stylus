@@ -9,10 +9,12 @@ import {renderTargetIcons} from '@/js/target-icons';
 import {isSidebar, sessionStore, t, urlParams} from '@/js/util';
 import {browserWindows, getOwnTab} from '@/js/util-webext';
 import {filterAndAppend, showFiltersStats} from './filters';
-import {createStyleElement, createTargetsElement, updateTotal} from './render';
+import {createStyleElement, createTargetsElement, fitNameColumn, updateTotal} from './render';
 import * as sorter from './sorter';
 import {checkUpdate, handleUpdateInstalled} from './updater-ui';
-import {installed, lazyAddEntryTitle, objectDiff, queue, styleToDummyEntry, UI} from './util';
+import {
+  installed, isColumnable, lazyAddEntryTitle, objectDiff, queue, styleToDummyEntry, UI,
+} from './util';
 
 for (const a of $$('#header a[href^="http"]')) a.onclick = openLink;
 installed.on('click', onEntryClicked);
@@ -151,21 +153,29 @@ export function onEntryClicked(event) {
 }
 
 export function handleBulkChange() {
+  const pending = [];
   for (const msg of queue) {
     const {id} = msg.style;
+    const defer = msg.reason === 'import' || msg.reason === 'sync';
     let fullStyle;
+    let res;
     if (msg.method === 'styleDeleted') {
       handleDelete(id);
     } else if (msg.reason === 'import' && (fullStyle = queue.styles.get(id))) {
-      handleUpdate(fullStyle, msg);
+      res = handleUpdate(fullStyle, msg, defer);
       queue.styles.delete(id);
     } else {
-      handleUpdateForId(id, msg);
+      res = handleUpdateForId(id, msg, defer);
     }
+    if (defer && res) pending.push(res);
   }
   sorter.updateStripes({onlyWhenColumnsChanged: true});
   queue.p = null;
   queue.length = 0;
+  if (pending.length) return Promise.all(pending).then(() => {
+    if (isColumnable) fitNameColumn();
+    sorter.update();
+  });
 }
 
 function handleDelete(id) {
@@ -181,7 +191,7 @@ function handleDelete(id) {
   }
 }
 
-function handleUpdate(style, {reason, method} = {}) {
+function handleUpdate(style, {reason, method} = {}, defer) {
   if (!style || reason === 'editPreview' || reason === 'editPreviewEnd')
     return;
   let entry;
@@ -202,12 +212,13 @@ function handleUpdate(style, {reason, method} = {}) {
   if ((reason === 'update' || reason === 'install') && entry.matches('.updatable')) {
     handleUpdateInstalled(entry, reason);
   }
-  filterAndAppend({entry}).then(sorter.update);
+  const res = filterAndAppend({entry, defer}).then(!defer && sorter.update);
   if (!entry.matches('.hidden') && reason !== 'import' && reason !== 'sync') {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
   }
   if (UI.favicons) renderTargetIcons(entry);
+  return res;
 
   function handleToggledOrCodeOnly() {
     const diff = objectDiff(oldEntry.styleMeta, style)
@@ -228,6 +239,6 @@ function handleUpdate(style, {reason, method} = {}) {
   }
 }
 
-async function handleUpdateForId(id, opts) {
-  handleUpdate(await API.styles.getCore({id, sections: true, size: true}), opts);
+async function handleUpdateForId(id, opts, defer) {
+  return handleUpdate(await API.styles.getCore({id, sections: true, size: true}), opts, defer);
 }

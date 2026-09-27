@@ -221,8 +221,9 @@ function highlightEditedStyle() {
   }
 }
 
-export function fitNameColumn(styles, style) {
+export function fitNameColumn(styles, style, defer) {
   if (style) calcNameLenKey(style);
+  if (defer) return;
   styles = styles ? styles.map(calcNameLenKey) : [...nameLengths.values()];
   const pick = sorter.columns > 1 ? .8 : .95; // quotient of entries in single line
   const extras = 5; // average for optional extras like " UC ", "v1.0.0"

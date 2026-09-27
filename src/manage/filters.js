@@ -140,9 +140,9 @@ function buildFilter(hide) {
     ).filter(Boolean).join(hide ? ',' : '');
 }
 
-export function filterAndAppend({entry, container}, alreadySearched) {
+export function filterAndAppend({entry, container, defer}, alreadySearched) {
   if (!container && isColumnable) {
-    fitNameColumn(undefined, entry.styleMeta);
+    fitNameColumn(undefined, entry.styleMeta, defer);
     fitSizeColumn(undefined, entry);
   }
   return reapplyFilter(container || [entry], alreadySearched, entry);
