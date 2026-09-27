@@ -43,6 +43,8 @@ $('#toggler').on('click', evt => {
   if (!cmd)
     return;
   evt.preventDefault();
+  if (!togglables)
+    return;
   const cycle = cmd[0] === '*';
   const enable = cmd[0] === '+';
   const list = cycle ? togglables : entries;
@@ -58,7 +60,7 @@ export async function pause(fn, ...args) {
 
 /** @param {KeyboardEvent} evt */
 function onKeyDown(evt) {
-  if (evt.metaKey)
+  if (evt.metaKey || !togglables)
     return;
   let entry;
   let {code, key, altKey, ctrlKey, shiftKey} = evt;
