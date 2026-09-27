@@ -64,7 +64,7 @@
   },
   "scripts": {
     "lint": "eslint . --cache",
-    "test": "pnpm lint && pnpm test-csslint && pnpm test-beautify",
+    "test": "run-p lint test-csslint test-beautify",
     "test-csslint": "node tools/test-css.js",
     "test-beautify": "node --test tools/test-beautify.js",
     "update-locales": "tx pull --all --minimum-perc=1 && node tools/fix-transifex.js commit",
