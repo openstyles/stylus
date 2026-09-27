@@ -124,7 +124,8 @@ class Color {
     }
     if (str.charCodeAt(str.length - 1) !== 41/*)*/) {
       v = NAMED_COLORS.get(str);
-      if (+v) NAMED_COLORS.set(str, v = new Color(COLOR_HEX, v >> 16, (v >> 8) & 255, v & 255));
+      if (typeof v === 'number')
+        NAMED_COLORS.set(str, v = new Color(COLOR_HEX, v >> 16, (v >> 8) & 255, v & 255));
       return v;
     }
     let type, a;
