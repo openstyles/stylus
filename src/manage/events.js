@@ -172,11 +172,9 @@ export function handleBulkChange() {
   sorter.updateStripes({onlyWhenColumnsChanged: true});
   queue.p = null;
   queue.length = 0;
-  if (pending.length) return Promise.allSettled(pending).then(results => {
+  if (pending.length) return Promise.all(pending).then(() => {
     if (isColumnable) fitNameColumn();
     sorter.update();
-    const failed = results.find(res => res.status === 'rejected');
-    if (failed) throw failed.reason;
   });
 }
 
