@@ -296,7 +296,7 @@ function colorizeLineViaStyles(state, line, lineHandle) {
     style = styles[i + 1];
     if (!style || !(v = style.indexOf('overlay ')))
       continue;
-    if (v > 0) style = style.slice(0, v);
+    if (v > 0) style = style.slice(0, v).trimEnd();
     if (style !== 'atom' && style !== 'keyword' && style !== 'variable callee')
       continue;
     start = i > 2 ? styles[i - 2] : 0;
