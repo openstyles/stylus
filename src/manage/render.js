@@ -6,7 +6,7 @@ import * as prefs from '@/js/prefs';
 import {TO_CSS} from '@/js/style-util';
 import {renderTargetIcons} from '@/js/target-icons';
 import {FIREFOX} from '@/js/ua';
-import {sessionStore, t} from '@/js/util';
+import {debounce, sessionStore, t} from '@/js/util';
 import {filterAndAppend} from './filters';
 import * as sorter from './sorter';
 import {installed, isColumnable, styleToDummyEntry, UI} from './util';
@@ -221,8 +221,12 @@ function highlightEditedStyle() {
   }
 }
 
-export function fitNameColumn(styles, style) {
+export function fitNameColumn(styles, style, defer) {
   if (style) calcNameLenKey(style);
+  if (defer) {
+    debounce(fitNameColumn);
+    return;
+  }
   styles = styles ? styles.map(calcNameLenKey) : [...nameLengths.values()];
   const pick = sorter.columns > 1 ? .8 : .95; // quotient of entries in single line
   const extras = 5; // average for optional extras like " UC ", "v1.0.0"

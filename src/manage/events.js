@@ -6,7 +6,7 @@ import {
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {renderTargetIcons} from '@/js/target-icons';
-import {isSidebar, sessionStore, t, urlParams} from '@/js/util';
+import {debounce, isSidebar, sessionStore, t, urlParams} from '@/js/util';
 import {browserWindows, getOwnTab} from '@/js/util-webext';
 import {filterAndAppend, showFiltersStats} from './filters';
 import {createStyleElement, createTargetsElement, updateTotal} from './render';
@@ -202,7 +202,8 @@ function handleUpdate(style, {reason, method} = {}) {
   if ((reason === 'update' || reason === 'install') && entry.matches('.updatable')) {
     handleUpdateInstalled(entry, reason);
   }
-  filterAndAppend({entry}).then(sorter.update);
+  const defer = reason === 'import' || reason === 'sync';
+  filterAndAppend({entry, defer}).then(defer ? () => debounce(sorter.update) : sorter.update);
   if (!entry.matches('.hidden') && reason !== 'import' && reason !== 'sync') {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
