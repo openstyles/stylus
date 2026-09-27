@@ -239,10 +239,55 @@ export default (function() {
         // and the next special character found opens
         // a new block
         function foundNestedPseudoClass() {
-            var openParen = 0;
+            var openParen = parenLevel;
+            var openBracket = 0;
+            var quote = '';
             for (var i = pos + 1; i < source_text.length; i++) {
                 var ch = source_text.charAt(i);
-                if (ch === "{") {
+                if (ch === "\\") {
+                    i++;
+                    continue;
+                }
+                if (quote) {
+                    if (ch === quote) quote = '';
+                    continue;
+                }
+                if (ch === '"' || ch === "'") {
+                    quote = ch;
+                    continue;
+                }
+                if (ch === '/' && source_text.charAt(i + 1) === '*') {
+                    i = source_text.indexOf('*/', i + 2);
+                    if (i < 0) return false;
+                    i++;
+                    continue;
+                }
+                if (ch === '/' && source_text.charAt(i + 1) === '/') {
+                    i = source_text.indexOf('\n', i + 2);
+                    if (i < 0) return false;
+                    continue;
+                }
+                if ((ch === '#' || ch === '@') && source_text.charAt(i + 1) === '{') {
+                    i += 2;
+                    for (; i < source_text.length; i++) {
+                        if (source_text.charAt(i) === "\\") {
+                            i++;
+                        } else if (source_text.charAt(i) === '}') {
+                            break;
+                        }
+                    }
+                    continue;
+                }
+                if (ch === '[') {
+                    openBracket++;
+                    continue;
+                }
+                if (ch === ']') {
+                    openBracket--;
+                    continue;
+                }
+                if (openBracket) continue;
+                if (ch === "{" && openParen === 0) {
                     return true;
                 } else if (ch === '(') {
                     // pseudoclasses can contain ()
@@ -478,6 +523,14 @@ export default (function() {
                         outputPosCol++;
                     }
                 }
+            } else if (ch === "\\") {
+                print.preserveSingleSpace();
+                output.push(ch);
+                outputPosCol++;
+                if (next()) {
+                    output.push(ch);
+                    outputPosCol++;
+                }
             } else if (ch === '"' || ch === '\'') {
                 print.preserveSingleSpace();
                 print.text(eatString(ch));
@@ -489,6 +542,7 @@ export default (function() {
                     newline_between_properties ? print.newLine() : print.singleSpace();
                 }
             } else if (ch === '(') { // may be a url
+                parenLevel++;
                 if (lookBack("url")) {
                     output.push(ch);
                     outputPosCol++;
@@ -496,12 +550,12 @@ export default (function() {
                     if (next()) {
                         if (ch !== ')' && ch !== '"' && ch !== '\'') {
                             print.text(eatString(')'));
+                            parenLevel--;
                         } else {
                             pos--;
                         }
                     }
                 } else {
-                    parenLevel++;
                     print.preserveSingleSpace();
                     output.push(ch);
                     outputPosCol++;
