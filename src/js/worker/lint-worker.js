@@ -46,7 +46,7 @@ const LintWorkerAPI = {
   getCssPropsValues() {
     if (!parserlib) loadParserlib();
     const {
-      css: {GlobalKeywords, NamedColors, Parser: {AT}, Properties},
+      css: {GlobalKeywords, NamedColors, Parser, Properties},
       util: {describeProp, VTFunctions},
     } = parserlib;
     const atKeys = [`@-moz-document`, '@starting-style'];
@@ -58,7 +58,7 @@ const LintWorkerAPI = {
     const res = {};
     // moving vendor-prefixed props to the end
     const cmp = (a, b) => a[0] === '-' && b[0] !== '-' ? 1 : a < b ? -1 : a > b;
-    for (const k in AT) {
+    for (const k in Parser.ats) {
       if (k !== 'document') atKeys.push('@' + k);
     }
     for (let i = 0, k, v; i < keys.length; i++) {

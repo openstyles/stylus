@@ -5,7 +5,7 @@ const parserlib = require('csslint-mod/dist/parserlib').default;
 const csslintmod = require('csslint-mod').default;
 const {SRC} = require('./util.js');
 
-const {ScopedProperties, NamedColors, Properties, Parser: {AT}} = parserlib.css;
+const {ScopedProperties, NamedColors, Properties, Parser} = parserlib.css;
 const ver = 'csslint-mod ' + require('csslint-mod/package.json').version;
 const signature = '// AUTO-GENERATED FROM ';
 const header = signature + ver;
@@ -38,7 +38,7 @@ const values = [
 
 const makeUniqString = arr => [...new Set(arr)].join(' ').toLowerCase();
 const text = /*language=js*/ `
-export const atRules = ['${Object.keys(AT).join("', '")}'];
+export const atRules = ['${Object.keys(Parser.ats).join("', '")}'];
 export const colorKeywords = /*@__PURE__*/'${colorsLC}'.split(' ');
 export const counterDescriptors = ['${counterProps}'];
 export const fontProperties = ['${fontProps}'];
