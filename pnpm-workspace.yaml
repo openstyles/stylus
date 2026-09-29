@@ -2,8 +2,5 @@ allowBuilds:
   '@swc/core': true
   ttf2woff2: true
 
-minimumReleaseAgeExclude:
-  - stylelint-bundle@17.15.0
-
 neverBuiltDependencies:
   - csslint-mod
