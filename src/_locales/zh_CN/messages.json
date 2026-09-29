@@ -1269,6 +1269,9 @@
   "searchStylesMatchUrl": {
     "message": "URL"
   },
+  "searchStylesMatchUrlError": {
+    "message": "请指定完整 URL，例如 https://www.example.org/"
+  },
   "searchStylesMeta": {
     "message": "元数据"
   },
