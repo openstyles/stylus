@@ -1,5 +1,6 @@
 import {pSideManager, pSideOptions, UCD} from '@/js/consts';
 import {isTouch} from '@/js/dom';
+import {SPLIT_BTN_MENU} from '@/js/dom-on-load';
 import {configDialog} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {onMessage} from '@/js/msg';
@@ -41,6 +42,9 @@ const GlobalClick = {
   [selFinder]: openStyleFinder,
   [selManager]: openManager,
   [selOptions]: openOptions,
+  [selManager + '~' + SPLIT_BTN_MENU + ' a'](evt, entry, btn) {
+    if (btn === 2) openManager(null, entry, btn);
+  },
 };
 export const styleFinder = {};
 export const tSideHint = '\n' + t('popupSidePanelOpenHint');
@@ -187,7 +191,7 @@ export async function openEditor(event, entry, button) {
 function openManager(event, entry, button) {
   event?.preventDefault();
   return openDashboard(
-    event.shiftKey || (/**@type{CustomEvent}*/event).detail === 'site'
+    !event || event.shiftKey || (/**@type{CustomEvent}*/event).detail === 'site'
       ? {search: tabUrl, searchMode: 'url'}
       : {},
     button === 2, close, {windowId});

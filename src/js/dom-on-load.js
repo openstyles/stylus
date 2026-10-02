@@ -10,7 +10,7 @@ import {FIREFOX} from './ua';
 import {installUsercss} from './urls';
 import {clamp, debounce, t, tryURL} from './util';
 
-const SPLIT_BTN_MENU = '.split-btn-menu';
+export const SPLIT_BTN_MENU = '.split-btn-menu';
 const tooltips = new WeakMap();
 const noteBoxes = new WeakMap();
 /** Strips all normal html tags but allows <invalid-html-tags> which we use to emphasize stuff */
