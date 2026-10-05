@@ -8,7 +8,6 @@ import {connected, disconnected, DRIVE_NAMES, getStatusText} from '@/js/sync-uti
 import {t} from '@/js/util';
 
 (async () => {
-  let {sync: status, syncOpts} = __.MV3 && swController ? clientData : await clientData;
   const elSync = $('.sync-options');
   const elCloud = elSync.$('.cloud-name');
   const elToggle = elSync.$('.connect');
@@ -20,6 +19,9 @@ import {t} from '@/js/util';
   elCloud.append(
     ...Object.entries(DRIVE_NAMES).map(([id, name]) =>
       $create('option', {value: id}, name)));
+  if ((elCloud.value = parent.prefs.__values[pSync]) !== kNone)
+    elStatus.textContent = '...'; // shown while waiting for sync to initialize lazily
+  let {sync: status, syncOpts} = __.MV3 && swController ? clientData : await clientData;
   updateButtons();
   onMessage.set(e => {
     if (e.method === 'syncStatusUpdate') {
