@@ -288,14 +288,13 @@ a.icon {
     text-transform: uppercase;
   }
 }
-[data-drive="webdav"] {
+.drive-options {
   width: 100%;
   border-spacing: 0;
   border-collapse: collapse;
   & td:nth-child(1) {
     padding: 1px .5em 1px 0;
-    max-width: 10em;
-    overflow-wrap: break-word;
+    white-space: nowrap;
   }
   & td:nth-child(2) {
     padding: 1px 0;

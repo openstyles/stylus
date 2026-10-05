@@ -2,5 +2,8 @@ allowBuilds:
   '@swc/core': true
   ttf2woff2: true
 
+minimumReleaseAgeExclude:
+  - db-to-cloud@0.9.0
+
 neverBuiltDependencies:
   - csslint-mod

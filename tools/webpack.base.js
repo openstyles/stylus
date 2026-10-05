@@ -16,6 +16,7 @@ const patchLESS = require('./wp-patch-less');
 
 const patchCJS = {
   loader: './tools/wp-cjs-to-esm-loader.js',
+  type: 'javascript/auto',
   test: new RegExp(`/node_modules/(${[
     '@eight04/',
     'db-to-cloud',

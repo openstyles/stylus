@@ -8,6 +8,7 @@ export const pending = 'pending';
 
 export const DRIVE_NAMES = {
   dropbox: 'Dropbox',
+  github: 'GitHub Compatible',
   google: 'Google Drive',
   onedrive: 'OneDrive',
   webdav: 'WebDAV',

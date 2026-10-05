@@ -9,7 +9,7 @@
     "@eight04/draggable-list": "^0.3.0",
     "codemirror": "5.65.20",
     "csslint-mod": "github:openstyles/csslint-mod#semver:v1.0.18",
-    "db-to-cloud": "^0.8.1",
+    "db-to-cloud": "^0.9.0",
     "less": "^4.9.1",
     "lz-string-unsafe": "1.4.4-fork-1",
     "stylelint-bundle": "17.15.0",

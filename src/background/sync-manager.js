@@ -28,7 +28,7 @@ const SYNC_DELAY = 1;
 /** (minutes) between regular sync jobs, also acts as an upper limit for SYNC_DELAY debouncing. */
 const SYNC_INTERVAL = 30;
 const STORAGE_KEY = 'sync/state/';
-const NO_LOGIN = ['webdav'];
+const NO_LOGIN = ['github', 'webdav'];
 const status = {
   state: STATES.pending,
 };
@@ -172,7 +172,7 @@ export async function syncNow() {
   } catch (err) {
     err.message = translateErrorMessage(err);
     setError(err);
-    if (isGrantError(err)) {
+    if (isGrantError(err) && !NO_LOGIN.includes(curDriveName)) {
       status.login = false;
     }
   }
@@ -273,7 +273,8 @@ async function getDrive(name) {
     prefs.set(PREF_ID, kNone);
     throw new Error('Broken options: WebDAV server URL is missing');
   }
-  if (!__.MV3 || !webdav) opts.getAccessToken = () => getToken(name);
+  if (name === 'github') opts.getAccessToken = () => ({scheme: 'token', param: opts.token});
+  else if (!__.MV3 || !webdav) opts.getAccessToken = () => getToken(name);
   if (!__.MV3 && webdav) opts.fetch = fetchWebDAV.bind(opts);
   return cloudDrive[name](opts);
 }
