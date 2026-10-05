@@ -1920,6 +1920,10 @@
     "message": "Sync failed. Try logging in again in the Stylus options.",
     "description": "Tooltip for the toolbar icon"
   },
+   "syncGithubCompat": {
+    "message": "GitHub-compatible",
+    "description": "Name of a sync provider in the list next to Dropbox, OneDrive etc. It works with GitHub and services that have the same API (Gitea, Forgejo)."
+  },
   "syncStorageErrorSaving": {
     "message": "The value cannot be saved. Try reducing the amount of text.",
     "description": "Displayed when trying to save an excessively big value via storage.sync API"
