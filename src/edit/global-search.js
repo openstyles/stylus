@@ -4,7 +4,7 @@ import {$toggleDataset, cssFieldSizing} from '@/js/dom';
 import {setInputValue} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {chromeLocal} from '@/js/storage-util';
-import {debounce, RX_MAYBE_REGEXP, stringAsRegExpStr, t, tryRegExp} from '@/js/util';
+import {debounce, RX_MAYBE_REGEXP, sleep0, stringAsRegExpStr, t, tryRegExp} from '@/js/util';
 import editor from './editor';
 import './css/search.css';
 
@@ -57,6 +57,7 @@ let stateReplaceValue;
 let stateScrollX;
 let stateScrollY;
 let stateTally;
+let overlaying;
 
 const stateUndoHistory = [];
 const stateSearchInApplies = !editor.isUsercss;
@@ -452,25 +453,20 @@ function doUndo() {
 //endregion
 //region Overlay
 
-function setupOverlay(queue, debounced) {
-  if (!queue.length) {
-    return;
+async function setupOverlay(queue) {
+  if (overlaying) {
+    overlaying = -1;
+    await sleep0();
   }
-  if (queue.length > 1 || !debounced) {
-    debounce(setupOverlay, 0, queue, true);
-    if (!debounced) {
-      return;
-    }
-  }
-
-  let canContinue = true;
-  while (queue.length && canContinue) {
-    let cm = queue.shift();
+  overlaying = 0;
+  for (let cm of queue) {
     if (lazySections)
       cm = (!(/**@type{EditorSection}*/cm).init || lazySectionMatches(cm)) && cm.cm;
-    if (!cm || !document.body.contains(cm.display.wrapper))
+    if (!cm || !cm.display?.wrapper.isConnected)
       continue;
-
+    if (++overlaying > 0 && (await sleep0(), overlaying === -1))
+      break;
+    let done;
     const cmState = cm.stateSearch ||= {};
     const gen = cm.doc.history.generation;
     const ovr = cmState.overlay;
@@ -485,9 +481,8 @@ function setupOverlay(queue, debounced) {
       if (!cm.curOp) cm.startOperation();
       cm.removeOverlay(ovr);
       cmState.overlay = null;
-      canContinue = false;
+      done = true;
     }
-
     const hasMatches = query && cm.getSearchCursor(query, null, stateCursorOptions).find();
     if (hasMatches) {
       if (!cm.curOp) cm.startOperation();
@@ -497,14 +492,13 @@ function setupOverlay(queue, debounced) {
         numFound: 0,
         tallyShownTime: 0,
       });
-      canContinue = false;
+      done = true;
     }
-
     if (cmState.annotate) {
       if (!cm.curOp) cm.startOperation();
       cmState.annotate.clear();
       cmState.annotate = null;
-      canContinue = false;
+      done = true;
     }
     if (cmState.annotateTimer) {
       clearTimeout(cmState.annotateTimer);
@@ -514,12 +508,11 @@ function setupOverlay(queue, debounced) {
       cmState.annotateTimer = setTimeout(annotateScrollbar, ANNOTATE_SCROLLBAR_DELAY,
         cm, query, stateIcase);
     }
-
     cmState.unclosedOp = false;
     if (cm.curOp) cm.endOperation();
+    if (done) break;
   }
-
-  if (!queue.length) debounce.unregister(setupOverlay);
+  overlaying = 0;
 }
 
 function tokenize(stream) {

@@ -25,8 +25,7 @@ export default function SectionsEditor() {
   const xo = new IntersectionObserver(refreshOnViewListener, {rootMargin: '100%'});
   const reifySection = /** @type {ProxyHandler} */ {
     get(obj, i) {
-      const sec = this.src[i];
-      return (obj[i] = sec.init ? sec.create() : sec.cm);
+      return (obj[i] = this.src[i].cm);
     },
   };
   let INC_ID = 0; // an increment id that is used by various object to track the order
