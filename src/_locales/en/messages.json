@@ -1222,6 +1222,20 @@
   "optionsStylusThemes": {
     "message": "Click the Stylus icon in the browser toolbar on any Stylus page including this one, then click 'Find styles'"
   },
+  "optionsSyncApiUrl": {
+    "message": "API URL"
+  },
+  "optionsSyncApiUrlHint": {
+    "message": "Empty for github.com.\nGitea, Forgejo: https://host/api/v1\nGitHub Enterprise: https://host/api/v3"
+  },
+  "optionsSyncBranch": {
+    "message": "Branch",
+    "description": "A git branch"
+  },
+  "optionsSyncBranchDefault": {
+    "message": "default branch",
+    "description": "Placeholder of the empty Branch field: the repository's default git branch is used"
+  },
   "optionsSyncConnect": {
     "message": "Connect"
   },
@@ -1234,8 +1248,18 @@
   "optionsSyncNone": {
     "message": "None"
   },
+  "optionsSyncOwner": {
+    "message": "Owner",
+    "description": "User or organization that owns the git repository"
+  },
   "optionsSyncPassword": {
     "message": "Password"
+  },
+  "optionsSyncRepo": {
+    "message": "Repository"
+  },
+  "optionsSyncRepoHint": {
+    "message": "The repository must already exist.\nFiles are written to its root, so use a dedicated one."
   },
   "optionsSyncStatusConnected": {
     "message": "Connected"
@@ -1279,6 +1303,12 @@
   },
   "optionsSyncSyncNow": {
     "message": "Sync now"
+  },
+  "optionsSyncToken": {
+    "message": "Access token"
+  },
+  "optionsSyncTokenHint": {
+    "message": "GitHub: a fine-grained token with <Contents: Read and write> for this repository, or a classic token with the <repo> scope.\nGitea, Forgejo: a token with the <write:repository> scope."
   },
   "optionsSyncUrl": {
     "message": "URL"
@@ -1889,6 +1919,10 @@
   "syncErrorRelogin": {
     "message": "Sync failed. Try logging in again in the Stylus options.",
     "description": "Tooltip for the toolbar icon"
+  },
+  "syncGithubCompat": {
+    "message": "GitHub-compatible",
+    "description": "Name of a sync provider in the list next to Dropbox, OneDrive etc. It works with GitHub and services that have the same API (Gitea, Forgejo)."
   },
   "syncStorageErrorSaving": {
     "message": "The value cannot be saved. Try reducing the amount of text.",
