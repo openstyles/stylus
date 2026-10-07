@@ -24,6 +24,7 @@ let wasDirty = false;
  * @type Editor
  * @prop {number} [lineHeight]
  * @prop {boolean} [loading]
+ * @prop {boolean} [tabOvr]
  * @prop {UsercssTemplate} template
  * @prop {boolean} [toggling]
  * @prop {{find: string, replace: string, icase: boolean}} state

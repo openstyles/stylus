@@ -1,4 +1,4 @@
-import {pLivePreview} from '@/js/consts';
+import {kTabOvr, pLivePreview} from '@/js/consts';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {debounce} from '@/js/util';
@@ -24,6 +24,7 @@ export default function livePreview(now) {
   if (!enabled
   || !editor.style.id // not saved
   || !editor.style.enabled && (!data || !data.enabled) && !editor.dirty.has('enabled')
+    && !editor[kTabOvr]
   || !port && !editor.dirty.isDirty() // not modified since the style was saved and thus applied
   ) return;
   if (!now) {

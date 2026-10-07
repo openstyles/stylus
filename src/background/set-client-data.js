@@ -1,4 +1,4 @@
-import {kBadFavs, kEditorScrollInfo, kPopup, pEditorTheme, UCD} from '@/js/consts';
+import {kBadFavs, kEditorScrollInfo, kPopup, kTabOvr, pEditorTheme, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
 import {fetchText, NOP} from '@/js/util';
@@ -11,6 +11,7 @@ import {nondefaults} from './prefs-api';
 import * as styleMan from './style-manager';
 import {badStyles} from './style-manager/init';
 import * as syncMan from './sync-manager';
+import {tabCache} from './tab-manager';
 import {loadTemplate} from './usercss-template';
 
 const CM_THEMES_TEXT = {};
@@ -21,9 +22,14 @@ const PROVIDERS = {
     const isUsercss = style ? UCD in style : prefs.__values.newStyleAsUsercss;
     const siKey = kEditorScrollInfo + id;
     let v;
+    if (style)
+      for (const tabId in tabCache)
+        if ((v = tabCache[tabId][kTabOvr]) && (v = v[id]))
+          break;
     v = /** @namespace StylusClientData */ {
       style,
       isUsercss,
+      [kTabOvr]: v,
       si: style && (__.MV3 ? stateDB.get(siKey) : dataHub.get(siKey)),
       template: isUsercss && loadTemplate(),
       theme: v = prefs.__values[pEditorTheme],

@@ -1,3 +1,4 @@
+import {kTabOvr} from '@/js/consts';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import {closeCurrentTab} from '@/js/util-webext';
@@ -41,6 +42,10 @@ function handleExternalUpdate(style, reason, editorId) {
       livePreview();
     }
     editor.updateMeta?.();
+    return;
+  }
+  if (reason === kTabOvr) {
+    editor[kTabOvr] = style.enabled;
     return;
   }
   (replaceQueue ??= []).push([style.id, reason]);
