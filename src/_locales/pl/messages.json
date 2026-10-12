@@ -997,6 +997,18 @@
   "optionsStylusThemes": {
     "message": "Kliknij ikonę Stylusa na pasku narzędzi przeglądarki na dowolnej stronie Stylusa, w tym tej, a następnie kliknij 'Znajdź style'"
   },
+  "optionsSyncApiUrl": {
+    "message": "Adres URL API"
+  },
+  "optionsSyncApiUrlHint": {
+    "message": "Puste dla github.com.\nGitea, Forgejo: https://host/api/v1\nGitHub Enterprise: https://host/api/v3"
+  },
+  "optionsSyncBranch": {
+    "message": "Gałąź"
+  },
+  "optionsSyncBranchDefault": {
+    "message": "gałąź domyślna"
+  },
   "optionsSyncConnect": {
     "message": "Połącz"
   },
@@ -1009,8 +1021,17 @@
   "optionsSyncNone": {
     "message": "Brak"
   },
+  "optionsSyncOwner": {
+    "message": "Właściciel"
+  },
   "optionsSyncPassword": {
     "message": "Hasło"
+  },
+  "optionsSyncRepo": {
+    "message": "Repozytorium"
+  },
+  "optionsSyncRepoHint": {
+    "message": "Repozytorium musi już istnieć.\nPliki są zapisywane w jego katalogu głównym, więc należy użyć dedykowanego repozytorium."
   },
   "optionsSyncStatusConnected": {
     "message": "Połączono"
@@ -1054,6 +1075,12 @@
   },
   "optionsSyncSyncNow": {
     "message": "Synchronizuj teraz"
+  },
+  "optionsSyncToken": {
+    "message": "Token dostępu"
+  },
+  "optionsSyncTokenHint": {
+    "message": "GitHub: token typu „fine-grained” z uprawnieniem 1 dla tego repozytorium lub klasyczny token z zakresem 2.\nGitea, Forgejo: token z zakresem 3."
   },
   "optionsSyncUrl": {
     "message": "Adres URL"
@@ -1554,6 +1581,9 @@
   },
   "syncErrorRelogin": {
     "message": "Synchronizacja nie powiodła się. Wylogowano.\nSpróbuj ponownie zalogować się w opcjach Stylusa."
+  },
+  "syncGithubCompat": {
+    "message": "Zgodny z GitHubem"
   },
   "syncStorageErrorSaving": {
     "message": "Nie można zapisać wartości. Spróbuj zmniejszyć ilość tekstu."

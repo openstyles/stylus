@@ -913,6 +913,12 @@
   "optionsResetButton": {
     "message": "Restabelecer opções"
   },
+  "optionsSyncBranch": {
+    "message": "Ramo"
+  },
+  "optionsSyncBranchDefault": {
+    "message": "Ramo padrão"
+  },
   "optionsSyncConnect": {
     "message": "Conectar"
   },
@@ -924,6 +930,9 @@
   },
   "optionsSyncPassword": {
     "message": "Senha"
+  },
+  "optionsSyncRepo": {
+    "message": "Repositório"
   },
   "optionsSyncStatusConnected": {
     "message": "Conectado"
@@ -945,6 +954,9 @@
   },
   "optionsSyncSyncNow": {
     "message": "Sincronizar agora"
+  },
+  "optionsSyncToken": {
+    "message": "Token de acesso"
   },
   "optionsSyncUsername": {
     "message": "Nome de usuário"
@@ -1002,6 +1014,9 @@
   },
   "popupOpenEditInWindowTooltip": {
     "message": "Também ativado ao desanexar o separador do editor de uma janela do browser, e desativado por anexar um separador único do editor a outra janela."
+  },
+  "popupSidePanelOpenHint": {
+    "message": "Botão direito: no painel lateral"
   },
   "popupStylesFirst": {
     "message": "Estilos antes de comandos"
@@ -1339,6 +1354,9 @@
   },
   "syncErrorRelogin": {
     "message": "Sincronização mal-sucedida. Tente iniciar a sessão novamente nas opções do Stylus."
+  },
+  "syncGithubCompat": {
+    "message": "Compatível com GitHub"
   },
   "syncStorageErrorSaving": {
     "message": "O valor não pode ser guardado. Tente reduzir a quantidade de texto."

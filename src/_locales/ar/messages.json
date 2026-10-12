@@ -1006,6 +1006,18 @@
   "optionsStylusThemes": {
     "message": "انقر على أيقونة Stylus في شريط أدوات المتصفح على أي صفحة من صفحات Stylus بما في ذلك هذه، ثم انقر على 'البحث عن الأنماط'"
   },
+  "optionsSyncApiUrl": {
+    "message": "عنوان URL لواجهة برمجة التطبيقات"
+  },
+  "optionsSyncApiUrlHint": {
+    "message": "اتركه فارغاً لـ github.com.\nGitea و Forgejo: https://host/api/v1\nGitHub Enterprise: https://host/api/v3"
+  },
+  "optionsSyncBranch": {
+    "message": "فرع"
+  },
+  "optionsSyncBranchDefault": {
+    "message": "الفرع الافتراضي"
+  },
   "optionsSyncConnect": {
     "message": "الاتصال"
   },
@@ -1018,8 +1030,17 @@
   "optionsSyncNone": {
     "message": "لا شيء"
   },
+  "optionsSyncOwner": {
+    "message": "مالك"
+  },
   "optionsSyncPassword": {
     "message": "كلمة المرور"
+  },
+  "optionsSyncRepo": {
+    "message": "مستودع"
+  },
+  "optionsSyncRepoHint": {
+    "message": "يجب أن يكون المستودع موجوداً بالفعل؛\n إذ تُكتب الملفات في مجلده الجذري، لذا ينبغي استخدام مستودع مخصص لهذا الغرض."
   },
   "optionsSyncStatusConnected": {
     "message": "متصل"
@@ -1063,6 +1084,12 @@
   },
   "optionsSyncSyncNow": {
     "message": "مزامنة الآن"
+  },
+  "optionsSyncToken": {
+    "message": "رمز الوصول"
+  },
+  "optionsSyncTokenHint": {
+    "message": "GitHub: رمز وصول دقيق الصلاحيات (fine-grained)<Contents: Read and write> يمتلك لهذا المستودع، أو رمز كلاسيكي يمتلك <repo>نطاق .\nGitea، Forgejo: رمز يمتلك <write:repository>نطاق ."
   },
   "optionsSyncUrl": {
     "message": "عنوان URL"
@@ -1548,7 +1575,7 @@
     "message": "لا يعمل Stylus على صفحات مثل هذه."
   },
   "stylusUnavailableForURLdetails": {
-    "message": "كإجراء احترازي أمني، يمنع المتصفح الإضافات من التأثير على صفحاته المدمجة (مثل chrome://version، وصفحة علامة التبويب الجديدة القياسية اعتبارًا من Chrome 61، وabout:addons، وما إلى ذلك) وكذلك صفحات الإضافات الأخرى. كما يقيّد كل متصفح الوصول إلى متجر الإضافات الخاص به (مثل Chrome Web Store أو AMO)."
+    "message": "كإجراء احترازي أمني، يمنع المتصفح الإضافات من التأثير على صفحاته المدمجة (مثل chrome://version, وصفحة علامة التبويب الجديدة القياسية اعتبارًا من Chrome 61، وabout:addons، وما إلى ذلك) وكذلك صفحات الإضافات الأخرى. كما يقيّد كل متصفح الوصول إلى متجر الإضافات الخاص به (مثل Chrome Web Store أو AMO)."
   },
   "syncError": {
     "message": "فشلت المزامنة"
@@ -1563,6 +1590,9 @@
   },
   "syncErrorRelogin": {
     "message": "فشلت المزامنة. حاول تسجيل الدخول مرة أخرى في خيارات Stylus."
+  },
+  "syncGithubCompat": {
+    "message": "متوافق مع GitHub"
   },
   "syncStorageErrorSaving": {
     "message": "لا يمكن حفظ القيمة. حاول تقليل amount of النص."

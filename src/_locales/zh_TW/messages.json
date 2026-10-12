@@ -1003,6 +1003,15 @@
   "optionsStylusThemes": {
     "message": "點擊任何 Stylus 頁面（包含這個）的瀏覽器工具列中的 Stylus 圖示，然後點擊「尋找樣式」"
   },
+  "optionsSyncApiUrlHint": {
+    "message": "若要使用 github.com 請留空。\nGitea, Forgejo: https://host/api/v1\nGitHub Enterprise: https://host/api/v3"
+  },
+  "optionsSyncBranch": {
+    "message": "分支"
+  },
+  "optionsSyncBranchDefault": {
+    "message": "預設分支"
+  },
   "optionsSyncConnect": {
     "message": "連線"
   },
@@ -1015,8 +1024,17 @@
   "optionsSyncNone": {
     "message": "無"
   },
+  "optionsSyncOwner": {
+    "message": "擁有者"
+  },
   "optionsSyncPassword": {
     "message": "密碼"
+  },
+  "optionsSyncRepo": {
+    "message": "倉庫"
+  },
+  "optionsSyncRepoHint": {
+    "message": "倉庫必須已經存在。\n檔案會寫入其根目錄，因此請使用專用的倉庫。"
   },
   "optionsSyncStatusConnected": {
     "message": "已連線"
@@ -1060,6 +1078,12 @@
   },
   "optionsSyncSyncNow": {
     "message": "立刻同步"
+  },
+  "optionsSyncToken": {
+    "message": "存取權杖"
+  },
+  "optionsSyncTokenHint": {
+    "message": "GitHub：此儲存庫的細粒度權杖（具 <Contents: Read and write> 權限），或具有 <repo> 權限範圍的經典權杖。\nGitea、Forgejo：具有 <write:repository> 權限範圍的權杖。"
   },
   "optionsSyncUsername": {
     "message": "使用者名稱"
@@ -1557,6 +1581,9 @@
   },
   "syncErrorRelogin": {
     "message": "同步失敗。您已被登出。\n嘗試在 Stylus 選項中重新登入。"
+  },
+  "syncGithubCompat": {
+    "message": "相容於 GitHub"
   },
   "syncStorageErrorSaving": {
     "message": "無法儲存值。嘗試減少文字量。"
