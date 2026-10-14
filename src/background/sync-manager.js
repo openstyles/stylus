@@ -145,11 +145,9 @@ export async function stop() {
   if (!curDrive) return;
   status.state = STATES.disconnecting;
   emitStatusChange();
-  try {
-    await ctrl.uninit();
-    await revokeToken(curDriveName);
-    await chromeLocal.remove(STORAGE_KEY + curDriveName);
-  } catch {}
+  await ctrl.uninit().catch(console.warn);
+  await revokeToken(curDriveName).catch(console.warn);
+  await chromeLocal.remove(STORAGE_KEY + curDriveName).catch(console.warn);
   curDrive = curDriveName = null;
   prefs.set(PREF_ID, kNone);
   status.state = STATES.disconnected;
