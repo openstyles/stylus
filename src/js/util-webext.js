@@ -43,27 +43,31 @@ export const ignoreChromeError = () => chrome.runtime.lastError;
  * @param {{}} [mgr] manager options or falsy to open options
  * @param {boolean} [side]
  * @param {boolean} [close]
- * @param {{tabId?: number, windowId?: number}} [where] only one specifier is allowed
+ * @param {number} [tabId]
  * @return {void | Promise<void>}
  */
-export const openDashboard = (mgr, side, close, where) =>
+export const openDashboard = (mgr, side, close, tabId) =>
   browserSidebar && (side || __values[mgr ? pSideManager : pSideOptions])
-    ? openSidebar(mgr ? 'manage.html?' + new URLSearchParams(mgr) : 'options.html', close, where)
+    ? openSidebar(mgr ? 'manage.html?' + new URLSearchParams(mgr) : 'options.html', close, tabId)
     : API.tabs.openManager(mgr || {options: true}).then(close);
 
 /**
  * @param {string} path
  * @param {boolean} [close]
- * @param {{tabId?: number, windowId?: number}} [where] only one specifier is allowed
+ * @param {number} [tabId]
  * @return {void | Promise<void>}
  */
-export const openSidebar = async (path, close, where) => {
+export const openSidebar = async (path, close, tabId) => {
   path += (path.includes('?') ? '&' : '?') + kSidebar;
-  return isSidebar ? location.assign(path)
-    : (browserSidepanel
-      ? (browserSidepanel.setOptions({tabId: where.tabId, path}), browserSidepanel.open(where))
-      : (browserSidebar.setPanel({...where, panel: path}), browserSidebar.open())
-    ).then(__.ENTRY === true && !isSidebar && close && global.close);
+  return isSidebar ? location.assign(path) : (
+    browserSidepanel ? (
+      browserSidepanel.setOptions({tabId, path}),
+      browserSidepanel.open(tabId == null ? {windowId: -2/*current*/} : {tabId})
+    ) : (
+      browserSidebar.setPanel({tabId, panel: path}),
+      browserSidebar.open()
+    )
+  ).then(__.ENTRY === true && !isSidebar && close && global.close);
 };
 
 export const paintCanvas = (w, h, cb) => {

@@ -23,7 +23,6 @@ const isFullscreenPopup = MOBILE
 export let tabId;
 export let tabUrl;
 export let tabUrlSupported;
-export let windowId;
 export let isBlocked;
 let prevHeight = Math.max(innerHeight, 150);
 
@@ -100,7 +99,6 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
   tabId = tab.id;
   tabUrl = frames[0].url;
   tabUrlSupported = urlSupported;
-  windowId = tab.windowId;
   frames.forEach(createWriterElement);
 
   if ($('.match .match:not(.dupe),' + WRITE_FRAME_SEL)) {

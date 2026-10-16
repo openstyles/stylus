@@ -191,7 +191,7 @@ async function loadImage(url) {
 
 /** @param {chrome.tabs.Tab} tab */
 function openPopupInSidebar(tab) {
-  openSidebar('popup.html?' + kSidebar, false, {tabId: tab.id});
+  openSidebar('popup.html?' + kSidebar, false, tab.id);
 }
 
 function refreshGlobalIcon() {

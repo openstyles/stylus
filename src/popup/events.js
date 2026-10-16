@@ -9,7 +9,7 @@ import {__values, subscribe} from '@/js/prefs';
 import {FIREFOX, MAC} from '@/js/ua';
 import {isSidebar, NOP, t} from '@/js/util';
 import {browserSidebar, getActiveTab, openDashboard, openSidebar} from '@/js/util-webext';
-import {tabId, tabUrl, windowId} from '.';
+import {tabId, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
 import {openMenu} from './menu';
 import {installed, updateStyleEntry} from './render';
@@ -160,7 +160,7 @@ export async function configure(event, entry, button) {
       !(mode = __values[pSideConfig]) ||
       mode > 0 && entry.styleMeta[UCD].vars >= mode
     )) {
-      return openSidebar(`sidepanel.html?id=${entry.styleId}`, close, {tabId});
+      return openSidebar(`sidepanel.html?id=${entry.styleId}`, close, tabId);
     }
     hotkeys.pause(() => configDialog(entry.styleId, entry.getBoundingClientRect().bottom));
   } else {
@@ -176,7 +176,7 @@ export async function configure(event, entry, button) {
 export async function openEditor(event, entry, button) {
   const params = entry ? '?id=' + entry.styleId : this.search;
   if (browserSidebar && (button === 2 || __values[pSideEditor])) {
-    return openSidebar('edit.html' + params, close, {tabId});
+    return openSidebar('edit.html' + params, close, tabId);
   }
   await API.tabs.openEditor(params);
   if (!isSidebar)
@@ -194,7 +194,7 @@ function openManager(event, entry, button) {
     !event || event.shiftKey || (/**@type{CustomEvent}*/event).detail === 'site'
       ? {search: tabUrl, searchMode: 'url'}
       : {},
-    button === 2, close, {windowId});
+    button === 2, close, tabId);
 }
 
 /**
@@ -203,7 +203,7 @@ function openManager(event, entry, button) {
  * @param {number} [button]
  */
 export function openOptions(event, entry, button) {
-  return openDashboard(null, button === 2, close, {windowId});
+  return openDashboard(null, button === 2, close, tabId);
 }
 
 /**
@@ -213,7 +213,7 @@ export function openOptions(event, entry, button) {
  */
 export async function openStyleFinder(event, entry, button) {
   if (browserSidebar && !isSidebar && (button === 2 || __values[pSideFinder]))
-    return openSidebar(`popup.html?${pSideFinder}`, close, {tabId});
+    return openSidebar(`popup.html?${pSideFinder}`, close, tabId);
   this.disabled = true;
   if (!styleFinder.on) await import('./search');
   styleFinder.inline();
