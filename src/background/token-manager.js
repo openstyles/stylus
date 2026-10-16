@@ -107,7 +107,7 @@ export async function getToken(name, interactive, hooks) {
 export async function revokeToken(name, hooks) {
   const provider = AUTH[name];
   const k = buildKeys(name, hooks);
-  if (provider.revoke) {
+  if (provider?.revoke) {
     try {
       const token = await chromeLocal.getValue(k.TOKEN);
       if (token) await provider.revoke(token);

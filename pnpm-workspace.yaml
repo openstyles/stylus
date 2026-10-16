@@ -3,7 +3,7 @@ allowBuilds:
   ttf2woff2: true
 
 minimumReleaseAgeExclude:
-  - db-to-cloud@0.9.0
+  - db-to-cloud@0.9.0 || 0.9.1
 
 neverBuiltDependencies:
   - csslint-mod
