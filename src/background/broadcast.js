@@ -1,7 +1,7 @@
 import '@/js/browser';
 import {kTabOvr, pExposeIframes, pStyleViaASS} from '@/js/consts';
 import {rxIgnorableError} from '@/js/msg-api';
-import {sleep0} from '@/js/util';
+import {sleep} from '@/js/util';
 import {isOptionSite, optionSites} from './option-sites';
 import {tabCache} from './tab-manager';
 import {getWindowClients} from './util';
@@ -57,7 +57,7 @@ async function doBroadcast() {
        so we're yielding for a possible navigation/messaging event. */
     if (++cnt > 50) {
       cnt = 0;
-      await sleep0();
+      await sleep();
     }
   }
 }

@@ -19,9 +19,8 @@ export const isObject = val => typeof val === 'object' && val;
 /** @param {UsercssData} ucd */
 export const makeUserCssFindFilter = ucd => mapObj(ucd, null, ['name', 'namespace']);
 export const NOP = () => {};
+/** Not using scheduler.yield() as it doesn't repaint the page */
 export const sleep = ms => new Promise(ms > 0 ? cb => setTimeout(cb, ms) : setTimeout);
-/** uses scheduler.yield() to prioritize continuation of the initiator over another task */
-export const sleep0 = () => global.scheduler?.yield?.() || new Promise(setTimeout);
 export const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
 /** like stringAsRegExpStr but non-escaped "*" is replaced with ".*" */

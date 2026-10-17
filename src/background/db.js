@@ -1,7 +1,7 @@
 import {CACHE_DB, DB, kContentType, kInjectionOrder, STATE_DB, STORAGE_KEY, UCD} from '@/js/consts';
 import {chromeLocal} from '@/js/storage-util';
 import {CHROME} from '@/js/ua';
-import {deepMerge, sleep, sleep0} from '@/js/util';
+import {deepMerge, sleep} from '@/js/util';
 import ChromeStorageDB from './db-chrome-storage';
 
 /*
@@ -263,14 +263,14 @@ export async function mirrorStorage(styleMap) {
   keys = new Set(keys);
   for (const style of styleMap.values()) {
     if (!keys.has(style.id)) {
-      await sleep0();
+      await sleep();
       await execMirror(DB, 'put', style);
     }
   }
   keys = new Set(await execMirror(STORAGE_KEY, 'getAllKeys'));
   for (const key of [kInjectionOrder]) {
     if (!keys.has(key) && (val = await prefsDB.get(key))) {
-      await sleep0();
+      await sleep();
       await execMirror(STORAGE_KEY, 'put', val, key);
     }
   }

@@ -8,7 +8,7 @@ import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {isDark, onDarkChanged} from '@/js/dom-themer';
 import {CHROME, FIREFOX, MAC, MOBILE, OPERA} from '@/js/ua';
-import {clamp, isSidebar, sleep0, t, urlParams} from '@/js/util';
+import {clamp, isSidebar, sleep, t, urlParams} from '@/js/util';
 import {getActiveTab, ignoreChromeError} from '@/js/util-webext';
 import {openStyleFinder, pSideFinder, selUnstylable} from './events';
 import {initHotkeys} from './hotkeys';
@@ -133,7 +133,7 @@ async function initPopup({frames, ping0, tab, urlSupported}) {
     }
     // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
     // so we'll wait a bit to handle popup being invoked right after switching
-    await sleep0();
+    await sleep();
     tab = await getActiveTab();
   }
 

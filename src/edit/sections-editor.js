@@ -6,7 +6,7 @@ import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {getMetaComment, styleSectionsEqual, styleToCss} from '@/js/style-util';
-import {clipString, sleep0, t} from '@/js/util';
+import {clipString, sleep, t} from '@/js/util';
 import {iconize} from './applies-to';
 import editor, {scrollInfo} from './editor';
 import * as linterMan from './linter';
@@ -464,7 +464,7 @@ export default function SectionsEditor() {
       } else if (now - tPrev > 100) {
         tPrev = 0;
         forceRefresh = false;
-        await sleep0();
+        await sleep();
       }
       if (si) forceRefresh = y < scrollY2 && (y += secsi?.parentHeight || 0) > scrollY1;
       insertSectionAfter(src[i], null, forceRefresh, secsi);

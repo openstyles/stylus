@@ -4,7 +4,7 @@ import {$toggleDataset, cssFieldSizing} from '@/js/dom';
 import {setInputValue} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {chromeLocal} from '@/js/storage-util';
-import {debounce, RX_MAYBE_REGEXP, sleep0, stringAsRegExpStr, t, tryRegExp} from '@/js/util';
+import {debounce, RX_MAYBE_REGEXP, sleep, stringAsRegExpStr, t, tryRegExp} from '@/js/util';
 import editor from './editor';
 import './css/search.css';
 
@@ -456,7 +456,7 @@ function doUndo() {
 async function setupOverlay(queue) {
   if (overlaying) {
     overlaying = -1;
-    await sleep0();
+    await sleep();
   }
   overlaying = 0;
   for (let cm of queue) {
@@ -464,7 +464,7 @@ async function setupOverlay(queue) {
       cm = (!(/**@type{EditorSection}*/cm).init || lazySectionMatches(cm)) && cm.cm;
     if (!cm || !cm.display?.wrapper.isConnected)
       continue;
-    if (++overlaying > 0 && (await sleep0(), overlaying === -1))
+    if (++overlaying > 0 && (await sleep(), overlaying === -1))
       break;
     let done;
     const cmState = cm.stateSearch ||= {};

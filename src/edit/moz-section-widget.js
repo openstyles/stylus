@@ -1,11 +1,11 @@
+import {CodeMirror} from '@/cm';
 import colorMimicry from '@/js/color/color-mimicry';
 import {pFavicons} from '@/js/consts';
 import {$root, $toggleDataset} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
 import * as prefs from '@/js/prefs';
-import {sleep0, t} from '@/js/util';
-import {CodeMirror} from '@/cm';
+import {sleep, t} from '@/js/util';
 import {
   C_CONTAINER, C_ITEM, C_LIST, C_TYPE, C_VALUE, iconize, tplAppliesTo, tplAppliesToItem,
 } from './applies-to';
@@ -64,7 +64,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
         const type = func.str.type;
         const elList = !type && elItem.parentElement;
         cm.replaceRange(type ? `, ${type}("")` : func.str.value + 'domain("") ', pos, pos);
-        await sleep0();
+        await sleep();
         (elList || elItem.nextElementSibling).$('input').focus();
       },
     };
