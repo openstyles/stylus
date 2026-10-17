@@ -968,6 +968,15 @@
   "optionsStylusThemes": {
     "message": "このページを含む任意のStylusのページで、ブラウザのツールバー内のStylusアイコンをクリックして、「スタイルを検索」をクリックします"
   },
+  "optionsSyncApiUrlHint": {
+    "message": "空欄ならgithub.comを使用\nGitea, Forgejo: https://host/api/v1\nGitHub Enterprise: https://host/api/v3"
+  },
+  "optionsSyncBranch": {
+    "message": "ブランチ"
+  },
+  "optionsSyncBranchDefault": {
+    "message": "デフォルトブランチ"
+  },
   "optionsSyncConnect": {
     "message": "接続"
   },
@@ -980,8 +989,17 @@
   "optionsSyncNone": {
     "message": "未選択"
   },
+  "optionsSyncOwner": {
+    "message": "所有者"
+  },
   "optionsSyncPassword": {
     "message": "パスワード"
+  },
+  "optionsSyncRepo": {
+    "message": "リポジトリ"
+  },
+  "optionsSyncRepoHint": {
+    "message": "リポジトリが存在している必要があります。\nファイルはルートディレクトリに書き込まれるので、専用のリポジトリを使用してください。"
   },
   "optionsSyncStatusConnected": {
     "message": "接続状態"
@@ -1025,6 +1043,12 @@
   },
   "optionsSyncSyncNow": {
     "message": "すぐに同期"
+  },
+  "optionsSyncToken": {
+    "message": "アクセストークン"
+  },
+  "optionsSyncTokenHint": {
+    "message": "GitHub: このリポジトリ用の<Contents: Read and write>を持つ fine-grained トークン、または<repo>のスコープを持つ classic トークン。\nGitea, Forgejo: <write:repository>のスコープを持つトークン。"
   },
   "optionsSyncUsername": {
     "message": "ユーザ名"
@@ -1522,6 +1546,9 @@
   },
   "syncErrorRelogin": {
     "message": "同期に失敗しました。ログアウトした可能性があります。\nStylusのオプション画面で再ログインしてください。"
+  },
+  "syncGithubCompat": {
+    "message": "GitHub互換"
   },
   "syncStorageErrorSaving": {
     "message": "値を保存できません。テキストの量を減らしてください。"
