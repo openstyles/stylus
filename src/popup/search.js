@@ -211,13 +211,15 @@ function prev() {
   render();
 }
 
-function error(err) {
-  dom.error.textContent = err && err.message || `${err}`;
-  dom.error.hidden = false;
-  dom.list.hidden = true;
+function error(err, url) {
+  const el = dom.error;
+  el.textContent = err && err.message || `${err}`;
+  el.hidden = false;
+  el.title = url || '';
+  dom.list.hidden = !url;
   $rootCL.add('search-results-shown');
-  if (dom.error.getBoundingClientRect().bottom < 0) {
-    dom.error.scrollIntoView(true);
+  if (el.getBoundingClientRect().bottom < 0) {
+    el.scrollIntoView(true);
   }
 }
 
@@ -591,7 +593,7 @@ async function fetchIndexJob([url, prefix, prop, filter]) {
         : formatNumber(done) + '...';
     });
   };
-  for (let triesLeft = 3; triesLeft--; await sleep(250)) {
+  for (let triesLeft = 3; triesLeft--;) {
     let res = await API.util.download(url, {port: prefix}).catch(console.error);
     if (res && (res = tryJSONparse(res)) && Array.isArray(prop ? res = res[prop] : res)) {
       if (filter) res = res.filter(filter);
@@ -600,7 +602,8 @@ async function fetchIndexJob([url, prefix, prop, filter]) {
       break;
     }
     // CDN weirdly fails the first time, so we'll retry
-    if (!triesLeft) error('Style index is unavailable: ' + url);
+    if (!triesLeft) error('Style index is unavailable', url);
+    else await sleep(1000);
   }
   el = el.style.opacity = 0;
 }
