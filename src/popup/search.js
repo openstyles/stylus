@@ -8,7 +8,8 @@ import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import * as URLS from '@/js/urls';
 import {
-  clipString, debounce, isSidebar, sleep, stringAsRegExp, stringAsRegExpStr, t, tryRegExp, tryURL,
+  clipString, debounce, isSidebar, sleep, stringAsRegExp, stringAsRegExpStr, t, tryJSONparse,
+  tryRegExp, tryURL,
 } from '@/js/util';
 import {tabUrl, tabUrlSupported} from '.';
 import {configure, openURLandHide, styleFinder} from './events';
@@ -564,8 +565,8 @@ function calcCategory({retry} = {}) {
 async function fetchIndex() {
   const elNote = $id('pct').firstChild;
   const jobs = [
-    [INDEX_URL, 'uso', json => json.filter(v => v.f === 'uso')],
-    [USW_INDEX_URL, 'usw', json => json.data],
+    [INDEX_URL, 'uso', false, v => v.f === 'uso'],
+    [USW_INDEX_URL, 'usw', 'data'],
   ].map(fetchIndexJob);
   indexing = Promise.all(jobs).then(() => {
     indexing = null;
@@ -576,10 +577,10 @@ async function fetchIndex() {
   await new Promise((resolve, reject) => {
     for (const job of jobs) job.then(resolve, reject);
   });
-  return index;
+  return index || [];
 }
 
-async function fetchIndexJob([url, prefix, transform]) {
+async function fetchIndexJob([url, prefix, prop, filter]) {
   let el = $create('div', {title: url});
   $id('pct').append(el);
   onConnect[prefix] = port => {
@@ -590,21 +591,16 @@ async function fetchIndexJob([url, prefix, transform]) {
         : formatNumber(done) + '...';
     });
   };
-  for (let triesLeft = 3; triesLeft--;) {
-    try {
-      const res = transform(JSON.parse(await API.util.download(url, {port: prefix})));
+  for (let triesLeft = 3; triesLeft--; await sleep(250)) {
+    let res = await API.util.download(url, {port: prefix}).catch(console.error);
+    if (res && (res = tryJSONparse(res)) && Array.isArray(prop ? res = res[prop] : res)) {
+      if (filter) res = res.filter(filter);
       for (const v of res) v.i = `${prefix}-${v.i}`;
-      if (!index) {
-        index = res;
-      } else {
-        index = index.concat(res);
-      }
+      index = index?.concat(res) || res;
       break;
-    } catch (e) {
-      // CDN weirdly fails the first time, so we'll retry
-      if (!triesLeft) error(e.message);
-      else await sleep(250);
     }
+    // CDN weirdly fails the first time, so we'll retry
+    if (!triesLeft) error('Style index is unavailable: ' + url);
   }
   el = el.style.opacity = 0;
 }
