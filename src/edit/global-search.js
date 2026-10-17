@@ -470,20 +470,21 @@ async function setupOverlay(queue) {
     const gen = cm.doc.history.generation;
     const ovr = cmState.overlay;
     const query = stateRX2;
+    let {curOp} = cm;
     if (cmState.gen === gen && ovr?.query === query) {
-      if (cmState.unclosedOp && cm.curOp) cm.endOperation();
+      if (cmState.unclosedOp && curOp) cm.endOperation();
       cmState.unclosedOp = false;
       continue;
     }
     cmState.gen = gen;
     if (ovr) {
-      if (!cm.curOp) cm.startOperation();
+      curOp ||= (cm.startOperation(), setupOverlay);
       cm.removeOverlay(ovr);
       cmState.overlay = null;
     }
     const hasMatches = query && cm.getSearchCursor(query, null, stateCursorOptions).find();
     if (hasMatches) {
-      if (!cm.curOp) cm.startOperation();
+      curOp ||= (cm.startOperation(), setupOverlay);
       cm.addOverlay(cmState.overlay = {
         query,
         token: tokenize,
@@ -492,7 +493,7 @@ async function setupOverlay(queue) {
       });
     }
     if (cmState.annotate) {
-      if (!cm.curOp) cm.startOperation();
+      curOp ||= (cm.startOperation(), setupOverlay);
       cmState.annotate.clear();
       cmState.annotate = null;
     }
@@ -505,7 +506,7 @@ async function setupOverlay(queue) {
         cm, query, stateIcase);
     }
     cmState.unclosedOp = false;
-    if (cm.curOp) cm.endOperation();
+    if (curOp === setupOverlay) cm.endOperation();
   }
   overlaying = 0;
 }
