@@ -466,7 +466,6 @@ async function setupOverlay(queue) {
       continue;
     if (++overlaying > 0 && (await sleep(), overlaying === -1))
       break;
-    let done;
     const cmState = cm.stateSearch ||= {};
     const gen = cm.doc.history.generation;
     const ovr = cmState.overlay;
@@ -481,7 +480,6 @@ async function setupOverlay(queue) {
       if (!cm.curOp) cm.startOperation();
       cm.removeOverlay(ovr);
       cmState.overlay = null;
-      done = true;
     }
     const hasMatches = query && cm.getSearchCursor(query, null, stateCursorOptions).find();
     if (hasMatches) {
@@ -492,13 +490,11 @@ async function setupOverlay(queue) {
         numFound: 0,
         tallyShownTime: 0,
       });
-      done = true;
     }
     if (cmState.annotate) {
       if (!cm.curOp) cm.startOperation();
       cmState.annotate.clear();
       cmState.annotate = null;
-      done = true;
     }
     if (cmState.annotateTimer) {
       clearTimeout(cmState.annotateTimer);
@@ -510,7 +506,6 @@ async function setupOverlay(queue) {
     }
     cmState.unclosedOp = false;
     if (cm.curOp) cm.endOperation();
-    if (done) break;
   }
   overlaying = 0;
 }
