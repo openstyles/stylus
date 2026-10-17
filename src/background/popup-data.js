@@ -53,12 +53,13 @@ export default async function makePopupData(tabId) {
   const url = tab.url || tab.pendingUrl || '';
   const td = tabCache[tabId] || false;
   const isOwn = url.startsWith(ownRoot);
+  const urlSupported = isOwn || supported(url);
   const [
     ping0 = (__.MV3 || !__.B_CHROME && FIREFOX >= 153) && (await reinjectContentScripts(tab)),
     frames,
   ] = await Promise.all([
     isOwn
-      || supported(url) && pingTab(tabId),
+      || urlSupported && pingTab(tabId),
     isOwn && (__.B_CHROME || __.B_ANY && CHROME) && getAllFrames(url, tab)
       || browser.webNavigation.getAllFrames({tabId}),
   ]);
@@ -107,9 +108,9 @@ export default async function makePopupData(tabId) {
     }
   }
   // webNavigation doesn't set url in some cases e.g. in our own pages
-  frames[0].url = url;
-  const urlSupported = supported(url);
-  if (urlSupported) {
+  const realUrl = frames[0].url ||= url;
+  const realUrlSupported = supported(realUrl);
+  if (realUrlSupported) {
     if (bgBusy) await bgBusy;
     for (const f of frames) {
       if (f.url && !f.isDupe)
@@ -119,9 +120,9 @@ export default async function makePopupData(tabId) {
   /** @namespace PopupData */
   return {
     frames,
-    ping0,
     tab,
-    urlSupported,
+    ping0: ping0 || !urlSupported && realUrlSupported,
+    urlSupported: realUrlSupported,
     [kTabOvrToggle]: td[kTabOvrToggle],
   };
 }
