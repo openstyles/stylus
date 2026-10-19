@@ -11,7 +11,7 @@ import {iconize} from './applies-to';
 import editor, {scrollInfo} from './editor';
 import * as linterMan from './linter';
 import livePreview from './live-preview';
-import EditorSection, {ACTIONS} from './sections-editor-section';
+import EditorSection, {ACTIONS, CLS_SEC_REMOVED} from './sections-editor-section';
 import {helpPopup, rerouteHotkeys, showCodeMirrorPopup, worker} from './util';
 
 export default function SectionsEditor() {
@@ -481,11 +481,9 @@ export default function SectionsEditor() {
   /** @param {EditorSection} section */
   function removeSection(section) {
     if (liveSections.length === 1) {
-      // TODO: hide remove button when `#sections[data-section-count=1]`
       throw new Error('Cannot remove last section');
     }
     if (section.cm.isBlank()) {
-      sections.splice(sections.indexOf(section), 1);
       section.el.remove();
       section.toggle();
       section.destroy();
@@ -513,6 +511,11 @@ export default function SectionsEditor() {
   function restoreSection(section) {
     section.elDel.remove();
     section.toggle(true);
+    /** @type {EditorSectionElement} */
+    let el, prev;
+    el = section.el;
+    while ((prev = el.previousSibling) && (el = prev).classList.contains(CLS_SEC_REMOVED)) {/*NOP*/}
+    liveSections.splice(el ? liveSections.indexOf(el.me) + 1 : 0, 0, section);
     updateSectionOrder();
     livePreview();
   }

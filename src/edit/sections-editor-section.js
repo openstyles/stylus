@@ -21,6 +21,7 @@ import {helpPopup, trimCommentLabel} from './util';
 let headerOffset; // in compact mode the header is at the top so it reduces the available height
 let cmExtrasHeight; // resize grip + borders
 
+export const CLS_SEC_REMOVED = 'removed';
 /** @type {{[name: string]: (section: EditorSection) => any}} */
 export const ACTIONS = {__proto__: null};
 /**
@@ -39,7 +40,7 @@ export default class EditorSection {
    */
   constructor(sectionData, genId, si) {
     const me = this;
-    const el = me.el = template.section.cloneNode(true);
+    const el = me.el = /**@type{EditorSectionElement}*/template.section.cloneNode(true);
     const elLabel = me.elLabel = el.$('.code-label');
     const elTargets = this.elTargets = tplAppliesTo.cloneNode(true);
     const wrapper = $tag('div');
@@ -118,7 +119,7 @@ export default class EditorSection {
 
   toggle(restore) {
     (restore ? linterMan.enableForEditor : linterMan.disableForEditor)(this.cm);
-    this.el.classList.toggle('removed', !restore);
+    this.el.classList.toggle(CLS_SEC_REMOVED, !restore);
     this.removed = this.tocEntry.removed = !restore;
     this.targets.forEach(t => restore ? t.restore() : t.remove());
     if (restore) this.cm.refresh();
