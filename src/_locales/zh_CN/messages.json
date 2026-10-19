@@ -193,7 +193,7 @@
     "message": "是"
   },
   "copy": {
-    "message": "复制到粘贴板"
+    "message": "复制到剪切板"
   },
   "customNameHint": {
     "message": "在此自定义本地名称才不影响在线更新"
@@ -427,7 +427,7 @@
     "message": "追加导入"
   },
   "importAppendTooltip": {
-    "message": "以追加的方式来导入"
+    "message": "将导入的样式追加到当前样式"
   },
   "importLabel": {
     "message": "导入"
@@ -436,7 +436,7 @@
     "message": "由于此样式未使用 <UserCSS> 模式创建，使用 <@preprocessor> 的代码将无法生效。\n　\n译注：请尝试新建一个空白 UserCSS 样式，将此样式导出，再导入到那个 UserCSS 样式。"
   },
   "importReplaceLabel": {
-    "message": "覆盖替换导入"
+    "message": "覆盖样式"
   },
   "importReplaceTooltip": {
     "message": "放弃当前样式的内容，使用已导入样式覆盖它"
