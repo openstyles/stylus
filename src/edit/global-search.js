@@ -505,8 +505,9 @@ async function setupOverlay(queue) {
       cmState.annotateTimer = setTimeout(annotateScrollbar, ANNOTATE_SCROLLBAR_DELAY,
         cm, query, stateIcase);
     }
+    if (curOp === setupOverlay || curOp && cmState.unclosedOp)
+      cm.endOperation();
     cmState.unclosedOp = false;
-    if (curOp === setupOverlay) cm.endOperation();
   }
   overlaying = 0;
 }
@@ -859,6 +860,7 @@ function writeStorage() {
     val.find = stateFind;
     val.replace = stateReplace;
     val.icase = stateIcase;
+    val.spaces = stateLooseSpaces;
     chromeLocal.set({[kEditorState]: val});
   });
 }
@@ -869,4 +871,5 @@ function writeStorage() {
   find: stateFind = stateFind,
   replace: stateReplace = stateReplace,
   icase: stateIcase = stateIcase,
+  spaces: stateLooseSpaces = stateLooseSpaces,
 } = editor.state || {}); // this module runs when editor.state is set
