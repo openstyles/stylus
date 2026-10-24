@@ -6,9 +6,10 @@ import {
 
 const ALPHA_DIGITS = 3;
 const mathRound = Math.round;
-const RX_ANGLE = /(?:deg|y?rad|turn|)$/;
+const RX_ANGLE = /(?:deg|g?rad|turn|)$/;
 const ANGLE_TO_DEG = {
   __proto__: null,
+  deg: 1,
   grad: 360 / 400,
   rad: 180 / Math.PI,
   turn: 360,
@@ -274,11 +275,11 @@ export function parseColorFunc(type, val, mod = 0) {
           ? +s1.slice(0, -units.length)
           : +s1
     ) !== x /* NaN detection */ ||
-    (y = space && s2 === 'none' ? (mod |= BIT_COLOR_NONE_X, 0) :
+    (y = space && s2 === 'none' ? (mod |= BIT_COLOR_NONE_Y, 0) :
       (y = s2.charCodeAt(s2.length - 1) === 37) !== (rgb ? pct : y || !space/*hsl+comma*/) ? NaN :
         y ? (mod |= BIT_COLOR_PCT_Y, +s2.slice(0, -1)) : +s2
     ) !== y /* NaN detection */ ||
-    (z = space && s3 === 'none' ? (mod |= BIT_COLOR_NONE_X, 0) :
+    (z = space && s3 === 'none' ? (mod |= BIT_COLOR_NONE_Z, 0) :
       (z = s3.charCodeAt(s3.length - 1) === 37) !== (rgb ? pct : z || !space/*hsl+comma*/) ? NaN :
         z ? (mod |= BIT_COLOR_PCT_Z, +s3.slice(0, -1)) : +s3
     ) !== z /* NaN detection */ ||
