@@ -64,9 +64,10 @@
   },
   "scripts": {
     "lint": "eslint . --cache",
-    "test": "run-p lint test-csslint test-beautify",
+    "test": "run-p lint test-csslint test-beautify test-color",
     "test-csslint": "node tools/test-css.js",
     "test-beautify": "node --test tools/test-beautify.js",
+    "test-color": "node --test tools/test-color.js",
     "update-locales": "tx pull --all --minimum-perc=1 && node tools/fix-transifex.js commit",
     "update-transifex": "tx push -s",
     "build-chrome": "node tools/build.js",
