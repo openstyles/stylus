@@ -54,4 +54,25 @@ const {test} = require('node:test');
     assert.equal(Color.parse('hsl(10 20% none)').toString(), 'hsl(10 20% none)');
     assert.equal(Color.parse('hwb(none 10% 20%)').toString(), 'hwb(none 10% 20%)');
   });
+
+  test('converting to another format writes valid css', () => {
+    const conv = (str, type) => Color.parse(str).toString(type, {round: true});
+    assert.equal(conv('hsl(200, 50%, 50%)', 2), 'rgb(64, 149, 191)');
+    assert.equal(conv('hsl(200 50% 50%)', 2), 'rgb(64 149 191)');
+    assert.equal(conv('rgb(64, 149, 191)', 3), 'hsl(200, 50%, 50%)');
+    assert.equal(conv('rgb(25%, 50%, 75%)', 3), 'hsl(210, 50%, 50%)');
+    assert.equal(conv('rgb(64, 149, 191)', 4), 'hwb(200, 25%, 25%)');
+    assert.equal(conv('#4095bf', 3), 'hsl(200 50% 50%)');
+    assert.equal(conv('hsl(none 50% 50%)', 2), 'rgb(191 64 64)');
+    // same format keeps the original flags
+    assert.equal(conv('rgb(25%, 50%, 75%)', 2), 'rgb(25%, 50%, 75%)');
+  });
+
+  test('picker round trip through HSV', () => {
+    const pick = (str, type) => Color.parse(str).toHSV().to(type).toString(type, {round: true});
+    assert.equal(pick('hsl(200, 50%, 50%)', 2), 'rgb(64, 149, 191)');
+    assert.equal(pick('hsl(200, 50%, 50%)', 3), 'hsl(200, 50%, 50%)');
+    assert.equal(pick('rgb(25%, 50%, 75%)', 2), 'rgb(25%, 50%, 75%)');
+    assert.equal(pick('rgb(64, 149, 191)', 3), 'hsl(200, 50%, 50%)');
+  });
 })();
