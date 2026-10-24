@@ -16,6 +16,19 @@ const ANGLE_TO_DEG = {
 };
 export const constrain = (min, max, value) => value < min ? min : value > max ? max : value;
 export const constrainHue = x => x < 0 ? x % 360 + 360 : x >= 360 ? x % 360 : x;
+const BITS_PER_COMPONENT = BIT_COLOR_PCT_X | BIT_COLOR_PCT_Y | BIT_COLOR_PCT_Z |
+  BIT_COLOR_NONE_X | BIT_COLOR_NONE_Y | BIT_COLOR_NONE_Z;
+
+/**
+ * The percent/none flags describe the components of the source format, so they can't be reused
+ * as is in another format, e.g. hsl(200, 50%, 50%) would become rgb(64, 58%, 75%) - invalid in
+ * the comma syntax, while rgb(64, 149, 191) would become hsl(200, 50, 50).
+ */
+const convertMod = (mod, src, type) =>
+  src === type || type === COLOR_HEX || type === COLOR_HSV
+    ? mod
+    // for hex it's the uppercase bit, which doubles as comma syntax
+    : (mod & ~BITS_PER_COMPONENT) | (type === COLOR_RGB ? 0 : BIT_COLOR_PCT_Y | BIT_COLOR_PCT_Z);
 
 class Color {
   /**
@@ -25,14 +38,16 @@ class Color {
    * @param {number} z
    * @param {?number} a
    * @param {?number} mod - hex: uppercase 1|0, others: space 1|0 + alpha pct 2|0 + rgb-pct 4|0
+   * @param {number} [src] - the original format of an HSV color, so the picker can restore `mod`
    */
-  constructor(type, x, y, z, a, mod) {
+  constructor(type, x, y, z, a, mod, src) {
     this.type = type;
     this.x = x;
     this.y = y;
     this.z = z;
     this.a = a;
     this.mod = mod;
+    this.src = src || 0;
   }
 
   /**
@@ -42,13 +57,15 @@ class Color {
    */
   toString(type, {[kHexUppercase]: upper, uso, round} = {}) {
     type ||= this.type;
-    const {a, mod, type: src} = this;
+    let {mod} = this;
+    const {a, type: src} = this;
     const hex = type === COLOR_HEX;
     const rgb = type === COLOR_RGB;
     const comma = mod & BIT_COLOR_COMMA;
     const sep = comma || uso ? ', ' : ' ';
     const srcConv = src === COLOR_HEX ? COLOR_RGB : src;
     const dstConv = hex ? COLOR_RGB : type;
+    if (srcConv !== dstConv) mod = convertMod(mod, src, dstConv);
     let color = srcConv === dstConv ? this : this.to(dstConv);
     let aa, pctX, pctY, pctZ, pctA;
     let {x, y, z} = color;
@@ -181,7 +198,7 @@ class Color {
       res.y = y;
       res.z = z;
     } else {
-      res = new Color(type, x, y, z, this.a, this.mod);
+      res = new Color(type, x, y, z, this.a, convertMod(this.mod, this.src || this.type, type));
     }
     return res;
   }
@@ -213,7 +230,7 @@ class Color {
       y = MaxC === 0 ? 0 : DeltaC / MaxC;
       z = MaxC;
     }
-    return new Color(COLOR_HSV, constrainHue(x), y, z, a, mod);
+    return new Color(COLOR_HSV, constrainHue(x), y, z, a, mod, type);
   }
 }
 
