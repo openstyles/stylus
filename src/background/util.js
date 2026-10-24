@@ -1,5 +1,5 @@
 import {CLIENT, createPortProxy} from '@/js/port';
-import {workerPath} from '@/js/urls';
+import {actionPopupUrl, workerPath} from '@/js/urls';
 import {clientDataJobs} from './common';
 import offscreen from './offscreen';
 
@@ -14,7 +14,7 @@ const getWorkerPortFromClient = async () => {
   __.DEBUGPORT('sw -> worker -> offscreen client', offscreen[CLIENT]);
   if (!offscreen[CLIENT]) {
     for (const client of await getWindowClients()) {
-      if (!clientDataJobs.has(client.url)) {
+      if (!clientDataJobs.has(client.url) && !client.url.startsWith(actionPopupUrl)) {
         __.DEBUGPORT('sw -> worker -> client', client);
         proxy = createPortProxy(client, {once: true});
         break;
