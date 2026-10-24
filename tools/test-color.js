@@ -35,4 +35,23 @@ const {test} = require('node:test');
     assert.equal(Color.parse('hsl(200, 50, 50)'), undefined);
     assert.equal(Color.parse('hsl(200, 50%, 50%)').toString(), 'hsl(200, 50%, 50%)');
   });
+
+  test('hue units', () => {
+    for (const [input, expected] of [
+      ['hsl(200deg 50% 50%)', 'hsl(200 50% 50%)'],
+      ['hsl(200deg, 50%, 50%)', 'hsl(200, 50%, 50%)'],
+      ['hsl(100grad 50% 50%)', 'hsl(90 50% 50%)'],
+      ['hsl(.5turn 50% 50%)', 'hsl(180 50% 50%)'],
+    ]) {
+      const color = Color.parse(input);
+      assert.ok(color, input);
+      assert.equal(color.toString(), expected);
+    }
+  });
+
+  test('none stays in its own component', () => {
+    assert.equal(Color.parse('hsl(0 none 50%)').toString(), 'hsl(0 none 50%)');
+    assert.equal(Color.parse('hsl(10 20% none)').toString(), 'hsl(10 20% none)');
+    assert.equal(Color.parse('hwb(none 10% 20%)').toString(), 'hwb(none 10% 20%)');
+  });
 })();
