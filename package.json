@@ -12,7 +12,7 @@
     "db-to-cloud": "^0.9.1",
     "less": "^4.9.1",
     "lz-string-unsafe": "1.4.4-fork-1",
-    "stylelint-bundle": "17.15.0",
+    "stylelint-bundle": "17.16.0",
     "stylus-lang-bundle": "github:openstyles/stylus-lang-bundle#semver:0.64.0-umd-bundle-v3",
     "usercss-meta": "^0.12.0",
     "webext-launch-web-auth-flow": "^0.1.2"
