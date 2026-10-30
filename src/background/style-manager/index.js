@@ -283,7 +283,8 @@ export async function importMany(items) {
       }
       res.push(styles.push(style) - 1);
     } catch (err) {
-      res.push({err});
+      // Error's own props aren't enumerable, so MV2's deepCopy in the client would lose them
+      res.push({err: err?.message ? `${err.message}` : err});
     }
   }
   const events = await db.putMany(styles);
