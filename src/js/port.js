@@ -10,7 +10,10 @@ const willAutoClose = __.ENTRY === 'worker' || __.ENTRY === 'offscreen';
 const SharedWorker =
   __.ENTRY !== 'worker' && // already in a worker
   __.ENTRY !== 'sw' && // SW can't nest workers, https://crbug.com/40772041
-  !/Apple/.test(navigator.vendor) && // Safari/Orion's SharedWorker is unreliable in extensions
+  // Safari/Orion's SharedWorker is unreliable in extensions and in some WebKit-based browsers
+  // it can't load our files at all. GestureEvent is WebKit-only and also catches browsers
+  // that pretend to be Chrome in navigator.vendor.
+  !/Apple/.test(navigator.vendor) && !('GestureEvent' in global) &&
   global.SharedWorker;
 const kWorker = '_worker';
 let numJobs = 0;
