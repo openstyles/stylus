@@ -964,6 +964,15 @@
   "optionsStylusThemes": {
     "message": "Klik op een willekeurige Stylus-pagina (waaronder deze) op het Stylus-pictogram in de browserwerkbalk, en klik daarna op ‘Stijlen zoeken’."
   },
+  "optionsSyncApiUrl": {
+    "message": "API-URL"
+  },
+  "optionsSyncApiUrlHint": {
+    "message": "Leeg voor github.com.\nGitea, Forgejo: https://host/api/v1\nGitHub Enterprise: https://host/api/v3"
+  },
+  "optionsSyncBranchDefault": {
+    "message": "standaardbranch"
+  },
   "optionsSyncConnect": {
     "message": "Koppelen"
   },
@@ -975,6 +984,9 @@
   },
   "optionsSyncNone": {
     "message": "Geen"
+  },
+  "optionsSyncOwner": {
+    "message": "Eigenaar"
   },
   "optionsSyncPassword": {
     "message": "Wachtwoord"
@@ -1021,6 +1033,9 @@
   },
   "optionsSyncSyncNow": {
     "message": "Nu synchroniseren"
+  },
+  "optionsSyncToken": {
+    "message": "Toegangstoken"
   },
   "optionsSyncUsername": {
     "message": "Gebruikersnaam"
@@ -1509,6 +1524,9 @@
   },
   "syncErrorRelogin": {
     "message": "Synchronisatie mislukt. Probeer u opnieuw aan te melden in de Stylus-opties."
+  },
+  "syncGithubCompat": {
+    "message": "GitHub-compatibel"
   },
   "syncStorageErrorSaving": {
     "message": "De waarde kan niet worden opgeslagen. Probeer de hoeveelheid tekst te verminderen."
