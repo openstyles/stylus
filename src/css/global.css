@@ -476,6 +476,7 @@ body {
 /* header resizer - end */
 
 .split-btn {
+  display: flex;
   position: relative;
   white-space: nowrap;
   --menu-pad: .5em;
@@ -505,6 +506,7 @@ body {
 .split-btn-menu {
   background: var(--bg);
   position: absolute;
+  top: var(--input-height);
   box-shadow: 2px 3px 7px rgba(0, 0, 0, .5);
   border: 1px solid hsl(180deg, 50%, 50%);
   white-space: nowrap;

@@ -737,8 +737,8 @@ a:hover i {
 }
 .styles-first:not(.search-results-shown) {
   #popup-options .split-btn-menu {
-    bottom: 0;
-    transform: translateY(-20px); /* global button style: 13(font) * 1.2(line) + 4(pad) + 2(border) */
+    top: auto;
+    bottom: var(--input-height);
   }
   .split-btn-pedal::after {
     border-top: var(--side) solid transparent;
