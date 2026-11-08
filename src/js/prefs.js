@@ -298,7 +298,8 @@ if (__.IS_BG) {
   busy = ready = new Promise(cb => (setReady = cb));
   busy.set = (...args) => setReady(setAll(...args));
 } else if (__.MV3 && swController) {
-  if (clientData.err) onerror(clientData.err);
+  const {err} = clientData; // storing it because of makePropertyPopProxy
+  if (err) onerror(err);
   setBadFavs(clientData);
   setAll(clientData.prefs);
   ready = Promise.resolve();
