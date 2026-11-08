@@ -1,11 +1,10 @@
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
-import {getStyleAtPos, rxUniBody} from '@/cm/util';
-import {kCodeMirror, kEditorSettings} from '@/js/consts';
-import {template} from '@/js/localization';
+import {getStyleAtPos, kLineWrapping, disableWrappingForLongLine, rxUniBody} from '@/cm/util';
+import {kCodeMirror} from '@/js/consts';
 import {swController} from '@/js/msg-init';
 import * as prefs from '@/js/prefs';
 import {styleJSONseemsValid, styleToCss} from '@/js/style-util';
-import {t, tryJSONparse} from '@/js/util';
+import {tryJSONparse} from '@/js/util';
 import editor from './editor';
 import {rerouteHotkeys} from './util';
 
@@ -57,7 +56,6 @@ const cmFactory = {
 
 // focus and blur
 
-const kLineWrapping = 'lineWrapping';
 const onCmFocus = cm => {
   rerouteHotkeys.toggle(false);
   cm.display.wrapper.classList.add('CodeMirror-active');
@@ -72,26 +70,9 @@ const onCmBlur = cm => {
     wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
   });
 };
-const onCmBeforeChange = (cm, {text}) => {
-  const opts = cm.options;
-  const max = Math.max(opts.maxHighlightLength, 100e3);
-  if (!text && opts.value.length < max)
-    return;
-  (text ? text.some : cm.eachLine).call(text || cm, line => {
-    line = (text ? line : line.text).length;
-    if (line > max) {
-      const el = template[kEditorSettings].$('#lineWrapping-label + a');
-      el.hidden = false;
-      el.title = t('cm_lineWrappingOff', [Math.round(line / 1000)]);
-      el.parentElement.on('change', evt => !evt.target.checked && (el.hidden = true), {once: true});
-      cm.setOption(kLineWrapping, false);
-      return true;
-    }
-  });
-};
 const onCmOption = (cm, name) => {
   if (name === kLineWrapping) {
-    cm[cm.options[name] ? 'on' : 'off']('beforeChange', onCmBeforeChange);
+    cm[cm.options[name] ? 'on' : 'off']('beforeChange', disableWrappingForLongLine);
   }
 };
 const maybeImportOnPaste = (cm, evt) => {
@@ -117,8 +98,8 @@ CodeMirror.defineInitHook(cm => {
   cm.on('optionChange', onCmOption);
   cm.on('paste', maybeImportOnPaste);
   if (cm.options[kLineWrapping]) {
-    cm.on('beforeChange', onCmBeforeChange);
-    onCmBeforeChange(cm, {});
+    cm.on('beforeChange', disableWrappingForLongLine);
+    disableWrappingForLongLine(cm, {});
   }
 });
 

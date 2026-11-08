@@ -1,5 +1,6 @@
 import '@/js/dom-init';
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
+import {disableWrappingForLongLine} from '@/cm/util';
 import compareVersion from '@/js/cmpver';
 import {kNone, pFavicons, UCD} from '@/js/consts';
 import {$$remove, $create, $createLink} from '@/js/dom';
@@ -107,10 +108,12 @@ setTimeout(() => !cm && showSpinner($id('header')), 200);
   const theme = prefs.__values[THEME_KEY];
   loadCmTheme(theme);
   cm = CodeMirror($('.main'), {
-    value: sourceCode || style.sourceCode,
-    readOnly: true,
-    colorpicker: true,
     theme,
+    colorpicker: true,
+    readOnly: true,
+    value: sourceCode || style.sourceCode,
+    finishInit: prefs.__values['editor.lineWrapping'] &&
+      (me => disableWrappingForLongLine(me, {once: true})),
   });
   window.on('resize', adjustCodeHeight);
   if (error) {
@@ -407,6 +410,7 @@ async function renderTargetSites() {
     el.lastChild.nodeValue = val.slice(1);
     targets[i] = el.cloneNode(true);
   }
+  elParent.textContent = ''; // clearing in case [x]reload was toggled twice
   elParent.append(...targets);
   if (favs) renderTargetIcons(elParent);
   prefs.subscribe(pFavicons, (key, val) => {

@@ -1,4 +1,9 @@
+import {kEditorSettings} from '@/js/consts';
+import {template} from '@/js/localization';
+import {t} from '@/js/util';
+
 export const kLineComment = 'lineComment';
+export const kLineWrapping = 'lineWrapping';
 /** https://drafts.csswg.org/css-syntax-3/#non-ascii-ident-code-point
  * The leading character was already checked */
 export const rxUniBody = /[-\\\w\u00B7\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u037D\u037F-\u1FFF\u200C\u200D\u203F\u2040\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{10FFFF}]*/yu;
@@ -30,4 +35,26 @@ export const getStyleAtPos = (styles, ch, pickOne) => {
   return pickOne === 0 ? styles[a + 1]
     : pickOne === 1 ? a
       : [styles[a + 1], a];
+};
+
+export const disableWrappingForLongLine = (cm, {text, once}) => {
+  const opts = cm.options;
+  const max = Math.max(opts.maxHighlightLength, 100e3);
+  if (!text && opts.value.length < max)
+    return;
+  (text ? text.some : cm.eachLine).call(text || cm, line => {
+    line = (text ? line : line.text).length;
+    if (line < max)
+      return;
+    const el = template[kEditorSettings]?.$('#lineWrapping-label + a');
+    if (el) {
+      el.hidden = false;
+      el.title = t('cm_lineWrappingOff', [Math.round(line / 1000)]);
+      el.parentElement.on('change', evt => !evt.target.checked && (el.hidden = true), {once: true});
+    }
+    if (once)
+      cm.off('beforechange', disableWrappingForLongLine);
+    cm.setOption(kLineWrapping, false);
+    return true;
+  });
 };
