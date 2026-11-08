@@ -25,7 +25,7 @@ if (navLocks) {
   __.DEBUGPORT('%c%s port lock', 'color:red', PATH);
   navLocks.request(PATH, () => new Promise(NOP));
 }
-if (__.MV3 && __.ENTRY === true || __.ENTRY === 'offscreen') {
+if (__.ENTRY === 'offscreen') {
   navigator.serviceWorker.onmessage = initRemotePort.bind(COMMANDS);
   Object.assign(COMMANDS, /** @namespace CommandsAPI */ {
     /** @this {RemotePortEvent} */
@@ -34,10 +34,6 @@ if (__.MV3 && __.ENTRY === true || __.ENTRY === 'offscreen') {
       this._transfer = [p];
       return p;
     },
-  });
-}
-if (__.ENTRY === 'offscreen') {
-  Object.assign(COMMANDS, /** @namespace CommandsAPI */ {
     keepAlive(val) {
       if (!val) {
         autoClose();
@@ -70,6 +66,7 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
   let initPending;
   let tracking;
   let lastId = 0;
+  let onceTimer;
   return exec;
 
   async function exec(...args) {
@@ -89,6 +86,7 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
       {args, id: ++lastId},
       once || (Array.isArray(this) ? this : undefined));
 
+    onceTimer = once && setTimeout(ctx.rr[1], typeof once === 'number' ? once : 1000, 'timeout');
     queue.set(lastId, ctx);
     ctx.p = promise.catch(NOP);
     __.DEBUGPORT('%c%s exec sent', 'color:green', PATH, lastId, args);
@@ -129,6 +127,8 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
     const {id, res, err} = data.id ? data : JSON.parse(data);
     const {stack, rr: [resolve, reject]} = queue.get(id);
     queue.delete(id);
+    if (onceTimer)
+      clearTimeout(onceTimer);
     if (lastId > 1e9)
       lastId = 0;
     if (!err) {
@@ -160,7 +160,7 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
     tracking = false;
     __.DEBUGPORT(`${PATH} target disconnected`, target, lock, once);
     for (const {stack, rr: [, reject]} of myQ.values()) {
-      const msg = 'Target disconnected';
+      const msg = 'Target disconnected: ' + lock;
       const err = new Error(msg);
       err.stack = msg + '\n' + stack;
       reject(err);

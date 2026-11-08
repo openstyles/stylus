@@ -4,7 +4,6 @@ import {CLIENT_DATA_PREFIX, kMainFrame, kSubFrame} from '@/js/consts';
 import {_execute} from '@/js/msg';
 import {initRemotePort} from '@/js/port';
 import {ownRoot} from '@/js/urls';
-import {clientDataJobs} from '../common';
 import {cloudDrive} from '../db-to-cloud-broker';
 import setClientData from '../set-client-data';
 import offscreen from '../offscreen';
@@ -54,8 +53,6 @@ global.onfetch = evt => {
       return {err};
     }).then(res =>
       new Response(`${__.CLIENT_DATA}=${JSON.stringify(res)}`, RESPONSE_INIT));
-    clientDataJobs.set(pageUrl, job);
-    job.finally(() => clientDataJobs.delete(pageUrl));
     evt.respondWith(job);
   } else if (/\.user.css#(\d+)$/.test(url)) {
     evt.respondWith(Response.redirect('edit.html?id=' + RegExp.$1));

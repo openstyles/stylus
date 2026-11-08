@@ -1,6 +1,5 @@
-import {CLIENT, createPortProxy} from '@/js/port';
-import {actionPopupUrl, workerPath} from '@/js/urls';
-import {clientDataJobs} from './common';
+import {createPortProxy} from '@/js/port';
+import {workerPath} from '@/js/urls';
 import offscreen from './offscreen';
 
 /** @return {WindowClient[]} */
@@ -9,24 +8,9 @@ export const getWindowClients = () => self.clients.matchAll({
   type: 'window',
 });
 
-const getWorkerPortFromClient = async () => {
-  let proxy;
-  __.DEBUGPORT('sw -> worker -> offscreen client', offscreen[CLIENT]);
-  if (!offscreen[CLIENT]) {
-    for (const client of await getWindowClients()) {
-      if (!clientDataJobs.has(client.url) && !client.url.startsWith(actionPopupUrl)) {
-        __.DEBUGPORT('sw -> worker -> client', client);
-        proxy = createPortProxy(client, {once: true});
-        break;
-      }
-    }
-  }
-  return (proxy || offscreen).getWorkerPort(workerPath);
-};
-
 /** @type {WorkerAPI} */
 export const worker = __.MV3
-  ? createPortProxy(getWorkerPortFromClient, {lock: workerPath})
+  ? createPortProxy(() => offscreen.getWorkerPort(workerPath), {lock: workerPath})
   : createPortProxy(workerPath);
 
 const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *

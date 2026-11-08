@@ -10,7 +10,7 @@ import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
 import {ownId, toggleListener, webNavigation} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
-import {bgBusy, bgPreInit, clientDataJobs, dataHub, onUnload, WRBTest, WRB} from './common';
+import {bgBusy, bgPreInit, dataHub, onUnload, WRBTest, WRB} from './common';
 import {stateDB} from './db';
 import {updateIconBadge} from './icon-manager';
 import offscreen from './offscreen';
@@ -53,7 +53,7 @@ if (__.MV3) {
         offscreen.keepAlive(val);
       }
     }, true);
-  }, clientDataJobs.size ? 1000/*let the client page load first*/ : 0));
+  }, 1000/* wait for stuff to settle, e.g. load the client page */));
 }
 
 subscribe(pDisableAll, setup, true);

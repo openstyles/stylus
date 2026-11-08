@@ -2,9 +2,6 @@ import {k_busy, kResolve} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {browserWindows} from '@/js/util-webext';
 
-/** @type {Map<string,Promise>} */
-export const clientDataJobs = __.MV3 && new Map();
-
 /** Temporary storage for data needed elsewhere e.g. in a content script */
 export const dataHub = Object.assign(new Map(), {
   pop(key) {
