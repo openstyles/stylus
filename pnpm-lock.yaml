@@ -3222,8 +3222,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  serialize-javascript@7.0.6:
-    resolution: {integrity: sha512-ATTK5Q4gFVg0YDp1my2vqygyvhcklD/UV5GIlYHooGTn/NogJqIzpetkD6E5kmuVULqz/S9inUL25XcAgDRJQg==}
+  serialize-javascript@7.1.4:
+    resolution: {integrity: sha512-FqlEuoTq/zRmA4Lg6aOqyH3lCHbUtCB0bmHCeFniX2GBdDqMJM3FwdvEhlE5Pim1dlt2FfBdVPmUNNiGhhKqpw==}
     engines: {node: '>=20.0.0'}
 
   setimmediate@1.0.5:
@@ -5102,7 +5102,7 @@ snapshots:
       glob-parent: 6.0.2
       normalize-path: 3.0.0
       schema-utils: 4.3.3
-      serialize-javascript: 7.0.6
+      serialize-javascript: 7.1.4
       tinyglobby: 0.2.17
       webpack: 5.107.2(clean-css@5.3.3)(cssnano@7.1.9(postcss@8.5.29))(csso@5.0.5)(html-minifier-terser@7.2.0)(postcss@8.5.29)
 
@@ -5161,7 +5161,7 @@ snapshots:
       jest-worker: 30.4.1
       postcss: 8.5.29
       schema-utils: 4.3.3
-      serialize-javascript: 7.0.6
+      serialize-javascript: 7.1.4
       webpack: 5.107.2(clean-css@5.3.3)(cssnano@7.1.9(postcss@8.5.29))(csso@5.0.5)(html-minifier-terser@7.2.0)(postcss@8.5.29)
     optionalDependencies:
       clean-css: 5.3.3
@@ -6661,7 +6661,7 @@ snapshots:
 
   semver@7.8.5: {}
 
-  serialize-javascript@7.0.6: {}
+  serialize-javascript@7.1.4: {}
 
   setimmediate@1.0.5: {}
 
