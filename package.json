@@ -18,9 +18,9 @@
     "webext-launch-web-auth-flow": "^0.1.2"
   },
   "devDependencies": {
-    "@automattic/webpack-inline-constant-exports-plugin": "^1.0.0",
-    "@babel/core": "^8.0.7",
-    "@babel/plugin-transform-runtime": "^8.0.6",
+    "@automattic/webpack-inline-constant-exports-plugin": "^1.0.1",
+    "@babel/core": "^8.1.2",
+    "@babel/plugin-transform-runtime": "^8.1.2",
     "@babel/preset-env": "^8.0.7",
     "@types/codemirror": "^5.60.18",
     "@types/firefox-webext-browser": "^143.0.1",
@@ -29,29 +29,29 @@
     "acorn-walk": "^8.3.5",
     "babel-loader": "^10.1.1",
     "chalk": "^6.0.1",
-    "chrome-types": "^0.1.454",
+    "chrome-types": "^0.1.464",
     "copy-webpack-plugin": "^14.0.0",
     "css-loader": "^7.1.5",
     "css-minimizer-webpack-plugin": "^8.0.0",
     "cssnano-preset-lite": "^6.0.11",
     "deepmerge": "^4.3.1",
-    "eslint": "^10.12.0",
+    "eslint": "^10.15.0",
     "fast-glob": "^3.3.3",
-    "globals": "^17.13.0",
+    "globals": "^17.14.0",
     "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.8",
     "html-webpack-processing-plugin": "^1.0.2",
     "husky": "^9.1.7",
-    "jszip": "^3.10.1",
+    "jszip": "^3.10.2",
     "mini-css-extract-plugin": "^2.10.2",
-    "npm-run-all2": "^9.0.3",
+    "npm-run-all2": "^9.0.4",
     "only-allow": "^1.2.2",
-    "postcss": "^8.5.29",
-    "postcss-calc": "^11.2.3",
-    "postcss-import": "^17.0.0",
+    "postcss": "^8.5.33",
+    "postcss-calc": "^11.3.0",
+    "postcss-import": "^17.0.1",
     "postcss-loader": "^8.2.1",
-    "postcss-nested": "^8.0.1",
-    "postcss-preset-env": "^11.5.0",
+    "postcss-nested": "^9.0.1",
+    "postcss-preset-env": "^11.6.2",
     "postcss-simple-vars": "^7.0.1",
     "string-replace-loader": "^3.3.0",
     "svg2ttf": "^6.1.0",
@@ -60,7 +60,7 @@
     "terser-webpack-plugin": "^5.6.1",
     "ttf2woff2": "^8.0.1",
     "webpack": "5.107.2",
-    "webpack-bundle-analyzer": "^5.3.2"
+    "webpack-bundle-analyzer": "^5.4.2"
   },
   "scripts": {
     "lint": "eslint . --cache",
@@ -91,5 +91,5 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@12.8.1+sha512.f64ba907507f5ceafe06c8d38e6052d0179444580ec1279ddd5bfc11cb48aa8a2644b66598e07e761da84872a9fc57d5f902b87fa49d024198d558612aabbe45"
+  "packageManager": "pnpm@12.21.0+sha512.66fd8278ee28935ce951792d34367ff3af5c432a2756445823029533835b8da529bbe0be5130afd56ed0713fb8789e47bad82d93bd5ae2fe54b15562d6276ef0"
 }
