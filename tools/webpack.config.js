@@ -241,7 +241,11 @@ module.exports = [
           }].filter(Boolean)),
         ],
       }),
-      !GITHUB_ACTIONS && new webpack.ProgressPlugin(),
+      !GITHUB_ACTIONS && new webpack.ProgressPlugin({
+        progressBar: true,
+        dependencies: false,
+        modules: false,
+      }),
     ].filter(Boolean),
     resolve: RESOLVE_VIA_SHIM,
     devServer: HMR && {
