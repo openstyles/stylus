@@ -55,7 +55,10 @@ if (!FF) {
     xo.observe(el);
   };
 }
-navHubParent?.addEventListener(NAV_ID, onUrlChanged, true);
+if (navHubParent) {
+  navHubParent.addEventListener(NAV_ID, onUrlChanged, true);
+  addEventListener('pagehide', onPageHide);
+}
 if (TDM < 0) {
   document.onprerenderingchange = onReified;
 }
@@ -315,6 +318,15 @@ function onUrlChanged() {
   updateUrl(parent.location.href);
 }
 
+/** The listener in the parent's navHub retains this frame's entire context,
+ * so we detach it when the frame is removed or navigated, but not when it enters bfcache. */
+function onPageHide(e) {
+  if (!e.persisted) {
+    removeEventListener('pagehide', onPageHide);
+    navHubParent.removeEventListener(NAV_ID, onUrlChanged, true);
+  }
+}
+
 function selfDestruct() {
   // In Chrome content script is orphaned on an extension update/reload
   // so we need to detach event listeners
@@ -323,7 +335,10 @@ function selfDestruct() {
   if (offscreen) for (const fn of offscreen) fn();
   if (TDM < 0) document.onprerenderingchange = null;
   if (__.MV3) removeEventListener('mousedown', wakeUpSW, true);
-  navHubParent?.removeEventListener(NAV_ID, onUrlChanged, true);
+  if (navHubParent) {
+    removeEventListener('pagehide', onPageHide);
+    navHubParent.removeEventListener(NAV_ID, onUrlChanged, true);
+  }
   offscreen = null;
   styleInjector.shutdown();
   onMessage.delete(applyOnMessage);
