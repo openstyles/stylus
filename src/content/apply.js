@@ -321,7 +321,7 @@ function onUrlChanged() {
 /** The listener in the parent's navHub retains this frame's entire context,
  * so we detach it when the frame is removed or navigated, but not when it enters bfcache. */
 function onPageHide(e) {
-  if (!e.persisted) {
+  if (e.isTrusted && !e.persisted) {
     removeEventListener('pagehide', onPageHide);
     navHubParent.removeEventListener(NAV_ID, onUrlChanged, true);
   }
