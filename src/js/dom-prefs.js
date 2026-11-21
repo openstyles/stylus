@@ -1,3 +1,4 @@
+import {pEditorPanelAutoHide} from '@/js/consts';
 import {cssFieldSizing} from './dom';
 import {mqCompact} from './dom-init';
 import {onDetailsToggled} from './dom-util';
@@ -25,7 +26,7 @@ export function setupLiveDetails() {
     const {open} = el;
     const key = el.dataset.pref;
     const fn = onDetailsToggled.get(el);
-    const canSave = !el.matches(SEL_NO_SAVE);
+    const canSave = !prefs.__values[pEditorPanelAutoHide] && !el.matches(SEL_NO_SAVE);
     if (canSave) prefs.set(key, open);
     fn?.(key, open);
   }

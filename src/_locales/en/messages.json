@@ -1353,6 +1353,12 @@
   "paginationTotal": {
     "message": "Total pages"
   },
+  "panelAutoHide": {
+    "message": "Auto-hide panels"
+  },
+  "panelAutoHideHint": {
+    "message": "Automatically hides a toggleable panel if it's not active and the mouse cursor leaves its area for more than a second. You can reverse the configured behavior for a panel by opening it via right-click or long-press."
+  },
   "parseUsercssError": {
     "message": "Stylus failed to parse UserCSS:",
     "description": "The error message to show when stylus failed to parse UserCSS"
@@ -1490,6 +1496,9 @@
   },
   "saveAsTemplate": {
     "message": "Save as template"
+  },
+  "saveViaHotkey": {
+    "message": "Save when toggling via hotkey"
   },
   "saved": {
     "message": "Saved",

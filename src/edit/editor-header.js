@@ -1,11 +1,13 @@
 import {CodeMirror, extraKeys} from '@/cm';
-import {pKeyMap} from '@/js/consts';
+import {pEditorPanelAutoHide, pKeyMap} from '@/js/consts';
 import {setupConditionalPrefs, setupLiveDetails, setupLivePrefs} from '@/js/dom-prefs';
 import {setInputValue} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
 import {sleep, t} from '@/js/util';
 import {initBeautifyButton} from './beautify';
 import editor from './editor';
+
+let panelAutoHide;
 
 export default function EditorHeader() {
   initBeautifyButton($id('beautify'));
@@ -18,9 +20,13 @@ export default function EditorHeader() {
     prefs.subscribe(pKeyMap, showHotkeyInTooltip, true);
     window.on('showHotkeyInTooltip', showHotkeyInTooltip);
   }, {once: true});
-  for (const el of $$('#header summary')) {
-    el.on('contextmenu', peekDetails);
-  }
+  prefs.subscribe(pEditorPanelAutoHide, (key, val, isInit) => {
+    panelAutoHide = val;
+    for (const el of $$('#header summary')) {
+      el[val ? 'on' : 'off']('click', peekDetails);
+      if (isInit) el.on('contextmenu', peekDetails);
+    }
+  }, true);
 }
 
 function findKeyForCommand(command, map) {
@@ -78,11 +84,23 @@ function initNameArea() {
 async function peekDetails(evt) {
   evt.preventDefault();
   const el = this.parentElement;
-  if (!(el.open = !el.open) || 'peek' in el.dataset)
+  if (!(el.open = !el.open) // closed now
+  || panelAutoHide === (evt.type === 'contextmenu') // right-click if autoHide, click otherwise
+  || el.dataset.peek === '') // already peeking, older peekDetails is running its while() loop
     return;
   el.dataset.peek = ''; // also provides a way to style such temporarily open element
-  while (el.open && el.matches(':hover, :active')) {
-    await new Promise(cb => el.on('mouseleave', cb, {once: true}));
+  while (el.open && (
+    el.matches(':hover, :active') ||
+    el.children[1].matches(':focus-within')
+  )) {
+    let resolve;
+    await new Promise(cb => {
+      resolve = cb;
+      el.on('focusout', cb); // not using `blur` because it doesn't fire on <details>
+      el.on('mouseleave', cb);
+    });
+    el.off('focusout', resolve);
+    el.off('mouseleave', resolve);
     await sleep(1000);
   }
   el.open = false;

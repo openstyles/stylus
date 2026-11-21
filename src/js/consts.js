@@ -95,6 +95,7 @@ export const pEditorBeautifyHotkey = 'editor.beautify.hotkey';
 export const pEditorColorpickerHotkey = 'editor.colorpicker.hotkey';
 export const pEditorLinter = 'editor.linter';
 export const pEditorLinterOn = pEditorLinter + '.on';
+export const pEditorPanelAutoHide = 'editor.panel.autoHide';
 export const pEditorTheme = 'editor.theme';
 export const pEditorToggleHotkey = 'editor.toggle.hotkey';
 export const pEditorToggleSave = 'editor.toggle.save';

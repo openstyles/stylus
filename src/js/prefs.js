@@ -1,7 +1,8 @@
 /** Don't use this file in content script context! */
 import {
   k_busy, kBadFavs, kNone, pArrowKeysTraverse, pDisableAll, pEditorBeautifyHotkey,
-  pEditorColorpickerHotkey, pEditorLinter, pEditorLinterOn, pEditorTheme, pEditorToggleHotkey,
+  pEditorColorpickerHotkey, pEditorLinter, pEditorLinterOn, pEditorPanelAutoHide, pEditorTheme,
+  pEditorToggleHotkey,
   pEditorToggleSave, pExposeIframes, pFavicons, pFaviconsGray, pKeyMap, pLintReportDelay,
   pLivePreview, pManageNewUi, pManageNewUiTargets, pOpenEditInWindow, pPatchCsp,
   pPopupTogglerExpanded, pStyleViaASS, pStyleViaXhr, pSync, pUrlInstaller, STORAGE_KEY,
@@ -100,6 +101,7 @@ const defaults = {
   'editor.indentWithTabs': false, // smart indent with tabs
   'editor.tabSize': 4,            // tab width, in spaces
   [pKeyMap]: 'default',
+  [pEditorPanelAutoHide]: false,
   [pEditorTheme]: 'default',      // CSS theme
   // CSS beautifier
   'editor.beautify': {

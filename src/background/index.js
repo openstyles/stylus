@@ -1,6 +1,8 @@
 import './intro';
 import '@/js/browser';
-import {k_msgExec, kBadFavs, kInvokeAPI, kResolve, pKeyMap} from '@/js/consts';
+import {
+  k_msgExec, kBadFavs, kInvokeAPI, kResolve, pEditorPanelAutoHide, pKeyMap,
+} from '@/js/consts';
 import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '@/js/dnr';
 import {_execute, onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
@@ -86,6 +88,7 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     initContextMenus();
   }
   if (reason === 'install') {
+    prefs.set(pEditorPanelAutoHide, true);
     if (MOBILE) prefs.set('manage.newUI', false);
     if (WINDOWS) prefs.set(pKeyMap, 'sublime');
   }
