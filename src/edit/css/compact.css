@@ -1,6 +1,9 @@
 @import 'vars.css';
 
 @media screen and (max-width: 850px), compact {
+  :root[data-ui-theme="dark"] {
+    --header-shadow: 0 0 3rem .5rem #000;
+  }
   .usercss body {
     display: flex;
     flex-direction: column;
@@ -23,7 +26,7 @@
     align-content: start;
     gap: $pad05;
     &.sticky {
-      box-shadow: 0 0 3rem -.75rem;
+      box-shadow: var(--header-shadow, 0 0 3rem -.75rem);
     }
     details > :not(summary) {
       margin-left: 0;
