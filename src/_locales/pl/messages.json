@@ -418,7 +418,7 @@
     "message": "Wpisz nazwę polecenia"
   },
   "helpKeyMapHotkey": {
-    "message": "Naciśnij klawisz skrótu"
+    "message": "Naciśnij skrót klawiszowy"
   },
   "importAppendLabel": {
     "message": "Dołącz do stylu"
@@ -1120,6 +1120,12 @@
   "paginationTotal": {
     "message": "Wszystkie strony"
   },
+  "panelAutoHide": {
+    "message": "Automatycznie ukrywaj panele"
+  },
+  "panelAutoHideHint": {
+    "message": "Automatycznie ukrywa przełączalny panel, jeśli nie jest aktywny, a kursor myszy opuszcza jego obszar na dłużej niż sekundę. Możesz odwrócić skonfigurowane zachowanie panelu, otwierając go kliknięciem prawym przyciskiem myszy lub długim naciśnięciem."
+  },
   "parseUsercssError": {
     "message": "Stylusowi nie udało się sparsować UserCSS:"
   },
@@ -1232,6 +1238,9 @@
   },
   "saveAsTemplate": {
     "message": "Zapisz jako szablon"
+  },
+  "saveViaHotkey": {
+    "message": "Zapisz podczas przełączania za pomocą skrótu klawiszowego"
   },
   "saved": {
     "message": "Zapisano"

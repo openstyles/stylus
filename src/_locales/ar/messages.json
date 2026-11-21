@@ -1129,6 +1129,12 @@
   "paginationTotal": {
     "message": "إجمالي الصفحات"
   },
+  "panelAutoHide": {
+    "message": "خفاء اللوحات تلقائياً"
+  },
+  "panelAutoHideHint": {
+    "message": "يخفي تلقائياً أي لوحة قابلة للتبديل إذا لم تكن نشطة وغادر مؤشر الفأرة منطقتها لأكثر من ثانية. يمكنك عكس السلوك المُعدّ للوحة عن طريق فتحها بالنقر بالزر الأيمن أو بالضغط المطوّل."
+  },
   "parseUsercssError": {
     "message": "فشل Stylus في تحليل UserCSS:"
   },
@@ -1241,6 +1247,9 @@
   },
   "saveAsTemplate": {
     "message": "حفظ كقالب"
+  },
+  "saveViaHotkey": {
+    "message": "الحفظ عند التبديل عبر مفتاح الاختصار"
   },
   "saved": {
     "message": "تم الحفظ"
