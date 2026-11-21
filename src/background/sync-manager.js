@@ -1,8 +1,9 @@
 import '@/js/browser';
 import * as chromeSync from '@/js/chrome-sync';
-import {kNone, pSync} from '@/js/consts';
+import {kNone, pSync, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
+import {styleJSONseemsValid} from '@/js/style-util';
 import * as STATES from '@/js/sync-util';
 import {fetchWebDAV, hasOwn, t, tryURL} from '@/js/util';
 import {broadcastExtension} from './broadcast';
@@ -14,6 +15,7 @@ import * as styleMan from './style-manager';
 import {onSaved} from './style-manager/fixer';
 import {getByUuid, styleMap} from './style-manager/util';
 import {getToken, revokeToken} from './token-manager';
+import * as usercssMan from './usercss-manager';
 
 export {getToken};
 
@@ -201,8 +203,18 @@ function initController() {
       } else if (oldCust) {
         uuidIndex.custom[doc._id] = doc;
       } else {
-        delete doc.id;
         if (id) doc.id = id;
+        else delete doc.id;
+        if (!styleJSONseemsValid(doc)) {
+          if (doc[UCD]) {
+            await usercssMan.buildCode(doc, oldDoc);
+          } else {
+            const err = new Error('Invalid style in sync:\n' + JSON.stringify(doc, null, 2));
+            console.error(err);
+            setError(err);
+            return;
+          }
+        }
         doc.id = await db.put(doc);
         await onSaved(doc, 'sync');
       }
