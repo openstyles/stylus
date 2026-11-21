@@ -1,13 +1,12 @@
-import {DB, UCD} from '@/js/consts';
+import {DB} from '@/js/consts';
 import {chromeLocal} from '@/js/storage-util';
 
 let GET_KEYS;
 
 export default class ChromeStorageDB {
 
-  constructor(dbName, mirror) {
+  constructor(dbName) {
     this._max = dbName === DB ? null : 1; // used only with DB
-    this._mirror = mirror;
     this._prefix = dbName === DB ? 'style-' : `${dbName}-`;
     GET_KEYS ??= !!chromeLocal.getKeys;
   }
@@ -35,11 +34,7 @@ export default class ChromeStorageDB {
 
   async put(item, key) {
     key ??= item.id ??= (this._max ??= await this._getDbMax(), this._max++);
-    await chromeLocal.set({
-      [this._prefix + key]: this._mirror && item[UCD]
-        ? {...item, sections: undefined}
-        : item,
-    });
+    await chromeLocal.set({[this._prefix + key]: item});
     return key;
   }
 
@@ -49,9 +44,7 @@ export default class ChromeStorageDB {
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       const id = keys ? keys[i] : item.id ??= (this._max ??= await this._getDbMax(), this._max++);
-      data[this._prefix + id] = this._mirror && item[UCD]
-        ? {...item, sections: undefined}
-        : item;
+      data[this._prefix + id] = item;
       res.push(id);
     }
     await chromeLocal.set(data);
