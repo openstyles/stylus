@@ -14,6 +14,14 @@ const {ALIASES, CSS, DST, FS_CACHE, SHIM, JS, VARS, RAW_VARS, SEP_ESC, SRC_ESC} 
 const patchCodemirror = require('./wp-patch-codemirror');
 const patchLESS = require('./wp-patch-less');
 
+const sharedPlugins = [
+  new webpack.ids.NamedChunkIdsPlugin({context: SRC + JS}),
+  new InlineConstantExportsPlugin([/[/\\](consts|dom-themer|sync-util)\.js$/]),
+  (MV3 || BUILD === 'firefox') &&
+    new webpack.NormalModuleReplacementPlugin(/scrollbar-chrome-dark\.css$/, 'data:text/css,'),
+  (MV3 || BUILD === 'firefox') &&
+    new webpack.NormalModuleReplacementPlugin(/transition-suppressor\.css$/, 'data:text/css,'),
+];
 const patchCJS = {
   loader: './tools/wp-cjs-to-esm-loader.js',
   type: 'javascript/auto',
@@ -179,14 +187,8 @@ const getBaseConfig = ({entry, vars} = {}) => ({
     maxEntrypointSize: 1e6,
   },
   plugins: [
-    // new webpack.debug.ProfilingPlugin({outputPath: DST + '.profile.json'}),
+    ...sharedPlugins,
     vars && new RawEnvPlugin(...vars),
-    new webpack.ids.NamedChunkIdsPlugin({context: SRC + JS}),
-    new InlineConstantExportsPlugin([/[/\\](consts|dom-themer|sync-util)\.js$/]),
-    (MV3 || BUILD === 'firefox') &&
-      new webpack.NormalModuleReplacementPlugin(/scrollbar-chrome-dark\.css$/, 'data:text/css,'),
-    (MV3 || BUILD === 'firefox') &&
-      new webpack.NormalModuleReplacementPlugin(/transition-suppressor\.css$/, 'data:text/css,'),
     +process.env.PROFILE && new webpack.debug.ProfilingPlugin({
       outputPath: __dirname + `/../webpack-profile-${entry}.json`,
     }),
