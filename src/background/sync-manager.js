@@ -3,7 +3,7 @@ import * as chromeSync from '@/js/chrome-sync';
 import {kNone, pSync, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
-import {styleJSONseemsValid} from '@/js/style-util';
+import {RX_META1, styleJSONseemsValid} from '@/js/style-util';
 import * as STATES from '@/js/sync-util';
 import {fetchWebDAV, hasOwn, t, tryURL} from '@/js/util';
 import {broadcastExtension} from './broadcast';
@@ -35,7 +35,7 @@ const status = {
   state: STATES.pending,
 };
 const compareRevision = (rev1, rev2) => rev1 - rev2;
-let lastError = null;
+let /**@type {Error}*/lastError;
 let ctrl;
 let curDrive;
 let curDriveName;
@@ -133,7 +133,6 @@ async function doStart(name) {
 }
 
 function onStartError(err) {
-  console.error(err);
   setError(err);
   emitStatusChange();
   return stop();
@@ -191,6 +190,7 @@ function initController() {
   return dbToCloud({
     onGet: _id => getByUuid(_id) || uuidIndex.custom[_id]
       || Promise.reject('No such style UUID: ' + _id),
+    /** @param {StyleObj} doc */
     async onPut(doc) {
       if (!doc) return; // TODO: delete it?
       const id = uuidIndex.get(doc._id);
@@ -205,15 +205,15 @@ function initController() {
       } else {
         if (id) doc.id = id;
         else delete doc.id;
-        if (!styleJSONseemsValid(doc)) {
-          if (doc[UCD]) {
+        if (!styleJSONseemsValid(doc)) try {
+          if (doc[UCD] && RX_META1.test(doc.sourceCode)) {
             await usercssMan.buildCode(doc, oldDoc);
           } else {
-            const err = new Error('Invalid style in sync:\n' + JSON.stringify(doc, null, 2));
-            console.error(err);
-            setError(err);
-            return;
+            throw 'Invalid style in sync:\n' + JSON.stringify(doc, null, 2);
           }
+        } catch (err) {
+          setError(err);
+          return;
         }
         doc.id = await db.put(doc);
         await onSaved(doc, 'sync');
@@ -317,8 +317,9 @@ async function schedule(prefKey, prefVal = curDriveName, isInit) {
 }
 
 function setError(err) {
-  status.errorMessage = err?.message;
-  lastError = err;
+  const msg = status.errorMessage = err ? err.message || `${err}` : '';
+  lastError = err && (err instanceof Error ? err : new Error(msg));
+  if (err) console.warn(err);
 }
 
 function translateErrorMessage(err) {
