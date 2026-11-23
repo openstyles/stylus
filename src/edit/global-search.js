@@ -356,7 +356,6 @@ function doReplace() {
     doSearchInEditors({cmStart: getNextEditor(cm)});
   }
 
-  (cm.stateSearch ||= {}).unclosedOp = false;
   if (cm.curOp) cm.endOperation();
 
   if (cursor) {
@@ -398,16 +397,10 @@ function doReplaceInEditor({cm, pos, all = false}) {
   cursor.find();
   while (cursor.atOccurrence) {
     found = true;
-    if (!cm.curOp) {
-      cm.startOperation();
-      (cm.stateSearch ||= {}).unclosedOp = true;
-    }
-    if (stateRX) {
-      const text = cm.getRange(cursor.pos.from, cursor.pos.to);
-      cursor.replace(stateReplaceHasRefs ? text.replace(stateRX, replace) : replace);
-    } else {
-      cursor.replace(replace);
-    }
+    if (!cm.curOp) cm.startOperation();
+    cursor.replace(stateRX && stateReplaceHasRefs
+      ? cm.getRange(cursor.pos.from, cursor.pos.to).replace(stateRX, replace)
+      : replace);
     if (!all) {
       makeMatchVisible(cm, cursor);
       return cursor;
@@ -472,19 +465,18 @@ async function setupOverlay(queue) {
     const query = stateRX2;
     let {curOp} = cm;
     if (cmState.gen === gen && ovr?.query === query) {
-      if (cmState.unclosedOp && curOp) cm.endOperation();
-      cmState.unclosedOp = false;
+      if (curOp) cm.endOperation();
       continue;
     }
     cmState.gen = gen;
     if (ovr) {
-      curOp ||= (cm.startOperation(), setupOverlay);
+      curOp ||= !cm.startOperation();
       cm.removeOverlay(ovr);
       cmState.overlay = null;
     }
     const hasMatches = query && cm.getSearchCursor(query, null, stateCursorOptions).find();
     if (hasMatches) {
-      curOp ||= (cm.startOperation(), setupOverlay);
+      curOp ||= !cm.startOperation();
       cm.addOverlay(cmState.overlay = {
         query,
         token: tokenize,
@@ -493,7 +485,7 @@ async function setupOverlay(queue) {
       });
     }
     if (cmState.annotate) {
-      curOp ||= (cm.startOperation(), setupOverlay);
+      curOp ||= !cm.startOperation();
       cmState.annotate.clear();
       cmState.annotate = null;
     }
@@ -505,9 +497,8 @@ async function setupOverlay(queue) {
       cmState.annotateTimer = setTimeout(annotateScrollbar, ANNOTATE_SCROLLBAR_DELAY,
         cm, query, stateIcase);
     }
-    if (curOp === setupOverlay || curOp && cmState.unclosedOp)
+    if (curOp)
       cm.endOperation();
-    cmState.unclosedOp = false;
   }
   overlaying = 0;
 }
@@ -728,7 +719,6 @@ function makeMatchVisible(cm, searchCursor) {
       to: cm.getCursor('to'),
     },
     searchPos: pos,
-    unclosedOp: !cm.curOp,
   });
   if (!cm.curOp) cm.startOperation();
   if (!stateFirstRun) {
