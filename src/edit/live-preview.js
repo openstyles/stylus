@@ -4,15 +4,20 @@ import * as prefs from '@/js/prefs';
 import {debounce} from '@/js/util';
 import editor from './editor';
 
-let data;
+/** @type {StyleObj} */
+export let data;
+export let enabled;
+/** @type {chrome.runtime.Port} */
 let port;
-let enabled;
 
 prefs.subscribe(pLivePreview, (key, value, init) => {
   enabled = value;
   if (init) return;
   if (value) livePreview();
-  else port &&= port.disconnect();
+  else if (port) {
+    port.disconnect();
+    data = port = null; // clear so a stale data is not misused by external consumers like updateDraft
+  }
 }, true);
 
 /**
@@ -35,6 +40,6 @@ export default function livePreview(now) {
     port = chrome.runtime.connect({name: 'livePreview:' + editor.style.id});
     port.onDisconnect.addListener(() => (port = null));
   }
-  data = editor.getValue(now);
+  data = editor.getValue(true);
   return API.styles.preview(data).then(livePreview._then, livePreview._catch);
 }

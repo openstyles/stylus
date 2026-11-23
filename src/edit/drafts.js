@@ -5,6 +5,7 @@ import * as prefs from '@/js/prefs';
 import {styleToCss} from '@/js/style-util';
 import {clamp, debounce, NOP, t} from '@/js/util';
 import editor from './editor';
+import * as livePreview from './live-preview';
 import {helpPopup, showCodeMirrorPopup} from './util';
 
 const makeId = () => editor.style.id || 'new';
@@ -63,7 +64,7 @@ function updateDraft(isDirty = editor.dirty.isDirty()) {
   API.draftsDB.put({
     date: new Date(),
     isUsercss: editor.isUsercss,
-    style: editor.getValue(true),
+    style: livePreview.enabled && livePreview.data || editor.getValue(true),
     si: editor.makeScrollInfo(),
   }, makeId());
 }

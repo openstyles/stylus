@@ -59,7 +59,6 @@ export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
   'Ctrl-Pause': 'toggleEditorFocus',
 });
 const rxNonSpace = /\S/;
-const {getValue} = CodeMirror.prototype;
 
 (async () => {
   if (!__.MV3 || !swController)
@@ -141,14 +140,6 @@ if (WINDOWS) {
 
 /** @namespace CM */
 Object.assign(CodeMirror.prototype, {
-  getValue(sep) {
-    if (sep != null)
-      return getValue.call(this, sep);
-    const gen = this.doc.history.generation;
-    return gen === this.valueGen && this.value ||
-      (this.valueGen = gen) &&
-      (this.value = getValue.call(this));
-  },
   /**
    * @param {UsercssData} meta
    * @param {boolean} [force]
