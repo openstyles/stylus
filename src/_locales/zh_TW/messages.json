@@ -1120,6 +1120,12 @@
   "paginationTotal": {
     "message": "總頁面"
   },
+  "panelAutoHide": {
+    "message": "自動隱藏面板"
+  },
+  "panelAutoHideHint": {
+    "message": "若某個可切換面板處於非活躍狀態，且滑鼠游標離開該面板區域超過一秒，系統會自動將其隱藏。您可透過右鍵點擊或長按開啟該面板，以反轉其設定的行為。"
+  },
   "parseUsercssError": {
     "message": "Stylus 解析 UserCSS 失敗："
   },
@@ -1232,6 +1238,9 @@
   },
   "saveAsTemplate": {
     "message": "另存為範本"
+  },
+  "saveViaHotkey": {
+    "message": "透過快捷鍵切換時儲存"
   },
   "saved": {
     "message": "已儲存"
