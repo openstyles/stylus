@@ -171,7 +171,7 @@ function colorizeInvisible() {
     cm.eachLine(line--, size, lh => {
       ++line;
       if (line < viewFrom || line >= viewTo || line > doc.highlightFrontier)
-        return (lh.styles || (stopped = hlw()))
+        return (lh.styles || (stopped = hlw()) && lh.styles)
           && colorizeLineViaStyles(state, line, lh) && (stopped = true);
     });
     updateMarkers(state);
