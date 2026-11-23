@@ -24,9 +24,16 @@
   }
 }
 
-@keyframes highlight {
+.copied {
+  animation: copied 3s cubic-bezier(0, .4, .6, 1);
+}
+@keyframes copied {
   from {
-    background-color: var(--gold1);
+    background-color: var(--accent-4);
+    outline: 2px solid var(--accent-3);
+  }
+  to {
+    outline: 2px solid transparent;
   }
 }
 

@@ -1,7 +1,7 @@
 import {CodeMirror, extraKeys} from '@/cm';
 import {kCodeMirror, pArrowKeysTraverse, pFavicons} from '@/js/consts';
 import {$create, $root} from '@/js/dom';
-import {messageBox, setInputValue} from '@/js/dom-util';
+import {animateElement, messageBox, setInputValue} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
@@ -36,6 +36,11 @@ export default function SectionsEditor() {
   updateMeta();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
   $id('to-mozilla').on('click', showMozillaFormat);
+  $id('to-mozilla-copy').title += ' + ' + t('copy');
+  $id('to-mozilla-copy').onclick = function () {
+    animateElement(this, 'copied');
+    navigator.clipboard.writeText(editor.getValue());
+  };
   $id('from-mozilla').on('click', () => showMozillaFormatImport());
   document.on('wheel', scrollEntirePageOnCtrlShift, {passive: false});
   extraKeys['Shift-Ctrl-Wheel'] = 'scrollWindow';
