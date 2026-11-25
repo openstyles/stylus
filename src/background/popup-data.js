@@ -56,12 +56,12 @@ export default async function makePopupData(tabId) {
   const urlSupported = isOwn || supported(url);
   const [
     ping0 = (__.MV3 || !__.B_CHROME && FIREFOX >= 153) && (await reinjectContentScripts(tab)),
-    frames,
+    frames = [],
   ] = await Promise.all([
     isOwn
       || urlSupported && pingTab(tabId),
     isOwn && (__.B_CHROME || __.B_ANY && CHROME) && getAllFrames(url, tab)
-      || browser.webNavigation.getAllFrames({tabId}),
+      || browser.webNavigation.getAllFrames({tabId}).catch(NOP),
   ]);
   // sorting frames and connecting children to parents
   const unknown = new Map(frames.map(f => [f.frameId, f]));
