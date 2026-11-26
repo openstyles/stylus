@@ -118,11 +118,15 @@ export default class EditorSection {
   }
 
   toggle(restore) {
-    (restore ? linterMan.enableForEditor : linterMan.disableForEditor)(this.cm);
     this.el.classList.toggle(CLS_SEC_REMOVED, !restore);
     this.removed = this.tocEntry.removed = !restore;
     this.targets.forEach(t => restore ? t.restore() : t.remove());
-    if (restore) this.cm.refresh();
+    if (restore) {
+      linterMan.enableForEditor(this.cm);
+      this.cm.refresh();
+    } else if (!this.init) {
+      linterMan.disableForEditor(this.cm);
+    }
   }
 
   render() {

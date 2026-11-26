@@ -26,7 +26,8 @@ unhookListeners.add(cm => {
     table.element.remove();
     tables.delete(cm);
   }
-  updateCount();
+  if (!editor.loading)
+    updateCount();
 });
 
 export function getIssues() {
@@ -45,7 +46,7 @@ export function refreshReport() {
   }
 }
 
-function updateCount() {
+export function updateCount() {
   const issueCount = Array.from(tables.values())
     .reduce((sum, table) => sum + table.trs.length, 0);
   $id('lint').hidden = !issueCount;

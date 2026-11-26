@@ -1,12 +1,14 @@
 import {pLintReportDelay} from '@/js/consts';
 import {__values} from '@/js/prefs';
+import editor from '../editor';
 import {cms, linters, lintingUpdatedListeners, unhookListeners} from './store';
 import './engines';
 
 export * from './reports';
 
 export function disableForEditor(cm) {
-  setCmLintOption(cm, false);
+  if (!editor.loading)
+    setCmLintOption(cm, false);
   cms.delete(cm);
   for (const cb of unhookListeners) {
     cb(cm);

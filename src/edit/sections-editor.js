@@ -447,7 +447,9 @@ export default function SectionsEditor() {
   } = {}) {
     let forceRefresh = true;
     let scrollY1, scrollY2, tPrev;
+    editor.loading = true;
     if (replace) {
+      dirty.clear();
       for (const s of liveSections) s.toggle();
       liveSections.length = sections.length = 0;
       container.textContent = '';
@@ -462,7 +464,7 @@ export default function SectionsEditor() {
     } else {
       si = null;
     }
-    editor.loading = dirty.paused = !keepDirty;
+    dirty.paused = !keepDirty;
     for (let i = 0, y = 0, iSec = sections.length; i < src.length; i++, iSec++) {
       const now = performance.now();
       const secsi = si && si.cms[i];
@@ -483,6 +485,7 @@ export default function SectionsEditor() {
     if (!forceRefresh) updateSectionOrder();
     container.style.removeProperty('height');
     editor.loading = dirty.paused = false;
+    linterMan.updateCount();
   }
 
   /** @param {EditorSection} section */
