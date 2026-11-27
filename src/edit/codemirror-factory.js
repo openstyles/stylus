@@ -1,5 +1,5 @@
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
-import {rxUniBody} from '@/cm/css-util';
+import {rxUniBody} from 'cm5-css-mode-mod';
 import {getStyleAtPos, kLineWrapping, disableWrappingForLongLine} from '@/cm/util';
 import {kCodeMirror} from '@/js/consts';
 import {swController} from '@/js/msg-init';

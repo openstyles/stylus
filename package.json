@@ -7,8 +7,9 @@
   "author": "Stylus Team",
   "dependencies": {
     "@eight04/draggable-list": "^0.3.0",
-    "codemirror": "5.65.20",
+    "codemirror": "^5.65.20",
     "csslint-mod": "github:openstyles/csslint-mod#semver:v1.0.22",
+    "cm5-css-mode-mod": "github:openstyles/cm5-css-mode-mod#semver:v1.0.0",
     "db-to-cloud": "^0.9.1",
     "less": "^4.9.1",
     "lz-string-unsafe": "1.4.4-fork-1",
@@ -85,8 +86,7 @@
     "bump": "pnpm version patch",
     "bump-stable": "pnpm version minor",
     "prepare": "husky",
-    "preinstall": "npx only-allow pnpm",
-    "postinstall": "node tools/build-cm-css-data.js"
+    "preinstall": "npx only-allow pnpm"
   },
   "engines": {
     "node": ">=24"

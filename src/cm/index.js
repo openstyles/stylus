@@ -34,7 +34,7 @@ import 'codemirror/keymap/sublime';
 import 'codemirror/keymap/vim';
 import 'codemirror/mode/stylus/stylus';
 import '@/vendor-overwrites/codemirror-addon/match-highlighter.js';
-import './css';
+import 'cm5-css-mode-mod';
 import {THEME_KEY} from './themes';
 import './index.css';
 

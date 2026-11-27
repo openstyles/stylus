@@ -29,11 +29,4 @@ namespace CM {
     indent: string;
     prev: Context;
   }
-  interface CSSState {
-    context: Context;
-    space: boolean;
-    state: string;
-    stateArg: any;
-    tokenize?: Function;
-  }
 }

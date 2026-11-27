@@ -4,7 +4,7 @@ const {CM_PACKAGE_PATH, makePatchOptions} = require('./util');
 const CM_PATH = 'codemirror/lib/codemirror';
 const importCssData = [
   'import CodeMirror',
-  'import * as cssData from "@/cm/css-data";\n$&',
+  'import * as cssData from "cm5-css-mode-mod/css-data";\n$&',
 ];
 
 const patchCodeMirror = makePatchOptions([
@@ -53,7 +53,7 @@ const patchCodeMirror = makePatchOptions([
     (_, reqs, body) => {
       reqs = reqs.match(/(?<=require\()".+?"/g);
       reqs = reqs ? `import CodeMirror from ${reqs.shift()};\n${
-        reqs.map(s => `import ${s.includes('/css/css') ? '"@/cm/css"' : s};\n`).join('')
+        reqs.map(s => `import ${s.includes('/css/css') ? '"cm5-css-mode-mod"' : s};\n`).join('')
       }` : '';
       return reqs + body;
     },
