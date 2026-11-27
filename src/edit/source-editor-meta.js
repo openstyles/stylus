@@ -58,6 +58,7 @@ export const metaCompiler = async (text, linterOptions, linterCM, force) => {
   } else {
     pendingMeta = new Promise(cb => (done = cb));
     const {metadata, errors} = await worker.metalint(text);
+    prevMetadata = metadata;
     pendingMeta = null;
     if (force)
       return metadata;

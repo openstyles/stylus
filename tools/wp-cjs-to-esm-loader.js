@@ -9,7 +9,8 @@ module.exports = function (text) {
     (s, what, from) => `import ${what.replaceAll(':', ' as ')} from ${from}`);
   const t2 = text.replace(/Object\.defineProperty\(exports,\s*["']__esModule["'],\s*{[^}]+}\);?/, '');
   if (t2 !== text) {
-    text = t2.replace(/^var \w+ = \(function .+ {|(\s+return exports;\s*)?}\(\{}\)\);\s*(\/\/.*\s*)?$/g, '');
+    text = t2.replace(/^var \w+ = \(function .+ {/, '');
+    text = text.replace(/(\s+return exports;\s*)?}\(\{}\)\);\s*(\/\/.*[\r\n]\s*)?$/, '');
     text = text.replace(/^\s*(export)s\.(\w+) = (\w+)/gm, '$1 {$3 as $2}');
   }
   return text;

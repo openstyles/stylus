@@ -16,7 +16,7 @@ import {t} from './util';
 export const template = /*@__PURE__*/Object.create(new Proxy({__proto__: null}, {
   get: (obj, k) => createTemplate($(`template[data-id="${k}"]`)),
 }));
-const RX_BAD_TAGS = /<script[^<>]*[^<]*<\/script[^>]*>/gi;
+const RX_BAD_TAGS = /<script[\s\S]*<\/script[^>]*>/gi;
 /** Attributes are ignored. The URL of <a> must be set explicitly in JS. */
 const RX_PARTS = /<(?:(br|hr)|(\/)?(a(\s+href=[^>]*)?|b|code|nobr|p|pre|table|tr|td)|([^\s<>][^<>]*))>|(?:[^<]+|<\s+)+|$/g;
 const RX_WORD_BREAK = /([\w{-\uFFFF]{10}|[\w{-\uFFFF]{5,10}[!'")*,./]|((?!\s)\W){10})(?!\s|$)/gu;

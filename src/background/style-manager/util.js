@@ -104,9 +104,9 @@ export function storeInMap(style) {
 
 export function toggleSiteOvrImpl(style, val, type, add) {
   type = type ? kInclusions : kExclusions;
-  let list = style[type];
+  const list = style[type];
   if (add) {
-    if (!list) list = style[type] = [val];
+    if (!list) style[type] = [val];
     else if (!list.includes(val)) list.push(val);
   } else if (list && (val = list.indexOf(val)) >= 0) {
     if (list.length > 1) list.splice(val, 1);

@@ -112,7 +112,7 @@ function makeManifest(files) {
       else base[key] = val;
     }
   }
-  let ver = base.version;
+  const ver = base.version;
   if (BUILD === 'firefox') {
     delete base.key;
   }
@@ -126,8 +126,7 @@ function makeManifest(files) {
       : 'apmmpaebfobifelkijhaljbmpcgbjbdo';
     if (!isStable) {
       base.name += ` (beta)`;
-      ver = base.version = ver.replace(/^2\./, '3.');
-      ver += '-beta';
+      base.version = ver.replace(/^2\./, '3.');
     }
     fs.appendFileSync(process.env.GITHUB_ENV, `EXTENSION_ID=${extId}\n`, 'utf8');
   }

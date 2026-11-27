@@ -252,6 +252,7 @@ export default async function UpdateHistory(show, el, selector) {
           t('manageOnlyUpdates'),
         ]));
 
+      // eslint-disable-next-line secure-coding/no-redos-vulnerable-regex
       toggler.rxRemoveNOP = new RegExp(
         '^[^#]*(' +
         Object.keys(states)

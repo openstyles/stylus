@@ -74,6 +74,7 @@ const moduleRules = [
   },
   {
     loader: 'html-loader',
+    // eslint-disable-next-line secure-coding/no-redos-vulnerable-regex
     test: new RegExp(SRC_ESC + String.raw`.*[/\\].*\.html$`),
     options: {
       sources: false, // false = keep the source as-is

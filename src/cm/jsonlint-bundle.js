@@ -7,7 +7,6 @@ CodeMirror.registerHelper('lint', 'json', text => {
   try {
     parseJSON({text, lastIndex: 0});
   } catch (e) {
-    ch = 0;
     line = i = -1;
     do line++; while ((i = text.indexOf('\n', ch = i + 1)) >= 0 && i < e.index);
     ch = e.index - ch;

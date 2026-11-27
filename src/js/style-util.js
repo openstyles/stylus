@@ -17,7 +17,7 @@ export const FROM_CSS = {
 export const RX_META1 = /\/\*!?\s*==userstyle==/gi;
 export const RX_META2 = /(==\/userstyle==\s*)?\*\//gi;
 const STYLE_CODE_EMPTY_RE =
-  /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/iyu;
+  /\s+|\/\*[^*]*(?:\*(?!\/)[^*]*)*(?:\*\/|$)|@namespace[^;]+;|@charset[^;]+;/iyu;
 const rxEscape = /[\\"]/g;
 
 /**
@@ -147,7 +147,7 @@ export function getMetaComment(str, action) {
   }
   if (action === 'del') {
     res = a && b?.[1] ? str.slice(0, a.index) + str.slice(i) : str;
-  } else if (!a || !b || !(b = b[1])) {
+  } else if (!a || !b || !b[1]) {
     // nothing
   } else if (action === '?') {
     res = true;

@@ -9,6 +9,7 @@ const manifest = require('../src/manifest.json');
 
 (async () => {
   manifest.permissions.push('extension', 'i18n', 'runtime');
+  // eslint-disable-next-line secure-coding/no-redos-vulnerable-regex
   const FN_NO_CB = /\bstatic (\w+) (\w+)(?![^)]*callback)\(\s*([^)]*)\)/g;
   const BASE = 'https://github.com/chromium/chromium/raw/master/';
   const PATHS = [

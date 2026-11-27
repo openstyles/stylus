@@ -14,7 +14,7 @@ export const SPLIT_BTN_MENU = '.split-btn-menu';
 const tooltips = new WeakMap();
 const noteBoxes = new WeakMap();
 /** Strips all normal html tags but allows <invalid-html-tags> which we use to emphasize stuff */
-const rxTag = /<(?:\/[a-z]+|[a-z]+(?:\s+[^>]*)?)>/g;
+const rxTag = /<(?:\/[a-z]+|[a-z]+(?:\s+[^>\s][^>]*)?)>/g;
 const rxLong1 = /([.?!]\s+|[．。？！]\s*|(?:<[^\s<>][^<>]*>)?.{55,70},)\s+/gu;
 const rxLong2 = /((?:<[^\s<>][^<>]*>)?.{55,70}(?=.{50,}))\s+/gu;
 const elOff = $id('disableAll-label'); // won't hide if already shown
@@ -256,10 +256,12 @@ export function splitLongTooltips(elems) {
     tooltips.set(el, old);
     let res = old.includes('</') ? old.replace(rxTag, '') : old;
     if (res.length > 60) {
-      for (let arr = res.split(/\n+/), a = res = '', b, cut, i = 0; i < arr.length; i++) {
-        a = arr[i];
-        b = a.length <= 60 ? a : a.replace(rxLong1, '$1\n').replace(rxLong2, '$1\n');
-        if (res) res += cut || i && b !== a ? '\n\n' : '\n';
+      const arr = res.split(/\n+/);
+      res = '';
+      let cut;
+      for (const a of arr) {
+        const b = a.length <= 60 ? a : a.replace(rxLong1, '$1\n').replace(rxLong2, '$1\n');
+        if (res) res += cut || b !== a ? '\n\n' : '\n';
         res += b;
         cut = b !== a;
       }

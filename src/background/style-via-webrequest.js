@@ -23,7 +23,8 @@ import {patchCsp, patchCspMetaTag} from './util';
 const REVOKE_TIMEOUT = 10e3;
 const kRuleIds = 'ruleIds';
 const kSetCookie = 'set-cookie'; // must be lowercase
-const rxNONCE = /(?:^|[;,])\s*style-src\s+[^;,]*?'nonce-([-+/=\w]+)'/;
+const rxStyleSrc = /(?:^|[;,])\s*style-src\s+[^;,]+/;
+const rxNonce = /'nonce-([-+/=\w]+)'/;
 const BLOB_URL_PREFIX = 'blob:' + ownRoot;
 const WEBNAV_FILTER = {url: [{urlPrefix: 'http'}]};
 const WR_FILTER = {
@@ -159,7 +160,7 @@ async function prepareStyles(req) {
   const cookie = makeXhrCookie(blobId);
   let {ruleId = 0} = data;
   if (!ruleId) {
-    while (++ruleId in ruleIds) {/**/}
+    while (++ruleId in ruleIds) { /**/ }
     data.ruleId = ruleId;
   }
   ruleIds[ruleId] = key;
@@ -202,7 +203,8 @@ function modifyHeaders(req) {
     patchCspMetaTag(req.requestId);
   }
   if (csp) {
-    const m = (v = csp.value).match(rxNONCE);
+    let m = (v = csp.value).match(rxStyleSrc);
+    m &&= m[1].match(rxNonce);
     if (m) tabMan.set(req.tabId, 'nonce', req.frameId, payload.cfg.nonce = m[1]);
     // We don't change CSP if there are no styles when the page is loaded
     // TODO: show a reminder in the popup to reload the tab when the user enables a style

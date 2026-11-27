@@ -59,7 +59,7 @@ export async function buildCode(style, oldStyleWithVars, logs, strict) {
 export async function buildMeta(style, sourceCode) {
   if (!sourceCode && style && style[UCD])
     return style;
-  const code = (sourceCode || style?.sourceCode).replace(/\r\n?/g, '\n');
+  const code = (sourceCode || style?.sourceCode || '').replace(/\r\n?/g, '\n');
   const match = getMetaComment(code, 'match');
   if (!match)
     throw new Error('Could not find metadata.');

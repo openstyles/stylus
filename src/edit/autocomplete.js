@@ -94,7 +94,7 @@ async function helper(cm) {
     prevData.len = prevMatch.length;
     return prevData;
   }
-  prev = prevData = null;
+  prevData = null;
   if (i) {
     prop = prevMatch;
     prev = end = ch;
@@ -127,7 +127,7 @@ async function helper(cm) {
     const L = (leftLC = left.toLowerCase())[0];
 
     // Using Allman style to have conceptually one block but with separate clauses
-    /*eslint-disable brace-style*/
+    /*eslint-disable @stylistic/brace-style*/
     if (L === '!')
     {
       list = '!important'.startsWith(leftLC) ? ['!important'] : [];
@@ -181,7 +181,7 @@ async function helper(cm) {
       }
     }
   }
-  /*eslint-enable brace-style*/
+  /*eslint-enable @stylistic/brace-style*/
 
   if (list == null) {
     // property values

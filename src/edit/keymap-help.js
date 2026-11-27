@@ -99,7 +99,7 @@ function mergeKeyMaps(merged, ...more) {
         if (typeof cmd === 'function') {
           // for 'emacs' keymap: provide at least something meaningful (hotkeys and the function body)
           // for 'vim*' keymaps: almost nothing as it doesn't rely on CM keymap mechanism
-          cmd = cmd.toString().replace(/^function.*?{[\s\r\n]*([\s\S]+?)[\s\r\n]*}$/, '$1');
+          cmd = cmd.toString().replace(/^function[^{]*{\s*|\s*}$/g, '');
           merged[key] = clipString(cmd, 200);
         } else {
           merged[key] = cmd;

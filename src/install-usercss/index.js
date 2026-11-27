@@ -228,7 +228,7 @@ function updateMeta(newStyle) {
     el.checked = el.value === (style.preferScheme || kNone);
   });
 
-  replaceChildren($('.meta-author'), makeAuthor(data.author), true);
+  replaceChildren($('.meta-author'), data.author && makeAuthor(data.author), true);
   replaceChildren($('.meta-license'), data.license, true);
   replaceChildren($('.external-link'), makeExternalLink());
   renderTargetSites();
@@ -264,19 +264,19 @@ function updateMeta(newStyle) {
   if (dup) enablePostActions();
 
   function makeAuthor(text) {
-    const match = text && text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))?$/);
-    if (!match) {
-      return text;
-    }
-    const [, name, email, url] = match;
     const elems = [];
-    if (email) {
-      elems.push($createLink(`mailto:${email}`, name));
-    } else {
-      elems.push($create('span', name));
+    let m;
+    if ((m = /(?:^\s*|\S\s+)\((\S+)\)$/.exec(text))) {
+      elems.push($createLink(m[1], $create('i.i-external')));
+      text = text.slice(0, m.index + 1).trim();
     }
-    if (url) {
-      elems.push($createLink(url, $create('i.i-external')));
+    if ((m = /(?:^\s*|\S\s+)<(\S+)>$/.exec(text))) {
+      text = text.slice(0, m.index + 1).trim();
+      elems.unshift($createLink(`mailto:${m[1]}`, text));
+    } else if (!elems.length) {
+      return text;
+    } else {
+      elems.unshift($create('span', text));
     }
     return elems;
   }

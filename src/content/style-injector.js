@@ -17,6 +17,8 @@ export const runtime = chrome.runtime;
 // Firefox uses a different id for moz-extension://
 export const ownId = __.MV3 ? runtime.id : runtime.getURL('').split('/')[2];
 export const isXml = !__.ENTRY && document instanceof XMLDocument;
+export const setOnInjectorUpdate = fn => (onInjectorUpdate = fn);
+export const setSelfDestruct = fn => (selfDestruct = fn);
 const wrappedDoc = !__.B_CHROME && (FF && document.wrappedJSObject || document);
 const assDoc = !__.B_CHROME && FF && !IDBIndex.prototype.getAllRecords
   ? wrappedDoc // can't directly access ASS in Firefox < 153 (detecting via feature for reliability)
@@ -49,7 +51,7 @@ let reorderStart = 0;
 let creationDoc, createElement, createElementNS;
 let orderPrio, orderMain;
 let checkCSP;
-export let onInjectorUpdate, selfDestruct;
+let onInjectorUpdate, selfDestruct;
 
 export function shutdown() {
   if (!list.length) return;
@@ -240,7 +242,7 @@ function createStyle(style) {
   if (nonce)
     el.nonce = nonce;
   if (id && exposeStyleName) // not exposing it by default to reduce fingerprint
-    id = el.id = `${PREFIX}${id}`;
+    el.id = `${PREFIX}${id}`;
   // SVG className is not a string, but an instance of SVGAnimatedString
   el.classList.add(CLASS);
   setTextAndName(el, style);
@@ -379,7 +381,7 @@ function restoreOrder(mutations) {
   }
   if (!bad) return;
   if (!mutations || ++reorderCnt < 10) addAllElements();
-  else console.debug(`Stylus ignored wrong order of styles to avoid an infinite loop of mutations.`); // eslint-disable-line max-len
+  else console.debug(`Stylus ignored wrong order of styles to avoid an infinite loop of mutations.`); // eslint-disable-line @stylistic/max-len
   const t = performance.now();
   if (t - reorderStart > 250) {
     reorderCnt = 0;

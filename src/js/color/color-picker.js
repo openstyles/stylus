@@ -87,7 +87,7 @@ export default function ColorPicker(cm) {
       if (props) delete props.tag;
       return Object.assign(el, props);
     }
-    const alphaPattern = /^\s*(0+\.?|0*\.\d+|0*1\.?|0*1\.0*)?\s*$/.source;
+    const alphaPattern = /^\s*((0+\.?|0*(\.\d+|1(\.0*)?))\s*)?$/.source;
     const makeNum = (type, name, channel, channelName, props, min, max) =>
       $(['input-field', `${name}-${channelName}`], [
         (($inputs[type] ||= {})[channel] =
@@ -841,7 +841,6 @@ export default function ColorPicker(cm) {
     if (el) {
       const {scrollY: y, scrollX: x} = window;
       el.focus({preventScroll: true});
-      el = null;
       if (window.scrollY !== y || window.scrollX !== x) {
         setTimeout(window.scrollTo, 0, x, y);
       }

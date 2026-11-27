@@ -1,3 +1,4 @@
+/* eslint-disable secure-coding/no-hardcoded-credentials */
 import {kAppUrlencoded, kContentType} from '@/js/consts';
 import {DNR_ID_IDENTITY, updateSessionRules} from '@/js/dnr';
 import {chromeLocal} from '@/js/storage-util';

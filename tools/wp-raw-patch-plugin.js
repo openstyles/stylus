@@ -236,7 +236,7 @@ function flattenExports(str, ids) {
       const idd = id === 'default' ? dest : id;
       if (
         (isFunc ??= ids?.[idd] === FUNC) ||
-        (isConst ??= (ids?.[idd] === CONST || dest === '__WEBPACK_DEFAULT_EXPORT__'))
+        (isConst ?? (ids?.[idd] === CONST || dest === '__WEBPACK_DEFAULT_EXPORT__'))
       ) {
         match = `\n${RG.exports}.${id} = ${dest};`;
         if (isFunc) flat1 += match; else flat2 += match;

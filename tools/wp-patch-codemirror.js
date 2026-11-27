@@ -11,9 +11,11 @@ const patchCodeMirror = makePatchOptions([
   ['codemirror',
     [/(function startWorker[^<]+<) cm\.display\.viewTo\)/,
       '$1 cm.doc.size)'],
+    // eslint-disable-next-line secure-coding/no-redos-vulnerable-regex
     [/(?<top>function highlightWorker.+\s+)(?<head>[^(]+\()(?<chk>doc\.high[^5]+)500(?<neck>[\s\S]+?)(?<vis>if \(context\.line.+\s+)(?<chest>[\s\S]+?)(?<change>var ischange[\s\S]+?if \(ischange\).+\s+)(?<legs>[\s\S]+?)(?<stop>startWorker.+\s+return)(?<end>[\s\S]+?}\); })/,
       '$<top>var stopped;$<head>false && $<chk>1e9$<neck>' +
       'if(1) {$<chest>$<vis>$<change>}$<legs>$<stop> stopped =$<end>\nreturn stopped;'],
+    // eslint-disable-next-line secure-coding/no-redos-vulnerable-regex
     [/(function resetModeState.+\s+)(cm\.doc\.iter[\s\S]+?)(startWorker)\((cm, 100)\)/,
       '$1!cm.options.value && $2setTimeout($3, 0, $4)'],
   ],

@@ -62,12 +62,12 @@ if (navHubParent) {
 if (TDM < 0) {
   document.onprerenderingchange = onReified;
 }
-styleInjector.onInjectorUpdate = () => {
+styleInjector.setOnInjectorUpdate(() => {
   updateCount();
   if (isFrame) updateExposeIframes();
   if (isFrame || own.cfg.wake) updatePort();
-};
-styleInjector.selfDestruct = selfDestruct;
+});
+styleInjector.setSelfDestruct(selfDestruct);
 if (!isFrame) initMQ();
 // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
 init();

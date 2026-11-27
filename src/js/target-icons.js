@@ -6,9 +6,9 @@ import {getOwnTab, MF_ICON, ownId, ownTab} from '@/js/util-webext';
 
 /** Removes negative look-ahead,
  * replaces extra characters & all but the first group entry "(abc|def|ghi)xyz" => abcxyz */
-const rxDrop = /(?:\?!([^)]+\))|\(\?![\w(]+[^)]+[\w|)]+)|(?:\|[^)]+)+\)/g;
+const rxDrop = /\(\?![^)]+\)|\|[^)]*\)/g;
 /** Skips controls like \b()[]?\\ and extracts individual parts of the host */
-const rxHostFromRE = /(?:[^-\w\\](?!https?)(\w[-\w]*)(?:[^\w.]|\\\w\b)*(\.)[^\w\\]*)?(\w[-\w]*)[^\w.]*(\.)[^\w\\]*([a-z]{2,10})(?:[^-\w]*(-)[^\w\\]*([a-z]{2,10}))?(?=\W|$)/;
+const rxHostFromRE = /(?:[^-\w\\](?!https?)(\w+(?:-\w+)?)(?:[^\w.]|\\\w\b)*(\.)[^\w\\]*)?(\w+(?:-\w+)?)[^\w.]*(\.)[^\w\\]*([a-z]{2,10})(?:[^-\w]*(-)[^\w\\]*([a-z]{2,10}))?(?=\W|$)/;
 const rxHostFromUrl = /^(?:ht|f)tps?:\/\/(?:[^@/]*@)?([-.\w]+)/;
 const rxIsExtensionUrl = /-extension:\\?\//;
 const TARGET_SEL = '.target';

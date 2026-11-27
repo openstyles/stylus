@@ -67,6 +67,7 @@ module.exports = makePatchOptions([
       ',cmt $& this.cmt = cmt;'],
     ['visibilityInfo())))',
       'visibilityInfo(), this.cmt)))'],
+    // eslint-disable-next-line secure-coding/no-redos-vulnerable-regex
     [/(?<=\n\s+genCSS\(.+\{)([\s\S]+?if \(rules\) \{\s+)(.+;)/, `\
       let _start = this.cmt != null ? output.add().length : -1;
       let _body, _str;
@@ -93,6 +94,7 @@ module.exports = makePatchOptions([
     [', JavaScript', ''],
   ],
   [LIB_LESS + 'tree/node.js',
+    // eslint-disable-next-line secure-coding/no-redos-vulnerable-regex
     [/toCSS\(context.+[\s\S]+strs\.join.+\s+}/, `${{
       toCSS(context) {
         let str = '';
@@ -109,6 +111,7 @@ module.exports = makePatchOptions([
   [LIB_LESS + 'parser/parser.js',
     [/if \(context\.pluginManager/,
       'if (0'],
+    // eslint-disable-next-line secure-coding/no-redos-vulnerable-regex
     [/while .+\s+node = this\.comment.+\s+if \(!node.+/,
       'let cmt1; $& cmt1 = node._index;'],
     ['|| this.atrule(',
@@ -117,10 +120,12 @@ module.exports = makePatchOptions([
       '$&cmt1, cmt2, cmt'],
     ["case '@document':",
       '$& cmt = cmt2 ? parserInput.getInput().slice(cmt1, cmt2).trim() : "";'],
+    // eslint-disable-next-line secure-coding/no-redos-vulnerable-regex
     [/new\(tree\.AtRule\).+\s+.+\s+isRooted/,
       '$&, null, cmt'],
     ['entities.javascript()',
       'undefined'],
+    // eslint-disable-next-line secure-coding/no-redos-vulnerable-regex
     [/javascript: function [\s\S]+?invalid javascript.+\s+}/,
       ''],
   ],
