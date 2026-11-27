@@ -6,7 +6,7 @@
 /* eslint-disable no-shadow,one-var,one-var-declaration-per-line,prefer-const */
 import CodeMirror from 'codemirror';
 import * as cssData from './css-data';
-import {kLineComment, rxUniBody} from './util';
+import {kLineComment, rxUniBody} from './css-util';
 
 const kAllowNested = 'allowNested';
 const kAtom = 'atom';
