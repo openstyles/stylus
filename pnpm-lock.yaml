@@ -185,8 +185,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       cm5-css-mode-mod:
-        specifier: github:openstyles/cm5-css-mode-mod#semver:v1.0.0
-        version: https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/5fa1c10f6e64eeb4b2cb133763ce3b751347302e(codemirror@5.65.20)
+        specifier: github:openstyles/cm5-css-mode-mod#semver:v1.0.22
+        version: https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/654e6b3b8bad2c7f6c132ebf53bfd6c4c01619be(codemirror@5.65.20)
       codemirror:
         specifier: ^5.65.20
         version: 5.65.20
@@ -1648,9 +1648,9 @@ packages:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}
     engines: {node: '>= 10.0'}
 
-  cm5-css-mode-mod@https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/5fa1c10f6e64eeb4b2cb133763ce3b751347302e:
-    resolution: {gitHosted: true, integrity: sha512-MAB12ouviRLBqeJlUKOQAzCOgg8lUZbwzsZ5I6wTEmpvjw2kcCTswfCtPJJURx3GnbRsu5XzitvouF6x+WJMqQ==, tarball: https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/5fa1c10f6e64eeb4b2cb133763ce3b751347302e}
-    version: 1.0.0
+  cm5-css-mode-mod@https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/654e6b3b8bad2c7f6c132ebf53bfd6c4c01619be:
+    resolution: {gitHosted: true, integrity: sha512-sgk5NXmQawE6mTUv/4P2idhu1Otbpy3PWJCvUYGfecj5nKwTsYX7/sY6zwaikHvrCvNf/vFX+swP+YAOZO+bag==, tarball: https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/654e6b3b8bad2c7f6c132ebf53bfd6c4c01619be}
+    version: 1.0.22
     engines: {node: '>=24'}
     peerDependencies:
       codemirror: ^5.65.20
@@ -4933,7 +4933,7 @@ snapshots:
     dependencies:
       source-map: 0.6.1
 
-  cm5-css-mode-mod@https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/5fa1c10f6e64eeb4b2cb133763ce3b751347302e(codemirror@5.65.20):
+  cm5-css-mode-mod@https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/654e6b3b8bad2c7f6c132ebf53bfd6c4c01619be(codemirror@5.65.20):
     dependencies:
       codemirror: 5.65.20
 
