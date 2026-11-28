@@ -16,12 +16,15 @@ export const worker = __.MV3
 const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
 const rxHtmlEntity = /&(#x?)?([^;]+);/g;
 const rxQuoteSpace = / '\s+([-+/=\w]+')/g;
-const rxMetaCSP = /<meta[\s/](?:[^<>]|"[^"]*"|'[^']*')*?\bhttp-equiv\s*=\s*["']?Content-Security-Policy(?:[^<>]|"[^"]*"|'[^']*')*>/i;
-const rxMetaCSPVal = /([\s/]content\s*=)(?:'([^']+)'|"([^"]+)"|([^<>\s]+))/i;
+const rxMeta = /<meta[\s/](?:[^>'"]+|"[^"]*"|'[^']*')+/gi;
+const rxMetaCSP = /[\s/]http-equiv\s*=\s*["']?Content-Security-Policy/i;
+const rxMetaCSPVal = /([\s/]content\s*=)\s*(?:'([^']+)'|"([^"]+)"|([^<>\s]+))/i;
 const patchCspMetaTagValReplacer = (_, key, q1, q2, q0) => key + '"' +
   patchCsp((q1 || q2 || q0).replace(rxHtmlEntity, patchHtmlEntities).replace(rxQuoteSpace, " '$1"))
     .replace(/"/g, '&#34;') + '"';
-const patchCspMetaTagReplacer = str => str.replace(rxMetaCSPVal, patchCspMetaTagValReplacer);
+const patchCspMetaTagReplacer = str => rxMetaCSP.test(str)
+  ? str.replace(rxMetaCSPVal, patchCspMetaTagValReplacer)
+  : str;
 const patchHtmlEntities = (_, hash, s) => hash
   ? String.fromCharCode(parseInt(s, hash === '#x' ? 16 : 10))
   : htmlEntities[s] || s;
@@ -75,7 +78,7 @@ export const patchCspMetaTag = reqId => {
       chunks.push(data);
       text += decoder.decode(data, {stream: true});
       if (/<body\W/i.test(text)) {
-        if (text !== (text = text.replace(rxMetaCSP, patchCspMetaTagReplacer)))
+        if (text !== (text = text.replace(rxMeta, patchCspMetaTagReplacer)))
           chunks = [encoder.encode(text + decoder.decode())];
         chunks.forEach(filter.write, filter);
         chunks = text = null;
