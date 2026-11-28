@@ -3,7 +3,7 @@ import {
   pDisableAll, pExposeIframes, pKeepAlive, pPatchCsp, pStyleViaASS, pStyleViaXhr, UCD,
 } from '@/js/consts';
 import {__values} from '@/js/prefs';
-import {calcStyleDigest, styleCodeEmpty} from '@/js/style-util';
+import {calcStyleDigest, styleCodeAt} from '@/js/style-util';
 import {calcObjSize, isEmptyObj, mapObj, NOP} from '@/js/util';
 import {broadcast, broadcastExtension, sendTab} from '../broadcast';
 import * as colorScheme from '../color-scheme';
@@ -148,7 +148,7 @@ export function getByUrl(url, id, tabId, needsOvrs) {
         continue;
       matching = true;
       sloppy ||= secMatch === 'sloppy';
-      empty &&= styleCodeEmpty(sec);
+      empty &&= styleCodeAt(sec) < 0;
     }
     if (matching) {
       res.empty = empty;

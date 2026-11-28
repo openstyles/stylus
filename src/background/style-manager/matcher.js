@@ -1,5 +1,5 @@
 import {kExclusions, kInclusions} from '@/js/consts';
-import {styleCodeEmpty} from '@/js/style-util';
+import {styleCodeAt} from '@/js/style-util';
 import {ownRoot} from '@/js/urls';
 import {globAsRegExpStr, RX_MAYBE_REGEXP, tryURL} from '@/js/util';
 import {styleMap} from './util';
@@ -114,7 +114,7 @@ export function urlMatchSection(query, section, skipEmptyGlobal) {
   return !rrL && !ppL && !uuL && !ddL &&
     // We allow only intentionally targeted sections for own pages
     !(query.isOwnPage ??= query.url.startsWith(ownRoot)) &&
-    (!skipEmptyGlobal || !styleCodeEmpty(section));
+    (!skipEmptyGlobal || styleCodeAt(section) < 0);
 }
 
 /** @this {MatchQuery} */

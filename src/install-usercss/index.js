@@ -8,7 +8,7 @@ import {configDialog, messageBox, showSpinner} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
-import {styleCodeEmpty} from '@/js/style-util';
+import {styleCodeAt} from '@/js/style-util';
 import {renderTargetIcons} from '@/js/target-icons';
 import {isLocalhost} from '@/js/urls';
 import {clipString, debounce, deepEqual, sessionStore, t, tryURL, urlParams} from '@/js/util';
@@ -388,7 +388,7 @@ async function renderTargetSites() {
   el.className = 'target';
   el.append('');
   for (const section of style.sections) {
-    if (styleCodeEmpty(section))
+    if (styleCodeAt(section) >= 0)
       continue;
     let hasTargets;
     for (let i = 0, arr, val; i < TYPES.length; i++) {

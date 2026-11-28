@@ -16,8 +16,7 @@ export const FROM_CSS = {
  * like /* foo /* ==userstyle==. TODO: extract a simplified CSS tokenizer from csslint-mod? */
 export const RX_META1 = /\/\*!?\s*==userstyle==/gi;
 export const RX_META2 = /(==\/userstyle==\s*)?\*\//gi;
-const STYLE_CODE_EMPTY_RE =
-  /\s+|\/\*[^*]*(?:\*(?!\/)[^*]*)*(?:\*\/|$)|@namespace[^;]+;|@charset[^;]+;/iyu;
+const rxEmpty = /^(?:\s+|\/\*[^*]*(?:\*(?!\/)[^*]*)*(?:\*\/|$)|@(?:namespace|charset)[^;]+;)*/iu;
 const rxEscape = /[\\"]/g;
 
 /**
@@ -53,16 +52,16 @@ export const styleToCss = style => {
   return res.join('');
 };
 
-/** @param {StyleSection} sec */
-export function styleCodeEmpty(sec) {
-  const {code} = sec;
-  let res = !code;
-  if (res || (res = sec._empty) != null) return res;
-  const len = code.length;
-  const rx = STYLE_CODE_EMPTY_RE; rx.lastIndex = 0;
-  let i = 0; while (rx.exec(code) && (i = rx.lastIndex) !== len) {/**/}
-  Object.defineProperty(sec, '_empty', {value: res = i === len, configurable: true});
-  styleCodeEmpty.lastIndex = i;
+/** @param {StyleSection} sec
+ * @return {number} >= 0 position of non-empty code or -1 */
+export function styleCodeAt(sec) {
+  let code;
+  let res = sec._codePos;
+  if (res != null || !(code = sec.code) && (res = -1))
+    return res;
+  res = rxEmpty.exec(code)[0].length;
+  if (res === code.length) res = -1;
+  Object.defineProperty(sec, '_codePos', {value: res, configurable: true});
   return res;
 }
 

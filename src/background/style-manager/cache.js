@@ -1,5 +1,5 @@
 import {kExclusions, kInclusions, kOverridden, kTabOvr} from '@/js/consts';
-import {styleCodeEmpty} from '@/js/style-util';
+import {styleCodeAt} from '@/js/style-util';
 import {themeAllowsStyle} from '../color-scheme';
 import {urlMatchOverride, urlMatchSection} from './matcher';
 import {styleMap, stylePreviewMap} from './util';
@@ -43,7 +43,7 @@ export function create(url, cache, maybe, tabOvr) {
     ) {
       v = [];
       for (const section of style.sections) {
-        if ((isIncluded || urlMatchSection(query, section) === true) && !styleCodeEmpty(section)) {
+        if ((isIncluded || urlMatchSection(query, section) === true) && styleCodeAt(section) >= 0) {
           v.push(section.code);
         }
       }

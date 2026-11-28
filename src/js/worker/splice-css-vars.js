@@ -1,4 +1,4 @@
-import {styleCodeEmpty} from '@/js/style-util';
+import {styleCodeAt} from '@/js/style-util';
 import {loadParserlib, parserlib} from './util';
 
 export default function spliceCssVars(sections, vars) {
@@ -8,9 +8,8 @@ export default function spliceCssVars(sections, vars) {
     ).join('')
   }}\n`;
   for (const section of sections) {
-    if (!styleCodeEmpty(section)) {
-      spliceCssAfterGlobals(section, vars, styleCodeEmpty.lastIndex);
-    }
+    const pos = styleCodeAt(section);
+    if (pos >= 0) spliceCssAfterGlobals(section, vars, pos);
   }
 }
 
