@@ -185,14 +185,14 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       cm5-css-mode-mod:
-        specifier: github:openstyles/cm5-css-mode-mod#semver:v1.0.22
-        version: https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/654e6b3b8bad2c7f6c132ebf53bfd6c4c01619be(codemirror@5.65.20)
+        specifier: github:openstyles/cm5-css-mode-mod#semver:v1.0.23
+        version: https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/a6601413dc6722c975224473b37b2710562ddb39(codemirror@5.65.20)
       codemirror:
         specifier: ^5.65.20
         version: 5.65.20
       csslint-mod:
-        specifier: github:openstyles/csslint-mod#semver:v1.0.22
-        version: https://codeload.github.com/openstyles/csslint-mod/tar.gz/1e68d4c6c37f4dfd4e19f836a6e8f0e661062335
+        specifier: github:openstyles/csslint-mod#semver:v1.0.23
+        version: https://codeload.github.com/openstyles/csslint-mod/tar.gz/03528838340005c9dbe6ffab48cd6fa78417ce38
       db-to-cloud:
         specifier: ^0.9.1
         version: 0.9.1
@@ -1701,9 +1701,9 @@ packages:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}
     engines: {node: '>= 10.0'}
 
-  cm5-css-mode-mod@https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/654e6b3b8bad2c7f6c132ebf53bfd6c4c01619be:
-    resolution: {gitHosted: true, integrity: sha512-sgk5NXmQawE6mTUv/4P2idhu1Otbpy3PWJCvUYGfecj5nKwTsYX7/sY6zwaikHvrCvNf/vFX+swP+YAOZO+bag==, tarball: https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/654e6b3b8bad2c7f6c132ebf53bfd6c4c01619be}
-    version: 1.0.22
+  cm5-css-mode-mod@https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/a6601413dc6722c975224473b37b2710562ddb39:
+    resolution: {gitHosted: true, integrity: sha512-Tm8MPWO/gFW4CqM+fQEI/FEqrd96KBYgcIRRhLJKNgT9kb8JiqRWGuQxNqT56VQYI8CRGrMfuo8WFFf5gfUqkw==, tarball: https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/a6601413dc6722c975224473b37b2710562ddb39}
+    version: 1.0.23
     engines: {node: '>=24'}
     peerDependencies:
       codemirror: ^5.65.20
@@ -1864,9 +1864,9 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
-  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/1e68d4c6c37f4dfd4e19f836a6e8f0e661062335:
-    resolution: {gitHosted: true, integrity: sha512-NOwsJxMkpMJpP48dnecJ0jCxwaT/pPS1uU1ypyC7ppOIhOrVI/1Zln7gb+E7aloLKT6zgWm9wb+g5rTm49G4Xw==, tarball: https://codeload.github.com/openstyles/csslint-mod/tar.gz/1e68d4c6c37f4dfd4e19f836a6e8f0e661062335}
-    version: 1.0.22
+  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/03528838340005c9dbe6ffab48cd6fa78417ce38:
+    resolution: {gitHosted: true, integrity: sha512-d3jtFlM1DgkXggJMo5MaYZHGKQOsAkzGPl4I37pQMVVMQx/hEXd7b6gk1T7t/xzFG4lotCPP/rDQ5cgxftDi9g==, tarball: https://codeload.github.com/openstyles/csslint-mod/tar.gz/03528838340005c9dbe6ffab48cd6fa78417ce38}
+    version: 1.0.23
 
   cssnano-preset-default@7.0.17:
     resolution: {integrity: sha512-11qO63A+czwguQFJCaTdICvbaxn0pJzz/XghLlv+OT7WyToDxAMR0Xb3/26/l0y0hQJywwNbj/SLSQlGBHE1OA==}
@@ -5023,7 +5023,7 @@ snapshots:
     dependencies:
       source-map: 0.6.1
 
-  cm5-css-mode-mod@https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/654e6b3b8bad2c7f6c132ebf53bfd6c4c01619be(codemirror@5.65.20):
+  cm5-css-mode-mod@https://codeload.github.com/openstyles/cm5-css-mode-mod/tar.gz/a6601413dc6722c975224473b37b2710562ddb39(codemirror@5.65.20):
     dependencies:
       codemirror: 5.65.20
 
@@ -5161,7 +5161,7 @@ snapshots:
 
   cssesc@3.0.0: {}
 
-  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/1e68d4c6c37f4dfd4e19f836a6e8f0e661062335: {}
+  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/03528838340005c9dbe6ffab48cd6fa78417ce38: {}
 
   cssnano-preset-default@7.0.17(postcss@8.5.33):
     dependencies:
